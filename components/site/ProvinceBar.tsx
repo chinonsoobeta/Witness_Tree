@@ -37,13 +37,15 @@ function UnionJack({ x = 0, y = 0, width = 18, height = 11 }: Readonly<{
   </>;
 }
 
-function ProvinceFlag({ province, locale }: Readonly<{
+export function ProvinceFlag({ province, locale, id }: Readonly<{
   province: ExploreMapView;
   locale: Locale;
+  /** Lets a page find this drawing again, as the harvest and fire PNG export does. */
+  id?: string;
 }>) {
   const label = PROVINCES[province].flag[locale];
   if (province === "bc") return (
-    <svg className="province-flag" viewBox="0 0 36 22" role="img" aria-label={label}>
+    <svg className="province-flag" id={id} viewBox="0 0 36 22" role="img" aria-label={label}>
       <title>{label}</title>
       <rect width="36" height="22" fill="var(--flag-white)" />
       <UnionJack width={36} />
@@ -54,7 +56,7 @@ function ProvinceFlag({ province, locale }: Readonly<{
     </svg>
   );
   if (province === "ab") return (
-    <svg className="province-flag" viewBox="0 0 36 22" role="img" aria-label={label}>
+    <svg className="province-flag" id={id} viewBox="0 0 36 22" role="img" aria-label={label}>
       <title>{label}</title>
       <rect width="36" height="22" fill="var(--flag-alberta-blue)" />
       <path d="M12 4h12v9c0 3.5-2.5 5-6 6.5-3.5-1.5-6-3-6-6.5Z" fill="var(--flag-white)" stroke="var(--flag-wheat)" strokeWidth=".7" />
@@ -65,7 +67,7 @@ function ProvinceFlag({ province, locale }: Readonly<{
     </svg>
   );
   if (province === "on") return (
-    <svg className="province-flag" viewBox="0 0 36 22" role="img" aria-label={label}>
+    <svg className="province-flag" id={id} viewBox="0 0 36 22" role="img" aria-label={label}>
       <title>{label}</title>
       <rect width="36" height="22" fill="var(--flag-red)" />
       <UnionJack width={18} height={11} />
@@ -78,7 +80,7 @@ function ProvinceFlag({ province, locale }: Readonly<{
     </svg>
   );
   return (
-    <svg className="province-flag" viewBox="0 0 36 22" role="img" aria-label={label}>
+    <svg className="province-flag" id={id} viewBox="0 0 36 22" role="img" aria-label={label}>
       <title>{label}</title>
       <rect width="36" height="22" fill="var(--flag-quebec-blue)" />
       <path d="M15 0h6v22h-6ZM0 8h36v6H0Z" fill="var(--flag-white)" />
@@ -100,7 +102,8 @@ function ProvinceItem({
   selected: ExploreMapView | null;
   onSelect?: (province: ExploreMapView) => void;
 }>) {
-  const contents = <><ProvinceFlag province={province} locale={locale} /><span>{PROVINCES[province].name[locale]}</span></>;
+  // The province is named beside its flag, so the flag's own label would only repeat it.
+  const contents = <><span aria-hidden="true"><ProvinceFlag province={province} locale={locale} /></span><span>{PROVINCES[province].name[locale]}</span></>;
   return onSelect ? (
     <button type="button" aria-pressed={selected === province} onClick={() => onSelect(province)}>{contents}</button>
   ) : (

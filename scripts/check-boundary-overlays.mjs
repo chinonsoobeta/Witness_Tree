@@ -10,7 +10,7 @@ const JURISDICTION_NAMES = new Map([
   ["QC", { en: "Québec", fr: "Québec" }],
 ]);
 
-const PRODUCT_ID = "boundary-overlays-v3";
+const PRODUCT_ID = "boundary-overlays-v4";
 const PROVINCE_CLIP = Object.freeze({
   operation: "intersection",
   boundaryRelativePath: "raw/statcan-boundaries/2026-08-12/lpr_000b21a_e.zip",

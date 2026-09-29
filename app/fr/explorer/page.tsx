@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { provincialCauseByInterval } from "@/lib/phase4/provincial-cause";
 import { ExploreView } from "@/components/explore";
-import { FederalDistrictFinder } from "@/components/search";
 import { SiteShell } from "@/components/site";
-import { federalRidingComparison } from "@/lib/comparison";
 import {
   exploreFixtures,
   EXPLORE_MODES,
@@ -13,6 +12,8 @@ import {
 } from "@/lib/explore";
 // Imported by path rather than through the barrel: this module carries every
 // span for every district and must never be pulled into a browser bundle.
+// The same holds for the economic-region table.
+import { regionIntervalMeasurements } from "@/lib/explore/region-intervals";
 import { ridingIntervalMeasurements } from "@/lib/explore/riding-intervals";
 import { localizedAlternates } from "@/lib/site-metadata";
 
@@ -40,7 +41,6 @@ export default async function Page({
   )
     ? (query.mode as (typeof EXPLORE_MODES)[number])
     : "forest-change";
-  const presentation = query.presentation === "list" ? "list" : "map";
   const year = parseExploreYear(query.year);
   // The span, not just its closing year. A URL that names only `year` still
   // means the annual interval ending there, which is what it has always meant.
@@ -51,34 +51,18 @@ export default async function Page({
       <main id="main" className="page-wrap">
         <header className="masthead">
           <h1>Explorer les pertes forestières</h1>
-          <p className="masthead-note">La portée, les téléchargements et les limites des versions sont répertoriés dans <Link href="/fr/versions">Versions des données</Link>.</p>
+          <p className="masthead-note">Les téléchargements, les notes de version et les limites se trouvent dans <Link href="/fr/versions">Versions des données</Link>.</p>
         </header>
         <ExploreView
           events={exploreFixtures}
           locale="fr"
           mode={mode}
-          presentation={presentation}
           data={query.data === "table" ? "table" : "chart"}
           year={interval.toYear}
           fromYear={interval.fromYear}
           overlays={overlays}
-          ridingMeasurements={ridingIntervalMeasurements(interval)}
-        />
-        <p className="explore-draw-link"><Link className="btn btn--outline" href="/fr/explorer/dessiner">Dessiner et mesurer une zone</Link></p>
-        <FederalDistrictFinder
-          locale="fr"
-          query={query.district ?? ""}
-          rows={federalRidingComparison.places}
-          parameters={[
-            { name: "mode", value: mode },
-            { name: "presentation", value: presentation },
-            { name: "data", value: query.data === "table" ? "table" : "chart" },
-            { name: "year", value: String(interval.toYear) },
-            ...(interval.fromYear !== interval.toYear - 1
-              ? [{ name: "from", value: String(interval.fromYear) }]
-              : []),
-            ...(overlays.length > 0 ? [{ name: "overlays", value: overlays.join(",") }] : []),
-          ]}
+          ridingMeasurements={[...ridingIntervalMeasurements(interval), ...regionIntervalMeasurements(interval)]}
+          provincialCause={provincialCauseByInterval()}
         />
       </main>
     </SiteShell>

@@ -1,6 +1,6 @@
 # Current-wildfire owner admission
 
-The owner has approved the conditional Phase 1 scope for the four checksum-bound current-wildfire snapshots. This clears the BC and Ontario geometry decisions and resolves the CWFIS and Alberta operational semantics. It does **not** prove transformation, ingestion, release, production admission, or immutable storage: zero of six payloads have durable machine-verifiable archive proof, while six placeholder-only attestations are recorded.
+The owner has approved the conditional Phase 1 scope for the four checksum-bound current-wildfire snapshots. This clears the BC and Ontario geometry decisions and resolves the CWFIS and Alberta operational semantics. It does **not** prove transformation, ingestion, release, or production admission. The primary archive gate now has exact-version proof for all six objects. A recovery replica and mutation provenance are still unproven.
 
 The binding record is [`data/current-wildfire-owner-admission.json`](../data/current-wildfire-owner-admission.json). Its gate requires exact object keys, version IDs, byte lengths, full-object checksum verification, exact-version readbacks, Canadian `ca-central-1` storage and active COMPLIANCE retention through at least `2033-08-12T00:00:00Z` for four raw objects and the two required derived objects.
 
@@ -19,7 +19,7 @@ Within a province, the responsible provincial wildfire agency source prevails ov
 
 ## Remaining activation gate
 
-No AWS operation is part of this decision. The six integrated raw/derived records are attestations only: they omit concrete provider version identifiers, use `redacted-present` checksum placeholders, and record no audit operations for the derived pair. The primary archive gate is therefore `0/6` machine-verifiable (`6/6` attested only). Production eligibility remains `false` until exact-version immutable proof and every downstream gate pass. Owner approval cannot substitute for those proofs, and the existing raw provenance and geometry policies remain unchanged.
+No AWS operation is part of this decision. When it was made, the six integrated raw/derived records were attestations only, so the gate stood at `0/6` machine-verifiable. The later exact captures in [`data/current-wildfire-exact-raw-archive-capture-2026-08-25.json`](../data/current-wildfire-exact-raw-archive-capture-2026-08-25.json) and [`data/current-wildfire-derived-manifest-retention-evidence.json`](../data/current-wildfire-derived-manifest-retention-evidence.json) raised it to `6/6` verified, with primary exact-version readbacks verified. `recoveryReplicaVerified` and `mutationProvenance` are both still `false`. Production eligibility remains `false` until those and every downstream gate pass. Owner approval cannot substitute for those proofs, and the existing raw provenance and geometry policies remain unchanged.
 
 ## Derived archive recovery
 

@@ -1,0 +1,338 @@
+{
+ "schemaVersion": "witness-tree/current-wildfire-scheduled-archive-iam-applied-readback/1",
+ "status": "applied-and-read-back",
+ "ownerPolicyApproval": "The owner read the exact trust policy, permission policy, provider and repository variable in chat on 2026-09-13 and replied 'I approve.' before anything was created.",
+ "observedAt": "2026-09-13T16:56:09+00:00",
+ "scope": "IAM provisioning readback for the scheduled wildfire archive writer only. This is not a scheduled run, an upload, applied retention, object readback, transformation, ingestion, release or production evidence.",
+ "accountId": "286853118812",
+ "region": "ca-central-1",
+ "oidcProvider": {
+  "arn": "arn:aws:iam::286853118812:oidc-provider/token.actions.githubusercontent.com",
+  "url": "token.actions.githubusercontent.com",
+  "clientIds": [
+   "sts.amazonaws.com"
+  ],
+  "thumbprints": [
+   "ab9d0263244dd0326eb67015705a667e79cfe998"
+  ],
+  "thumbprintNote": "Not supplied at creation; AWS filled it in. AWS validates GitHub's certificate chain itself."
+ },
+ "role": {
+  "roleName": "WitnessTreeWildfireScheduledArchiveWriter",
+  "arn": "arn:aws:iam::286853118812:role/WitnessTreeWildfireScheduledArchiveWriter",
+  "roleId": "AROAUFSOHHNOHK3ZPHSM2",
+  "createdAt": "2026-09-13T16:56:09+00:00",
+  "maxSessionSeconds": 3600,
+  "permissionsBoundary": null,
+  "attachedManagedPolicies": [],
+  "inlinePolicyNames": [
+   "WildfireScheduledArchiveWrite"
+  ]
+ },
+ "trustPolicy": {
+  "Version": "2012-10-17",
+  "Statement": [
+   {
+    "Sid": "WildfireRefreshWorkflowOnMainOnly",
+    "Effect": "Allow",
+    "Principal": {
+     "Federated": "arn:aws:iam::286853118812:oidc-provider/token.actions.githubusercontent.com"
+    },
+    "Action": "sts:AssumeRoleWithWebIdentity",
+    "Condition": {
+     "StringEquals": {
+      "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
+      "token.actions.githubusercontent.com:sub": "repo:chinonsoobeta@292947834/Witness_Tree@1331584639:ref:refs/heads/main",
+      "token.actions.githubusercontent.com:repository_id": "1331584639",
+      "token.actions.githubusercontent.com:repository_owner_id": "292947834",
+      "token.actions.githubusercontent.com:job_workflow_ref": "chinonsoobeta/Witness_Tree/.github/workflows/wildfire-refresh.yml@refs/heads/main"
+     }
+    }
+   }
+  ]
+ },
+ "trustPolicySha256": "e757b63df82b683a56cb82841270d8ee49c40d7bf0ae40eda7140330f92311bf",
+ "trustReadbackMatches": true,
+ "inlinePolicyName": "WildfireScheduledArchiveWrite",
+ "permissionPolicy": {
+  "Version": "2012-10-17",
+  "Statement": [
+   {
+    "Sid": "ArchiveFourFeeds",
+    "Effect": "Allow",
+    "Action": [
+     "s3:PutObject",
+     "s3:PutObjectRetention",
+     "s3:GetObject",
+     "s3:GetObjectVersion",
+     "s3:GetObjectRetention"
+    ],
+    "Resource": [
+     "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/cwfis-current/undeclared/*",
+     "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/bc-wildfire/undeclared/*",
+     "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/ab-wildfire/undeclared/*",
+     "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/on-fire-disturbance/undeclared/*"
+    ]
+   },
+   {
+    "Sid": "PublishWildfireStatus",
+    "Effect": "Allow",
+    "Action": "s3:PutObject",
+    "Resource": "arn:aws:s3:::witness-tree-public-delivery-ca-central-1/wildfire/current-status.json"
+   },
+   {
+    "Sid": "NeverOverwriteArchive",
+    "Effect": "Deny",
+    "Action": "s3:PutObject",
+    "Resource": [
+     "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/cwfis-current/undeclared/*",
+     "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/bc-wildfire/undeclared/*",
+     "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/ab-wildfire/undeclared/*",
+     "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/on-fire-disturbance/undeclared/*"
+    ],
+    "Condition": {
+     "Null": {
+      "s3:if-none-match": "true"
+     },
+     "Bool": {
+      "s3:ObjectCreationOperation": "true"
+     }
+    }
+   },
+   {
+    "Sid": "PayloadsCompliance",
+    "Effect": "Deny",
+    "Action": "s3:PutObject",
+    "Resource": [
+     "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/cwfis-current/undeclared/*/payload/*",
+     "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/bc-wildfire/undeclared/*/payload/*",
+     "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/ab-wildfire/undeclared/*/payload/*",
+     "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/on-fire-disturbance/undeclared/*/payload/*"
+    ],
+    "Condition": {
+     "StringNotEquals": {
+      "s3:object-lock-mode": "COMPLIANCE"
+     }
+    }
+   },
+   {
+    "Sid": "PayloadsTwoYears",
+    "Effect": "Deny",
+    "Action": [
+     "s3:PutObject",
+     "s3:PutObjectRetention"
+    ],
+    "Resource": [
+     "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/cwfis-current/undeclared/*/payload/*",
+     "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/bc-wildfire/undeclared/*/payload/*",
+     "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/ab-wildfire/undeclared/*/payload/*",
+     "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/on-fire-disturbance/undeclared/*/payload/*"
+    ],
+    "Condition": {
+     "NumericLessThan": {
+      "s3:object-lock-remaining-retention-days": "729"
+     }
+    }
+   },
+   {
+    "Sid": "ExistingObjectsUntouched",
+    "Effect": "Deny",
+    "Action": [
+     "s3:PutObject",
+     "s3:PutObjectRetention"
+    ],
+    "Resource": [
+     "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/cwfis-current/undeclared/2026-08-14T*",
+     "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/bc-wildfire/undeclared/2026-08-14T*",
+     "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/ab-wildfire/undeclared/2026-08-14T*",
+     "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/on-fire-disturbance/undeclared/2026-08-14T*"
+    ]
+   },
+   {
+    "Sid": "NothingDestructiveOrAdministrative",
+    "Effect": "Deny",
+    "Action": [
+     "s3:DeleteObject",
+     "s3:DeleteObjectVersion",
+     "s3:BypassGovernanceRetention",
+     "s3:PutObjectLegalHold",
+     "s3:PutObjectAcl",
+     "s3:PutObjectVersionAcl",
+     "s3:PutBucket*",
+     "s3:DeleteBucket*",
+     "s3:PutLifecycleConfiguration",
+     "s3:PutReplicationConfiguration",
+     "s3:PutEncryptionConfiguration",
+     "iam:*",
+     "sts:AssumeRole"
+    ],
+    "Resource": "*"
+   }
+  ]
+ },
+ "permissionPolicySha256": "a4f6173d015a8e0a92d7030c17f0bad18677b4ff47ee8794d14762a41c056453",
+ "permissionReadbackMatches": true,
+ "repositoryVariable": {
+  "name": "WILDFIRE_ARCHIVE_ROLE_ARN",
+  "value": "arn:aws:iam::286853118812:role/WitnessTreeWildfireScheduledArchiveWriter"
+ },
+ "policySimulation": {
+  "tool": "aws iam simulate-principal-policy",
+  "cases": [
+   {
+    "case": "payload put, new, COMPLIANCE 731d",
+    "action": "s3:PutObject",
+    "resource": "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/bc-wildfire/undeclared/2026-09-13T17-00-00Z/abc/payload/x.json",
+    "expected": "allowed",
+    "decision": "allowed"
+   },
+   {
+    "case": "sidecar put, new, unlocked",
+    "action": "s3:PutObject",
+    "resource": "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/bc-wildfire/undeclared/2026-09-13T17-00-00Z/abc/manifest.json",
+    "expected": "allowed",
+    "decision": "allowed"
+   },
+   {
+    "case": "payload put without If-None-Match",
+    "action": "s3:PutObject",
+    "resource": "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/bc-wildfire/undeclared/2026-09-13T17-00-00Z/abc/payload/x.json",
+    "expected": "explicitDeny",
+    "decision": "explicitDeny"
+   },
+   {
+    "case": "payload put GOVERNANCE",
+    "action": "s3:PutObject",
+    "resource": "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/bc-wildfire/undeclared/2026-09-13T17-00-00Z/abc/payload/x.json",
+    "expected": "explicitDeny",
+    "decision": "explicitDeny"
+   },
+   {
+    "case": "payload put without lock",
+    "action": "s3:PutObject",
+    "resource": "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/bc-wildfire/undeclared/2026-09-13T17-00-00Z/abc/payload/x.json",
+    "expected": "explicitDeny",
+    "decision": "explicitDeny"
+   },
+   {
+    "case": "payload put COMPLIANCE 100d",
+    "action": "s3:PutObject",
+    "resource": "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/bc-wildfire/undeclared/2026-09-13T17-00-00Z/abc/payload/x.json",
+    "expected": "explicitDeny",
+    "decision": "explicitDeny"
+   },
+   {
+    "case": "retention shortened to 100d",
+    "action": "s3:PutObjectRetention",
+    "resource": "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/bc-wildfire/undeclared/2026-09-13T17-00-00Z/abc/payload/x.json",
+    "expected": "explicitDeny",
+    "decision": "explicitDeny"
+   },
+   {
+    "case": "existing 2026-08-14 object put",
+    "action": "s3:PutObject",
+    "resource": "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/bc-wildfire/undeclared/2026-08-14T20-31-39Z/abc/payload/x",
+    "expected": "explicitDeny",
+    "decision": "explicitDeny"
+   },
+   {
+    "case": "existing 2026-08-14 retention",
+    "action": "s3:PutObjectRetention",
+    "resource": "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/cwfis-current/undeclared/2026-08-14T20-24-34Z/abc/payload/x",
+    "expected": "explicitDeny",
+    "decision": "explicitDeny"
+   },
+   {
+    "case": "delete object version",
+    "action": "s3:DeleteObjectVersion",
+    "resource": "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/bc-wildfire/undeclared/2026-09-13T17-00-00Z/abc/payload/x.json",
+    "expected": "explicitDeny",
+    "decision": "explicitDeny"
+   },
+   {
+    "case": "bypass governance",
+    "action": "s3:BypassGovernanceRetention",
+    "resource": "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/bc-wildfire/undeclared/2026-09-13T17-00-00Z/abc/payload/x.json",
+    "expected": "explicitDeny",
+    "decision": "explicitDeny"
+   },
+   {
+    "case": "legal hold",
+    "action": "s3:PutObjectLegalHold",
+    "resource": "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/bc-wildfire/undeclared/2026-09-13T17-00-00Z/abc/payload/x.json",
+    "expected": "explicitDeny",
+    "decision": "explicitDeny"
+   },
+   {
+    "case": "bucket policy change",
+    "action": "s3:PutBucketPolicy",
+    "resource": "arn:aws:s3:::witness-tree-raw-archive-ca-central-1",
+    "expected": "explicitDeny",
+    "decision": "explicitDeny"
+   },
+   {
+    "case": "sopfeu put",
+    "action": "s3:PutObject",
+    "resource": "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/sopfeu/undeclared/2026-09-13T17-00-00Z/abc/payload/x",
+    "expected": "implicitDeny",
+    "decision": "implicitDeny"
+   },
+   {
+    "case": "other raw feed read",
+    "action": "s3:GetObject",
+    "resource": "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/qc-fourth-inventory/x",
+    "expected": "implicitDeny",
+    "decision": "implicitDeny"
+   },
+   {
+    "case": "payload readback",
+    "action": "s3:GetObjectVersion",
+    "resource": "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/bc-wildfire/undeclared/2026-09-13T17-00-00Z/abc/payload/x.json",
+    "expected": "allowed",
+    "decision": "allowed"
+   },
+   {
+    "case": "retention readback",
+    "action": "s3:GetObjectRetention",
+    "resource": "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/bc-wildfire/undeclared/2026-09-13T17-00-00Z/abc/payload/x.json",
+    "expected": "allowed",
+    "decision": "allowed"
+   },
+   {
+    "case": "status publish",
+    "action": "s3:PutObject",
+    "resource": "arn:aws:s3:::witness-tree-public-delivery-ca-central-1/wildfire/current-status.json",
+    "expected": "allowed",
+    "decision": "allowed"
+   },
+   {
+    "case": "release write",
+    "action": "s3:PutObject",
+    "resource": "arn:aws:s3:::witness-tree-public-delivery-ca-central-1/releases/x",
+    "expected": "implicitDeny",
+    "decision": "implicitDeny"
+   },
+   {
+    "case": "iam create user",
+    "action": "iam:CreateUser",
+    "resource": "*",
+    "expected": "explicitDeny",
+    "decision": "explicitDeny"
+   }
+  ],
+  "mismatches": 0,
+  "limit": "The simulator evaluates the role's own policies with supplied context keys. It does not prove GitHub's token carries the expected sub and job_workflow_ref claims; only a real run on main can show that, and a mismatch fails closed."
+ },
+ "sha256Note": "Policy hashes are SHA-256 of JSON with sorted keys and no whitespace.",
+ "claims": {
+  "oidcProviderCreated": true,
+  "iamRoleCreated": true,
+  "tokenClaimsObservedInRealRun": false,
+  "scheduledWriteExecuted": false,
+  "retentionApplied": false,
+  "transformed": false,
+  "ingested": false,
+  "released": false,
+  "productionEligible": false
+ }
+}

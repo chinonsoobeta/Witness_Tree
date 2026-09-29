@@ -11,21 +11,37 @@ function section(source, start, end) {
   return source.slice(from, to);
 }
 
-test("landing pages use the production aggregate and retain the bounded scope", async () => {
+test("landing pages use the released province span and retain the bounded scope", async () => {
   const [english, french] = await Promise.all([read("../app/en/page.tsx"), read("../app/fr/page.tsx")]);
   for (const page of [english, french]) {
-    assert.match(page, /EXPLORE_PRODUCTION_LAYER\.rows/);
-    assert.match(page, /not per-cell geometry|ne fournit pas une géométrie par cellule/);
+    assert.match(page, /SPAN_ROWS/);
+    /*
+     * This used to require the page to say the release "is not per-cell
+     * geometry". That stopped being true on 2026-09-19, when the clipped
+     * four-province per-cell products were admitted and released, so the
+     * sentence became a false denial of something the Explore map draws.
+     *
+     * The binding limit is countable:false, not absence, so the page is held
+     * to that instead, at the same strictness: the patches exist, they may be
+     * drawn, no total may be taken from them, and the formal gate stays open.
+     * The 2026-09-23 plain-language pass says the same four things in plainer
+     * words, so the assertions follow the words and keep the four claims.
+     */
+    assert.match(page, /for looking at, not adding up|servent à regarder, pas à additionner/);
+    assert.match(page, /no expert has reviewed|aucun spécialiste ne les a examinées/);
+    assert.match(page, /not the final release|et non la version définitive/);
     assert.match(page, /attribution\.href/);
   }
-  assert.match(english, /technical preview/);
-  assert.match(french, /aperçu technique/);
-  assert.match(english, /bounded, provisional/);
-  assert.match(french, /provisoire et limité/);
+  assert.match(english, /are an early preview, not the final release/);
+  assert.match(french, /sont un premier aperçu, et non la version définitive/);
+  // The owner asked on 2026-09-27 for the "provisional" sentence to go; the
+  // preview status above still says the figures are not final.
+  assert.doesNotMatch(english, /These figures are provisional/);
+  assert.doesNotMatch(french, /Ces chiffres sont provisoires/);
   assert.doesNotMatch(english, /The verified .* province aggregate/);
   assert.doesNotMatch(french, /agrégat provincial vérifié/);
-  assert.match(english, /Other provinces are coming soon/);
-  assert.match(french, /D’autres provinces s’ajouteront bientôt/);
+  assert.match(english, /The record covers these four provinces only/);
+  assert.match(french, /Le registre ne couvre que ces quatre provinces/);
   assert.doesNotMatch(english, /Every result shows what the evidence says/);
   assert.doesNotMatch(french, /Chaque résultat indique ce que montrent les preuves/);
 });
@@ -34,7 +50,7 @@ test("landing pages use the production aggregate and retain the bounded scope", 
  * This replaces the staged-grammar test that pinned the landing-hero and
  * landing-record-band structure. The confidence-first canvas puts the coverage
  * statement and the evidence legend ahead of the first figure, and reports each
- * province through a coverage card rather than a definition list, so the old
+ * province through a ranked list rather than a grid of cards, so the old
  * structure is gone by design rather than by neglect. The contract it enforced
  * is kept here against the composition that replaced it, at the same strictness:
  * one call to action per band, the interior sections still numbered, and no
@@ -47,26 +63,35 @@ test("the landing composition puts coverage and the legend before any figure", a
     [french, "/fr/explorer", "/fr/methodes#coverage-gap"],
   ]) {
     const hero = section(page, '<header className="masthead masthead--record">', "</header>");
-    assert.match(hero, /<p className="eyebrow">/);
+    // The owner removed the hero eyebrow on 2026-09-27; the question is the title.
+    assert.doesNotMatch(hero, /<p className="eyebrow">/);
     assert.match(hero, /<h1>/);
     assert.match(hero, /<ProvinceBar/);
     // Nothing leaves the hero: the reader meets the coverage statement first.
     assert.equal((hero.match(/<Link\b/g) ?? []).length, 0);
-    // Order is the claim. The coverage statement and the legend both stand
+    // Order is the claim. The headline carries its own minimum inside the
+    // panel, so there is no separate coverage banner; the legend still stands
     // ahead of the section that reports a province's figures.
-    const coverage = page.indexOf("<CoverageStatement");
-    const legend = page.indexOf("<EvidenceLegend");
+    assert.equal(page.indexOf("<CoverageStatement"), -1, "the headline panel says the minimum itself");
+    const headline = page.indexOf("<CumulativeHeadline");
+    const legend = page.indexOf("<EvidenceMarks");
     const record = page.indexOf('<section className="content-section landing-coverage"');
-    assert.ok(coverage > 0 && legend > coverage && record > legend, "coverage, then legend, then figures");
-    const band = section(page, '<section className="content-section landing-coverage"', '<section className="content-section prose-measure">');
-    assert.match(band, /<span className="num">01<\/span>/);
-    assert.match(band, /<ProvinceCoverageCard/);
+    assert.ok(headline > 0 && legend > headline && record > legend, "headline with its minimum, then legend, then figures");
+    const band = section(page, '<section className="content-section landing-coverage"', '<section className="content-section">');
+    assert.match(band, /<ProvinceRecordList/);
     assert.match(band, new RegExp(`href="${methods}"`));
     assert.match(band, new RegExp(`href="${route}"`));
     assert.equal((page.match(/landing-coverage/g) ?? []).length, 1);
-    assert.match(page, /<span className="num">02<\/span>/);
-    assert.match(page, /<span className="num">03<\/span>/);
-    assert.match(page, /<span className="num">04<\/span>/);
+    /*
+     * The interior sections are no longer numbered. A numbered marker claims
+     * the content is a sequence the reader should follow in order, and these
+     * four never were: 02 and 04 stated the same caveat several screens
+     * apart. They collapse into the evidence marks plus one limits block, so
+     * the contract enforced here is now that no such marker survives and that
+     * the limits block is single.
+     */
+    assert.doesNotMatch(page, /<span className="num">/);
+    assert.equal((page.match(/aria-labelledby="(limits|limites)"/g) ?? []).length, 1);
     assert.doesNotMatch(page, /\u2014/);
   }
 });
@@ -82,7 +107,10 @@ test("public coverage copy derives from the bounded Explore period", async () =>
     read("../lib/explore/types.ts"),
   ]);
   for (const source of [gateway, english, french, footer, brand, fixtures]) {
-    assert.match(source, /EXPLORE_COVERAGE_PERIOD/);
+    // Either derived span is acceptable; a literal year range is not. The
+    // The landing pages derive the released span instead of repeating a
+    // literal range, which keeps the period attached to the figures.
+    assert.match(source, /EXPLORE_COVERAGE_PERIOD|productionAggregatePeriod|provinceSpanReach/);
     assert.doesNotMatch(source, /1984(?:–| to )present|1984–2025|depuis 1984/i);
   }
   assert.match(period, /EXPLORE_YEAR_MAX = 2022/);
@@ -165,11 +193,11 @@ test("localized not-found pages use the site shell and offer three exits", async
 
 test("about routes are bilingual and reserve owner statements for owner copy", async () => {
   const [english, french, header, footer] = await Promise.all([read("../app/en/about/page.tsx"), read("../app/fr/a-propos/page.tsx"), read("../components/site/SiteHeader.tsx"), read("../components/site/SiteFooter.tsx")]);
-  assert.match(english, /Owner copy pending/);
-  assert.match(english, /No owner statement has been supplied/);
+  assert.match(english, /Coming soon/);
+  assert.match(english, /The owner hasn’t written this page yet/);
   assert.match(english, /fr: "\/fr\/a-propos"/);
-  assert.match(french, /Texte du propriétaire à venir/);
-  assert.match(french, /Aucune déclaration du propriétaire n’a été fournie/);
+  assert.match(french, /À venir/);
+  assert.match(french, /Le propriétaire n’a pas encore rédigé cette page/);
   assert.match(french, /en: "\/en\/about"/);
   assert.doesNotMatch(header, /\["About", "\/en\/about"\]/);
   assert.doesNotMatch(header, /\["À propos", "\/fr\/a-propos"\]/);

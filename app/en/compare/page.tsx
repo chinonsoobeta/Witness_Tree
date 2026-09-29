@@ -1,5 +1,4 @@
 import { CoverageStatement } from "@/components/policy/CoverageStatement";
-import { EvidenceLegend } from "@/components/policy/EvidenceLegend";
 import type { Metadata } from "next";
 import {
   FederalRidingPicker,
@@ -42,10 +41,9 @@ export default async function ComparePage({
       <main id="main" className="page-wrap">
         <header className="masthead">
           <h1>{TITLE}</h1>
-          <p className="masthead-note">Extent-corrected measurements for 2021–2022.</p>
+          <p className="masthead-note">Figures for 2021–2022, for the mapped part of each riding.</p>
         </header>
-        <CoverageStatement locale="en"><p>Compare the mapped coverage before comparing the figures. A smaller measured loss does not establish less loss where coverage differs. Missing measurements are excluded from the ranking, never counted as zero.</p><p>The forested-area denominator includes only known mapped forest; it does not describe forest in areas without coverage.</p></CoverageStatement>
-        <EvidenceLegend locale="en" />
+        <CoverageStatement locale="en"><p>Before comparing two ridings, check how much of each was mapped: a smaller loss can just mean less was mapped. Ridings without full data are left out of the ranking rather than counted as zero, and every share is of mapped forest only.</p></CoverageStatement>
         <FederalRidingPicker
           rows={federalRidingComparison.comparisonRows}
           locale="en"

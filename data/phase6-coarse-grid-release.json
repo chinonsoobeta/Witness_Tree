@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "witness-tree/coarse-grid-release/1",
+  "productId": "phase6-coarse-grid-v1",
+  "releaseId": "0d58b35643f7f8033d2d9e1651c34b065cf4168a947c35987beb32cf1393be8c",
+  "releaseIdMeaning": "the grid's completion marker (tiles.complete.sha256), which data/phase6-coarse-grid-tiles.json binds",
+  "base": "https://d3g1406o0uekin.cloudfront.net/releases/phase6-coarse-grid-v1/0d58b35643f7f8033d2d9e1651c34b065cf4168a947c35987beb32cf1393be8c/tiles",
+  "siteBinding": {
+    "name": "COARSE_GRID_BASE",
+    "value": "https://d3g1406o0uekin.cloudfront.net/releases/phase6-coarse-grid-v1/0d58b35643f7f8033d2d9e1651c34b065cf4168a947c35987beb32cf1393be8c/tiles/",
+    "setBy": "the owner, on the live site, through the ChatGPT Sites control plane"
+  },
+  "gridRecord": {
+    "path": "data/phase6-coarse-grid-tiles.json",
+    "sha256": "f9c45f76b96d2daf0e194f3103d0d9eab18ea4b453533ac821b44987e40dcd0b"
+  },
+  "admission": {
+    "path": "data/phase2-1984-2022-admission-record-2026-09-18.json",
+    "sha256": "4fc4382364576404af0a231eb0e1fef676b52f73627805605bca5e80a4bf60ee",
+    "item": "F-coarse-grid"
+  },
+  "tileCount": 2067,
+  "totalBytes": 496687280,
+  "claims": {
+    "admitted": true,
+    "released": true,
+    "releasedMeaning": "Uploaded create-once to the release prefix and read back byte for byte from S3 and CloudFront. The draw-and-measure route reads it once the live site's COARSE_GRID_BASE names this base.",
+    "expertReviewed": false,
+    "complete": false,
+    "formalGatesChanged": false
+  },
+  "limits": [
+    "Loss is counted once per place against the forest known at the start year; the yearly sum is hectares only, never a share.",
+    "Edge blocks of a drawn shape are bracketed, not measured; the route reports the bracket.",
+    "Every province is partially mapped, so every figure is a minimum. Nodata is Unknown, never zero.",
+    "Nothing has been expert reviewed."
+  ],
+  "recordedAt": "2026-09-19T05:13:02.091Z"
+}

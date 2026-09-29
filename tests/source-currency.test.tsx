@@ -41,8 +41,8 @@ test("the standing sentence follows the record rather than the copy", () => {
   // and must say the opposite when the record does.
   assert.equal(sourceCurrency.laterYearPublished, false);
   const current = renderToStaticMarkup(<SourceCurrency locale="en" />);
-  assert.match(current, /is the period the publisher offers/);
-  assert.doesNotMatch(current, /behind the publisher/);
+  assert.match(current, /so this site is up to date with it/);
+  assert.doesNotMatch(current, /this site is behind/);
   assert.doesNotMatch(current, /can differ from the same year read from the source today/);
 });
 
@@ -57,7 +57,8 @@ test("the Data page carries the section in both locales", () => {
 test("Data leads with coverage and keeps provenance beside the reader downloads", () => {
   for (const locale of ["en", "fr"] as const) {
     const html = renderToStaticMarkup(<DataPage locale={locale} />);
-    assert.ok(html.indexOf('class="coverage-statement"') < html.indexOf('class="data-layout"'));
+    const note = html.indexOf('<details class="coverage-note">');
+    assert.ok(note >= 0 && note < html.indexOf('class="data-layout"'));
     assert.match(html, /<aside class="data-provenance" aria-label="[^"]+">/);
     assert.ok(html.indexOf('class="data-reader"') < html.indexOf('class="data-provenance"'));
     assert.match(html, /source-ledger\.json/);

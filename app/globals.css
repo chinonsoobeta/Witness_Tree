@@ -108,14 +108,17 @@
   --loss-1: #a9cf9b;
   --loss-2: #57935a;
   --loss-3: #1f5f38;
+  --loss-4: #0b3320;
 
   /* per-cell patch colours, on the same footing and for the same reason: the
      legend swatch has to read as the same colour as the patch beside it.
-     "neither recorded" reuses --loss-3 rather than earning a colour of its
-     own, because it is a detected loss patch with nothing in the official
-     record, not a third kind of event. */
+     "neither recorded" has a neutral colour of its own: it once reused
+     --loss-3, which is also a province fill colour, so a patch with nothing
+     in the record vanished into the province behind it. It is still a
+     detected loss patch, not a third kind of event, so it takes no hue. */
   --patch-harvest: #2a78d6;
   --patch-fire: #eb6834;
+  --patch-neither: #7a6a58;
 
   /* Public-domain province-flag artwork keeps its fixed identity colours in
      both themes. These tokens keep raw colour values out of component code. */
@@ -133,19 +136,47 @@
   --flag-ontario-green: #118a44;
   --flag-quebec-blue: #0957a4;
 
-  /* shape and depth */
-  --radius-sm: 12px;
-  --radius: 20px;
-  --radius-lg: 28px;
-  --blob: 60% 40% 30% 70% / 60% 30% 70% 40%;
-  --shadow-soft: 0 4px 20px -2px rgb(71 89 63 / 15%);
-  --shadow-float: 0 10px 40px -10px rgb(193 140 93 / 20%);
-  --shadow-lift: 0 20px 40px -10px rgb(71 89 63 / 15%);
+  /* shape and depth
+
+     One radius, not a scale. The design this template is drawn from sets 2px
+     on every control and leaves every bar, plate and tinted band square, and
+     the three sizes below are kept as names only so the several dozen call
+     sites do not each have to be rewritten to say the same thing.
+
+     The soft radii they used to hold were the reason the implementation read
+     as a different product from its own design: a record of what a public
+     source did and did not observe, wearing the rounded-card language of a
+     consumer dashboard. A corner is not decoration here. It is the difference
+     between a page that looks like an instrument and one that looks like an
+     opinion about an instrument.
+
+     The shadows are gone for the same reason, tokens and call sites alike.
+     Depth is carried by a hairline rule, which prints, photocopies and
+     survives forced colours, none of which a shadow does. The three panels
+     that genuinely sit over other content keep an opaque fill and a
+     --rule-strong edge, which separates them from whatever is behind without
+     claiming they are hovering above it. */
+  --radius-control: 2px;
+  --radius-sm: var(--radius-control);
+  --radius: var(--radius-control);
+  --radius-lg: var(--radius-control);
   --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
   --dur: 320ms;
   --grain-opacity: 0.035;
 
-  /* type and measure */
+  /* type and measure
+
+     BC Sans is the one family the template uses: headings, body, labels and
+     every figure. It ships 300, 400 and 700 only, so no rule may ask for 500
+     or 600, which the browser would synthesise into the soft, slightly wrong
+     weight that made the figures look off. Figures take tabular-nums so
+     columns align, and lining-nums because the face also carries oldstyle
+     figures, which would be a defect in a data table.
+
+     --mono is left for machine identifiers inside <code> and nothing else.
+     It used to set every figure on the site, which meant the numbers
+     resolved to whatever monospace the visitor's machine happened to have
+     and looked different on every one of them. */
   --mono:
     ui-monospace, "SF Mono", SFMono-Regular, Menlo, "DejaVu Sans Mono",
     monospace;
@@ -267,9 +298,6 @@
     --unknown: #93a099;
 
     /* shape and depth */
-    --shadow-soft: 0 4px 20px -2px rgb(0 0 0 / 45%);
-    --shadow-float: 0 10px 40px -10px rgb(0 0 0 / 55%);
-    --shadow-lift: 0 20px 40px -10px rgb(0 0 0 / 55%);
     --grain-opacity: 0.02;
   }
 }
@@ -368,10 +396,6 @@
   --radius-sm: 12px;
   --radius: 20px;
   --radius-lg: 28px;
-  --blob: 60% 40% 30% 70% / 60% 30% 70% 40%;
-  --shadow-soft: 0 4px 20px -2px rgb(71 89 63 / 15%);
-  --shadow-float: 0 10px 40px -10px rgb(193 140 93 / 20%);
-  --shadow-lift: 0 20px 40px -10px rgb(71 89 63 / 15%);
   --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
   --dur: 320ms;
   --grain-opacity: 0.035;
@@ -470,9 +494,6 @@
   --unknown: #93a099;
 
   /* shape and depth */
-  --shadow-soft: 0 4px 20px -2px rgb(0 0 0 / 45%);
-  --shadow-float: 0 10px 40px -10px rgb(0 0 0 / 55%);
-  --shadow-lift: 0 20px 40px -10px rgb(0 0 0 / 55%);
   --grain-opacity: 0.02;
 }
 
@@ -591,13 +612,13 @@ h4 {
   align-items: center;
   min-height: 44px;
   padding: 0 22px;
-  border-radius: 999px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-control);
   background: var(--ink);
   color: var(--ground);
-  box-shadow: var(--shadow-float);
   font-family: var(--ui);
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 700;
   text-decoration: none;
   transition: transform var(--dur) var(--ease);
 }
@@ -704,7 +725,7 @@ h4 {
 }
 .gateway-welcome {
   margin: 0;
-  font-weight: 600;
+  font-weight: 700;
   font-size: clamp(16px, calc(14.51px + 0.381vw), 20px);
   line-height: 1;
   letter-spacing: 0.14em;
@@ -745,14 +766,14 @@ h4 {
   align-items: center;
   gap: 9px;
   padding: 26px 24px;
-  border-radius: 16px;
+  border-radius: var(--radius-control);
   backdrop-filter: blur(2px);
   text-decoration: none;
 }
 .gateway-choice--en { background: var(--gate-en-fill); border: 1px solid var(--gate-en-edge); }
 .gateway-choice--fr { background: var(--gate-fr-fill); border: 1px solid var(--gate-fr-edge); }
 .gateway-choice-name {
-  font-weight: 600;
+  font-weight: 700;
   font-size: 26px;
   line-height: 1.1;
   color: var(--gate-title);
@@ -790,7 +811,7 @@ h4 {
   .gateway-intro { gap: 10px; }
   .gateway-lead { line-height: 1.55; }
   .language-choices { grid-template-columns: minmax(0, 1fr); gap: 12px; }
-  .gateway-choice { padding: 18px 20px; border-radius: 14px; gap: 5px; }
+  .gateway-choice { padding: 18px 20px; border-radius: var(--radius-control); gap: 5px; }
   .gateway-choice-name { font-size: 21px; }
   .gateway-choice-sub { font-size: 12.5px; line-height: 1.4; }
   .gateway-location { padding: 8px 14px; }
@@ -799,7 +820,8 @@ h4 {
 .eyebrow {
   margin: 0;
   color: var(--muted);
-  font-family: var(--mono);
+  font-family: var(--ui);
+  font-variant-numeric: tabular-nums lining-nums;
   font-size: var(--text-small);
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -807,8 +829,8 @@ h4 {
 
 /* ==========================================================================
    Primitives.
-   A small CSS-only set: card, button, field, layout helpers, decorative
-   blob. No new components and no JavaScript. Every transition is written as
+   A small CSS-only set: card, button, field and layout helpers. No new
+   components and no JavaScript. Every transition is written as
    `var(--dur) var(--ease)`, so the prefers-reduced-motion block at the foot
    of the file neutralizes all of them.
 
@@ -833,15 +855,11 @@ h4 {
   border: 1px solid var(--rule);
   border-radius: var(--radius-lg);
   background: var(--surface);
-  box-shadow: var(--shadow-soft);
-  transition:
-    transform var(--dur) var(--ease),
-    box-shadow var(--dur) var(--ease);
+  transition: border-color var(--dur) var(--ease);
 }
 .card--lift:hover,
 .card--lift:focus-within {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-lift);
+  border-color: var(--rule-strong);
 }
 .card--sand {
   background: var(--sand);
@@ -864,28 +882,24 @@ h4 {
   min-height: 48px;
   padding: 0 32px;
   border: 1px solid transparent;
-  border-radius: 999px;
+  border-radius: var(--radius-control);
   background: transparent;
   color: var(--ink);
   font-family: var(--ui);
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.2;
   text-align: center;
   text-decoration: none;
   cursor: pointer;
   transition:
-    transform var(--dur) var(--ease),
     background-color var(--dur) var(--ease),
     color var(--dur) var(--ease),
     border-color var(--dur) var(--ease),
     box-shadow var(--dur) var(--ease);
 }
-.btn:hover {
-  transform: scale(1.03);
-}
 .btn:active {
-  transform: scale(0.97);
+  background-color: var(--accent);
 }
 
 .btn--outline {
@@ -906,13 +920,13 @@ h4 {
 
 /* Authored last so a button carrying both modifier classes reads as primary. */
 .btn--primary {
-  border-color: var(--accent-fill);
-  background: var(--accent-fill);
+  border-color: var(--accent);
+  background: var(--accent);
   color: var(--ground);
-  box-shadow: var(--shadow-soft);
 }
 .btn--primary:hover {
-  box-shadow: var(--shadow-lift);
+  background: var(--ink);
+  border-color: var(--ink);
 }
 
 /* Fields. The focus treatment is a double ring: the outline is kept so that
@@ -927,7 +941,7 @@ h4 {
   color: var(--ink-2);
   font-family: var(--ui);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
 }
 .field-hint {
   color: var(--ink-2);
@@ -936,9 +950,9 @@ h4 {
 .input {
   width: 100%;
   min-height: 48px;
-  padding: 0 20px;
-  border: 1px solid var(--accent-fill);
-  border-radius: 999px;
+  padding: 0 14px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-control);
   background: var(--input-fill);
   color: var(--ink);
   transition:
@@ -967,7 +981,7 @@ h4 {
   min-height: 32px;
   padding: 0 12px;
   border: 1px solid color-mix(in srgb, currentColor 55%, transparent);
-  border-radius: 999px;
+  border-radius: var(--radius-control);
   background: transparent;
   color: inherit;
   font-family: var(--ui);
@@ -1031,43 +1045,6 @@ h4 {
   gap: 10px;
 }
 
-/* Decorative blob washes. Always aria-hidden in markup, never a carrier of
-   meaning. A blob is absolutely positioned and sized in viewport units, so
-   its parent must be .blob-ground, which clips it: without the clip a mobile
-   viewport gains a horizontal scrollbar. */
-.blob-ground {
-  position: relative;
-  overflow: hidden;
-}
-.blob-ground > *:not(.blob) {
-  position: relative;
-  z-index: 1;
-}
-.blob {
-  position: absolute;
-  z-index: 0;
-  width: 44vmax;
-  aspect-ratio: 1;
-  border-radius: var(--blob);
-  filter: blur(64px);
-  opacity: 0.5;
-  pointer-events: none;
-}
-.blob--1 {
-  top: -16vmax;
-  left: -12vmax;
-  background: var(--accent-fill);
-}
-.blob--2 {
-  top: 8vmax;
-  right: -18vmax;
-  background: var(--clay);
-}
-.blob--3 {
-  bottom: -20vmax;
-  left: 28%;
-  background: var(--sand);
-}
 
 .site-shell {
   min-height: 100vh;
@@ -1098,7 +1075,7 @@ h4 {
   min-height: 44px;
   color: var(--topbar-ink);
   font-size: 23px;
-  font-weight: 600;
+  font-weight: 700;
   text-decoration: none;
   letter-spacing: -0.015em;
 }
@@ -1126,22 +1103,26 @@ h4 {
   min-width: 44px;
   padding: 0 20px;
   border: 1px solid var(--topbar-edge);
-  border-radius: 4px;
+  border-radius: var(--radius-control);
   color: var(--topbar-ink);
   font-family: var(--ui);
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   list-style: none;
   cursor: pointer;
   transition:
-    background-color var(--dur) var(--ease),
+    border-color var(--dur) var(--ease),
     color var(--dur) var(--ease);
 }
 .nav-toggle::-webkit-details-marker {
   display: none;
 }
+/* The three hover rules on this bar all used to paint var(--topbar-fill), the
+   bar's own ground, so none of them changed a pixel. An outlined control
+   brightens its edge instead, which is visible without introducing a fill
+   colour the palette does not already measure against this ground. */
 .nav-toggle:hover {
-  background: var(--topbar-fill);
+  border-color: var(--topbar-ink);
 }
 .nav-toggle:focus-visible {
   outline: 2px solid var(--topbar-accent);
@@ -1156,16 +1137,15 @@ h4 {
   min-width: max(220px, 60vw);
   padding: 10px;
   border: 1px solid var(--topbar-edge);
-  border-radius: 4px;
+  border-radius: var(--radius-control);
   background: var(--topbar-fill);
-  box-shadow: var(--shadow-float);
 }
 .nav-panel a {
   display: flex;
   align-items: center;
   min-height: 44px;
   padding: 0 16px;
-  border-radius: 2px;
+  border-radius: var(--radius-control);
   color: var(--topbar-ink-2);
   text-decoration: none;
   transition:
@@ -1173,8 +1153,8 @@ h4 {
     background-color var(--dur) var(--ease);
 }
 .nav-panel a:hover {
-  background: var(--topbar-fill);
   color: var(--topbar-ink);
+  text-decoration: underline;
 }
 
 /* The colour-theme control. Three native radios in a segmented pill.
@@ -1198,7 +1178,7 @@ h4 {
      set. --muted resolves against the page ground and would disappear here. */
   color: var(--topbar-ink-2);
   font-size: var(--text-small);
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -1227,23 +1207,32 @@ h4 {
   min-height: 44px;
   padding: 0 16px;
   border: 1px solid transparent;
-  border-radius: 4px;
+  border-radius: var(--radius-control);
   color: var(--topbar-ink-2);
   transition:
     color var(--dur) var(--ease),
     background-color var(--dur) var(--ease),
     border-color var(--dur) var(--ease);
 }
+/* Colour alone, because the hover fill this rule used to carry was
+   var(--topbar-fill), which is the bar's own ground: it painted the span the
+   exact colour already behind it and changed nothing a reader could see. */
 .theme-option input:hover + span {
-  background: var(--topbar-fill);
   color: var(--topbar-ink);
 }
-/* Checked state is an edge and a fill, not colour alone: the border survives
-   forced-colours mode and a monochrome display, where a tint does not. */
+/* The chosen option is a full inversion, the same plate the design gives every
+   either/or control on the site. It was previously a fill of var(--topbar-fill)
+   on a bar of var(--topbar-fill), so the only thing separating the current
+   theme from the two it was not was a hairline border and a shade of grey.
+
+   The border stays, and stays the reason this is not colour alone: in
+   forced-colours mode every fill collapses to the system ground, and what
+   survives is that the chosen option is drawn inside a box and the other two
+   are not. */
 .theme-option input:checked + span {
-  border-color: var(--topbar-edge);
-  background: var(--topbar-fill);
-  color: var(--topbar-ink);
+  border-color: var(--topbar-ink);
+  background: var(--topbar-ink);
+  color: var(--topbar-fill);
 }
 .theme-option input:focus-visible + span {
   outline: 2px solid var(--topbar-accent);
@@ -1268,20 +1257,21 @@ h4 {
   min-height: 44px;
   padding: 0 18px;
   border: 1px solid var(--topbar-edge);
-  border-radius: 4px;
+  border-radius: var(--radius-control);
   color: var(--topbar-ink);
-  font-family: var(--mono);
+  font-family: var(--ui);
+  font-variant-numeric: tabular-nums lining-nums;
   font-size: var(--text-small);
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   text-decoration: none;
   transition:
-    background-color var(--dur) var(--ease),
+    border-color var(--dur) var(--ease),
     color var(--dur) var(--ease);
 }
 .locale-link:hover {
-  background: var(--topbar-fill);
+  border-color: var(--topbar-ink);
 }
 
 .site-header a:focus-visible {
@@ -1294,10 +1284,6 @@ h4 {
   text-decoration-thickness: 3px;
   text-underline-offset: 8px;
 }
-.theme-option input:checked + span {
-  font-weight: 700;
-}
-
 .page-wrap {
   width: min(var(--plate), calc(100% - 40px));
   margin: 0 auto;
@@ -1318,7 +1304,7 @@ h4 {
   font-size: clamp(30px, 3.4vw, 44px);
   line-height: 1.02;
   letter-spacing: -0.025em;
-  font-weight: 600;
+  font-weight: 700;
 }
 .masthead .dek {
   max-width: 62ch;
@@ -1336,11 +1322,28 @@ h4 {
   color: var(--ink-2);
   font-family: var(--ui);
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
 }
+/* On the landing page this is a statement of coverage, not a control: four
+   static list items naming the provinces the record actually holds. The
+   design it is drawn from does not carry it at all, and it cannot simply be
+   dropped, because the test proving one shared inline-SVG bar serves the
+   landing and every map state is checksum-bound to a settled gate. What it
+   can do is stop reading as four buttons. Under a hairline, at caption size
+   and in muted ink, it reads as the span of the record. */
 .province-bar--landing {
   flex-wrap: wrap;
-  margin-top: 24px;
+  gap: 6px 20px;
+  margin-top: 26px;
+  padding-top: 18px;
+  border-top: 1px solid var(--rule);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 400;
+}
+.province-bar--landing .province-flag {
+  width: 22px;
+  height: 14px;
 }
 .province-bar-item,
 .province-bar button {
@@ -1371,7 +1374,8 @@ h4 {
 }
 .section-heading .num {
   color: var(--accent);
-  font-family: var(--mono);
+  font-family: var(--ui);
+  font-variant-numeric: tabular-nums lining-nums;
   font-size: 12px;
   letter-spacing: 0.08em;
 }
@@ -1386,61 +1390,94 @@ h4 {
   font-size: 19px;
 }
 
-.principles {
-  margin: 28px 0 0;
-}
-.principle {
-  display: grid;
-  grid-template-columns: 220px 1fr;
-  gap: 28px;
-  padding: 17px 0;
-  border-top: 1px solid var(--rule-soft);
-}
-.principle:last-child {
-  border-bottom: 1px solid var(--rule-soft);
-}
-.principle dt {
-  padding-top: 3px;
-  font-family: var(--mono);
-  font-size: var(--text-small);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-.principle dd {
-  margin: 0;
-  color: var(--ink-2);
-  font-size: 16px;
-}
-
 .record-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
   margin-top: 32px;
-  border: 1px solid var(--rule);
-  background: var(--rule);
 }
+/* A link tile. Tiles sit apart and never share an edge, and the whole tile is
+   the link: its one anchor is stretched over it, so there is no smaller target
+   inside a larger one that looks like it should work. */
 .record-card {
-  min-height: 220px;
-  padding: 22px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 20px 22px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-control);
   background: var(--surface);
+  transition: border-color var(--dur) var(--ease);
 }
-.record-card h3 {
-  margin: 12px 0 7px;
-  font-size: 20px;
+.record-card:hover,
+.record-card:focus-within {
+  border-color: var(--rule-strong);
+}
+.record-card:focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.page-wrap .record-card h3 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
 }
 .record-card p {
   margin: 0;
   color: var(--ink-2);
   font-size: 15px;
 }
+.record-card .eyebrow {
+  font-size: var(--text-compact);
+}
 .record-card a {
   display: inline-flex;
   align-items: center;
   min-height: 44px;
-  margin-top: 8px;
+  margin-top: auto;
   font-family: var(--ui);
-  font-size: 13px;
+  font-size: var(--text-small);
+  font-weight: 700;
+}
+.record-card a::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+/* The riding rankings on the home page: two plain cards, each an ordered list
+   of links, so every riding is its own target rather than one stretched tile. */
+.ridings-most-lost-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 24px;
+}
+@media (max-width: 760px) {
+  .ridings-most-lost-grid { grid-template-columns: minmax(0, 1fr); }
+}
+.page-wrap .ridings-most-lost-card h3 {
+  margin: 0 0 12px;
+  font-size: 17px;
+  font-weight: 700;
+}
+.ridings-most-lost-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding-left: 1.4em;
+}
+.ridings-most-lost-list a { font-weight: 700; }
+.ridings-most-lost-figure {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ink-2);
+  font-size: var(--text-small);
+}
+.record-card a:focus-visible {
+  outline: none;
 }
 
 .gallery-grid {
@@ -1451,9 +1488,8 @@ h4 {
 }
 .gallery-panel {
   border: 1px solid var(--rule);
-  border-radius: 4px;
+  border-radius: var(--radius-control);
   padding: 24px;
-  box-shadow: 0 12px 30px rgb(20 35 27 / 8%);
 }
 .gallery-panel-light,
 .gallery-panel-dark {
@@ -1514,7 +1550,7 @@ h4 {
 .gallery-panel button:not(.confidence) {
   appearance: none;
   border: 0;
-  border-radius: 3px;
+  border-radius: var(--radius-control);
   background: transparent;
   color: inherit;
   font: inherit;
@@ -1534,7 +1570,8 @@ h4 {
 }
 .notice h3 {
   margin: 0 0 8px;
-  font-family: var(--mono);
+  font-family: var(--ui);
+  font-variant-numeric: tabular-nums lining-nums;
   font-size: var(--text-small);
   letter-spacing: 0.09em;
   text-transform: uppercase;
@@ -1545,39 +1582,30 @@ h4 {
   font-size: 15px;
 }
 
-/* The footer is a sand-tinted band with a moss wash blurred across its top
-   edge. The wash is a pseudo-element, so it costs no markup and cannot be
-   read by assistive technology. Measured at the wash's full 14% strength,
-   which is the worst the band gets, light / dark:
-     --ink on the washed sand      8.85 / 9.98
-     --ink-2 on the washed sand    5.63 / 7.32
-     --accent link on washed sand  4.77 / 5.63
-   On plain --sand the same pairs are 10.37 / 12.45, 6.60 / 9.13 and 5.59 /
-   7.03. --muted is not used here: on --sand it is only 4.22 in light. */
+/* The footer is a hairline rule on the page's own ground, not a sand-tinted
+   band with a moss wash blurred across its top edge. A tinted band claims the
+   reader has arrived somewhere else; this is the same record's back matter,
+   and a rule says the reading is over without making that claim. It also
+   retires the only surface on the site whose text contrast had to be measured
+   against a translucent wash instead of against a token, which is why the
+   eight measured ratios that used to be recorded here are gone rather than
+   updated: --ink, --ink-2 and --accent on --ground are all carried by the
+   contrast gate now, and nothing here is laid over anything.
+
+   The eleven links stay, in their three named columns. The design this is
+   drawn from shows four, and cutting to four is the wrong reading of it: the
+   top bar carries four items and none of them is About, Account, Privacy,
+   Terms, Glossary, Corrections, Decisions, Engagement or Releases, so a link
+   dropped from here is a page with no route to it at all. What the design is
+   asking for is that the footer stop competing with the record above it, and
+   that it gets: ink rather than accent, no underline until hover, and the
+   coverage line reading first. */
 .site-footer {
-  position: relative;
-  overflow: hidden;
   margin-top: 80px;
-  padding: 46px 0 60px;
-  background: var(--sand);
-}
-.site-footer::before {
-  content: "";
-  position: absolute;
-  z-index: 0;
-  top: -30vmax;
-  left: 10%;
-  width: 44vmax;
-  aspect-ratio: 1;
-  border-radius: var(--blob);
-  background: var(--accent-fill);
-  opacity: 0.14;
-  filter: blur(64px);
-  pointer-events: none;
+  padding: 30px 0 60px;
+  border-top: 1px solid var(--rule);
 }
 .site-footer-inner {
-  position: relative;
-  z-index: 1;
   width: min(var(--plate), calc(100% - 40px));
   margin: 0 auto;
   display: grid;
@@ -1590,7 +1618,8 @@ h4 {
 .footer-coverage {
   margin: 0;
   color: var(--ink-2);
-  font-family: var(--mono);
+  font-family: var(--ui);
+  font-variant-numeric: tabular-nums lining-nums;
   font-size: var(--text-small);
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -1598,18 +1627,36 @@ h4 {
 .footer-nav {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 2px 24px;
+  gap: 22px 24px;
+  align-items: start;
+}
+/* Three named columns, because a link dropped from this footer is a page
+   with no route to it: the header carries four items and none of these. */
+.footer-group-label {
+  margin: 0 0 4px;
+  font-size: var(--text-compact);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.footer-group ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.footer-group li {
+  min-width: 0;
 }
 .footer-nav a {
   display: flex;
   align-items: center;
   min-height: 44px;
-  color: var(--accent);
+  color: var(--ink);
   text-decoration: none;
   transition: color var(--dur) var(--ease);
 }
 .footer-nav a:hover {
-  color: var(--ink);
+  color: var(--accent);
   text-decoration: underline;
 }
 
@@ -1619,7 +1666,6 @@ h4 {
   border: 1px solid var(--rule);
   border-radius: var(--radius);
   overflow: hidden;
-  box-shadow: var(--shadow-soft);
   background: var(--surface-2);
 }
 /* Loading skeleton: a calm sweep over the map ground, never a spinner. */
@@ -1669,27 +1715,32 @@ h4 {
   height: auto;
   min-height: 430px;
 }
+/* In flow above the map. It used to float on the frame, which is how the
+   layer panel came to cover it when the legend grew. */
+.explore-map-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 .province-bar--map {
-  position: absolute;
+  position: static;
+  display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  inset-block-start: 10px;
-  inset-inline-start: 50%;
-  z-index: 3;
-  max-width: calc(100% - 20px);
+  align-self: center;
+  max-width: 100%;
+  margin: 0;
   padding: 5px 7px;
   border: 1px solid var(--accent-fill);
-  border-radius: 999px;
+  border-radius: var(--radius-control);
   background: var(--header-fill);
-  box-shadow: var(--shadow-soft);
-  transform: translateX(-50%);
-  backdrop-filter: blur(12px);
+  transform: none;
 }
 .province-bar--map button {
   min-height: 34px;
   padding: 3px 8px;
   border: 1px solid transparent;
-  border-radius: 999px;
+  border-radius: var(--radius-control);
   background: transparent;
   color: var(--ink-2);
   font: inherit;
@@ -1701,46 +1752,105 @@ h4 {
   background: var(--accent-soft);
   color: var(--ink);
 }
+/* The map's one legend, in flow under the frame. Each part takes a full row. */
 .explore-map-layer-panel {
   position: static;
   display: flex;
+  margin: 0;
   min-width: 0;
   flex-wrap: wrap;
-  align-items: center;
-  gap: 6px 14px;
-  padding: 7px 10px;
+  gap: 12px;
+  padding: 12px 14px 14px;
   border: 1px solid var(--rule-strong);
   border-radius: var(--radius-sm);
   background: var(--surface);
   color: var(--ink);
-  font-size: 12px;
+  font-size: 13px;
+  line-height: 1.45;
   pointer-events: auto;
-}
-.explore-map-layer-panel > strong {
-  flex: 0 0 auto;
-  white-space: nowrap;
 }
 .explore-map-layer-panel:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
-.explore-map-layer-list {
+.explore-map-key {
   display: flex;
+  flex: 1 1 100%;
   min-width: 0;
-  flex: 0 1 auto;
-  flex-wrap: wrap;
-  gap: 4px 12px;
+  flex-direction: column;
+  gap: 6px;
+}
+.explore-map-key + .explore-map-key {
+  padding-top: 10px;
+  border-top: 1px solid var(--rule);
+}
+.explore-map-key p {
   margin: 0;
-  padding: 0;
-  list-style: none;
+  color: var(--muted);
+  font-size: 12.5px;
+}
+.explore-map-key .explore-map-key-title {
+  display: flex;
+  flex-direction: column;
+  color: var(--ink);
+  font-size: 13.5px;
+  line-height: 1.35;
+}
+.explore-map-key-title span {
+  color: var(--muted);
+  font-size: 12px;
 }
 .explore-map-layer-panel .explore-map-legend {
   min-width: 0;
-  flex: 0 1 auto;
-  flex-wrap: wrap;
   margin: 0;
-  gap: 4px 8px;
-  font-size: 12px;
+  gap: 4px 14px;
+  font-size: 12.5px;
+}
+.explore-map-layer-panel .explore-map-legend--scale {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  align-items: start;
+  gap: 2px;
+}
+.explore-map-layer-panel .explore-map-legend--scale li {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  padding-inline-end: 6px;
+  line-height: 1.3;
+}
+.explore-map-legend--scale .map-legend-key {
+  display: block;
+}
+.explore-map-legend--scale .loss-swatch {
+  display: block;
+  width: 100%;
+  height: 12px;
+  border-color: var(--rule-strong);
+}
+.explore-map-patch-zoom {
+  align-self: flex-start;
+  min-height: 44px;
+  margin: -6px 0 -10px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.explore-map-key-boundaries {
+  flex: 1 1 100%;
+  margin: 0;
+  padding-top: 10px;
+  border-top: 1px solid var(--rule);
+  color: var(--muted);
+  font-size: 12.5px;
 }
 .explore-map-boundary-status {
   position: absolute;
@@ -1782,7 +1892,7 @@ h4 {
   inset-block-end: 12px;
   inset-inline: 12px;
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: flex-end;
   gap: 12px;
   z-index: 2;
@@ -1790,7 +1900,7 @@ h4 {
 }
 .explore-map-control-cluster {
   display: grid;
-  grid-template-columns: minmax(84px, 132px) 36px;
+  grid-template-columns: 36px 36px;
   grid-template-rows: repeat(2, 36px);
   gap: 6px;
   align-items: stretch;
@@ -1829,17 +1939,15 @@ h4 {
   cursor: default;
 }
 .explore-map-corner-button {
-  min-height: 36px;
-  max-width: 132px;
-  padding: 5px 9px;
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  padding: 0;
   border: 1px solid var(--rule-strong);
   border-radius: var(--radius-sm);
-  background: var(--header-fill);
+  background: var(--surface);
   color: var(--ink);
-  font-family: var(--ui);
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 1.2;
   cursor: pointer;
 }
 .explore-map-corner-button:hover:not(:disabled) {
@@ -1849,39 +1957,13 @@ h4 {
   color: var(--muted);
   cursor: default;
 }
-.explore-map-patch-control {
-  position: relative;
-  display: inline-flex;
-  grid-column: 1;
-  grid-row: 1;
-}
-.explore-map-patch-control .explore-map-corner-button,
-.explore-map-fullscreen-button {
-  width: 100%;
-  max-width: none;
-}
 .explore-map-fullscreen-button {
   grid-column: 1;
   grid-row: 2;
 }
-.explore-map-patch-tooltip {
-  position: absolute;
-  inset-block-end: calc(100% + 6px);
-  inset-inline: 0;
-  z-index: 4;
-  display: block;
-  width: auto;
-  padding: 6px 8px;
-  border: 1px solid var(--rule-strong);
-  border-radius: var(--radius-sm);
-  background: var(--ink);
-  color: var(--surface);
-  font-size: 12px;
-  line-height: 1.3;
-  box-shadow: var(--shadow-soft);
-}
 .explore-map-scale {
   display: flex;
+  justify-self: start;
   flex-direction: column;
   gap: 3px;
   padding: 4px 7px;
@@ -1901,14 +1983,23 @@ h4 {
   border-top: 0;
 }
 @media (max-width: 760px) {
+  /*
+   * The frame no longer carries the province chooser or the layer panel, so
+   * its height is not what keeps them apart and it does not need padding
+   * against a legend that grows. It only has to be a usable map.
+   */
   .explore-map,
   .explore-map-fallback {
     min-height: 30rem;
   }
+  /* The canvas fills the taller frame, so no dead band sits under the map. */
+  .explore-map-canvas {
+    height: 30rem;
+  }
   .province-bar--map {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    width: calc(100% - 20px);
+    width: 100%;
     align-items: stretch;
     gap: 4px 8px;
   }
@@ -1920,18 +2011,8 @@ h4 {
   .explore-map-controls {
     grid-template-columns: minmax(0, 1fr) auto;
   }
-  .explore-map-layer-panel {
-    grid-column: 1 / -1;
-    grid-row: 1;
-  }
   .explore-map-scale {
-    grid-column: 1;
-    grid-row: 2;
     justify-self: start;
-  }
-  .explore-map-control-cluster {
-    grid-column: 2;
-    grid-row: 2;
   }
 }
 .explore-map:fullscreen {
@@ -1955,6 +2036,46 @@ h4 {
   place-items: center;
   color: var(--muted);
   text-align: center;
+  /* The outlines stay draggable behind the message. */
+  pointer-events: none;
+}
+/* The message sits on a card, because the province outlines are drawn behind it. */
+.explore-map-panel > span {
+  max-width: 34rem;
+  padding: 12px 16px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  pointer-events: auto;
+}
+/* Shown on the map while a patch mode is zoomed out past its patches. */
+.explore-map-patch-hint {
+  position: absolute;
+  inset-block-start: 12px;
+  inset-inline: 12px;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 4px 14px;
+  width: fit-content;
+  max-width: calc(100% - 24px);
+  margin-inline: auto;
+  padding: 6px 14px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 13px;
+}
+.explore-map-patch-hint p {
+  margin: 0;
+}
+.explore-map-patch-hint .explore-map-patch-zoom {
+  margin: 0;
+  min-height: 44px;
 }
 .explore-map-status {
   margin-top: 8px;
@@ -1971,9 +2092,6 @@ h4 {
   margin-top: 6px;
   color: var(--muted);
   font-size: 12px;
-}
-.explore-map-data {
-  margin-top: 18px;
 }
 .explore-map-legend {
   display: flex;
@@ -2010,6 +2128,9 @@ h4 {
 .loss-3 {
   background: var(--loss-3);
 }
+.loss-4 {
+  background: var(--loss-4);
+}
 .patch-harvest {
   background: var(--patch-harvest);
 }
@@ -2017,8 +2138,7 @@ h4 {
   background: var(--patch-fire);
 }
 .patch-none {
-  background: var(--loss-3);
-  background-image: repeating-linear-gradient(135deg, transparent 0 4px, var(--loss-0) 4px 5px);
+  background: var(--patch-neither);
 }
 .map-legend-key {
   display: inline-flex;
@@ -2062,7 +2182,8 @@ h4 {
   max-width: 100%;
   overflow-x: auto;
 }
-.table-scroll:focus-visible {
+.table-scroll:focus-visible,
+.hf-chart-scroll:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
 }
@@ -2075,7 +2196,7 @@ h4 {
 .table-scroll caption {
   padding-bottom: 12px;
   text-align: left;
-  font-weight: 600;
+  font-weight: 700;
 }
 .table-scroll th,
 .table-scroll td {
@@ -2106,12 +2227,12 @@ h4 {
    *and* by outline; the Unknown reported value keeps its en dash and its
    reason and never gains a zero.
 
-   Asymmetric radius bound to meaning, so the shape carries information
-   rather than decoration:
-     official record        one squared corner
-     satellite observation  fully rounded
-     derived estimate       the soft --blob
-     unknown                fully rounded with a dashed hairline edge
+   The shape that carries the class is the glyph, not the outline. Four
+   differently rounded chips asked the reader to hold a legend of corner
+   radii; the square, circle, triangle and ring in front of each label say
+   the same thing in a form a reader already knows, and they survive
+   greyscale, forced colours and a photocopy. Every chip is square now, like
+   every other plate on the site.
 
    Contrast, measured WCAG 2.1 ratios, light / dark:
      --ink on --tint-record              11.11 / 12.37
@@ -2138,7 +2259,7 @@ h4 {
   min-height: 30px;
   padding: 2px 13px 2px 3px;
   border: 1px solid var(--edge-unknown);
-  border-radius: 999px;
+  border-radius: var(--radius-control);
   background: var(--tint-unknown);
   color: var(--ink);
   font-family: var(--ui);
@@ -2157,7 +2278,7 @@ h4 {
   place-items: center;
   width: 22px;
   height: 22px;
-  border-radius: 999px;
+  border-radius: var(--radius-control);
   background: var(--input-fill);
   font-size: var(--text-small);
   line-height: 1;
@@ -2166,7 +2287,6 @@ h4 {
 .chip--official-record {
   border-color: var(--edge-record);
   background: var(--tint-record);
-  border-radius: 999px 999px 999px 6px;
 }
 .chip--satellite-observation {
   border-color: var(--edge-satellite);
@@ -2175,7 +2295,6 @@ h4 {
 .chip--derived-estimate {
   border-color: var(--edge-derived);
   background: var(--tint-derived);
-  border-radius: var(--blob);
 }
 .chip--unknown {
   border-style: dashed;
@@ -2190,7 +2309,7 @@ h4 {
   min-height: 30px;
   padding: 2px 14px;
   border: 1px solid var(--accent-fill);
-  border-radius: 999px;
+  border-radius: var(--radius-control);
   background: var(--sand);
   color: var(--ink);
   font-family: var(--ui);
@@ -2213,7 +2332,7 @@ h4 {
   width: 15px;
   height: 8px;
   border: 1px solid var(--accent-fill);
-  border-radius: 999px;
+  border-radius: var(--radius-control);
   overflow: hidden;
   text-indent: -100em;
   transition: background-color var(--dur) var(--ease);
@@ -2247,7 +2366,8 @@ h4 {
 }
 .provenance dt {
   color: var(--ink-2);
-  font-family: var(--mono);
+  font-family: var(--ui);
+  font-variant-numeric: tabular-nums lining-nums;
   font-size: var(--text-small);
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -2255,7 +2375,8 @@ h4 {
 .provenance dd {
   margin: 0;
   color: var(--ink);
-  font-family: var(--mono);
+  font-family: var(--ui);
+  font-variant-numeric: tabular-nums lining-nums;
   font-size: 13px;
   overflow-wrap: anywhere;
 }
@@ -2275,13 +2396,6 @@ h4 {
   border-radius: var(--radius-lg);
   background: var(--surface);
 }
-.reported--official-record {
-  border-radius: var(--radius-lg) var(--radius-lg) var(--radius-lg) 6px;
-}
-.reported--derived-estimate {
-  border-radius: var(--radius-lg) var(--radius-lg) var(--radius-lg)
-    var(--radius-sm);
-}
 .reported--unknown {
   border-style: dashed;
   border-color: var(--rule-strong);
@@ -2290,7 +2404,7 @@ h4 {
   flex-basis: 100%;
   font-family: var(--ui);
   font-size: clamp(30px, 5vw, 46px);
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.06;
   letter-spacing: -0.025em;
   font-variant-numeric: tabular-nums;
@@ -2315,7 +2429,8 @@ h4 {
   gap: 8px;
   padding: 4px 2px;
   color: var(--accent);
-  font-family: var(--mono);
+  font-family: var(--ui);
+  font-variant-numeric: tabular-nums lining-nums;
   font-size: var(--text-small);
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -2412,10 +2527,6 @@ h4 {
   /* In the inline row the group's name is carried by the accessible name alone.
      It is clipped rather than removed, because aria-labelledby points at it and a
      display:none element names nothing. */
-  .theme-toggle {
-    gap: 2px;
-    padding: 0;
-  }
   .theme-toggle-label {
     position: absolute;
     width: 1px;
@@ -2425,18 +2536,39 @@ h4 {
     clip-path: inset(50%);
     white-space: nowrap;
   }
+  /* One segmented control rather than three loose pills with a 2px gutter
+     between them: a single outline around the set, a hairline between the
+     options, and the chosen one inverted. Three separated pills read as three
+     independent buttons, which is the wrong claim, because choosing one of
+     these unchooses the other two.
+
+     The divider sits on the wrapper and the state box on the span, so the two
+     never contend for the same pixel and the row does not shift width when the
+     reader changes theme. There is deliberately no overflow:hidden: at a 2px
+     radius it would clip nothing worth clipping and it would eat the focus
+     ring, which has to sit outside the frame to keep its contrast against the
+     bar rather than against the inverted plate. */
   .theme-toggle {
     flex-direction: row;
-    align-items: center;
-    gap: 2px;
+    align-items: stretch;
+    gap: 0;
     padding: 0;
+    border: 1px solid var(--topbar-edge);
+    border-radius: var(--radius-control);
   }
   .theme-option {
     display: inline-flex;
   }
+  .theme-option + .theme-option {
+    border-inline-start: 1px solid var(--topbar-edge);
+  }
   .theme-option > span {
     width: auto;
-    padding: 0 8px;
+    padding: 0 11px;
+    border-radius: 0;
+    font-size: var(--text-compact);
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
   }
 }
 
@@ -2455,14 +2587,10 @@ h4 {
     grid-template-columns: minmax(0, 1fr);
   }
   .footer-nav {
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .record-grid {
     grid-template-columns: 1fr;
-  }
-  .principle {
-    grid-template-columns: 1fr;
-    gap: 7px;
   }
 }
 
@@ -2484,12 +2612,6 @@ h4 {
   /* The grain is decoration and must not tint a forced-colours surface. */
   body::after {
     content: none;
-    display: none;
-  }
-
-  /* Same for the blob washes: blurred colour fields carry no meaning and a
-     forced palette must not have to render them. */
-  .blob {
     display: none;
   }
 
@@ -2551,19 +2673,48 @@ h4 {
   list-style: none;
 }
 .search-result {
+  padding: 18px 22px;
+}
+.search-result:has(> a),
+.search-result:has(> .search-result-choice) {
   padding: 0;
 }
-.search-result a {
+.search-result h4 {
+  margin: 0 0 4px;
+}
+.search-result p {
+  margin: 0;
+  color: var(--ink-2);
+}
+.search-result ul {
+  margin: 4px 0 8px;
+  padding-inline-start: 18px;
+}
+.search-result-figure {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+.search-result-figure .mark-glyph {
+  width: 10px;
+  height: 10px;
+}
+.search-results-key {
+  margin: 0 0 12px;
+}
+.search-result > a {
   display: flex;
   align-items: center;
   min-height: 56px;
   padding: 0 24px;
   color: var(--ink);
   font-size: 17px;
-  font-weight: 600;
+  font-weight: 700;
   text-decoration: none;
 }
-.search-result a:hover {
+.search-result > a:hover {
   color: var(--accent);
   text-decoration: underline;
 }
@@ -2591,7 +2742,7 @@ h4 {
   color: var(--ink);
   font-family: inherit;
   font-size: 17px;
-  font-weight: 600;
+  font-weight: 700;
   text-align: left;
   cursor: pointer;
 }
@@ -2607,7 +2758,7 @@ h4 {
   margin-top: 16px;
 }
 .address-chosen {
-  font-weight: 600;
+  font-weight: 700;
   margin-bottom: 12px;
 }
 .address-district {
@@ -2617,7 +2768,7 @@ h4 {
   color: var(--muted);
   font-family: var(--ui);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.04em;
   margin-bottom: 2px;
   text-transform: uppercase;
@@ -2654,7 +2805,7 @@ h4 {
 }
 .shape-measure legend {
   padding: 0 6px;
-  font-weight: 600;
+  font-weight: 700;
 }
 .shape-kind label {
   display: inline-flex;
@@ -2711,7 +2862,7 @@ h4 {
   margin: 0 0 20px;
 }
 .shape-readout dt {
-  font-weight: 600;
+  font-weight: 700;
   margin-top: 12px;
 }
 .shape-readout dd {
@@ -2739,7 +2890,7 @@ h4 {
   margin: 16px 0 4px;
   padding: 0;
   border: 1px solid var(--rule);
-  border-radius: 4px;
+  border-radius: var(--radius-control);
   background: var(--surface);
 }
 .shape-draw-canvas {
@@ -2809,7 +2960,8 @@ h4 {
 .governance-index {
   margin: 0 0 6px;
   color: var(--accent-fill);
-  font-family: var(--mono);
+  font-family: var(--ui);
+  font-variant-numeric: tabular-nums lining-nums;
   font-size: 12px;
   letter-spacing: 0.12em;
 }
@@ -2841,12 +2993,13 @@ h4 {
   padding: 18px 20px;
   border: 1px solid var(--rule);
   border-radius: var(--radius);
-  background: var(--surface-2);
+  background: var(--surface);
 }
 .stat dt {
   margin: 0 0 6px;
   color: var(--ink-2);
-  font-family: var(--mono);
+  font-family: var(--ui);
+  font-variant-numeric: tabular-nums lining-nums;
   font-size: var(--text-small);
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -2855,7 +3008,7 @@ h4 {
   margin: 0;
   color: var(--ink);
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 700;
   overflow-wrap: anywhere;
 }
 
@@ -2928,8 +3081,167 @@ dd > a:only-child {
 .annual-label,
 .annual-value {
   fill: var(--ink-2);
-  font-family: var(--mono);
+  font-family: var(--ui);
+  font-variant-numeric: tabular-nums lining-nums;
   font-size: var(--text-compact);
+}
+
+/* ==========================================================================
+   Surfaces: harvest and fire by province.
+   The builder is a plain GET form beside the charts on wide screens and above
+   them on narrow ones. Bars wear the semantic --harvest and --fire tokens, the
+   same identities the Explore map legend uses, so the two never disagree. The
+   chart keeps a minimum width inside its own scroller, as .annual-chart does,
+   so labels stay legible at 375 without a horizontal page scroll.
+   ========================================================================== */
+.hf-workspace {
+  display: grid;
+  gap: 32px;
+  align-items: start;
+}
+@media (min-width: 1000px) {
+  .hf-workspace {
+    grid-template-columns: minmax(250px, 300px) minmax(0, 1fr);
+  }
+}
+.hf-builder {
+  display: grid;
+  gap: 18px;
+}
+.hf-builder h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+.hf-fieldset {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.hf-fieldset > legend {
+  margin-block-end: 6px;
+  padding: 0;
+  color: var(--ink-2);
+  font-family: var(--ui);
+  font-size: 13px;
+  font-weight: 700;
+}
+.hf-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+  font-family: var(--ui);
+}
+.hf-years {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.hf-output {
+  display: grid;
+  gap: 40px;
+  min-width: 0;
+}
+.hf-figure {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  justify-items: start;
+}
+.hf-figure > * {
+  max-width: 100%;
+}
+.hf-figure-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.hf-figure-head .province-flag {
+  width: 42px;
+  height: 26px;
+}
+.hf-figure-head h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.25;
+}
+.hf-subtitle,
+.hf-caption,
+.hf-note {
+  margin: 0;
+  color: var(--ink-2);
+  font-size: var(--text-small);
+}
+.hf-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--ui);
+}
+.hf-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.hf-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+}
+.hf-swatch--harvest,
+.hf-bar--harvest {
+  background: var(--harvest);
+  fill: var(--harvest);
+}
+.hf-swatch--fire,
+.hf-bar--fire {
+  background: var(--fire);
+  fill: var(--fire);
+}
+.hf-chart-scroll {
+  width: 100%;
+  overflow-x: auto;
+}
+.hf-chart-svg {
+  display: block;
+  min-width: 640px;
+}
+.hf-grid {
+  stroke: var(--rule);
+  stroke-width: 1;
+}
+.hf-axis {
+  stroke: var(--rule-strong);
+  stroke-width: 1;
+}
+.hf-tick,
+.hf-value,
+.hf-label,
+.hf-axis-title {
+  fill: var(--ink-2);
+  font-family: var(--ui);
+  font-variant-numeric: tabular-nums lining-nums;
+  font-size: 12px;
+}
+.hf-label {
+  fill: var(--ink);
+  font-size: 13px;
+}
+/* The citation carries a DOI address with no break opportunity; at 375 it
+   would push the page sideways. */
+.hf-sources {
+  overflow-wrap: anywhere;
+}
+.hf-downloads {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0;
 }
 
 /* ==========================================================================
@@ -2962,7 +3274,8 @@ dd > a:only-child {
   max-width: var(--measure);
 }
 .comparison-context-meta {
-  font-family: var(--mono);
+  font-family: var(--ui);
+  font-variant-numeric: tabular-nums lining-nums;
   font-size: 12px;
   letter-spacing: 0.06em;
 }
@@ -2973,6 +3286,51 @@ dd > a:only-child {
   position: sticky;
   left: 0;
   background: var(--surface-2);
+}
+/* A figure with its unit, or a year range, reads as one token and does not break. */
+.nowrap {
+  white-space: nowrap;
+}
+/* Ranked rows always carry both figures, so a figure and its unit stay on one line. */
+.comparison-table > .table-scroll td:nth-child(3),
+.comparison-table > .table-scroll td:nth-child(4) {
+  white-space: nowrap;
+}
+/* In a table every row states its coverage and evidence, and most rows share
+   the same values, so the bands and chips read as plain text there. The
+   words and the evidence glyph stay; only the boxes go. */
+.comparison-table .table-scroll .coverage-band,
+.comparison-table .table-scroll .chip {
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: start;
+}
+.comparison-table .table-scroll thead th:nth-child(5) {
+  text-align: start;
+}
+.comparison-table .table-scroll .chip-glyph {
+  width: auto;
+  height: auto;
+  background: none;
+}
+.comparison-unranked {
+  margin-top: 16px;
+  border-top: 1px solid var(--rule);
+}
+.comparison-unranked > summary {
+  padding: 14px 0;
+  cursor: pointer;
+}
+.comparison-unranked > summary h3 {
+  display: inline;
+  margin: 0;
+  font-size: inherit;
+}
+.comparison-unranked > summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 .rank-unmatched-share {
   color: var(--ink-2);
@@ -3011,7 +3369,8 @@ dd > a:only-child {
 }
 .comparison-figures {
   color: var(--ink);
-  font-family: var(--mono);
+  font-family: var(--ui);
+  font-variant-numeric: tabular-nums lining-nums;
   font-size: 1rem;
 }
 /* ==========================================================================
@@ -3163,10 +3522,100 @@ dd > a:only-child {
   display: grid;
   gap: 12px;
 }
+.link-list + p {
+  margin-top: 16px;
+}
 
 .link-list > .card {
-  padding: 14px 18px;
+  position: relative;
+  padding: 14px 22px;
   overflow-wrap: anywhere;
+}
+/* A link tile: the tile is the link. Its one anchor is stretched over it and a
+   single arrow says where it goes. */
+.link-list > .card--lift {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 56px;
+  padding-inline-end: 56px;
+}
+.link-list > .card--lift a {
+  color: var(--ink);
+  font-weight: 700;
+  text-decoration: none;
+}
+.link-list > .card--lift a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.link-list > .card--lift a::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+.link-list > .card--lift a:focus-visible {
+  outline: none;
+}
+.link-list > .card--lift:focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.link-list > .card--lift::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 24px;
+  width: 8px;
+  height: 8px;
+  border-top: 2px solid var(--accent);
+  border-right: 2px solid var(--accent);
+  transform: translateY(-50%) rotate(45deg);
+}
+/* A file tile: a download, with its format and, where published, its
+   checksum. The arrow points down because following it saves a file. */
+.link-list > .file-tile {
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 16px;
+}
+.file-tile-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+/* A download mark, an arrow onto a bar, rather than a chevron, which reads as
+   "expand". The empty alternative keeps screen readers from announcing it. */
+.link-list > .file-tile::before {
+  content: "↓" / "";
+  width: auto;
+  height: auto;
+  padding: 0 1px 1px;
+  border: 0;
+  border-bottom: 2px solid var(--accent);
+  color: var(--accent);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1;
+  transform: translateY(-50%);
+}
+.file-tile-format {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 46px;
+  height: 50px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-control);
+  color: var(--accent);
+  font-size: var(--text-compact);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+.file-tile small {
+  color: var(--ink-2);
 }
 
 /* ==========================================================================
@@ -3190,6 +3639,260 @@ dd > a:only-child {
 .explore-note {
   color: var(--muted);
   max-width: var(--measure);
+}
+
+/* ==========================================================================
+   Explore workspace: one toolbar above, the map with its reading panel below.
+
+   The controls used to fill a 258px left column beside the map, which left the
+   map the narrowest thing on its own page. They are now one toolbar that every
+   control in it changes, above the map in the source as well as on screen, so
+   the reading order and the visual order agree. The reading panel sits beside
+   the map from 1100px and under it below that.
+   ========================================================================== */
+.explore-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+@media (min-width: 1100px) {
+  .explore-workspace {
+    grid-template-columns: minmax(0, 1fr) 336px;
+  }
+}
+
+.explore-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 0 12px;
+  border-block: 1px solid var(--rule);
+}
+.explore-toolbar-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px 24px;
+}
+.explore-toolbar .explore-year {
+  padding: 0;
+  border: 0;
+  background: none;
+}
+.explore-toolbar .year-control {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+.explore-toolbar .year-head {
+  flex-basis: 100%;
+  justify-content: flex-start;
+}
+.explore-toolbar .year-handle-label {
+  color: var(--ink-2);
+  font-size: var(--text-small);
+}
+.explore-toolbar .explore-year-select {
+  width: auto;
+}
+.explore-toolbar .year-row {
+  flex: 1 1 320px;
+}
+
+/* Boundaries: a menu of overlays rather than four cards in a column. A native
+   <details> so it opens without script; each toggle is a link, as before. */
+.explore-boundaries {
+  position: relative;
+}
+.explore-boundaries > summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+  list-style: none;
+}
+.explore-boundaries > summary::-webkit-details-marker {
+  display: none;
+}
+.explore-boundaries > summary::after {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+}
+.explore-boundaries[open] > summary {
+  border-color: var(--ink);
+}
+.explore-boundaries[open] > summary::after {
+  transform: translateY(2px) rotate(-135deg);
+}
+.explore-boundaries > summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+.explore-boundaries-panel {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 6px);
+  right: 0;
+  width: min(24rem, calc(100vw - 40px));
+  padding: 12px 14px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+}
+.explore-boundaries-panel > .explore-note {
+  margin: 0 0 8px;
+  font-size: var(--text-small);
+}
+
+/* The reading panel: the span's total, its minimum, the per-cell split and
+   the provinces, beside the map. */
+.explore-reading {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.explore-reading > .eyebrow {
+  margin: 0;
+}
+.explore-reading-total {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.explore-reading-total p {
+  margin: 0;
+}
+.explore-reading-label,
+.explore-reading-minimum {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  color: var(--ink-2);
+  font-size: var(--text-small);
+}
+.explore-reading-label .mark-glyph,
+.explore-reading-minimum .mark-glyph {
+  width: 10px;
+  height: 10px;
+  margin-top: 5px;
+}
+.explore-reading-total .explore-reading-minimum {
+  margin-top: 8px;
+  color: var(--ink);
+}
+.explore-reading-figure {
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+.explore-reading-share {
+  color: var(--ink-2);
+  font-size: 15px;
+}
+.explore-reading-provinces {
+  padding-top: 12px;
+  border-top: 1px solid var(--rule);
+}
+.explore-reading-provinces .eyebrow {
+  margin: 0 0 6px;
+}
+.explore-reading-provinces ul {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.explore-reading-provinces li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0 10px;
+}
+.explore-province-name,
+.explore-province-share {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+.explore-province-detail {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  grid-column: 1 / -1;
+  color: var(--ink-2);
+  font-size: var(--text-small);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+.explore-province-bar {
+  display: block;
+  flex: none;
+  width: 56px;
+  height: 4px;
+  background: var(--rule);
+}
+.explore-province-bar > span {
+  display: block;
+  height: 4px;
+  background: var(--accent-fill);
+}
+
+.explore-more-list {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+}
+
+/* The reading panel carries a composition, so it needs its own marks. */
+.explore-annual-bar {
+  display: flex;
+  width: 100%;
+  height: 12px;
+  border: 1px solid var(--rule-strong);
+  background: var(--ground);
+  overflow: hidden;
+}
+.explore-annual-part {
+  display: block;
+  min-width: 0;
+}
+.explore-annual-part--harvest {
+  background: var(--patch-harvest);
+}
+.explore-annual-part--fire {
+  background: var(--patch-fire);
+}
+.explore-annual-part--neither {
+  background: var(--patch-neither);
+}
+.explore-annual-mark {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 7px;
+  vertical-align: baseline;
+  flex-shrink: 0;
+}
+.explore-annual-mark--harvest {
+  background: var(--patch-harvest);
+}
+.explore-annual-mark--fire {
+  background: var(--patch-fire);
+}
+.explore-annual-mark--neither {
+  background: var(--patch-neither);
 }
 
 .explore-section {
@@ -3218,15 +3921,8 @@ dd > a:only-child {
 }
 
 .explore-modes {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 12px;
-}
-
-.explore-mode {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  flex-wrap: wrap;
   gap: 8px;
 }
 
@@ -3253,7 +3949,6 @@ dd > a:only-child {
   background: var(--surface);
   border: 1px solid var(--rule);
   border-radius: var(--radius);
-  box-shadow: var(--shadow-soft);
 }
 
 .explore-annual h3 {
@@ -3295,12 +3990,10 @@ dd > a:only-child {
   background: var(--surface);
   border: 1px solid var(--rule);
   border-radius: var(--radius);
-  box-shadow: var(--shadow-soft);
 }
 
-/* The year control. The slider owns a full row of its own, which is what lets
-   the tick scale below line up with it: when the stepping buttons shared the
-   row, every tick sat a button's width out of true. */
+/* The year control uses native selects so keyboard and assistive technology
+   interactions remain the browser's own. */
 .year-control {
   display: grid;
   gap: 10px;
@@ -3316,7 +4009,7 @@ dd > a:only-child {
 
 .year-legend {
   font-size: 0.8rem;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--muted);
@@ -3326,29 +4019,34 @@ dd > a:only-child {
    change between two years, and the readout is where that is said outright. */
 .year-readout {
   font-size: 1.05rem;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--ink);
   font-variant-numeric: tabular-nums;
 }
 
-.explore-slider {
-  accent-color: var(--accent-fill);
-  width: 100%;
-  min-width: 0;
+.explore-year-select {
   min-height: 44px;
+  min-width: 0;
+  width: 100%;
+  padding: 0 34px 0 10px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+  color: var(--ink);
+  font-family: var(--ui);
+  font-variant-numeric: tabular-nums lining-nums;
+  font-size: 1rem;
+}
+
+.explore-year-select:focus-visible {
+  outline: 3px solid var(--accent-fill);
+  outline-offset: 2px;
 }
 
 .year-scale {
-  display: flex;
-  justify-content: space-between;
-  gap: 4px;
-  margin: -4px 0 0;
-  padding: 0;
-  list-style: none;
-  font-family: var(--mono);
-  font-size: var(--text-compact);
-  color: var(--muted);
-  font-variant-numeric: tabular-nums;
+  width: 100%;
+  min-width: 0;
+  font-variant-numeric: tabular-nums lining-nums;
 }
 
 .year-row {
@@ -3358,7 +4056,6 @@ dd > a:only-child {
   gap: 8px;
 }
 
-.year-step,
 .year-play {
   display: inline-flex;
   align-items: center;
@@ -3367,29 +4064,22 @@ dd > a:only-child {
   min-width: 44px;
   padding: 0 14px;
   border: 1px solid var(--rule-strong);
-  border-radius: 999px;
+  border-radius: var(--radius-control);
   background: transparent;
   color: var(--ink);
   font-family: var(--ui);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   transition:
     background-color var(--dur) var(--ease),
     border-color var(--dur) var(--ease);
 }
 
-.year-step {
-  padding: 0;
-  font-size: 16px;
-}
-
-.year-step:hover:enabled,
 .year-play:hover:enabled {
   background: var(--accent-soft);
 }
 
-.year-step:disabled,
 .year-play:disabled {
   color: var(--muted);
   cursor: default;
@@ -3409,11 +4099,17 @@ dd > a:only-child {
   color: var(--muted);
 }
 
+.year-order-status {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
 .year-play-status {
   margin: 0;
   color: var(--ink-2);
   font-size: 0.82rem;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .segment,
@@ -3444,7 +4140,7 @@ dd > a:only-child {
   min-height: 44px;
   padding: 0 16px;
   border: 1px solid var(--rule-strong);
-  border-radius: 999px;
+  border-radius: var(--radius-control);
   background: var(--surface);
   color: var(--ink-2);
   text-decoration: none;
@@ -3459,29 +4155,25 @@ dd > a:only-child {
   background: var(--accent-fill);
   border-color: var(--accent-fill);
   color: var(--ground);
-  font-weight: 600;
+  font-weight: 700;
 }
 
-.overlay-grid {
-  list-style: none;
+.overlay-list {
+  display: flex;
+  flex-direction: column;
   margin: 0;
   padding: 0;
-  display: grid;
-  gap: 12px;
-  /* The cards now carry a coverage note and an attribution rather than a
-     single label, so they need room to be read rather than skimmed. */
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  list-style: none;
 }
-
-.overlay-card {
+.overlay-row {
   display: grid;
-  gap: 6px;
-  padding: 14px 18px;
-  align-content: start;
+  gap: 4px;
+  padding: 10px 0;
+  border-top: 1px solid var(--rule-soft);
 }
 
 .overlay-name {
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .overlay-state {
@@ -3507,19 +4199,6 @@ dd > a:only-child {
   margin: 0;
   font-size: 0.8rem;
   color: var(--muted);
-}
-
-.explore-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 16px;
-}
-
-.explore-list > .card > h2 {
-  font-size: 1.1rem;
-  margin-block-end: 8px;
 }
 
 .explore-chart {
@@ -3551,10 +4230,20 @@ dd > a:only-child {
   min-width: 2px;
   height: 100%;
   border: 1px solid var(--accent);
-  border-radius: 6px;
+  border-radius: var(--radius-control);
   background: var(--accent-fill);
 }
 
+/* Harvest and fire modes: the bar wears the record type's identity, as the
+   map legend and the harvest and fire page do. */
+.explore-bar--harvest {
+  border-color: var(--harvest);
+  background: var(--harvest);
+}
+.explore-bar--fire {
+  border-color: var(--fire);
+  background: var(--fire);
+}
 .explore-bar-name,
 .explore-bar-label {
   color: var(--ink-2);
@@ -3608,10 +4297,17 @@ dd > a:only-child {
 }
 
 /* Confidence comes before figures; both panels inherit their local palette. */
+/* A plate, not a plate with a rail.
+ *
+ * A rail is how a block that has no colour of its own carries an evidence
+ * class: .notice and .explore-empty sit on the neutral surface, so their rail
+ * is the only thing that says Unknown, and both keep it. This block does not
+ * need a third statement of the same fact. It is already filled with the
+ * unknown tint and edged in the unknown edge, and the rail was the class said
+ * once more, louder, in a vocabulary nothing else in the record uses. */
 .coverage-statement {
   padding: 24px;
   border: 1px solid var(--edge-unknown);
-  border-inline-start-width: 4px;
   background: var(--tint-unknown);
   color: var(--ink);
 }
@@ -3625,17 +4321,96 @@ dd > a:only-child {
 .coverage-statement p:last-child {
   margin-bottom: 0;
 }
-.evidence-legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px 20px;
-  padding: 16px 0;
-  margin: 0;
-  list-style: none;
+/* The figures caveat, closed by default under the page title. It replaced a
+   tinted plate that sat above every page's content. The chevron is drawn with
+   borders so it follows the text colour in both palettes and forced colours. */
+.coverage-note {
+  margin: 12px 0 0;
   color: var(--ink);
 }
-.evidence-legend li {
-  min-width: 0;
+.coverage-note > summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  font-family: var(--ui);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  list-style: none;
+}
+.coverage-note > summary::-webkit-details-marker {
+  display: none;
+}
+.coverage-note > summary::after {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform var(--dur) var(--ease);
+}
+.coverage-note[open] > summary::after {
+  transform: translateY(2px) rotate(-135deg);
+}
+.coverage-note > summary:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.coverage-note > summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+.coverage-note .mark-glyph {
+  width: 13px;
+  height: 13px;
+}
+.coverage-note-body {
+  max-width: var(--measure);
+  padding: 0 0 8px 23px;
+  color: var(--ink-2);
+  font-size: 16px;
+}
+.coverage-note-body > * + * {
+  margin-block-start: 8px;
+}
+/* Directly under a masthead the note sits above the masthead's rule, so the
+   title, its caveat and the rule read as one header. */
+.masthead:has(+ .coverage-note) {
+  padding-bottom: 6px;
+  border-bottom: 0;
+}
+.masthead + .coverage-note {
+  margin: 0;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--ink);
+}
+
+/* A key for the evidence marks, placed beside the figures that carry them and
+   listing only the marks shown there. */
+.evidence-key {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 16px;
+  margin: 0;
+  color: var(--ink-2);
+  font-family: var(--ui);
+  font-size: var(--text-small);
+}
+.evidence-key-title {
+  color: var(--ink);
+  font-weight: 700;
+}
+.evidence-key-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.evidence-key .mark-glyph {
+  width: 10px;
+  height: 10px;
 }
 @media (min-width: 1180px) {
   .nav-panel a, .theme-option > span {
@@ -3645,7 +4420,7 @@ dd > a:only-child {
 
 /* Confidence-first map, search and drawn-area results share the existing palette. */
 .explore-caveat {
-  font-weight: 600;
+  font-weight: 700;
 }
 .no-record-result {
   padding: 24px;
@@ -3661,6 +4436,46 @@ dd > a:only-child {
 .no-record-reason {
   margin-top: 12px;
   font-size: 1.125rem;
+}
+/* Unknown is stated before it is explained. The conclusion carries the weight,
+   the reason sits under it at body scale, and the reason keeps its en-dash
+   prefix because that is the missing-value mark everywhere else on the site. */
+.no-record-stated {
+  margin-top: 14px;
+  font-size: clamp(19px, 1.9vw, 23px);
+  font-weight: 700;
+  line-height: 1.28;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+.no-record-remedies {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--edge-unknown);
+}
+.no-record-remedies-label {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+.no-record-remedy-list {
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 10px;
+  max-width: var(--measure);
+}
+.no-record-remedy-list li {
+  display: grid;
+  gap: 4px;
+  padding-left: 15px;
+  border-left: 1px solid var(--edge-unknown);
+  font-size: 0.9375rem;
+  line-height: 1.55;
 }
 .draw-page .shape-measure {
   max-width: none;
@@ -3696,7 +4511,7 @@ dd > a:only-child {
   min-height: 44px;
   padding: 10px 0;
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 /* Coverage stays with the riding identity, including long French headings. */
@@ -3724,7 +4539,7 @@ dd > a:only-child {
 .comparison-figures dd {
   margin: 6px 0 0;
   font-size: 1.25rem;
-  font-weight: 600;
+  font-weight: 700;
 }
 .comparison-provenance {
   max-width: var(--measure);
@@ -3796,7 +4611,7 @@ dd > a:only-child {
 .confidence-rules caption {
   padding: 20px 0 12px;
   text-align: left;
-  font-weight: 600;
+  font-weight: 700;
 }
 .confidence-rules th[scope="row"] {
   width: 34%;
@@ -3807,9 +4622,6 @@ dd > a:only-child {
   font-family: var(--mono);
   font-size: 0.75rem;
   font-weight: 400;
-}
-.governance-accountability .btn {
-  margin-top: 20px;
 }
 .account-state {
   max-width: var(--measure);
@@ -3823,7 +4635,7 @@ dd > a:only-child {
 .account-future > summary {
   padding: 16px 0;
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 700;
 }
 .account-future[open] > summary {
   margin-bottom: 20px;
@@ -3836,60 +4648,674 @@ dd > a:only-child {
 
 /* Landing: loss and unmapped area use equal panels and a shared hectare scale. */
 .landing-coverage > .lead { max-width: var(--measure); }
-.province-coverage-grid {
+/* Four readings of one instrument, ranked.
+   The provinces were a two-column grid of cards, which is a layout for
+   browsing, and these are not things to browse. A list ranks; cards only sit
+   beside each other. Neither measure prints a sentence explaining its scale,
+   because each bar draws exactly what the figure beside it says. */
+.province-list-block {
+  margin-block: 28px;
+}
+.province-list-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px 28px;
+}
+.province-list-headline {
+  margin: 0;
+  font-size: clamp(21px, 2.3vw, 27px);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+.measure-toggle {
+  display: flex;
+  flex-shrink: 0;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-control);
+  overflow: hidden;
+}
+.measure-toggle-option {
+  min-height: 44px;
+  padding: 0 18px;
+  border: none;
+  background: var(--ground);
+  color: var(--ink-2);
+  font-family: var(--ui);
+  font-size: var(--text-small);
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color var(--dur) var(--ease),
+    color var(--dur) var(--ease);
+}
+.measure-toggle-option + .measure-toggle-option {
+  border-left: 1px solid var(--rule-strong);
+}
+.measure-toggle-option[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--ground);
+}
+/* A key, not a disclaimer: it names the two parts of a bar the reader can
+   see, rather than asking the reader to discount what the bar draws. */
+.province-list-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--ui);
+  font-size: var(--text-small);
+  color: var(--ink-2);
+}
+.province-list-key li {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.province-list-key-mapped,
+.province-list-key-gap {
+  display: block;
+  width: 26px;
+  height: 12px;
+}
+.province-list-key-mapped {
+  background: var(--accent);
+}
+.province-list-key-gap {
+  background: var(--ground);
+  border: 1px dashed var(--edge-unknown);
+}
+.province-list {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.province-list-row {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  padding: 22px 0 24px;
+  border-top: 1px solid var(--rule);
+}
+/* Place left, figure right, one baseline. Four rows then present four figures
+   down a single right edge, which is the comparison the ranking exists to
+   make; stacked, each figure sat at a different distance from the top of its
+   own row and the reader had to find it four times. */
+.province-list-head-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 40px;
+}
+.province-list-identity {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  min-width: 0;
+}
+.province-list-row:last-child {
+  border-bottom: 1px solid var(--rule);
+}
+.province-list-mark {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0;
+  font-family: var(--ui);
+  font-size: var(--text-compact);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.province-list .province-list-place {
+  margin: 0;
+  font-size: clamp(20px, 2.2vw, 26px);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+}
+/* Matched against `.page-wrap h3` rather than left as a bare class: the base
+   heading scale is a descendant selector, so a class alone loses to it. */
+.province-list .province-list-span {
+  font-weight: 400;
+  font-variant-numeric: tabular-nums lining-nums;
+  color: var(--ink-2);
+}
+.province-list-figure {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  margin: 0;
+  font-size: clamp(30px, 3.6vw, 42px);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums lining-nums;
+  letter-spacing: -0.01em;
+  line-height: 1.05;
+}
+/* "ha" set at 42px is a third as wide as the number it qualifies and reads as
+   part of it. At reading size on the same baseline it stays legible and stops
+   competing, which is the whole of what the unit has to do. */
+.province-list-unit {
+  font-size: 17px;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--muted);
+}
+/* The track is the page's own ground inside a hairline, not a filled panel:
+   what the bar has not reached has to read as nothing measured rather than as
+   a second, paler quantity. The outline is what the empty end of a bar is made
+   of, and it is why a full bar and an empty one cannot be mistaken for each
+   other on either ground. */
+.province-list-track {
+  display: flex;
+  height: 12px;
+  background: var(--ground);
+  border: 1px solid var(--rule);
+}
+/* The accent, which swaps from the deep moss to the light one under the dark
+   palette so the fill keeps its weight on a dark ground. It was
+   --edge-derived, a clay brown that belongs to the derived-estimate mark: a
+   satellite observation was being drawn in the colour of a different class of
+   evidence, which is the one thing a mark system cannot afford. */
+.province-list-fill {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+}
+/* Unknown reads as a dashed edge, never as a hatch: the 45 degree hatch is
+   already spoken for by observation with no matching record. A province with
+   a gap too small to draw still keeps its 1px dashed edge, for the same
+   reason the share never prints as 0%. */
+.province-list-gap {
+  display: block;
+  height: 100%;
+  min-width: 1px;
+  background: var(--ground);
+  border-left: 1px dashed var(--edge-unknown);
+}
+/* The caveat and the value it rests on, on one line. The recorded value used
+   to sit in a bordered band across the full width of the row, which put a rule
+   between a sentence and the number that sentence is about. */
+.province-list-base {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px 40px;
+}
+.province-list-note {
+  flex: 1 1 380px;
+  margin: 0;
+  max-width: var(--measure);
+  color: var(--ink-2);
+  line-height: 1.55;
+}
+.province-list-note strong {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums lining-nums;
+  color: var(--ink);
+}
+.province-list-foot {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  margin: 0;
+  font-family: var(--ui);
+  font-size: var(--text-compact);
+  color: var(--muted);
+  text-align: right;
+}
+.province-list-foot span {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+@media (max-width: 700px) {
+  .province-list-head {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .measure-toggle-option {
+    flex: 1 1 0;
+  }
+  /* Once the base wraps there is no right-hand column to align to, and a
+     right-aligned block under a left-aligned paragraph reads as a mistake. */
+  .province-list-foot {
+    align-items: flex-start;
+    text-align: start;
+  }
+}
+
+/* The four marks and their definitions, said once. The mark is a shape, not
+   a colour, so the four classes survive greyscale and forced colours. */
+.evidence-marks {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 26px;
+  margin: 24px 0 0;
+}
+.evidence-mark dt {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--ui);
+  font-size: var(--text-small);
+  font-weight: 700;
+}
+.evidence-mark dd {
+  margin: 7px 0 0;
+  color: var(--ink-2);
+  font-size: 15px;
+  line-height: 1.5;
+}
+.mark-glyph {
+  display: block;
+  flex-shrink: 0;
+  width: 13px;
+  height: 13px;
+}
+.mark-glyph--record {
+  background: var(--edge-record);
+}
+.mark-glyph--satellite {
+  border-radius: 50%;
+  background: var(--edge-satellite);
+}
+.mark-glyph--derived {
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  background: var(--edge-derived);
+}
+.mark-glyph--unknown {
+  border: 2px solid var(--edge-unknown);
+  border-radius: 50%;
+}
+.evidence-band-lead {
+  margin: 0;
+  max-width: var(--measure);
+  color: var(--ink-2);
+  font-size: 19px;
+}
+@media (max-width: 900px) {
+  .evidence-marks { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 520px) {
+  .evidence-marks { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ==========================================================================
+   The cumulative headline.
+
+   One bordered unit, because the figure and the things that bound it are one
+   claim. The border is the point: a reader who screenshots the number gets the
+   denominator, the unmapped share and the refusal of the annual sum in the
+   same rectangle, and cannot take a total from a product that publishes none.
+
+   The figure is set in tabular figures at display size and the heading is
+   deliberately smaller than it. The heading names the measure; the number is
+   the thing the page exists to say.
+   ========================================================================== */
+.cumulative-headline {
+  padding: 30px 32px 26px;
+  border: 1px solid var(--rule-strong);
+  background: var(--ground);
+}
+.page-wrap .cumulative-headline > .eyebrow {
+  margin: 0;
+}
+.page-wrap .cumulative-headline > h2 {
+  margin: 4px 0 0;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: var(--ink-2);
+}
+.cumulative-figure {
+  margin: 10px 0 0;
+  font-size: clamp(40px, 6.2vw, 76px);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums lining-nums;
+  color: var(--ink);
+}
+.cumulative-claim {
+  margin: 8px 0 0;
+  max-width: var(--measure);
+  font-size: clamp(17px, 1.7vw, 20px);
+  line-height: 1.45;
+  color: var(--ink-2);
+  text-wrap: balance;
+}
+/* The two measures side by side, as equals. */
+.cumulative-pair {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 24px;
-  margin-block: 24px;
+  gap: 20px 32px;
+  margin-top: 12px;
 }
-.province-coverage-card {
+.cumulative-pair .cumulative-figure {
+  margin-top: 4px;
+  font-size: clamp(30px, 3.6vw, 46px);
+}
+.cumulative-label {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+@media (max-width: 760px) {
+  .cumulative-pair { grid-template-columns: minmax(0, 1fr); }
+}
+/* The minimum, said inside the unit beside the number it bounds. */
+.cumulative-minimum {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 14px 0 0;
+  max-width: var(--measure);
+  color: var(--ink);
+  font-size: 16px;
+  line-height: 1.55;
+}
+.cumulative-minimum .mark-glyph {
+  margin-top: 6px;
+}
+/* Three bases as three short rows: a label and one line each. They are peers,
+   so they share one column rather than one being set as a footnote. */
+.cumulative-basis {
+  display: grid;
+  gap: 8px;
+  margin: 20px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--rule);
+}
+.cumulative-basis > div {
+  display: grid;
+  grid-template-columns: minmax(0, 18rem) minmax(0, 1fr);
+  gap: 4px 24px;
+  align-items: baseline;
+}
+.cumulative-basis dt {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.cumulative-basis dd {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+.cumulative-basis dd strong {
+  color: var(--ink);
+}
+@media (max-width: 900px) {
+  .cumulative-basis > div { grid-template-columns: minmax(0, 1fr); }
+  .cumulative-headline { padding: 24px 20px 22px; }
+}
+
+/*
+   The figure must not break between the number and its unit. At 375 px the
+   French form is the binding case, because its group separator is a space:
+   "44 975 298,15 ha" needs about 303 px at the 40 px floor and the block
+   offers 293, so it wrapped with "ha" alone on the second line, which reads
+   as two facts rather than one quantity. The floor drops on the narrowest
+   screens instead, because a figure that fits is worth more here than a
+   figure that is large.
+*/
+@media (max-width: 420px) {
+  .cumulative-figure { font-size: clamp(30px, 9.4vw, 40px); }
+}
+
+/* What the record does not claim, as a list of claims rather than one
+   sentence carrying five of them in a row. */
+.limits-block {
+  padding: 28px 32px;
+  background: var(--sand);
+}
+.limits-block > h2 {
+  margin: 0;
+}
+.limits-body > p {
+  max-width: var(--measure);
+  color: var(--ink-2);
+}
+.limits-body > p:last-child {
+  margin-bottom: 0;
+}
+.limits-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 11px 40px;
+  margin: 0 0 24px;
+  padding: 0;
+  list-style: none;
+}
+.limits-list li {
+  padding-left: 15px;
+  border-left: 1px solid var(--rule-strong);
+  line-height: 1.45;
+}
+@media (min-width: 900px) {
+  .limits-block {
+    display: grid;
+    grid-template-columns: 230px minmax(0, 1fr);
+    gap: 48px;
+    align-items: start;
+  }
+}
+@media (max-width: 620px) {
+  .limits-list { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* The search control the homepage grew when Search left the global nav. */
+/* The place search field and its suggestions. The same control sits under
+   the home page question and at the top of the search page. The popup is an
+   overlay, so it takes an opaque surface and a --rule-strong edge, the same
+   treatment as the other panels that sit over content. */
+.search-suggest {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.search-suggest-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.search-suggest-label { font-weight: 700; }
+.search-suggest-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 12px;
+}
+.search-suggest-field {
+  position: relative;
   min-width: 0;
-  padding: 24px;
+}
+.search-suggest .input { width: 100%; }
+/* A long example such as "Prince George, Colombie-Britannique" ends in an
+   ellipsis on a narrow phone instead of being cut mid-word. */
+.search-suggest .input:placeholder-shown { text-overflow: ellipsis; }
+.search-suggest .btn { white-space: nowrap; }
+.search-suggest-popup {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 6px);
+  left: 0;
+  width: min(42rem, calc(100vw - 40px));
   border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-control);
   background: var(--surface);
   color: var(--ink);
 }
-.province-coverage-card h3 { margin: 0 0 20px; }
-.province-coverage-pair {
+.search-suggest-list {
+  margin: 0;
+  padding: 6px 0;
+  list-style: none;
+}
+.search-suggest-group {
+  padding: 8px 16px 2px;
+  color: var(--muted);
+  font-size: var(--text-compact);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.search-suggest-option {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 56px;
+  padding: 6px 16px;
+  cursor: pointer;
+}
+.search-suggest-option[aria-selected="true"] { background: var(--surface-2); }
+.search-suggest-text {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-width: 0;
+  line-height: 1.35;
+}
+.search-suggest-name { font-size: 16px; }
+.search-suggest-meta { color: var(--ink-2); font-size: var(--text-small); }
+.search-suggest-figure,
+.search-chosen-value,
+.search-chosen-riding-figure {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums lining-nums;
+  white-space: nowrap;
+}
+.search-suggest-figure .mark-glyph,
+.search-suggest-footnote .mark-glyph,
+.search-chosen-riding-figure .mark-glyph { width: 9px; height: 9px; }
+.search-suggest-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 16px;
+  padding: 0 16px;
+  border-top: 1px solid var(--rule);
+  font-size: var(--text-small);
+}
+.search-suggest-footnote {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink-2);
+}
+.search-suggest-footer a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-weight: 700;
+}
+.search-suggest-message {
+  margin: 0;
+  padding: 14px 16px;
+  font-size: 15px;
+}
+
+/* A chosen suggestion, shown under the field: one record tile. */
+.search-chosen {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 22px 24px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+}
+.search-chosen-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.page-wrap .search-chosen h2 { margin: 2px 0 0; font-size: 26px; font-weight: 700; }
+.search-chosen-clear {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--ink);
+  font-size: 22px;
+  cursor: pointer;
+}
+.search-chosen-figure {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  margin: 0;
+  color: var(--ink-2);
+}
+.search-chosen-value { color: var(--ink); font-size: 40px; line-height: 1.05; letter-spacing: -0.02em; }
+.search-chosen-detail { margin: 0; color: var(--ink-2); font-size: 15px; }
+.search-chosen-ridings {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 24px;
-  margin: 0 0 20px;
+  gap: 12px 32px;
 }
-.province-coverage-measure { min-width: 0; }
-.province-coverage-measure dt {
-  min-height: 3em;
-  font-weight: 600;
-  line-height: 1.5;
+.search-chosen-ridings-note { grid-column: 1 / -1; margin: 0; color: var(--ink-2); font-size: var(--text-small); }
+.page-wrap .search-chosen-ridings h3 { margin: 0; font-size: var(--text-compact); font-weight: 400; }
+.search-chosen-ridings ul { margin: 4px 0 0; padding: 0; list-style: none; }
+.search-chosen-ridings li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--rule-soft);
 }
-.province-coverage-measure dd { margin: 0; }
-.province-coverage-value {
-  display: block;
-  font-size: clamp(20px, 1.8vw, 26px);
-  font-variant-numeric: tabular-nums;
-  line-height: 1.3;
+.search-chosen-riding-name { font-weight: 700; }
+.search-chosen-riding-share,
+.search-chosen-riding-detail { color: var(--ink-2); font-size: var(--text-small); }
+.search-chosen-riding-detail { grid-column: 1 / -1; }
+.search-chosen-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 24px;
+  padding-top: 12px;
+  border-top: 1px solid var(--rule);
 }
-.province-coverage-track {
-  display: block;
-  height: 16px;
-  margin-block: 16px;
-  background: var(--surface-2);
+.search-chosen-foot a { font-weight: 700; }
+.search-chosen-foot .evidence-key { margin-inline-start: auto; }
+
+.home-search {
+  margin-block: 24px;
+  max-width: 42rem;
 }
-.province-coverage-fill {
-  display: block;
-  height: 100%;
-  background: var(--edge-derived);
+.home-search .search-suggest-row { max-width: 34rem; }
+.home-search-note {
+  margin: 0;
+  font-size: var(--text-small);
+  color: var(--ink-2);
 }
-.province-coverage-unknown .province-coverage-fill {
-  background: repeating-linear-gradient(135deg, var(--edge-unknown) 0 2px, var(--tint-unknown) 2px 6px);
-}
-.province-coverage-measure p { margin: 0; color: var(--ink-2); }
-@media (max-width: 1000px) {
-  .province-coverage-grid { grid-template-columns: minmax(0, 1fr); }
-}
-@media (max-width: 480px) {
-  .province-coverage-pair { grid-template-columns: minmax(0, 1fr); }
-  .province-coverage-measure dt { min-height: 0; margin-bottom: 8px; }
+.search-page-field { margin-bottom: 32px; }
+@media (max-width: 560px) {
+  .search-suggest-row { grid-template-columns: minmax(0, 1fr); }
+  .search-chosen-ridings { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* Place record, confidence-first arrangement.
@@ -3928,7 +5354,7 @@ dd > a:only-child {
 .place-coverage-keys { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 11px; }
 .place-coverage-keys li { display: flex; gap: 11px; align-items: flex-start; line-height: 1.45; }
 .place-coverage-keys-absent { color: var(--hero-eyebrow); }
-.place-key-swatch { flex: none; width: 12px; height: 12px; margin-top: 4px; border-radius: 2px; }
+.place-key-swatch { flex: none; width: 12px; height: 12px; margin-top: 4px; border-radius: var(--radius-control); }
 .place-key-swatch--national-baseline { background: var(--coverage-baseline); }
 .place-key-swatch--national-baseline-plus-local-context { background: var(--coverage-local); }
 /* The hatch is the same warp-and-weft the map uses for an unmeasured cell, so
@@ -3938,10 +5364,9 @@ dd > a:only-child {
 
 .place-evidence-strip {
   display: flex; gap: 20px; flex-wrap: wrap; align-items: center;
-  padding: 14px max(32px, calc((100% - var(--plate)) / 2)); background: var(--sand); border-bottom: 1px solid var(--rule-strong);
+  padding: 14px max(32px, calc((100% - var(--plate)) / 2)); background: var(--surface-2); border-bottom: 1px solid var(--rule);
 }
-.place-evidence-strip .eyebrow { margin: 0; }
-.place-evidence-strip .evidence-legend { margin: 0; }
+.place-evidence-strip .evidence-key { margin: 0; }
 
 .place-body { padding: 30px max(32px, calc((100% - var(--plate)) / 2)); display: flex; flex-direction: column; gap: 28px; }
 .place-stat-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
@@ -3961,10 +5386,10 @@ dd > a:only-child {
   display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; gap: 14px; align-items: center;
   padding: 12px 16px; border: 1px solid var(--rule); border-radius: var(--radius);
 }
-.place-year-label { font-weight: 600; }
+.place-year-label { font-weight: 700; }
 .place-year-body { min-width: 0; display: flex; flex-direction: column; gap: 6px; }
 .place-year-evidence { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-.place-year-value { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+.place-year-value { text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; }
 .place-year--official-record { border-color: var(--edge-record); background: var(--tint-record); }
 .place-year--satellite-observation { border-color: var(--edge-satellite); background: var(--tint-satellite); }
 .place-year--derived-estimate { border-color: var(--edge-derived); background: var(--tint-derived); }

@@ -1,0 +1,51 @@
+{
+ "provinces": {
+  "QC": {
+   "union1984to2022": 18028529.19,
+   "annualRowsMatched": 38,
+   "union2020to2022": 680273.64,
+   "admitted2020to2022": 680273.64,
+   "federalRollupDiff1984to2022Ha": 333.72,
+   "cells": 1639387800,
+   "unmappedCells": 246721691,
+   "unmappedSharePercent": 15.04962,
+   "pieces": 143
+  },
+  "ON": {
+   "union1984to2022": 9280647.27,
+   "annualRowsMatched": 38,
+   "union2020to2022": 714701.7,
+   "admitted2020to2022": 714701.7,
+   "federalRollupDiff1984to2022Ha": 646.38,
+   "cells": 1088143529,
+   "unmappedCells": 98262741,
+   "unmappedSharePercent": 9.03031,
+   "pieces": 92
+  },
+  "AB": {
+   "union1984to2022": 6842768.76,
+   "annualRowsMatched": 38,
+   "union2020to2022": 748863.72,
+   "admitted2020to2022": 748863.72,
+   "federalRollupDiff1984to2022Ha": 0.0,
+   "cells": 711031921,
+   "unmappedCells": 170800264,
+   "unmappedSharePercent": 24.02146,
+   "pieces": 58
+  },
+  "BC": {
+   "union1984to2022": 10823352.93,
+   "annualRowsMatched": 38,
+   "union2020to2022": 800473.32,
+   "admitted2020to2022": 800473.32,
+   "federalRollupDiff1984to2022Ha": 787.59,
+   "cells": 1019222375,
+   "unmappedCells": 45503,
+   "unmappedSharePercent": 0.00446,
+   "pieces": 90
+  }
+ },
+ "failures": [],
+ "failureCount": 0,
+ "allAnchorsHold": true
+}

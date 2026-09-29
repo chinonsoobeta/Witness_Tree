@@ -5,9 +5,10 @@ import test from "node:test";
 const read = (path) => readFile(new URL(path, import.meta.url), "utf8");
 
 test("governance content is bilingual and truthful about unfinished external gates", async () => {
-  const content = await read("../components/governance/GovernancePage.tsx");
+  // The French copy writes its narrow no-break spaces as \u202F escapes, so read them as the character.
+  const content = (await read("../components/governance/GovernancePage.tsx")).replaceAll("\\u202F", "\u202F");
   for (const phrase of ["No production correction", "Aucune correction de production", "No engagement contact route", "Aucune voie de dialogue", "stores no account", "ne conserve actuellement aucune donnée", "not to pursue Mistik", "ne pas poursuivre Mistik"]) assert.match(content, new RegExp(phrase));
-  for (const phrase of ["Mistik request: not opened", "Terms: none", "Honorarium: none", "Final outcome: not pursued", "Demande concernant Mistik : non ouverte", "Conditions : aucune", "Honoraire : aucun", "Résultat final : non poursuivie"]) assert.match(content, new RegExp(phrase));
+  for (const phrase of ["Mistik request: not opened", "Terms: none", "Honorarium: none", "Final outcome: not pursued", "Demande concernant Mistik\u202F: non ouverte", "Conditions\u202F: aucune", "Honoraire\u202F: aucun", "Résultat final\u202F: non poursuivie"]) assert.match(content, new RegExp(phrase));
   assert.doesNotMatch(content, /permission (?:was|has been) granted|contacted on \d|legally approved/i);
 });
 
@@ -29,8 +30,8 @@ test("all seven governance surfaces have independently citable locale routes", a
 
 test("required correction service levels and Indigenous safeguards are present", async () => {
   const content = await read("../components/governance/GovernancePage.tsx");
-  assert.match(content, /Critical: acknowledge within 1 business day and resolve within 5/);
-  assert.match(content, /Indigenous geography content: 1 and 10/);
+  assert.match(content, /Response times, in business days to acknowledge and then to resolve: critical, 1 and 5/);
+  assert.match(content, /Indigenous geography content, 1 and 10/);
   assert.match(content, /do not describe the full extent of Indigenous lands, rights, title or relationships/);
   assert.match(content, /No ranking, rights finding, consent finding or compliance claim/);
 });
@@ -40,10 +41,10 @@ test("glossary separates event grades from measurement states and defines reader
   for (const phrase of [
     "Event coverage grades",
     "enhanced local records",
-    "Province and riding measurement coverage states",
-    "complete, partial with unknown area, or none mapped",
+    "Coverage for a province or riding says how much of it was mapped",
+    "all of it, part of it with the rest unknown, or none of it",
     "Les catégories de couverture des événements",
-    "Les états de couverture des mesures provinciales et des circonscriptions",
+    "La couverture d’une province ou d’une circonscription indique quelle part a été cartographiée",
   ]) assert.match(content, new RegExp(phrase));
   for (const heading of [
     "Per-cell",
@@ -66,10 +67,10 @@ test("glossary separates event grades from measurement states and defines reader
 
 test("corrections provides interim actions without inventing an intake address", async () => {
   const content = await read("../components/governance/GovernancePage.tsx");
-  assert.match(content, /use the publisher’s own correction route/);
-  assert.match(content, /Preparing this record does not file a case or start a service-level clock/);
-  assert.match(content, /utilisez la voie de correction de l’éditeur/);
-  assert.match(content, /Aucune adresse de correction ni aucun formulaire de soumission n’est actuellement autorisé/);
+  assert.match(content, /use that publisher’s correction process/);
+  assert.match(content, /Your notes don’t open a case or start the response clock/);
+  assert.match(content, /utilisez le processus de correction de cet éditeur/);
+  assert.match(content, /aucune adresse de correction ni aucun formulaire n’est approuvé/);
   assert.doesNotMatch(content, /mailto:|corrections@|correction@/i);
 });
 
@@ -83,8 +84,9 @@ test("method and decision copy use the current interval control", async () => {
     assert.match(content, /EXPLORE_YEAR_MIN/);
     assert.doesNotMatch(content, /default view (?:starts|begins) in 2000|vue par défaut commence en 2000/);
   }
-  assert.match(method, /each selected year names the interval ending in that year/);
-  assert.match(method, /chaque année choisie désigne l’intervalle qui se termine cette année-là/);
+  // The control is a first and a last year, so the copy describes a span.
+  assert.match(method, /On Explore you choose a first and a last year/);
+  assert.match(method, /vous choisissez une première et une dernière année/);
 });
 
 test("Releases indexes the bounded release and Data and Explore point back to it", async () => {
@@ -97,7 +99,9 @@ test("Releases indexes the bounded release and Data and Explore point back to it
   assert.match(governance, /provinceBulkRelease\.id/);
   assert.match(governance, /provinceCsv\.url/);
   assert.match(governance, /provinceGeoPackage\.url/);
-  assert.match(governance, /No production data release satisfying the formal Phase 2 gate exists/);
+  assert.match(governance, /There is no final release yet\. This preview stays in place until the remaining launch checks/);
+  // The owner removed the independent-comparison requirement; nothing may claim one took place.
+  assert.doesNotMatch(governance, /independent comparison (?:was|has been) (?:done|completed|published)/i);
   assert.doesNotMatch(governance, /No production data release exists\. The current repository/);
   assert.match(data, /\/en\/releases/);
   assert.match(data, /\/fr\/versions/);
@@ -106,10 +110,13 @@ test("Releases indexes the bounded release and Data and Explore point back to it
 });
 
 
-test("governance foregrounds accountability with a correction-instructions primary link", async () => {
+test("governance states its status under the title and links to the correction instructions", async () => {
   const source = await read("../components/governance/GovernancePage.tsx");
-  assert.ok(source.indexOf('className="coverage-statement governance-accountability"') < source.indexOf('page.sections.map'));
-  assert.match(source, /className="btn btn--primary" href=\{kind === "corrections" \? "#correction-instructions" : `\/\$\{locale\}\/corrections`\}/);
+  // No figures on these pages, so no figures caveat and no evidence key: the
+  // status and the way to report an error sit under the title as plain text.
+  assert.doesNotMatch(source, /CoverageStatement|EvidenceKey/);
+  assert.ok(source.indexOf('<p className="dek">{page.status}</p>') < source.indexOf("page.sections.map"));
+  assert.match(source, /href=\{kind === "corrections" \? "#correction-instructions" : `\/\$\{locale\}\/corrections`\}/);
   assert.match(source, /id=\{kind === "corrections" && index === 2 \? "correction-instructions" : undefined\}/);
-  for (const label of ["Accountability", "Responsabilité", "Read the correction instructions", "Consulter les instructions de correction"]) assert.ok(source.includes(label));
+  for (const label of ["Read the correction instructions", "Consulter les instructions de correction"]) assert.ok(source.includes(label));
 });

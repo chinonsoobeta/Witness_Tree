@@ -8,6 +8,7 @@ import { validatePhase2AdmissionRecordTemplate, validateRecordedPhase2AdmissionR
 import { validatePhase2V21ProvinceZonalPilotEvidence } from "./check-phase2-v21-province-zonal-pilot-evidence.mjs";
 import { validatePhase2V21RasterReadbackEvidence } from "./check-phase2-v21-raster-readback-evidence.mjs";
 import { validateExpertReviewEvidence } from "./check-phase2-v21-expert-review-evidence.mjs";
+import { readScopeDecision, removedCriteria, SCOPE_DECISION_PATH } from "./phase-scope-decision.mjs";
 
 const ROOT = fileURLToPath(new URL("../", import.meta.url));
 const THIS_FILE = fileURLToPath(import.meta.url);
@@ -25,10 +26,16 @@ const OPEN_EVIDENCE = {
 };
 /*
  * A retired criterion is a requirement the owner withdrew, not one the project
- * met. It keeps its place among the four so that withdrawing it cannot raise
- * the completion percentage: the denominator below is CRITERIA.length, which
- * does not move, and a retired criterion is derived as not complete every time.
+ * met. It keeps its place in the count and is derived as not complete every
+ * time, so retiring alone cannot raise the percentage.
+ *
+ * Removal is different and stricter to earn: the owner's scope decision of
+ * 2026-09-26 (data/phase-scope-decision-2026-09-26.json) takes a criterion out
+ * of the count, so the denominator shrinks. Only the two criteria below may be
+ * removed, and only while that record names them. Dropping a criterion from the
+ * status file without the decision still fails.
  */
+const REMOVABLE = ["expert-review-100-per-province", "published-independent-comparisons"];
 const RETIRED_EVIDENCE = {
   "expert-review-100-per-province": "data/phase2-expert-review-retirement-2026-08-30.json",
 };
@@ -89,8 +96,9 @@ function validateBaselineAndBoundary(criteria) {
     readJson("data/boundary-editions.json"),
     readJson("data/vlce2-remote-promotion-evidence.json"),
   );
-  const baselinePath = requireEvidencePath(criteria[0]);
-  const boundaryPath = requireEvidencePath(criteria[3]);
+  const byId = (id) => criteria.find((criterion) => criterion?.id === id);
+  const baselinePath = requireEvidencePath(byId("admitted-v21-national-baseline"));
+  const boundaryPath = requireEvidencePath(byId("admitted-boundary-aggregates"));
   exact(resolveEvidencePath(boundaryPath), resolveEvidencePath(baselinePath), "baseline and boundary admission evidence path");
   const admission = readAdmissionRecord(baselinePath, raster, template);
 
@@ -150,37 +158,38 @@ function validateCompletionCriterion(criterion) {
     : validateComparisonCompletion(path);
 }
 
-function expectedStatus(completed) {
-  return `${WORDS[completed]}-of-four-formal-exit-criteria`;
+function expectedStatus(completed, total) {
+  return `${WORDS[completed]}-of-${WORDS[total]}-formal-exit-criteria`;
 }
 
-export function validatePhase2FormalExitStatus(record) {
+export function validatePhase2FormalExitStatus(record, decision = readScopeDecision()) {
   assert.equal(record?.schemaVersion, "witness-tree/phase2-formal-exit-status/1");
   assert.equal(Array.isArray(record.criteria), true, "Phase 2 formal exit must contain criteria.");
-  assert.equal(record.criteria.length, CRITERIA.length, "Phase 2 formal exit must contain exactly four criteria.");
-  exact(record.criteria.map((criterion) => criterion?.id), CRITERIA, "Phase 2 criterion ids");
+  const removed = removedCriteria(decision, 2, REMOVABLE);
+  const expected = CRITERIA.filter((id) => !removed.includes(id));
+  // A criterion leaves the count only by the owner's recorded scope decision.
+  assert.equal(record.criteria.length, expected.length, "Phase 2 formal exit denominator must equal the plan's four criteria less those the scope decision removes.");
+  exact(record.criteria.map((criterion) => criterion?.id), expected, "Phase 2 criterion ids");
+  exact(record.removedCriteria ?? [], removed.map((id) => ({ id, decision: SCOPE_DECISION_PATH })), "Phase 2 removed criteria");
 
   const admissionResults = validateBaselineAndBoundary(record.criteria);
-  const derived = [
-    admissionResults.baseline,
-    validateCompletionCriterion(record.criteria[1]),
-    validateCompletionCriterion(record.criteria[2]),
-    admissionResults.boundary,
-  ];
+  const derived = record.criteria.map((criterion) => {
+    if (criterion.id === "admitted-v21-national-baseline") return admissionResults.baseline;
+    if (criterion.id === "admitted-boundary-aggregates") return admissionResults.boundary;
+    return validateCompletionCriterion(criterion);
+  });
   exact(record.criteria.map((criterion) => criterion.complete), derived, "Phase 2 criterion completion");
-
-  // Retirement withdraws a requirement; it must never shrink the denominator.
-  assert.equal(record.criteria.length, CRITERIA.length, "Phase 2 formal exit denominator must stay at four whether or not a criterion is retired.");
   for (const criterion of record.criteria) {
     if (criterion?.retired === true) assert.equal(criterion.complete, false, `${criterion.id} is retired and cannot be complete.`);
   }
 
   const completed = derived.filter(Boolean).length;
-  exact(record.formalExit, { completed, total: CRITERIA.length, percentage: completed / CRITERIA.length * 100 }, "Phase 2 formal exit");
-  assert.equal(record.status, expectedStatus(completed), "Phase 2 status must be derived from the four criteria.");
-  exact(record.claims, { productionEligible: false, released: false, formalPhaseComplete: completed === CRITERIA.length }, "Phase 2 claims");
+  const total = expected.length;
+  exact(record.formalExit, { completed, total, percentage: completed / total * 100 }, "Phase 2 formal exit");
+  assert.equal(record.status, expectedStatus(completed, total), "Phase 2 status must be derived from its criteria.");
+  exact(record.claims, { productionEligible: false, released: false, formalPhaseComplete: completed === total, expertReviewed: false, independentlyCompared: false }, "Phase 2 claims");
 
-  return { status: record.status, completed, total: CRITERIA.length, percentage: completed / CRITERIA.length * 100 };
+  return { status: record.status, completed, total, percentage: completed / total * 100 };
 }
 
 export function checkPhase2FormalExitStatus() {

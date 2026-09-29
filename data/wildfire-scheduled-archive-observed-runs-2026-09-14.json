@@ -1,0 +1,409 @@
+{
+ "schemaVersion": "witness-tree/wildfire-scheduled-archive-observed-runs/1",
+ "observedAt": "2026-09-14T16:03:58Z",
+ "scope": "Every scheduled run of the wildfire refresh workflow on the merge commit of #165, from the first one GitHub created to the retrieval time, with an independent readback of what each real refresh archived and published. This is raw snapshot provenance only: not a transformation, ingestion, release or production decision.",
+ "repository": "chinonsoobeta/Witness_Tree",
+ "workflowPath": ".github/workflows/wildfire-refresh.yml",
+ "headSha": "62ec72503d60139406a5e5f6a33a16ccac873b40",
+ "retrieval": {
+  "runListCommand": "gh run list --repo chinonsoobeta/Witness_Tree --workflow wildfire-refresh.yml --limit 20 --json databaseId,createdAt,conclusion,status,event,headSha",
+  "stepCommand": "gh run view <run-id> --repo chinonsoobeta/Witness_Tree --json databaseId,createdAt,updatedAt,conclusion,event,headSha,url,jobs",
+  "logCommand": "gh run view <run-id> --repo chinonsoobeta/Witness_Tree --log",
+  "archiveReadbackCommands": [
+   "aws s3api list-object-versions --bucket witness-tree-raw-archive-ca-central-1 --prefix raw/<feed>/undeclared/2026-09-1",
+   "aws s3api get-object-retention --bucket witness-tree-raw-archive-ca-central-1 --key <key> --version-id <version>",
+   "aws s3api get-object --bucket witness-tree-raw-archive-ca-central-1 --key <key> --version-id <version> /dev/stdout | shasum -a 256"
+  ],
+  "statusReadbackCommands": [
+   "aws s3api get-bucket-versioning --bucket witness-tree-public-delivery-ca-central-1",
+   "aws s3api list-object-versions --bucket witness-tree-public-delivery-ca-central-1 --prefix wildfire/current-status.json",
+   "aws s3api get-object --bucket witness-tree-public-delivery-ca-central-1 --key wildfire/current-status.json --version-id <version> /dev/stdout | shasum -a 256"
+  ],
+  "readbackNote": "Read-only calls from the owner's AWS CLI session. Payloads were hashed as a stream and never written to disk."
+ },
+ "classificationRule": {
+  "dstGatedNoOp": "The gate ran and the refresh, role and archive steps were all skipped, and the workflow concluded success.",
+  "realRefreshSuccess": "The gate ran, the refresh step, the role assumption and the archive step all succeeded, and the workflow concluded success.",
+  "attemptedRefreshFailure": "The workflow concluded failure."
+ },
+ "runs": [
+  {
+   "runId": 34783780960,
+   "url": "https://github.com/chinonsoobeta/Witness_Tree/actions/runs/34783780960",
+   "createdAt": "2026-09-13T21:25:30Z",
+   "updatedAt": "2026-09-13T21:26:10Z",
+   "event": "schedule",
+   "headSha": "62ec72503d60139406a5e5f6a33a16ccac873b40",
+   "conclusion": "success",
+   "reportedCron": "17 19 * * *",
+   "gateOpened": true,
+   "steps": {
+    "gate": "success",
+    "refresh": "success",
+    "delayedRefresh": "skipped",
+    "assumeRole": "success",
+    "archive": "success"
+   },
+   "assumedRoleId": "AROAUFSOHHNOHK3ZPHSM2:wildfire-refresh-34783780960-1",
+   "refreshedAt": "2026-09-13T21:25:37.628Z",
+   "retention": {
+    "mode": "COMPLIANCE",
+    "period": "P2Y"
+   },
+   "archived": [
+    {
+     "feed": "cwfis-current",
+     "key": "raw/cwfis-current/undeclared/2026-09-13T21-25-37Z/1d98e8dc199c73c4d24ce1d12dd3e90efc2a12b6a0aef266d9788649571dfba1/payload/2026-09-13T21-25-37-628Z-cwfis-current.json",
+     "versionId": "Qta.aATX2w1WAYpqUUOKq7gfR0o0huz_",
+     "sha256": "1d98e8dc199c73c4d24ce1d12dd3e90efc2a12b6a0aef266d9788649571dfba1",
+     "byteLength": 547913,
+     "retainUntil": "2028-09-13T21:25:45Z",
+     "manifestVersionId": "nOUZ88tWzoMMTAkN1muHiIUeUXhKpR4s",
+     "manifestByteLength": 825,
+     "readback": {
+      "retentionMode": "COMPLIANCE",
+      "retainUntil": "2028-09-13T21:25:45Z",
+      "sha256Matches": true
+     }
+    },
+    {
+     "feed": "bc-wildfire",
+     "key": "raw/bc-wildfire/undeclared/2026-09-13T21-25-37Z/883ecaf7e2094a9e53cbb99c34c1b021486a02fff170ab4b823e2cb8d7ac0dea/payload/2026-09-13T21-25-37-628Z-bc-wildfire.json",
+     "versionId": "m8FW8fFlsV5anHBLZz34ATutbG8QrPla",
+     "sha256": "883ecaf7e2094a9e53cbb99c34c1b021486a02fff170ab4b823e2cb8d7ac0dea",
+     "byteLength": 15944643,
+     "retainUntil": "2028-09-13T21:25:52Z",
+     "manifestVersionId": "8R04d2z4uy3nwxjWBNMdW4HNBwBHugCp",
+     "manifestByteLength": 819,
+     "readback": {
+      "retentionMode": "COMPLIANCE",
+      "retainUntil": "2028-09-13T21:25:52Z",
+      "sha256Matches": true
+     }
+    },
+    {
+     "feed": "ab-wildfire",
+     "key": "raw/ab-wildfire/undeclared/2026-09-13T21-25-37Z/adfe0647ebe6e18d6bff38c4bb6e0859072b64534e67fd22bb26934596e9278e/payload/2026-09-13T21-25-37-628Z-ab-wildfire.json",
+     "versionId": "9nMU606mqdDOeL2RoAi5cs_v08AtmeaA",
+     "sha256": "adfe0647ebe6e18d6bff38c4bb6e0859072b64534e67fd22bb26934596e9278e",
+     "byteLength": 716239,
+     "retainUntil": "2028-09-13T21:25:56Z",
+     "manifestVersionId": "7tQnOAdPW_PZ6lCEPT1kJfjtEKPlfZGD",
+     "manifestByteLength": 817,
+     "readback": {
+      "retentionMode": "COMPLIANCE",
+      "retainUntil": "2028-09-13T21:25:56Z",
+      "sha256Matches": true
+     }
+    },
+    {
+     "feed": "on-fire-disturbance",
+     "key": "raw/on-fire-disturbance/undeclared/2026-09-13T21-25-37Z/870225387a6089aa9c7951414c013dd0312c572ca5bb6452f9f59375f93abf05/payload/2026-09-13T21-25-37-628Z-on-fire-disturbance.json",
+     "versionId": "9ntG1LgFZrJTsVnUJRCyxcx9X3uly6_f",
+     "sha256": "870225387a6089aa9c7951414c013dd0312c572ca5bb6452f9f59375f93abf05",
+     "byteLength": 53298475,
+     "retainUntil": "2028-09-13T21:25:59Z",
+     "manifestVersionId": "0kAje07yfEtQJDHFn378d7aUGs4Xhd8o",
+     "manifestByteLength": 851,
+     "readback": {
+      "retentionMode": "COMPLIANCE",
+      "retainUntil": "2028-09-13T21:25:59Z",
+      "sha256Matches": true
+     }
+    }
+   ],
+   "status": {
+    "versionId": "xkpO.HOizZX9rKAIxx2dMrL97sdwRa9k",
+    "lastModified": "2026-09-13T21:26:07Z",
+    "sha256": "4eef1791f8b8661400cbfe076b84fe14c11e6df9ee84befd319132017b156194"
+   }
+  },
+  {
+   "runId": 34786802318,
+   "url": "https://github.com/chinonsoobeta/Witness_Tree/actions/runs/34786802318",
+   "createdAt": "2026-09-13T22:26:29Z",
+   "updatedAt": "2026-09-13T22:26:37Z",
+   "event": "schedule",
+   "headSha": "62ec72503d60139406a5e5f6a33a16ccac873b40",
+   "conclusion": "success",
+   "reportedCron": "17 20 * * *",
+   "gateOpened": false,
+   "steps": {
+    "gate": "success",
+    "refresh": "skipped",
+    "delayedRefresh": "skipped",
+    "assumeRole": "skipped",
+    "archive": "skipped"
+   }
+  },
+  {
+   "runId": 34795127322,
+   "url": "https://github.com/chinonsoobeta/Witness_Tree/actions/runs/34795127322",
+   "createdAt": "2026-09-14T01:11:48Z",
+   "updatedAt": "2026-09-14T01:12:29Z",
+   "event": "schedule",
+   "headSha": "62ec72503d60139406a5e5f6a33a16ccac873b40",
+   "conclusion": "success",
+   "reportedCron": "17 23 * * *",
+   "gateOpened": true,
+   "steps": {
+    "gate": "success",
+    "refresh": "success",
+    "delayedRefresh": "skipped",
+    "assumeRole": "success",
+    "archive": "success"
+   },
+   "assumedRoleId": "AROAUFSOHHNOHK3ZPHSM2:wildfire-refresh-34795127322-1",
+   "refreshedAt": "2026-09-14T01:11:57.279Z",
+   "retention": {
+    "mode": "COMPLIANCE",
+    "period": "P2Y"
+   },
+   "archived": [
+    {
+     "feed": "cwfis-current",
+     "key": "raw/cwfis-current/undeclared/2026-09-14T01-11-57Z/42516978613b1f3bff97e9ac6b0db02d5d1d42954f1dead6cd54e68463261290/payload/2026-09-14T01-11-57-279Z-cwfis-current.json",
+     "versionId": "4s9BBzmu1H5oj6BGBCUK0w.TT._LX_.W",
+     "sha256": "42516978613b1f3bff97e9ac6b0db02d5d1d42954f1dead6cd54e68463261290",
+     "byteLength": 548571,
+     "retainUntil": "2028-09-14T01:12:04Z",
+     "manifestVersionId": "jCiTNlBRN7J4ZmEvo53KAJEC9PoqW2Jg",
+     "manifestByteLength": 825,
+     "readback": {
+      "retentionMode": "COMPLIANCE",
+      "retainUntil": "2028-09-14T01:12:04Z",
+      "sha256Matches": true
+     }
+    },
+    {
+     "feed": "bc-wildfire",
+     "key": "raw/bc-wildfire/undeclared/2026-09-14T01-11-57Z/22e06f37552d9ca2eb34727404bddf2fa630f8bdca38ed8c6bb8888315f5eb55/payload/2026-09-14T01-11-57-279Z-bc-wildfire.json",
+     "versionId": "Le1ztqqOh2iN0hAQUiYt6FqFQGJgxuFM",
+     "sha256": "22e06f37552d9ca2eb34727404bddf2fa630f8bdca38ed8c6bb8888315f5eb55",
+     "byteLength": 15944646,
+     "retainUntil": "2028-09-14T01:12:11Z",
+     "manifestVersionId": ".Hi61FoND9XXZ5TqWkQNmXxTYavGEI3p",
+     "manifestByteLength": 819,
+     "readback": {
+      "retentionMode": "COMPLIANCE",
+      "retainUntil": "2028-09-14T01:12:11Z",
+      "sha256Matches": true
+     }
+    },
+    {
+     "feed": "ab-wildfire",
+     "key": "raw/ab-wildfire/undeclared/2026-09-14T01-11-57Z/971b8822b28920829106aad167ddeb24a132b474982d3fa84f3e0d19be666e65/payload/2026-09-14T01-11-57-279Z-ab-wildfire.json",
+     "versionId": "zmWd3EcX2Mf60ca1T9QBdxN6SLF7QQLM",
+     "sha256": "971b8822b28920829106aad167ddeb24a132b474982d3fa84f3e0d19be666e65",
+     "byteLength": 717117,
+     "retainUntil": "2028-09-14T01:12:16Z",
+     "manifestVersionId": "ys3Yi5eGuh7SVcZX4I0_xVUfgjTunrS5",
+     "manifestByteLength": 817,
+     "readback": {
+      "retentionMode": "COMPLIANCE",
+      "retainUntil": "2028-09-14T01:12:16Z",
+      "sha256Matches": true
+     }
+    },
+    {
+     "feed": "on-fire-disturbance",
+     "key": "raw/on-fire-disturbance/undeclared/2026-09-14T01-11-57Z/4d721af71b25908e4206a10a636adb97131826c84c8500b137afd6d0d9098be8/payload/2026-09-14T01-11-57-279Z-on-fire-disturbance.json",
+     "versionId": "CmacIf8LrRNNHCwz2ZtnYE8qFUuHWTOx",
+     "sha256": "4d721af71b25908e4206a10a636adb97131826c84c8500b137afd6d0d9098be8",
+     "byteLength": 53298475,
+     "retainUntil": "2028-09-14T01:12:19Z",
+     "manifestVersionId": "pQ_bLBPqB5lVoqEXMGUP9NrThV8Hr9xT",
+     "manifestByteLength": 851,
+     "readback": {
+      "retentionMode": "COMPLIANCE",
+      "retainUntil": "2028-09-14T01:12:19Z",
+      "sha256Matches": true
+     }
+    }
+   ],
+   "status": {
+    "versionId": ".9_3aYlIPK8gDrnm7TYoRPLMtw2qnCzu",
+    "lastModified": "2026-09-14T01:12:26Z",
+    "sha256": "01b386857e42bc764cac9dd6cca997b12e2088bc6179c91240154e1c9119180f"
+   }
+  },
+  {
+   "runId": 34807562792,
+   "url": "https://github.com/chinonsoobeta/Witness_Tree/actions/runs/34807562792",
+   "createdAt": "2026-09-14T04:51:41Z",
+   "updatedAt": "2026-09-14T04:51:52Z",
+   "event": "schedule",
+   "headSha": "62ec72503d60139406a5e5f6a33a16ccac873b40",
+   "conclusion": "success",
+   "reportedCron": "17 0 * * *",
+   "gateOpened": false,
+   "steps": {
+    "gate": "success",
+    "refresh": "skipped",
+    "delayedRefresh": "skipped",
+    "assumeRole": "skipped",
+    "archive": "skipped"
+   }
+  },
+  {
+   "runId": 34830573949,
+   "url": "https://github.com/chinonsoobeta/Witness_Tree/actions/runs/34830573949",
+   "createdAt": "2026-09-14T09:56:18Z",
+   "updatedAt": "2026-09-14T09:56:59Z",
+   "event": "schedule",
+   "headSha": "62ec72503d60139406a5e5f6a33a16ccac873b40",
+   "conclusion": "success",
+   "reportedCron": "17 4 * * *",
+   "gateOpened": true,
+   "steps": {
+    "gate": "success",
+    "refresh": "success",
+    "delayedRefresh": "skipped",
+    "assumeRole": "success",
+    "archive": "success"
+   },
+   "assumedRoleId": "AROAUFSOHHNOHK3ZPHSM2:wildfire-refresh-34830573949-1",
+   "refreshedAt": "2026-09-14T09:56:27.541Z",
+   "retention": {
+    "mode": "COMPLIANCE",
+    "period": "P2Y"
+   },
+   "archived": [
+    {
+     "feed": "cwfis-current",
+     "key": "raw/cwfis-current/undeclared/2026-09-14T09-56-27Z/2417804bea1bbdb805501fe3fabece46c116634bb76884717226a02d807234c3/payload/2026-09-14T09-56-27-541Z-cwfis-current.json",
+     "versionId": "QZ7mqSHAmws9eVnMDE8Iy1iSlNrUrnxm",
+     "sha256": "2417804bea1bbdb805501fe3fabece46c116634bb76884717226a02d807234c3",
+     "byteLength": 550199,
+     "retainUntil": "2028-09-14T09:56:37Z",
+     "manifestVersionId": "A460Ukp36cQkYdce.RaOWx.HUvitk39S",
+     "manifestByteLength": 825,
+     "readback": {
+      "retentionMode": "COMPLIANCE",
+      "retainUntil": "2028-09-14T09:56:37Z",
+      "sha256Matches": true
+     }
+    },
+    {
+     "feed": "bc-wildfire",
+     "key": "raw/bc-wildfire/undeclared/2026-09-14T09-56-27Z/30bf79421ace2be0d91a69c730cd2c8c12f607368faab780457c484dff6040d4/payload/2026-09-14T09-56-27-541Z-bc-wildfire.json",
+     "versionId": "oRoTJu6.CnWLOMxwwOZLqIbBjAD.CW4q",
+     "sha256": "30bf79421ace2be0d91a69c730cd2c8c12f607368faab780457c484dff6040d4",
+     "byteLength": 15944646,
+     "retainUntil": "2028-09-14T09:56:45Z",
+     "manifestVersionId": "PoZO8WGnPqrfrW2kNkk9sNZFwx5m2GVD",
+     "manifestByteLength": 819,
+     "readback": {
+      "retentionMode": "COMPLIANCE",
+      "retainUntil": "2028-09-14T09:56:45Z",
+      "sha256Matches": true
+     }
+    },
+    {
+     "feed": "ab-wildfire",
+     "key": "raw/ab-wildfire/undeclared/2026-09-14T09-56-27Z/fc054c24efef795acc17231e3c131c04ea9da13e2a4d5f8565afb054acbabe22/payload/2026-09-14T09-56-27-541Z-ab-wildfire.json",
+     "versionId": "2J2S9gpDbbaJDh9f4fYhD0QMvfWqIGQ5",
+     "sha256": "fc054c24efef795acc17231e3c131c04ea9da13e2a4d5f8565afb054acbabe22",
+     "byteLength": 718022,
+     "retainUntil": "2028-09-14T09:56:49Z",
+     "manifestVersionId": "y0CWcTUFfe2X0vixY3Lx__diABhkOpnn",
+     "manifestByteLength": 817,
+     "readback": {
+      "retentionMode": "COMPLIANCE",
+      "retainUntil": "2028-09-14T09:56:49Z",
+      "sha256Matches": true
+     }
+    },
+    {
+     "feed": "on-fire-disturbance",
+     "key": "raw/on-fire-disturbance/undeclared/2026-09-14T09-56-27Z/26dd62b1c0b86d9ef4f7e1d48d277f97fa861873876d4549cb02eabe53138028/payload/2026-09-14T09-56-27-541Z-on-fire-disturbance.json",
+     "versionId": "OFQbx.GS7OqtEIwIk6qT.zzlypXpYr6B",
+     "sha256": "26dd62b1c0b86d9ef4f7e1d48d277f97fa861873876d4549cb02eabe53138028",
+     "byteLength": 53298475,
+     "retainUntil": "2028-09-14T09:56:52Z",
+     "manifestVersionId": "OjYoKiToL_gK46JpOP9Xx_nQe_lsg2Kg",
+     "manifestByteLength": 851,
+     "readback": {
+      "retentionMode": "COMPLIANCE",
+      "retainUntil": "2028-09-14T09:56:52Z",
+      "sha256Matches": true
+     }
+    }
+   ],
+   "status": {
+    "versionId": "nElERWSwm5r8ubx9SwnJj16KZkH.Ke4l",
+    "lastModified": "2026-09-14T09:56:57Z",
+    "sha256": "2d6056ff52d7084905c7c010e5b7e66b5ec54499e0ae8e3c4261cec36b52d6b8"
+   }
+  },
+  {
+   "runId": 34834139891,
+   "url": "https://github.com/chinonsoobeta/Witness_Tree/actions/runs/34834139891",
+   "createdAt": "2026-09-14T10:37:55Z",
+   "updatedAt": "2026-09-14T10:38:06Z",
+   "event": "schedule",
+   "headSha": "62ec72503d60139406a5e5f6a33a16ccac873b40",
+   "conclusion": "success",
+   "reportedCron": "17 5 * * *",
+   "gateOpened": false,
+   "steps": {
+    "gate": "success",
+    "refresh": "skipped",
+    "delayedRefresh": "skipped",
+    "assumeRole": "skipped",
+    "archive": "skipped"
+   }
+  }
+ ],
+ "classifications": {
+  "realRefreshSuccesses": {
+   "count": 3,
+   "runIds": [
+    34783780960,
+    34795127322,
+    34830573949
+   ]
+  },
+  "dstGatedNoOpSuccesses": {
+   "count": 3,
+   "runIds": [
+    34786802318,
+    34807562792,
+    34834139891
+   ]
+  },
+  "attemptedRefreshFailures": {
+   "count": 0,
+   "runIds": []
+  }
+ },
+ "statusObject": {
+  "bucket": "witness-tree-public-delivery-ca-central-1",
+  "key": "wildfire/current-status.json",
+  "versioning": "Enabled",
+  "cacheControl": "public,max-age=60,must-revalidate",
+  "contentType": "application/json",
+  "versionCount": 3,
+  "everySourceHealthyInEveryVersion": true
+ },
+ "claims": {
+  "tokenClaimsObservedInRealRun": true,
+  "scheduledWriteExecuted": true,
+  "retentionApplied": true,
+  "archiveReadBackIndependently": true,
+  "statusPublished": true,
+  "crossesDaylightSavingTransition": false,
+  "transformed": false,
+  "ingested": false,
+  "released": false,
+  "productionEligible": false
+ },
+ "limitations": [
+  "The window is about 18.6 hours, from the first run to the retrieval time. GitHub created runs for the 19:17, 20:17 and 23:17 UTC slots on 2026-09-13 and the 00:17, 04:17 and 05:17 slots on 2026-09-14, and none for the 12:17 or 13:17 slots on 2026-09-14 by the retrieval time. It cannot show the four-a-day cadence.",
+  "No run crosses a daylight saving transition. The next one is 2026-11-01.",
+  "Every run started late, between 1 hour 54 minutes and 5 hours 39 minutes after its slot. The gate judged each by the slot GitHub reported, as designed.",
+  "A source marked healthy is the workflow's own classification after the feed contract accepted it. It is not an accuracy, completeness or rights finding.",
+  "The archived snapshots are raw. The site still shows an illustrative fixture and does not read the status object.",
+  "Each refresh adds about 70.5 MB of payloads locked for two years, 53.3 MB of it Ontario."
+ ]
+}

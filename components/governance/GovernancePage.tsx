@@ -1,10 +1,8 @@
-import { CoverageStatement } from "@/components/policy/CoverageStatement";
 import { formatYearRangeKey, PRODUCT_NAME, type Locale } from "@/lib/domain";
 import {
   EXPLORE_COVERAGE_PERIOD,
   EXPLORE_DEFAULT_YEAR,
   EXPLORE_YEAR_MIN,
-  productionAggregatePeriod,
 } from "@/lib/explore";
 import {
   PROVINCE_BULK_TIME_RANGE,
@@ -24,7 +22,8 @@ export type GovernancePageKind =
 type Section = Readonly<{
   heading: string;
   paragraphs: readonly string[];
-  links?: readonly Readonly<{ label: string; href: string }>[];
+  /** A link with a format is a file download and is drawn as a file tile, as on the Data page. */
+  links?: readonly Readonly<{ label: string; href: string; format?: string }>[];
 }>;
 type PageCopy = Readonly<{
   title: string;
@@ -41,73 +40,73 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
     en: {
       title: "Glossary",
       status:
-        "Terms used in Explore and Compare; professional forestry terminology review is pending.",
+        "Plain definitions of the terms used in Explore and Compare. A professional forestry review of these terms is still to come.",
       sections: [
         {
           heading: "Forest",
           paragraphs: [
-            "Land of at least 1 hectare and at least 20 metres wide, with at least 10% crown closure, carrying trees capable of reaching 5 metres at maturity. Percentages use forested hectares inside the stated boundary edition, not total land area.",
+            "Land of at least 1 hectare and at least 20 metres wide, where tree crowns cover at least 10% of the ground and trees can grow to 5 metres. Percentages are a share of forest, not of all land.",
           ],
         },
         {
           heading: "Evidence",
           paragraphs: [
-            "Official record: an authoritative public record. Satellite observation: change visible in imagery without, by itself, establishing cause. Derived estimate: a documented calculation. Unknown: no authoritative public record has been integrated for the question.",
+            "Official record: a public agency recorded it. Satellite observation: a change seen in satellite images, which can’t show the cause on its own. Derived estimate: a number calculated with a documented method. Unknown: no official public record answers the question yet.",
           ],
         },
         {
           heading: "Coverage",
           paragraphs: [
-            "Event coverage grades describe the records and context available for an event or reported value: enhanced local records, national baseline plus local context, national baseline, extended record with sparse official matching, or not applicable. These grades appear with event-level evidence and do not say that a whole province or riding was measured.",
-            "Province and riding measurement coverage states describe whether the required mapped inputs cover the selected boundary: complete, partial with unknown area, or none mapped. Explore labels these as “Every input pixel present” or “Some pixels unknown, so this is a minimum”; Compare uses “Complete mapped coverage”, “Partial mapped coverage; unknown area remains” and “No mapped coverage”. These states determine whether a boundary total or percentage can be reported. The two taxonomies answer different questions and are not interchangeable.",
+            "Event coverage grades say how many records support one event, from most to least: enhanced local records, national baseline plus local context, national baseline, extended record with few official matches, or not applicable. A grade describes one event, not a whole province or riding.",
+            "Coverage for a province or riding says how much of it was mapped: all of it, part of it with the rest unknown, or none of it. Only a fully mapped area gets a full figure and a percentage. Explore shows these as “Fully mapped” or “Some of this area has no data, so this is a minimum”; Compare uses “Complete mapped coverage”, “Partial mapped coverage; unknown area remains” and “No mapped coverage”.",
           ],
         },
         {
           heading: "Per-cell",
           paragraphs: [
-            "The most detailed published loss geometry. Each record represents one connected component traced from 30 metre source cells for one annual interval. Per-cell geometry is distinct from a province or riding aggregate.",
+            "The most detailed loss shapes we publish, traced from 30-metre grid cells for a single year. They are separate from province or riding figures.",
           ],
         },
         {
           heading: "Annual interval",
           paragraphs: [
-            "The period between two annual observations. The year control names the ending year, so 1985 means the interval from 1984 to 1985 rather than the 1985 calendar year.",
+            "The detected loss from one year to the next, the shortest span you can choose on Explore. Choosing 1984 as the first year and 1985 as the last shows what was lost between those two years.",
           ],
         },
         {
           heading: "Province aggregate",
           paragraphs: [
-            `A summary calculated for an entire provincial boundary. The available ${productionAggregatePeriod("en", "span")} province aggregate is a separate layer from the annual per-cell map and does not change when the year control moves.`,
+            `A figure for a whole province. Province figures exist for every span of years from 1984 to 2022, and on Explore they follow the year control.`,
           ],
         },
         {
           heading: "Provisional",
           paragraphs: [
-            "Published with stated limits for review and use, but not admitted as the formal Phase 2 production release. A provisional figure remains subject to the stated coverage, comparison and ground-verification limits.",
+            "Published for review and use, with its limits stated, but not the final release. A provisional figure keeps those limits on coverage, comparison and checks on the ground.",
           ],
         },
         {
           heading: "Mapped extent",
           paragraphs: [
-            "The area where the required source inputs are present and their extent has been checked. It may be smaller than the administrative boundary and does not imply complete coverage outside it.",
+            "The area where the source data exists and has been checked. It can be smaller than the official boundary, and nothing outside it is covered.",
           ],
         },
         {
           heading: "Unknown share",
           paragraphs: [
-            "The portion of a province or riding for which a required mapped input is unavailable. A non-zero unknown share means a detected-loss value is a known-area minimum, not a complete boundary total.",
+            "The part of a province or riding that has no data. If it is above zero, the loss figure is a minimum for the mapped part, not a full total.",
           ],
         },
         {
           heading: "Representation order",
           paragraphs: [
-            "The official Elections Canada boundary edition that defines federal electoral districts for an election. Compare uses the named order so results are tied to a specific set of riding boundaries rather than a generic current riding.",
+            "The official set of federal riding boundaries for an election, published by Elections Canada. Compare names the order it uses, so results match a specific set of boundaries.",
           ],
         },
         {
           heading: "Detected loss patch",
           paragraphs: [
-            "A simplified map shape traced from connected source cells where satellite data detected forest loss in one annual interval. Display patches cannot be added to recover exact area, and a patch alone does not establish logging, fire, deforestation, illegality or responsibility.",
+            "A simplified map shape showing where satellites detected forest loss in one year. Patches can’t be added up to get an exact area, and a patch alone doesn’t show logging, fire, deforestation, illegality or who is responsible.",
           ],
         },
       ],
@@ -115,73 +114,73 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
     fr: {
       title: "Glossaire",
       status:
-        "Termes employés dans Explorer et Comparer; la révision professionnelle de la terminologie forestière reste à faire.",
+        "Définitions simples des termes employés dans Explorer et Comparer. Une révision professionnelle de ces termes forestiers reste à faire.",
       sections: [
         {
           heading: "Forêt",
           paragraphs: [
-            "Terre d’au moins 1 hectare et d’au moins 20 mètres de largeur, présentant un couvert de cimes d’au moins 10 %, avec des arbres capables d’atteindre 5 mètres à maturité. Les pourcentages utilisent les hectares forestiers dans l’édition de limite indiquée, et non la superficie terrestre totale.",
+            "Terre d’au moins 1 hectare et d’au moins 20 mètres de largeur, où les cimes des arbres couvrent au moins 10\u00A0% du sol et où les arbres peuvent atteindre 5 mètres. Les pourcentages sont une part de la forêt, et non de tout le territoire.",
           ],
         },
         {
           heading: "Preuves",
           paragraphs: [
-            "Registre officiel : registre public faisant autorité. Observation satellitaire : changement visible dans les images qui, à lui seul, n’en établit pas la cause. Estimation dérivée : calcul documenté. Inconnu : aucun registre public faisant autorité n’a été intégré pour la question.",
+            "Registre officiel\u202F: un organisme public l’a consigné. Observation satellitaire\u202F: un changement vu dans les images satellites, qui ne montre pas à lui seul la cause. Estimation dérivée\u202F: un chiffre calculé selon une méthode documentée. Inconnu\u202F: aucun registre public officiel ne répond encore à la question.",
           ],
         },
         {
           heading: "Couverture",
           paragraphs: [
-            "Les catégories de couverture des événements décrivent les registres et le contexte disponibles pour un événement ou une valeur rapportée : registres locaux enrichis, référence nationale avec contexte local, référence nationale, registre prolongé avec appariement officiel limité, ou sans objet. Elles accompagnent les preuves au niveau de l’événement et n’indiquent pas qu’une province ou une circonscription entière a été mesurée.",
-            "Les états de couverture des mesures provinciales et des circonscriptions indiquent si les intrants cartographiés requis couvrent la limite choisie : couverture complète, couverture partielle avec zone inconnue, ou aucune couverture cartographiée. Explorer affiche « Tous les pixels d’entrée sont présents » ou « Certains pixels sont inconnus; il s’agit donc d’un minimum »; Comparer emploie « Couverture cartographiée complète », « Couverture cartographiée partielle; une zone inconnue demeure » et « Aucune couverture cartographiée ». Ces états déterminent si un total ou un pourcentage peut être rapporté pour la limite. Les deux taxonomies répondent à des questions différentes et ne sont pas interchangeables.",
+            "Les catégories de couverture des événements indiquent combien de registres appuient un événement, du plus au moins\u202F: registres locaux enrichis, référence nationale avec contexte local, référence nationale, registre prolongé avec peu d’appariements officiels, ou sans objet. Une catégorie décrit un événement, et non une province ou une circonscription entière.",
+            "La couverture d’une province ou d’une circonscription indique quelle part a été cartographiée\u202F: la totalité, une partie avec le reste inconnu, ou rien. Seule une zone entièrement cartographiée reçoit un chiffre complet et un pourcentage. Explorer affiche «\u00A0Entièrement cartographié\u00A0» ou «\u00A0Une partie de cette zone n’a pas de données\u202F: il s’agit donc d’un minimum\u00A0»\u202F; Comparer emploie «\u00A0Couverture cartographiée complète\u00A0», «\u00A0Couverture cartographiée partielle\u202F; une zone inconnue demeure\u00A0» et «\u00A0Aucune couverture cartographiée\u00A0».",
           ],
         },
         {
           heading: "Par cellule",
           paragraphs: [
-            "La géométrie de perte publiée la plus détaillée. Chaque enregistrement représente une composante connectée tracée à partir de cellules sources de 30 mètres pour un intervalle annuel. La géométrie par cellule est distincte d’un agrégat provincial ou de circonscription.",
+            "Les formes de perte les plus détaillées que nous publions, tracées à partir de cellules de 30 mètres pour une seule année. Elles sont distinctes des chiffres provinciaux ou par circonscription.",
           ],
         },
         {
           heading: "Intervalle annuel",
           paragraphs: [
-            "La période entre deux observations annuelles. Le contrôle de l’année nomme l’année de fin; 1985 désigne donc l’intervalle de 1984 à 1985 et non l’année civile 1985.",
+            "La perte détectée d’une année à la suivante, soit la période la plus courte que l’on peut choisir sur la page Explorer. Choisir 1984 comme première année et 1985 comme dernière montre ce qui a été perdu entre ces deux années.",
           ],
         },
         {
           heading: "Agrégat provincial",
           paragraphs: [
-            `Un résumé calculé pour toute une limite provinciale. L’agrégat provincial disponible ${productionAggregatePeriod("fr", "from")} constitue une couche distincte de la carte annuelle par cellule et ne change pas lorsque le contrôle de l’année est déplacé.`,
+            "Un chiffre pour une province entière. Les chiffres provinciaux existent pour chaque période de 1984 à 2022 et, dans Explorer, ils suivent la commande d’année.",
           ],
         },
         {
           heading: "Provisoire",
           paragraphs: [
-            "Publié avec des limites déclarées pour examen et utilisation, mais non admis comme version de production formelle de la phase 2. Une valeur provisoire demeure assujettie aux limites indiquées de couverture, de comparaison et de vérification sur le terrain.",
+            "Publié pour examen et utilisation, avec ses limites indiquées, mais ce n’est pas la version définitive. Un chiffre provisoire garde ces limites de couverture, de comparaison et de vérification sur le terrain.",
           ],
         },
         {
           heading: "Étendue cartographiée",
           paragraphs: [
-            "La zone où les intrants sources requis sont présents et dont l’étendue a été vérifiée. Elle peut être plus petite que la limite administrative et n’implique pas une couverture complète à l’extérieur.",
+            "La zone où les données sources existent et ont été vérifiées. Elle peut être plus petite que la limite officielle, et rien n’est couvert à l’extérieur.",
           ],
         },
         {
           heading: "Part inconnue",
           paragraphs: [
-            "La portion d’une province ou d’une circonscription pour laquelle un intrant cartographié requis n’est pas disponible. Une part inconnue non nulle signifie qu’une valeur de perte détectée est un minimum pour la zone connue, et non un total complet pour la limite.",
+            "La partie d’une province ou d’une circonscription sans données. Si elle dépasse zéro, le chiffre de perte est un minimum pour la partie cartographiée, et non un total complet.",
           ],
         },
         {
           heading: "Décret de représentation",
           paragraphs: [
-            "L’édition officielle des limites d’Élections Canada qui définit les circonscriptions fédérales pour une élection. Comparer utilise le décret nommé afin de rattacher les résultats à un ensemble précis de limites plutôt qu’à une circonscription actuelle générique.",
+            "L’ensemble officiel des limites des circonscriptions fédérales pour une élection, publié par Élections Canada. Comparer nomme le décret utilisé, afin que les résultats correspondent à des limites précises.",
           ],
         },
         {
           heading: "Zone de perte détectée",
           paragraphs: [
-            "Une forme cartographique simplifiée tracée à partir de cellules sources connectées où les données satellitaires ont détecté une perte forestière pendant un intervalle annuel. Les zones affichées ne peuvent pas être additionnées pour retrouver la superficie exacte et, à elles seules, n’établissent ni exploitation, ni incendie, ni déforestation, ni illégalité, ni responsabilité.",
+            "Une forme cartographique simplifiée qui montre où les satellites ont détecté une perte forestière pendant une année. Les zones ne peuvent pas être additionnées pour obtenir une superficie exacte et, à elles seules, ne montrent ni exploitation, ni incendie, ni déforestation, ni illégalité, ni responsable.",
           ],
         },
       ],
@@ -191,30 +190,30 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
     en: {
       title: "Corrections",
       status:
-        "No production correction has been filed because no production data has been published.",
+        "No production correction has been filed, because no final data has been published yet.",
       sections: [
         {
           heading: "Service levels",
           paragraphs: [
-            "Critical: acknowledge within 1 business day and resolve within 5. Indigenous geography content: 1 and 10. Material: 3 and 15. Minor: 5 and 30.",
+            "Response times, in business days to acknowledge and then to resolve: critical, 1 and 5; Indigenous geography content, 1 and 10; material, 3 and 15; minor, 5 and 30.",
           ],
         },
         {
           heading: "Public record",
           paragraphs: [
-            "Every correction will state what was wrong, what it is now and why it changed, in English and French on the same day. Previous figures will remain addressable, and people previously notified will receive a correction alert.",
+            "Each correction will say what was wrong, what it says now and why, in English and French on the same day. Old figures will stay available, and anyone notified before will get a correction alert.",
           ],
         },
         {
           heading: "Interim instructions",
           paragraphs: [
-            `If the concern is with an underlying public record, follow its source link and use the publisher’s own correction route. For a ${enBrand} display or transcription concern, keep the page URL, exact wording or value, date and time, displayed language, why it appears wrong, and any supporting official source link, then return here for the verified intake channel. Do not send personal or sensitive information to an address that is not published on this page. Preparing this record does not file a case or start a service-level clock.`,
+            `If the mistake is in a source’s own record, follow the source link and use that publisher’s correction process. If it’s on ${enBrand}, write down the page link, the exact words or number, the date and time, the language, why it looks wrong and any official source. There’s no way to send it to us yet, so check back here; don’t send personal information to any address this page doesn’t list. Your notes don’t open a case or start the response clock.`,
           ],
         },
         {
           heading: "Contact status",
           paragraphs: [
-            "Owner action is still required to appoint a named accountable recipient and publish a tested intake channel. No correction address or submission form is currently authorized, and this route will not claim to accept cases until that governance gate is complete.",
+            "We haven’t yet named a person responsible for corrections or set up a tested way to send them. Until then there is no approved correction address or form, and this page won’t claim to accept cases.",
           ],
         },
       ],
@@ -222,30 +221,30 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
     fr: {
       title: "Corrections",
       status:
-        "Aucune correction de production n’a été déposée, car aucune donnée de production n’a été publiée.",
+        "Aucune correction de production n’a été déposée, car aucune donnée définitive n’a encore été publiée.",
       sections: [
         {
           heading: "Délais de service",
           paragraphs: [
-            "Critique : accusé de réception dans un jour ouvrable et résolution dans cinq. Contenu de géographie autochtone : un et dix. Important : trois et quinze. Mineur : cinq et trente.",
+            "Délais de réponse, en jours ouvrables pour accuser réception puis pour régler\u202F: critique, 1 et 5\u202F; contenu de géographie autochtone, 1 et 10\u202F; important, 3 et 15\u202F; mineur, 5 et 30.",
           ],
         },
         {
           heading: "Registre public",
           paragraphs: [
-            "Chaque correction indiquera ce qui était erroné, la nouvelle information et la raison du changement, en français et en anglais le même jour. Les anciennes valeurs resteront accessibles et les personnes déjà avisées recevront une alerte de correction.",
+            "Chaque correction dira ce qui était erroné, ce qui est indiqué maintenant et pourquoi, en français et en anglais le même jour. Les anciennes valeurs resteront accessibles, et les personnes déjà avisées recevront une alerte de correction.",
           ],
         },
         {
           heading: "Instructions provisoires",
           paragraphs: [
-            `Si le problème concerne un registre public sous-jacent, suivez son lien source et utilisez la voie de correction de l’éditeur. Pour un problème d’affichage ou de transcription d’${frBrand}, conservez l’URL de la page, le libellé ou la valeur exacte, la date et l’heure, la langue affichée, la raison pour laquelle l’information semble erronée et tout lien vers une source officielle à l’appui, puis revenez ici pour connaître le canal de réception vérifié. N’envoyez aucun renseignement personnel ou sensible à une adresse qui n’est pas publiée sur cette page. La préparation de ce dossier ne dépose pas de demande et ne déclenche aucun délai de service.`,
+            `Si l’erreur se trouve dans le registre d’une source, suivez le lien source et utilisez le processus de correction de cet éditeur. Si elle se trouve sur ${frBrand}, notez le lien de la page, les mots ou le chiffre exacts, la date et l’heure, la langue, pourquoi l’information semble erronée et toute source officielle. Il n’y a pas encore de moyen de nous l’envoyer\u202F: revenez ici\u202F; n’envoyez aucun renseignement personnel à une adresse que cette page n’indique pas. Vos notes n’ouvrent pas de demande et ne déclenchent aucun délai de réponse.`,
           ],
         },
         {
           heading: "État du contact",
           paragraphs: [
-            "Le propriétaire doit encore désigner un destinataire responsable et publier un canal de réception testé. Aucune adresse de correction ni aucun formulaire de soumission n’est actuellement autorisé, et cette route ne prétendra pas accepter des dossiers avant la réalisation de cette condition de gouvernance.",
+            "Nous n’avons pas encore désigné de responsable des corrections ni mis en place un moyen testé de les envoyer. D’ici là, aucune adresse de correction ni aucun formulaire n’est approuvé, et cette page ne prétendra pas accepter de demandes.",
           ],
         },
       ],
@@ -255,31 +254,31 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
     en: {
       title: "Decision log",
       status:
-        "Decisions transcribed from implementation plan version 2, dated 11 August 2026.",
+        "Decisions copied from version 2 of the implementation plan, dated 11 August 2026.",
       sections: [
         {
           heading: "Product",
           paragraphs: [
-            `Working name: ${enBrand}. The record covers ${EXPLORE_COVERAGE_PERIOD.en}; the year control starts at ${EXPLORE_YEAR_MIN} because that is the first annual interval, and the default view is ${EXPLORE_DEFAULT_YEAR}. Scope is British Columbia, Alberta, Ontario and Quebec.`,
-            "NTEMS is the satellite spine. Live wildfire, riding comparison, accounts and alerts, reserve and treaty pages are in version 1. Advanced layer controls and asserted traditional territories are excluded.",
+            `Working name: ${enBrand}. The record covers ${EXPLORE_COVERAGE_PERIOD.en} in British Columbia, Alberta, Ontario and Québec; the year control starts at ${EXPLORE_YEAR_MIN}, the first year-to-year change, and opens on ${EXPLORE_DEFAULT_YEAR}.`,
+            "The satellite data comes from NTEMS, Canada’s national land-monitoring system. Version 1 includes live wildfire, riding comparison, accounts and alerts, and reserve and treaty pages; advanced layer controls and asserted traditional territories are left out.",
           ],
         },
         {
           heading: "Product name",
           paragraphs: [
-            `The owner retained ${enBrand} / ${frBrand} and decided not to pursue Mistik or an Indigenous engagement process. No Mistik request, permission, honorarium or terms exist, and the product must not imply otherwise.`,
+            `The owner kept the name ${enBrand} / ${frBrand} and decided not to pursue Mistik or an Indigenous engagement process. No Mistik request, permission, payment or terms exist, and the site must not suggest otherwise.`,
           ],
         },
         {
           heading: "Legal sign-off",
           paragraphs: [
-            "The accountable owner recorded full bilingual legal sign-off on 27 August 2026 for the current defamation safeguards, disclaimers, terms, privacy notice, licensing and attribution rules, account and alert controls, and correction and dispute routes. This owner record is not represented as an independent counsel opinion and does not grant missing source rights or approve a later materially changed scope.",
+            "On 27 August 2026 the owner recorded full legal sign-off, in both languages, for the site’s defamation safeguards, disclaimers, terms, privacy notice, licensing and credit rules, account and alert controls, and correction and dispute routes. This is the owner’s own record, not an independent lawyer’s opinion, and it doesn’t grant missing data rights or approve major later changes.",
           ],
         },
         {
           heading: "Change control",
           paragraphs: [
-            "Method changes, new sources and changes to published figures require future editorial-board approval. No board has yet been appointed.",
+            "Changes to methods, sources or published figures will need approval from an editorial board. No board has been appointed yet.",
           ],
         },
       ],
@@ -287,31 +286,31 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
     fr: {
       title: "Registre des décisions",
       status:
-        "Décisions transcrites de la version 2 du plan de mise en œuvre, datée du 11 août 2026.",
+        "Décisions reprises de la version 2 du plan de mise en œuvre, datée du 11 août 2026.",
       sections: [
         {
           heading: "Produit",
           paragraphs: [
-            `Nom de travail : ${frBrand}. Le registre couvre la période de ${EXPLORE_COVERAGE_PERIOD.fr}; la commande d’année commence à ${EXPLORE_YEAR_MIN}, soit le premier intervalle annuel, et la vue par défaut est ${EXPLORE_DEFAULT_YEAR}. La portée comprend la Colombie-Britannique, l’Alberta, l’Ontario et le Québec.`,
-            "NTEMS constitue la base satellitaire. Les incendies actuels, la comparaison des circonscriptions, les comptes et alertes ainsi que les pages de réserves et de traités sont prévus dans la version 1. Les commandes avancées de couches et les territoires traditionnels revendiqués sont exclus.",
+            `Nom de travail\u202F: ${frBrand}. Le registre couvre la période de ${EXPLORE_COVERAGE_PERIOD.fr} en Colombie-Britannique, en Alberta, en Ontario et au Québec\u202F; la commande d’année commence à ${EXPLORE_YEAR_MIN}, le premier changement d’une année à l’autre, et s’ouvre sur ${EXPLORE_DEFAULT_YEAR}.`,
+            "Les données satellitaires proviennent de NTEMS, le système national de surveillance du territoire du Canada. La version 1 comprend les incendies actuels, la comparaison des circonscriptions, les comptes et alertes, et les pages de réserves et de traités\u202F; les commandes avancées de couches et les territoires traditionnels revendiqués sont exclus.",
           ],
         },
         {
           heading: "Nom du produit",
           paragraphs: [
-            `Le propriétaire a retenu ${enBrand} / ${frBrand} et a décidé de ne pas poursuivre Mistik ni un processus de dialogue avec les peuples autochtones. Il n’existe aucune demande, permission, aucun honoraire ni aucune condition concernant Mistik, et le produit ne doit pas laisser entendre le contraire.`,
+            `Le propriétaire a gardé le nom ${enBrand} / ${frBrand} et a décidé de ne pas poursuivre Mistik ni un processus de dialogue avec les peuples autochtones. Il n’existe aucune demande, permission, rémunération ni condition concernant Mistik, et le site ne doit pas laisser entendre le contraire.`,
           ],
         },
         {
           heading: "Approbation juridique",
           paragraphs: [
-            "Le 27 août 2026, le propriétaire responsable a consigné une approbation juridique bilingue complète des mesures contre la diffamation, des avertissements, des conditions, de l’avis de confidentialité, des règles de licence et d’attribution, des contrôles des comptes et des alertes, ainsi que des voies de correction et de contestation actuels. Ce registre du propriétaire n’est pas présenté comme un avis d’un conseiller juridique indépendant et n’accorde aucun droit manquant sur une source ni aucune approbation d’une portée ultérieure sensiblement modifiée.",
+            "Le 27 août 2026, le propriétaire a consigné une approbation juridique complète, dans les deux langues, des mesures contre la diffamation, des avertissements, des conditions, de l’avis de confidentialité, des règles de licence et de mention des sources, des contrôles des comptes et des alertes, et des voies de correction et de contestation du site. Il s’agit du registre du propriétaire, et non de l’avis d’un avocat indépendant\u202F; il n’accorde aucun droit manquant sur les données et n’approuve pas de changements importants ultérieurs.",
           ],
         },
         {
           heading: "Contrôle des changements",
           paragraphs: [
-            "Les changements de méthode, les nouvelles sources et les modifications de valeurs publiées devront être approuvés par un futur comité éditorial. Aucun comité n’a encore été nommé.",
+            "Les changements de méthode, de sources ou de chiffres publiés devront être approuvés par un comité éditorial. Aucun comité n’a encore été nommé.",
           ],
         },
       ],
@@ -321,12 +320,12 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
     en: {
       title: "Indigenous engagement",
       status:
-        "The owner decided on 27 August 2026 not to operate an Indigenous engagement program for this product.",
+        "On 27 August 2026 the owner decided not to run an Indigenous engagement program for this product.",
       sections: [
         {
           heading: "Scope decision",
           paragraphs: [
-            "No engagement contact route, contact register, Mistik request, or engagement outcome will be represented as existing. Reserve and treaty production surfaces remain unavailable unless a later owner decision establishes the necessary source authority and accountable right-of-reply operation.",
+            "No engagement contact route, contact list, Mistik request or engagement outcome will be presented as existing. Reserve and treaty pages stay unavailable unless the owner later secures the right data authority and a working process for communities to reply.",
           ],
         },
         {
@@ -338,14 +337,14 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Safeguards",
           paragraphs: [
-            "Reserve and treaty boundaries are administrative and legal records; they do not describe the full extent of Indigenous lands, rights, title or relationships. No ranking, rights finding, consent finding or compliance claim applies to these geographies.",
-            "A treaty boundary is the boundary of an agreement as recorded by the Crown, not the boundary of a nation. Small areas below the resolution threshold will show the raw record without a computed rate.",
+            "Reserve and treaty boundaries are government and legal records; they do not describe the full extent of Indigenous lands, rights, title or relationships. No ranking, rights finding, consent finding or compliance claim applies to these areas.",
+            "A treaty boundary marks an agreement as recorded by the Crown, not the boundary of a nation. Areas too small to measure reliably will show the original record, without a calculated rate.",
           ],
         },
         {
           heading: "Public register",
           paragraphs: [
-            "Contacts made: none. Responses received: none. Confidential contacts, when requested, will not be identified publicly.",
+            "Contacts made: none. Responses received: none. Anyone who asks to stay confidential will not be named.",
           ],
         },
       ],
@@ -353,31 +352,31 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
     fr: {
       title: "Dialogue avec les peuples autochtones",
       status:
-        "Le propriétaire a décidé le 27 août 2026 de ne pas exploiter de programme de dialogue avec les peuples autochtones pour ce produit.",
+        "Le 27 août 2026, le propriétaire a décidé de ne pas mener de programme de dialogue avec les peuples autochtones pour ce produit.",
       sections: [
         {
           heading: "Décision sur la portée",
           paragraphs: [
-            "Aucune voie de dialogue, aucun registre de contacts, aucune demande concernant Mistik ni aucun résultat de dialogue ne seront présentés comme existants. Les surfaces de production sur les réserves et les traités demeurent indisponibles à moins qu’une décision ultérieure du propriétaire n’établisse l’autorité nécessaire sur les sources et un mécanisme responsable de droit de réponse.",
+            "Aucune voie de dialogue, aucune liste de contacts, aucune demande concernant Mistik ni aucun résultat de dialogue ne seront présentés comme existants. Les pages sur les réserves et les traités restent indisponibles à moins que le propriétaire n’obtienne plus tard l’autorité nécessaire sur les données et un processus fonctionnel permettant aux communautés de répondre.",
           ],
         },
         {
           heading: "Registre de la demande de nom",
           paragraphs: [
-            `Demande concernant Mistik : non ouverte. Conditions : aucune. Honoraire : aucun. Permission : aucune. Résultat final : non poursuivie; ${enBrand} / ${frBrand} sont retenus.`,
+            `Demande concernant Mistik\u202F: non ouverte. Conditions\u202F: aucune. Honoraire\u202F: aucun. Permission\u202F: aucune. Résultat final\u202F: non poursuivie\u202F; ${enBrand} / ${frBrand} sont retenus.`,
           ],
         },
         {
           heading: "Mesures de protection",
           paragraphs: [
-            "Les limites de réserves et de traités sont des registres administratifs et juridiques; elles ne décrivent pas toute l’étendue des terres, droits, titres ou relations autochtones. Aucun classement ni aucune conclusion sur les droits, le consentement ou la conformité ne s’applique à ces géographies.",
-            "Une limite de traité est la limite d’un accord consigné par la Couronne, et non la limite d’une nation. Les petites superficies sous le seuil de résolution présenteront le registre brut sans taux calculé.",
+            "Les limites de réserves et de traités sont des registres gouvernementaux et juridiques\u202F; elles ne décrivent pas toute l’étendue des terres, droits, titres ou relations autochtones. Aucun classement ni aucune conclusion sur les droits, le consentement ou la conformité ne s’applique à ces zones.",
+            "Une limite de traité marque un accord consigné par la Couronne, et non la limite d’une nation. Les zones trop petites pour être mesurées de façon fiable présenteront le registre original, sans taux calculé.",
           ],
         },
         {
           heading: "Registre public",
           paragraphs: [
-            "Contacts établis : aucun. Réponses reçues : aucune. Les contacts confidentiels ne seront pas identifiés publiquement lorsqu’une demande en ce sens est formulée.",
+            "Contacts établis\u202F: aucun. Réponses reçues\u202F: aucune. Toute personne qui demande la confidentialité ne sera pas nommée.",
           ],
         },
       ],
@@ -386,48 +385,48 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
   privacy: {
     en: {
       title: "Privacy notice – pre-activation",
-      status: `The current notice has owner-recorded legal sign-off. Accounts are not active and ${enBrand} currently stores no account, email or saved-area data.`,
+      status: `This notice has legal sign-off recorded by the owner. Accounts are not active yet, and ${enBrand} stores no account, email or saved-area data.`,
       sections: [
         {
           heading: "Planned minimum data",
           paragraphs: [
-            "With explicit consent: email, password hash, locale, saved geometries, alert preferences and send history. Saved areas will be treated as sensitive and will not be joined to analytics identifiers or written to logs.",
+            "Only with your clear consent: your email, a scrambled (hashed) password, language, saved areas, alert settings and a history of alerts sent. Saved areas will be treated as sensitive, and never linked to analytics or written to logs.",
           ],
         },
         {
           heading: "Planned controls",
           paragraphs: [
-            "Database-enforced row-level isolation, encryption at rest, verified email, one-click unsubscribe, deletion within 30 days, send-history purge after 24 months, no tracking pixels and one transactional provider carrying the minimum payload.",
+            "Each account’s data kept apart by the database, stored data encrypted, verified email, one-click unsubscribe, deletion within 30 days, alert history erased after 24 months, no tracking pixels, and a single email provider that gets only what it needs.",
           ],
         },
         {
           heading: "Hosting",
           paragraphs: [
-            "Canadian hosting for account data is required but has not been selected or verified. Accounts cannot launch until the location, privacy and security evidence, and operational controls are published.",
+            "Account data must be hosted in Canada, but a host hasn’t been chosen or checked yet. Accounts can’t launch until the location, the privacy and security checks, and the operating controls are published.",
           ],
         },
       ],
     },
     fr: {
       title: "Avis de confidentialité – avant activation",
-      status: `L’avis actuel a reçu l’approbation juridique consignée du propriétaire. Les comptes ne sont pas actifs et ${frBrand} ne conserve actuellement aucune donnée de compte, d’adresse courriel ou de zone enregistrée.`,
+      status: `Cet avis a reçu l’approbation juridique consignée par le propriétaire. Les comptes ne sont pas encore actifs, et ${frBrand} ne conserve actuellement aucune donnée de compte, d’adresse courriel ou de zone enregistrée.`,
       sections: [
         {
           heading: "Données minimales prévues",
           paragraphs: [
-            "Avec consentement explicite : adresse courriel, condensat du mot de passe, langue, géométries enregistrées, préférences d’alerte et historique d’envoi. Les zones enregistrées seront traitées comme sensibles et ne seront ni reliées à un identifiant analytique ni inscrites dans les journaux.",
+            "Seulement avec votre consentement clair\u202F: votre adresse courriel, un mot de passe brouillé (haché), la langue, les zones enregistrées, les réglages d’alerte et l’historique des alertes envoyées. Les zones enregistrées seront traitées comme sensibles, et ne seront jamais reliées à des outils d’analyse ni inscrites dans les journaux.",
           ],
         },
         {
           heading: "Contrôles prévus",
           paragraphs: [
-            "Isolement des lignes imposé par la base de données, chiffrement au repos, courriel vérifié, désabonnement en un clic, suppression dans les 30 jours, purge de l’historique d’envoi après 24 mois, aucun pixel de suivi et un seul fournisseur transactionnel recevant le minimum de données.",
+            "Données de chaque compte séparées par la base de données, données stockées chiffrées, courriel vérifié, désabonnement en un clic, suppression dans les 30 jours, historique des alertes effacé après 24 mois, aucun pixel de suivi, et un seul fournisseur de courriel qui reçoit seulement le nécessaire.",
           ],
         },
         {
           heading: "Hébergement",
           paragraphs: [
-            "L’hébergement canadien des données de compte est exigé, mais n’a pas encore été choisi ou vérifié. Les comptes ne peuvent être lancés avant la publication du lieu, des preuves de confidentialité et de sécurité, et des contrôles opérationnels.",
+            "Les données de compte doivent être hébergées au Canada, mais aucun hébergeur n’a encore été choisi ni vérifié. Les comptes ne pourront pas être lancés avant la publication du lieu, des vérifications de confidentialité et de sécurité, et des contrôles d’exploitation.",
           ],
         },
       ],
@@ -437,24 +436,24 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
     en: {
       title: "Terms and limitations – reviewed",
       status:
-        "The accountable owner recorded legal sign-off for these terms on 27 August 2026. That sign-off does not by itself authorize a production release.",
+        "The owner recorded legal sign-off for these terms on 27 August 2026. That alone doesn’t approve a full public release.",
       sections: [
         {
           heading: "Informational record",
           paragraphs: [
-            `${enBrand} is an evidence record, not an emergency service, legal opinion, compliance finding, ownership history, merchantable-timber estimate or statement about future wildfire behaviour. Source agencies remain authoritative.`,
+            `${enBrand} is a record of evidence. It is not an emergency service, legal advice, a compliance finding, an ownership history, an estimate of sellable timber or a wildfire forecast. The source agencies remain the authority.`,
           ],
         },
         {
           heading: "Interpretation",
           paragraphs: [
-            "Satellite-detected change does not establish cause. A named organisation appears only in the exact role and dated version of an authoritative public record; proximity is never attribution.",
+            "A change seen by satellite doesn’t show its cause. An organisation is named only in the exact role, and dated version, given in an official public record; being nearby never makes it responsible.",
           ],
         },
         {
           heading: "Licences",
           paragraphs: [
-            "Code has no open-source licence yet. Data retains source-specific terms. Illustrative fixtures grant no redistribution rights.",
+            "The code has no open-source licence yet. Data keeps its source’s own terms. The example data gives no right to redistribute.",
           ],
         },
       ],
@@ -462,24 +461,24 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
     fr: {
       title: "Conditions et limites – examinées",
       status:
-        "Le propriétaire responsable a consigné l’approbation juridique de ces conditions le 27 août 2026. Cette approbation n’autorise pas à elle seule une diffusion de production.",
+        "Le propriétaire a consigné l’approbation juridique de ces conditions le 27 août 2026. Cela seul n’approuve pas une diffusion publique complète.",
       sections: [
         {
           heading: "Registre d’information",
           paragraphs: [
-            `${frBrand} est un registre de preuves, et non un service d’urgence, un avis juridique, une conclusion de conformité, un historique de propriété, une estimation du bois marchand ou une déclaration sur le comportement futur des incendies. Les organismes sources demeurent les autorités.`,
+            `${frBrand} est un registre de preuves. Ce n’est ni un service d’urgence, ni un avis juridique, ni une conclusion de conformité, ni un historique de propriété, ni une estimation du bois vendable, ni une prévision des incendies. Les organismes sources demeurent l’autorité.`,
           ],
         },
         {
           heading: "Interprétation",
           paragraphs: [
-            "Un changement détecté par satellite n’en établit pas la cause. Une organisation n’est nommée que dans le rôle exact et la version datée d’un registre public faisant autorité; la proximité ne constitue jamais une attribution.",
+            "Un changement vu par satellite ne montre pas sa cause. Une organisation n’est nommée que dans le rôle exact, et la version datée, indiqués dans un registre public officiel\u202F; la proximité ne la rend jamais responsable.",
           ],
         },
         {
           heading: "Licences",
           paragraphs: [
-            "Le code ne possède pas encore de licence libre. Les données conservent leurs conditions propres à la source. Les exemples illustratifs n’accordent aucun droit de redistribution.",
+            "Le code n’a pas encore de licence libre. Les données gardent les conditions de leur source. Les données d’exemple ne donnent aucun droit de redistribution.",
           ],
         },
       ],
@@ -489,30 +488,30 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
     en: {
       title: "Data releases",
       status:
-        "One bounded technical-preview release is published and indexed here. It is not the production release required to close the formal Phase 2 gate.",
+        "One early preview release is published here. It is not the final release.",
       sections: [
         {
-          heading: "Published bounded release",
+          heading: "Published preview release",
           paragraphs: [
-            `Release ${provinceBulkRelease.id} contains the bounded ${formatYearRangeKey(PROVINCE_BULK_TIME_RANGE, "en", "span")} province aggregate for British Columbia, Alberta, Ontario and Quebec as a CSV and GeoPackage. Each artifact has a published SHA-256, licence attribution, boundary edition and method version.`,
-            "This release is a province-level technical preview, not per-cell geometry. All four provinces have some unknown mapped area, so its detected-loss figures are minima. It does not complete the formal Phase 2 gate.",
+            `Release ${provinceBulkRelease.id} holds the ${formatYearRangeKey(PROVINCE_BULK_TIME_RANGE, "en", "span")} province figures for British Columbia, Alberta, Ontario and Québec, as a CSV and a GeoPackage. Each file comes with its checksum (SHA-256), licence credit, boundary version and method version.`,
+            "It is a province-level preview, not detailed map shapes. Every province has some land with no data, so its loss figures are minimums.",
           ],
           links: [
-            { label: "Download the province CSV", href: provinceCsv.url },
-            { label: "Download the province GeoPackage", href: provinceGeoPackage.url },
+            { label: "Download the province CSV", href: provinceCsv.url, format: "CSV" },
+            { label: "Download the province GeoPackage", href: provinceGeoPackage.url, format: "GPKG" },
             { label: "Open the machine-readable release manifest", href: provinceBulkManifestUrl },
           ],
         },
         {
-          heading: "Formal Phase 2 gate",
+          heading: "Final release",
           paragraphs: [
-            "No production data release satisfying the formal Phase 2 gate exists. The published technical-preview release does not supply the still-missing independent-comparison envelope or turn local per-cell outputs into an admitted production release.",
+            "There is no final release yet. This preview stays in place until the remaining launch checks, such as the accessibility, security and translation reviews, are done.",
           ],
         },
         {
           heading: "Citation format",
           paragraphs: [
-            `${enBrand}, province aggregate, ${formatYearRangeKey(PROVINCE_BULK_TIME_RANGE, "en")}, ${provinceCsv.boundaryEdition}, release ${provinceBulkRelease.id}, method ${provinceCsv.methodVersion}, retrieval date and stable artifact URL. Cite it as a bounded technical preview. A production citation for the formal Phase 2 release cannot be generated until that specific gate has a verified release.`,
+            `${enBrand}, province aggregate, ${formatYearRangeKey(PROVINCE_BULK_TIME_RANGE, "en")}, ${provinceCsv.boundaryEdition}, release ${provinceBulkRelease.id}, method ${provinceCsv.methodVersion}, retrieval date and stable artifact URL. Cite it as a technical preview; a citation for the final release will be possible once that release exists.`,
           ],
         },
       ],
@@ -520,30 +519,30 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
     fr: {
       title: "Versions des données",
       status:
-        "Une version d’aperçu technique limitée est publiée et répertoriée ici. Elle n’est pas la version de production exigée pour satisfaire au critère formel de la phase 2.",
+        "Une version d’aperçu préliminaire est publiée ici. Ce n’est pas la version définitive.",
       sections: [
         {
-          heading: "Version limitée publiée",
+          heading: "Version d’aperçu publiée",
           paragraphs: [
-            `La version ${provinceBulkRelease.id} contient l’agrégat provincial limité ${formatYearRangeKey(PROVINCE_BULK_TIME_RANGE, "fr", "from")} pour la Colombie-Britannique, l’Alberta, l’Ontario et le Québec, en formats CSV et GeoPackage. Chaque artefact possède une somme SHA-256 publiée, une attribution de licence, une édition de limite et une version de méthode.`,
-            "Cette version est un aperçu technique au niveau provincial, et non une géométrie par cellule. Les quatre provinces comportent une superficie cartographiée inconnue; les valeurs de perte détectée sont donc des minimums. Cette version ne satisfait pas au critère formel de la phase 2.",
+            `La version ${provinceBulkRelease.id} contient les chiffres provinciaux ${formatYearRangeKey(PROVINCE_BULK_TIME_RANGE, "fr", "from")} pour la Colombie-Britannique, l’Alberta, l’Ontario et le Québec, en formats CSV et GeoPackage. Chaque fichier est accompagné de sa somme de contrôle (SHA-256), de la mention de licence, de la version des limites et de la version de la méthode.`,
+            "Il s’agit d’un aperçu au niveau provincial, et non de formes cartographiques détaillées. Chaque province compte un territoire sans données\u202F; ses chiffres de perte sont donc des minimums.",
           ],
           links: [
-            { label: "Télécharger le CSV provincial", href: provinceCsv.url },
-            { label: "Télécharger le GeoPackage provincial", href: provinceGeoPackage.url },
+            { label: "Télécharger le CSV provincial", href: provinceCsv.url, format: "CSV" },
+            { label: "Télécharger le GeoPackage provincial", href: provinceGeoPackage.url, format: "GPKG" },
             { label: "Ouvrir le manifeste de version lisible par machine", href: provinceBulkManifestUrl },
           ],
         },
         {
-          heading: "Critère formel de la phase 2",
+          heading: "Version définitive",
           paragraphs: [
-            "Aucune version de données de production satisfaisant au critère formel de la phase 2 n’existe. La version d’aperçu technique publiée ne fournit pas l’enveloppe de comparaison indépendante encore manquante et ne transforme pas les sorties locales par cellule en une version de production admise.",
+            "Il n’existe pas encore de version définitive. Cet aperçu reste en place jusqu’à ce que les dernières vérifications avant le lancement, comme les examens d’accessibilité, de sécurité et de traduction, soient faites.",
           ],
         },
         {
           heading: "Format de citation",
           paragraphs: [
-            `${frBrand}, agrégat provincial, ${formatYearRangeKey(PROVINCE_BULK_TIME_RANGE, "fr")}, ${provinceCsv.boundaryEdition}, version ${provinceBulkRelease.id}, méthode ${provinceCsv.methodVersion}, date de consultation et URL stable de l’artefact. La citation doit préciser qu’il s’agit d’un aperçu technique limité. Une citation de production pour la version formelle de la phase 2 ne peut être générée avant qu’une version vérifiée ne satisfasse précisément à ce critère.`,
+            `${frBrand}, agrégat provincial, ${formatYearRangeKey(PROVINCE_BULK_TIME_RANGE, "fr")}, ${provinceCsv.boundaryEdition}, version ${provinceBulkRelease.id}, méthode ${provinceCsv.methodVersion}, date de consultation et URL stable de l’artefact. Citez-la comme aperçu technique\u202F; une citation de la version définitive sera possible une fois cette version publiée.`,
           ],
         },
       ],
@@ -573,20 +572,16 @@ export function GovernancePage({
     <main id="main" className="page-wrap governance-page">
       <header className="masthead">
         <h1>{page.title}</h1>
+        {/* This screen reports no figure, so it carries no figures caveat and
+            no evidence key. Its status and the way to report an error sit
+            under the title as plain text rather than in a plate. */}
+        <p className="dek">{page.status}</p>
+        <p className="masthead-note">
+          <a href={kind === "corrections" ? "#correction-instructions" : `/${locale}/corrections`}>
+            {locale === "en" ? "Read the correction instructions" : "Consulter les instructions de correction"}
+          </a>
+        </p>
       </header>
-      {/* This screen reports no figure, so the plate carries accountability
-          rather than coverage, and no evidence legend belongs on it: the
-          legend annotates figures, and there are none here. */}
-      <CoverageStatement
-        locale={locale}
-        className="governance-accountability"
-        title={locale === "en" ? "Accountability" : "Responsabilité"}
-      >
-        <p>{page.status}</p>
-        <a className="btn btn--primary" href={kind === "corrections" ? "#correction-instructions" : `/${locale}/corrections`}>
-          {locale === "en" ? "Read the correction instructions" : "Consulter les instructions de correction"}
-        </a>
-      </CoverageStatement>
       <div className="content-section prose-measure">
         {page.sections.map((section, index) => (
           <section className="governance-section" key={section.heading} id={kind === "corrections" && index === 2 ? "correction-instructions" : undefined}>
@@ -600,9 +595,16 @@ export function GovernancePage({
             {section.links ? (
               <ul className="link-list">
                 {section.links.map((link) => (
-                  <li className="card card--lift" key={link.href}>
-                    <a href={link.href}>{link.label}</a>
-                  </li>
+                  link.format ? (
+                    <li className="card card--lift file-tile" key={link.href}>
+                      <span className="file-tile-format" aria-hidden="true">{link.format}</span>
+                      <span className="file-tile-body"><a href={link.href}>{link.label}</a></span>
+                    </li>
+                  ) : (
+                    <li className="card card--lift" key={link.href}>
+                      <a href={link.href}>{link.label}</a>
+                    </li>
+                  )
                 ))}
               </ul>
             ) : null}

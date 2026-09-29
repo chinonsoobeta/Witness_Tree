@@ -4,14 +4,14 @@ import type { Locale } from "@/lib/domain";
 
 const labels = {
   en: {
-    complete: "Complete mapped coverage",
-    "partial-with-unknown": "Partial mapped coverage; unknown area remains",
-    "none-mapped": "No mapped coverage",
+    complete: "Fully mapped",
+    "partial-with-unknown": "Partly mapped; an unknown area remains",
+    "none-mapped": "Not mapped",
   },
   fr: {
-    complete: "Couverture cartographiée complète",
-    "partial-with-unknown": "Couverture cartographiée partielle; une zone inconnue demeure",
-    "none-mapped": "Aucune couverture cartographiée",
+    complete: "Entièrement cartographiée",
+    "partial-with-unknown": "Partiellement cartographiée\u202F; une zone inconnue demeure",
+    "none-mapped": "Non cartographiée",
   },
 } as const;
 
@@ -29,7 +29,7 @@ export function missingMeasurement(place: Pick<ComparisonPlace, "measurementCove
     return locale === "en" ? "– No mapped coverage." : "– Aucune couverture cartographiée.";
   }
   if (place.measurementCoverage === "partial-with-unknown") {
-    return locale === "en" ? "– Partial mapped coverage; the measurement is unavailable." : "– Couverture cartographiée partielle; la mesure est indisponible.";
+    return locale === "en" ? "– Partial mapped coverage; the measurement is unavailable." : "– Couverture cartographiée partielle\u202F; la mesure est indisponible.";
   }
   return locale === "en" ? "– No measured value is available." : "– Aucune valeur mesurée n’est disponible.";
 }

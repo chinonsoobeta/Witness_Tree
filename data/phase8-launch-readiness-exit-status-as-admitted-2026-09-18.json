@@ -1,0 +1,357 @@
+{
+  "schemaVersion": "witness-tree/phase8-launch-readiness-exit-status/1",
+  "phase": 8,
+  "localImplementationStatus": "incomplete",
+  "phaseComplete": false,
+  "completedCriteria": 8,
+  "totalCriteria": 16,
+  "percentage": 50,
+  "exitCriteria": [
+    {
+      "id": "professional-bilingual-review",
+      "title": "Professional bilingual review is complete",
+      "status": "fail",
+      "reason": "English/French route parity and draft copy are automated, but no professional, subject-matter bilingual review record exists.",
+      "evidence": [
+        {
+          "path": "docs/EXTERNAL_GATES.md",
+          "sha256": "ef9c0f7598db39ebb306c187cb4ba797479470bccb18352c7057cb3c46e0c828"
+        }
+      ]
+    },
+    {
+      "id": "external-accessibility-audit",
+      "title": "An external accessibility audit is complete",
+      "status": "fail",
+      "reason": "The repository has a source-level accessibility gate only; it explicitly does not claim an independent WCAG 2.2 AA or EN 301 549 audit.",
+      "evidence": [
+        {
+          "path": "docs/ACCESSIBILITY.md",
+          "sha256": "c0814496d89649966c200529258d30504c2fcac72ccbc27759a68304853eb6ec"
+        }
+      ]
+    },
+    {
+      "id": "security-review",
+      "title": "A security review is complete",
+      "status": "fail",
+      "reason": "No production threat-model, security-review, or sign-off evidence is present.",
+      "evidence": [
+        {
+          "path": "docs/PLAN_GAP_MATRIX.md",
+          "sha256": "84ddbf899b6a66454850487729387c8d799fc9ea5bae4bac4d0e2c0cc7c425d4"
+        }
+      ]
+    },
+    {
+      "id": "load-testing",
+      "title": "Load testing is complete",
+      "status": "fail",
+      "reason": "Artifact budgets do not measure a deployed service or establish the required 50× load-test result.",
+      "evidence": [
+        {
+          "path": "docs/PERFORMANCE.md",
+          "sha256": "e60b5538236246b44d5e9a4e08ef076bb171991dbbb4a9ff8d95e64e496b3746"
+        }
+      ]
+    },
+    {
+      "id": "raw-archive-reproducibility",
+      "title": "Reproducibility from the raw archive is demonstrated",
+      "status": "pass",
+      "reason": "The admitted federal electoral output was reproduced from its raw archived inputs. The two archive objects were restored read-only, with the recorded VersionId asserted on both head-object and get-object, and the recorded method version re-run against them produced federal-electoral-districts-2023.gpkg at SHA-256 ca50eb02e1baee076ebec1b8e8511ca6697e8e48cef68bf5d1d74f5458681c05 and 20525056 bytes, equal to the admitted artifact. Both temporary data roots were removed. Two limits are recorded in the drill itself and do not affect the byte match: the archive role lacks s3:GetObjectVersion, so the read was unpinned with the version asserted rather than pinned, and the read-only verifier role returns 403 on this prefix, so a write-capable role was used and the non-mutation guarantee rests on the runner source. This closes the depth gate for one chain only. Phase 1 raw-file-archive-recovery is a universal breadth gate and remains unaffected.",
+      "evidence": [
+        {
+          "path": "data/raw-archive-reproduction-drill.json",
+          "sha256": "21a9c67ea4eca1b44defbb11393ed0e295301d7e8877110a188b987baf1ea04d"
+        },
+        {
+          "path": "scripts/check-raw-archive-reproduction-drill.mjs",
+          "sha256": "498ec7ed1fc4580054e5b93bc0696bac479d91caebc58b6a04f4229e6192afb4"
+        },
+        {
+          "path": "data/phase1-federal-electoral-production-admission.json",
+          "sha256": "a8f7130e54210147845c7c3a77134a82bb88bf7e1814e261aa4bdd2c5a8492e2"
+        }
+      ]
+    },
+    {
+      "id": "legal-licence-attribution-review",
+      "title": "Legal, licence, and attribution review is complete",
+      "status": "fail",
+      "reason": "The owner-recorded Phase 0 legal sign-off covers the current licensing and attribution rules, but it explicitly does not grant missing source rights. A complete production-release source-rights, licence, and attribution review therefore does not yet exist.",
+      "evidence": [
+        {
+          "path": "docs/EXTERNAL_GATES.md",
+          "sha256": "ef9c0f7598db39ebb306c187cb4ba797479470bccb18352c7057cb3c46e0c828"
+        }
+      ]
+    },
+    {
+      "id": "governance-and-corrections-procedures",
+      "title": "Governance and corrections procedures are implemented",
+      "status": "pass",
+      "reason": "The bilingual correction policy and validation tests define classifications, service targets, accountable-recipient and public-record requirements without claiming a live intake or real cases.",
+      "evidence": [
+        {
+          "path": "docs/CORRECTIONS_WORKFLOW.md",
+          "sha256": "98d4c2f7f95da87debeab3c9172616c70809d0fe412c62ade4b0f3322ac91610"
+        },
+        {
+          "path": "lib/corrections/policy.ts",
+          "sha256": "0e74e54721d35f250d0ac10e6559e1dcd17c97197d3235816de946e0ddcf2a50"
+        },
+        {
+          "path": "tests/corrections-workflow.test.ts",
+          "sha256": "7ab50a7dcda86cc0c7742da951731066351c8424e0aa51bfd9949490e3904b79"
+        }
+      ]
+    },
+    {
+      "id": "operations-handbook",
+      "title": "An operations handbook is complete",
+      "status": "pass",
+      "reason": "docs/OPERATIONS_HANDBOOK.md carries all four sections this criterion names, written against ChatGPT Sites as the actual host: ownership in section 2, incident response in section 3, escalation in section 4, and production procedures in section 6. The rollback procedure in section 6.2 is actionable end to end without any host knowledge, because the unit of rollback is a Git commit and the mechanism is another deploy. The handbook declares nine gaps of its own rather than papering over them, and each operational gap is separately gated: G1 is the on-call-rota criterion, G3 is observability, G9 is backups, all three of which remain fail. This criterion is about whether the handbook is complete, not whether the operation is staffed and instrumented; holding it on those absences would count the same gap three times. What is attested is the document. No incident has ever been rehearsed, so every timing target in it is a target and not an observed result, which the handbook itself says in gap G10. This flip is recorded as owner-authorized, not engineering-authorized. Section 2.2 of the handbook assigns the decision to flip a criterion to the Release approver rather than to engineering, and the prior record on this criterion said so and held it at fail for that reason. The accountable owner, acting as Release approver, directed on 2026-08-26 that the operations handbook be finished and that engineering flip the gates it could genuinely attest to. Engineering attests the document's contents; the owner supplied the authority. Neither half alone was sufficient.",
+      "evidence": [
+        {
+          "path": "docs/OPERATIONS_HANDBOOK.md",
+          "sha256": "30758d2bdd3b2db6a27bc5574f614ffac5c3f4ca670eac20f1c0750783ca80d1"
+        },
+        {
+          "path": "docs/PLAN_GAP_MATRIX.md",
+          "sha256": "84ddbf899b6a66454850487729387c8d799fc9ea5bae4bac4d0e2c0cc7c425d4"
+        }
+      ],
+      "ownerAuthorization": {
+        "role": "Release approver",
+        "date": "2026-08-26",
+        "scope": "operations-handbook criterion only"
+      }
+    },
+    {
+      "id": "on-call-rota",
+      "title": "An on-call rota is complete",
+      "status": "fail",
+      "reason": "No staffed, approved on-call rota or escalation coverage is recorded.",
+      "evidence": [
+        {
+          "path": "docs/PLAN_GAP_MATRIX.md",
+          "sha256": "84ddbf899b6a66454850487729387c8d799fc9ea5bae4bac4d0e2c0cc7c425d4"
+        }
+      ]
+    },
+    {
+      "id": "bulk-downloads",
+      "title": "Bulk downloads are complete",
+      "status": "pass",
+      "reason": "The bounded four-province 2020-2022 v2 technical-preview CSV and GeoPackage pair is public at content-addressed CloudFront URLs. The v2 public manifest carries exact source and admission bindings, per-artifact provenance and licences, bilingual citations and plain-language modification notice, claim limits, and the explicit owner decision superseding the earlier no-release scope only for these artifacts. GitHub Actions run 33183420113 retrieved and hashed the exact CSV, GeoPackage, and manifest on a separate Linux runner; byte lengths, SHA-256 values, content types, and CORS all matched. This closes only the bounded bulk-download criterion and does not complete Phase 2 or authorize a general production launch.",
+      "evidence": [
+        {
+          "path": "docs/DOWNLOADS.md",
+          "sha256": "d587bdc37c54de32fa9dfbcf9263e1045dc745441251c5862bd9aa8580fcf839"
+        },
+        {
+          "path": "data/bulk-download-publication-v2-owner-local.json",
+          "sha256": "14c3163f2b1bf7836a37ca121965816ee854577dbf1f97599c4064db30eaf943"
+        },
+        {
+          "path": "data/phase8-bulk-download-public-manifest.json",
+          "sha256": "0d43fd90f3f8c522e2885922f838e56b6c28fe4e2d1f8f2ab72a15a0a209789d"
+        },
+        {
+          "path": "data/phase8-bulk-download-owner-authorization-v2-2026-08-28.json",
+          "sha256": "a328aa5f2bc604b7c605bac3d0ba5a18883f59639235a18abe387b57c45bce90"
+        },
+        {
+          "path": "data/bulk-download-publication.json",
+          "sha256": "99a3f2d79eb2393b6567f6b3f0a7012753e60ffff7047a8764e755e551da3a3a"
+        },
+        {
+          "path": "scripts/check-phase8-bulk-download-publication.mjs",
+          "sha256": "9efd4faeb3d58f3e4958fcc405ab5b836312c1f680e564be0f5999dac9e350a7"
+        }
+      ]
+    },
+    {
+      "id": "citation-format",
+      "title": "A citation format is implemented",
+      "status": "pass",
+      "reason": "Release downloads require provenance metadata and generate a stable citation containing the release, time range, boundary edition, method, retrieval date, and artifact URL.",
+      "evidence": [
+        {
+          "path": "lib/downloads/generate.ts",
+          "sha256": "12aca48fcae29ba86c41b6b18f939254cbb65e75bff74ee12426cbd888e52aeb"
+        },
+        {
+          "path": "tests/downloads.test.ts",
+          "sha256": "bd5f8a29469e9ac1bcc3e5c7ccece2a6eb41ad06178d02e15a587b0f7647e1f9"
+        }
+      ]
+    },
+    {
+      "id": "release-notes",
+      "title": "Release notes are implemented",
+      "status": "pass",
+      "reason": "The release manifest requires a bilingual note, immutable artifact checksums, licence IDs, boundary edition, method version, corrections URL, and stale/degraded state; tests reject missing notes.",
+      "evidence": [
+        {
+          "path": "lib/releases/manifest.ts",
+          "sha256": "04161b5e3439c24023a15b0499c41f777ffd2a757f81982796ae30922ca7e234"
+        },
+        {
+          "path": "tests/release-manifest.test.ts",
+          "sha256": "6df496f76249b23e955c6a87ead4372a12a70ed03667afac771b80674cfbf09b"
+        }
+      ]
+    },
+    {
+      "id": "observability",
+      "title": "Observability is complete",
+      "status": "fail",
+      "reason": "The scheduled wildfire workflow provides limited job-failure notification, but no documented current service or delivery monitor, retained-log policy, dashboard, or completed operational review is recorded. Historical CloudTrail objects and workflow execution history do not by themselves establish operated site observability.",
+      "evidence": [
+        {
+          "path": "docs/IMMUTABLE_STORAGE_PROVISIONING.md",
+          "sha256": "b56456f0bbe253017a1d8d914b27a34d2c62095593457fd1a03bbd162327af6c"
+        },
+        {
+          "path": ".github/workflows/wildfire-refresh.yml",
+          "sha256": "768107c4125ff5bac1d9b5ff947a6c97e887e3b3b42e00a0a810308e0729d791"
+        },
+        {
+          "path": "docs/OPERATIONS_HANDBOOK.md",
+          "sha256": "30758d2bdd3b2db6a27bc5574f614ffac5c3f4ca670eac20f1c0750783ca80d1"
+        }
+      ]
+    },
+    {
+      "id": "backups",
+      "title": "Backups are complete",
+      "status": "fail",
+      "reason": "Bounded same-region recovery-replica readbacks exist for some archive objects, but no approved complete Canadian recovery copy covers every relied-on object and no current complete provider durability and recovery record exists.",
+      "evidence": [
+        {
+          "path": "docs/IMMUTABLE_STORAGE_PROVISIONING.md",
+          "sha256": "b56456f0bbe253017a1d8d914b27a34d2c62095593457fd1a03bbd162327af6c"
+        },
+        {
+          "path": "data/phase1-archive-live-readback-2026-08-20.json",
+          "sha256": "0e9430e3aebf258a592b2c310e8a01400d2eb925e699be901e90cb2650fed342"
+        },
+        {
+          "path": "docs/PHASE1_ARCHIVE_LIVE_READBACK_2026-08-20.md",
+          "sha256": "6630983a082fce4b4d814ee2116f1524fba32d6c132ed132114b3e653c70a882"
+        }
+      ]
+    },
+    {
+      "id": "restore-tests",
+      "title": "Restore tests are complete",
+      "status": "pass",
+      "reason": "The exact immutable versions of three raw archives were restored, verified, and removed from controlled temporary storage in a recorded read-only drill.",
+      "evidence": [
+        {
+          "path": "data/immutable-restore-drill.json",
+          "sha256": "666bdfbc9380b861a1cafa8d78eec213ca9e663e1037c949c6417c8aaa858c0e"
+        },
+        {
+          "path": "scripts/check-immutable-restore-drill.mjs",
+          "sha256": "95e11c86e39b90cde6324abd088157792b9dc953e81419f71bd311156429ab8c"
+        }
+      ]
+    },
+    {
+      "id": "cdn-tile-validation",
+      "title": "CDN and tile validation are complete",
+      "status": "pass",
+      "reason": "The admitted 2020-2022 province aggregate and authoritative boundary are bound to an immutable PMTiles archive in a private ca-central-1 delivery bucket behind CloudFront. Four additional boundary-only reference archives for federal ridings, provincial ridings, economic regions and watersheds have exact S3 and CloudFront byte-hash readback. The province archive has directory and tile ranges at three zooms, decoded province/value assertions, repeated CloudFront cache hits, CORS, origin isolation, immutable write controls, and a client PMTiles path with a verified GeoJSON fallback. A defect was found and fixed on 2026-08-28: the bundler never emitted the sibling module MapLibre resolves as its worker, so that URL returned HTTP 404 on the deployed site and map initialization failed before any tile request was issued. The version-pinned worker is now published from public/maplibre/ and pinned by the client, proven byte-identical to the installed distribution by scripts/check-maplibre-worker-asset.mjs. Browser-side PMTiles rendering was first witnessed on 2026-08-29 against a local build of an unmerged branch, which did not satisfy this criterion because the criterion is scoped to the deployed Site. The earlier note that no browser here could fire requestAnimationFrame described the browser this session had at the time and is superseded. The deployed Site has now been recorded the same way. On 2026-08-30 scripts/verify-deployed-map-render.mjs drove Chromium over the DevTools Protocol against https://www.witnesstree.ca/en/explore and wrote data/deployed-map-render-evidence-2026-08-30.json, which records three HTTP 206 range responses from the exact immutable PMTiles URL the client pins, zero fetches of the published GeoJSON compatibility fallback, a map region that settled on data-state=\"ready\" with data-map-source=\"pmtiles\", the component's own ready copy rather than either compatibility fallback copy, 2620 loss-ramp pixels among 506540 opaque pixels in the composited canvas, and no console errors. That record binds lib/explore/map-style.ts and components/explore/ExploreMapClient.tsx by SHA-256, so changing the archive URL or the client makes the observation stale rather than leaving this gate silently green; scripts/check-deployed-map-render.mjs enforces that on every branch. This criterion covers delivery and rendering only. It asserts no production admission, and the admitted-production-data-and-delivery external blocker remains blocked. On 2026-09-01 this criterion moved from pass to fail, because components/explore/ExploreMapClient.tsx changed on this branch and the 2026-08-30 observation no longer described the client the Site would serve. The owner then redeployed the Site, and on 2026-09-01 scripts/verify-deployed-map-render.mjs was re-run against https://www.witnesstree.ca/en/explore and wrote data/deployed-map-render-evidence-2026-09-01.json. That run recorded three HTTP 206 range responses from the exact immutable PMTiles URL the client pins, zero fetches of the published GeoJSON compatibility fallback, a map region settled on data-state=\"ready\" with data-map-source=\"pmtiles\", the component's own ready copy rather than either compatibility fallback copy, 2620 loss-ramp pixels among 506540 opaque pixels in the composited canvas, and no console errors. The new record binds the same two source files by SHA-256, and the client it names is the one on this branch. The 2026-08-30 record is untouched and stays on disk: it remains a true account of what was measured that day and is superseded as the current observation rather than withdrawn. This criterion still covers delivery and rendering only. It asserts no production admission, and the admitted-production-data-and-delivery external blocker remains blocked. On 2026-09-02 the unmerged change set changed ExploreMapClient.tsx again, which made the 2026-09-01 observation stale for the client this branch would serve, and this criterion returned to fail while that remained true. On 2026-09-03 the owner redeployed the Site to this branch and scripts/verify-deployed-map-render.mjs was re-run against https://www.witnesstree.ca/en/explore, writing data/deployed-map-render-evidence-2026-09-03.json. That run recorded four HTTP 206 range responses from the exact immutable PMTiles URL the client pins, zero fetches of the published GeoJSON compatibility fallback, a map region settled on data-state=\"ready\" with data-map-source=\"pmtiles\", the component's own ready copy rather than either compatibility fallback copy, 3490 loss-ramp pixels among 506540 opaque pixels in the composited canvas, and no console errors. The new record binds lib/explore/map-style.ts and components/explore/ExploreMapClient.tsx by SHA-256, and the client it names is the one on this branch and now on the deployed Site. scripts/check-deployed-map-render.mjs points at the 2026-09-03 record; the 2026-08-30 and 2026-09-01 records are untouched and remain true accounts of what was measured on those days. This criterion covers delivery and rendering only. It asserts no production admission, and the admitted-production-data-and-delivery external blocker remains blocked. On 2026-09-04 the integrated change set changed components/explore/ExploreMapClient.tsx again, so the 2026-09-03 observation no longer describes the client the Site would serve and scripts/check-deployed-map-render.mjs fails on this branch. Following the 2026-09-01 and 2026-09-02 precedent, this criterion returns to fail while that remains true. The 2026-09-03 record is untouched and remains a true account of what was measured that day. On the same date the gate gained two weaker tiers, documented in docs/DEPLOYED_MAP_RENDER_GATE.md: an observation of a preview deployment, which answers the gate but records that the Site observation is still owed, and a break-glass record, which measures nothing and states a reason, an authorizer, the digests it covers and a settle-by date at most fourteen days out. Neither weaker record is committed on this branch, so nothing weaker than an observation of the deployed Site has been used here, and this criterion is failing rather than being waived. This criterion still covers delivery and rendering only. It asserts no production admission, and the admitted-production-data-and-delivery external blocker remains blocked. On 2026-09-05 the owner redeployed the Site to this branch and scripts/verify-deployed-map-render.mjs was re-run against https://www.witnesstree.ca/en/explore, writing data/deployed-map-render-evidence-2026-09-05.json. That run recorded 4 HTTP 206 range responses from the exact immutable PMTiles URL the client pins, 0 fetches of the published GeoJSON compatibility fallback, a map region settled on data-state=\"ready\" with data-map-source=\"pmtiles\", the component's own ready copy rather than either compatibility fallback copy, 3808 loss-ramp pixels among 506540 opaque pixels in the composited canvas, and 0 console errors. Before the harness ran, the deployed ExploreMapClient bundle was checked for a string this change set introduced, so the observation is known to describe this branch's client rather than merely to have been taken after a deploy. The new record binds lib/explore/map-style.ts and components/explore/ExploreMapClient.tsx by SHA-256. scripts/check-deployed-map-render.mjs now points at the 2026-09-05 record; the earlier records are untouched and remain true accounts of what was measured on their days. No break-glass or preview record was used. This criterion covers delivery and rendering only. It asserts no production admission, and the admitted-production-data-and-delivery external blocker remains blocked. On 2026-09-08 origin/main was merged into the confidence-first redesign branch. Both lib/explore/map-style.ts and components/explore/ExploreMapClient.tsx differ from the client the 2026-09-05 run observed, so scripts/check-deployed-map-render.mjs reports the retained record no longer describes the client the Site would serve, and this criterion returns to fail. The 2026-09-05 record is untouched and remains a true account of what was measured that day. Nothing weaker is standing in for it: neither a preview observation nor a break-glass record is committed here. Restoring this criterion requires a redeploy of the Site from this branch followed by a successful run of scripts/verify-deployed-map-render.mjs against it. Phase 8 stands at seven of sixteen while that remains true. This criterion still covers delivery and rendering only. It asserts no production admission, and the admitted-production-data-and-delivery external blocker remains blocked. On 2026-09-08 the owner redeployed the Site to this branch and scripts/verify-deployed-map-render.mjs was re-run against https://www.witnesstree.ca/en/explore, writing data/deployed-map-render-evidence-2026-09-08.json. That run recorded 4 HTTP 206 range responses from the exact immutable PMTiles URL the client pins, 0 fetches of the published GeoJSON compatibility fallback, a map region settled on data-state=\"ready\" with data-map-source=\"pmtiles\", the component’s own ready copy rather than either compatibility fallback copy, 3819 loss-ramp pixels among 506540 opaque pixels in the composited canvas, and 0 console errors. Before the harness ran, the deployed page and the deployed ExploreMapClient and explore chunks were checked for the map-legend-shape class and the GeoBC terrestrial-boundary qualifier that this change set introduced, so the observation is known to describe this branch’s client rather than merely to have been taken after a deploy. The new record binds lib/explore/map-style.ts and components/explore/ExploreMapClient.tsx by SHA-256. scripts/check-deployed-map-render.mjs now points at the 2026-09-08 record; the earlier records are untouched and remain true accounts of what was measured on their days. No break-glass or preview record was used. Phase 8 returns to eight of sixteen. This criterion covers delivery and rendering only. It asserts no production admission, and the admitted-production-data-and-delivery external blocker remains blocked. On 2026-09-12, Sites version 33 deployed commit 66c494f1afdb8ed196d869f4f2712fb56a80275a with the owner-authorized MapLibre 6.9.0 security update. Both the Sites origin and canonical domain served the exact vendored worker bytes and a client chunk pinned to 6.9.0. A fresh browser run against https://www.witnesstree.ca/en/explore at 2026-09-12T15:31:55Z recorded four HTTP 206 PMTiles responses, zero GeoJSON fallback fetches, ready state from PMTiles, 3819 loss-ramp pixels and no console errors. All five checks passed. The current checker points to the new observation; historical observations are untouched. The delivery-and-rendering reason remains satisfied, Phase 8 stays 8/16, and every external blocker remains blocked. This does not admit data or open public production launch.",
+      "evidence": [
+        {
+          "path": "data/phase8-province-map-release.json",
+          "sha256": "2c7a3000ff0b1724fce8c139f2166cecb6838b8d6624fa2172dc07abbb44a58e"
+        },
+        {
+          "path": "data/phase8-public-delivery-evidence.json",
+          "sha256": "87465dcbba49a9868caee51f55421b4071dc6465ca959720ac374dca3741fd25"
+        },
+        {
+          "path": "scripts/check-phase8-province-map-release.mjs",
+          "sha256": "66a6d6ace9a5e1e39764b4850ebea1b55974ddf68eb93778077e5e9e60a83204"
+        },
+        {
+          "path": "tests/phase8-province-map-release.test.mjs",
+          "sha256": "b8d96db5c806f2359bbc459031db80a9475640b89a66c26751b2d65b0dc44fde"
+        },
+        {
+          "path": "components/explore/ExploreMapClient.tsx",
+          "sha256": "c9ff20df176f3e7b05bfa1a3ad8716dd1a016fc4aa8589dc99d7a3d2ab24c93d"
+        },
+        {
+          "path": "tests/explore.test.tsx",
+          "sha256": "42b3611a724fc91b43d455117cbd69cb9fc88f3ef9feb00ce6ccd564c2a65d49"
+        },
+        {
+          "path": "data/deployed-map-render-evidence-2026-09-05.json",
+          "sha256": "c1c9bbfd5cafce23e9d69ef2e7d2fd0614904c907531616e062fee2ffa2161bc"
+        },
+        {
+          "path": "data/deployed-map-render-evidence-2026-09-08.json",
+          "sha256": "37d5b89ce9d1de4210d5556dc277e79e08319c482f26e624d0c3434d858b8752"
+        },
+        {
+          "path": "scripts/verify-deployed-map-render.mjs",
+          "sha256": "62f21ebaa0cd85752242296edcd61501ffcf95699eeced91af7fa1e9916ac009"
+        },
+        {
+          "path": "scripts/check-deployed-map-render.mjs",
+          "sha256": "ad77baa5e60306c820887eaedfff903d1877e5ec4f597b9b6588a23cc3a71c18"
+        },
+        {
+          "path": "tests/deployed-map-render.test.mjs",
+          "sha256": "bb198eb1423443f6b76c36eec4f20c1cbc2027252ee7ecd6f30ca042c7b5f72e"
+        },
+        {
+          "path": "lib/explore/map-style.ts",
+          "sha256": "9f4614daef163416f6e20d21cc50a946a7a1bbd29c565e9856511ad655fb1398"
+        },
+        {
+          "path": "data/deployed-map-render-evidence-2026-09-12.json",
+          "sha256": "e83e2ade2e52b44547141665b7c8fc1a4d79074070293ae5be1a0ee04662a79f"
+        }
+      ]
+    }
+  ],
+  "externalBlockers": [
+    {
+      "id": "professional-bilingual-review",
+      "status": "blocked",
+      "reason": "A qualified reviewer must complete and record bilingual subject-matter review."
+    },
+    {
+      "id": "independent-accessibility-audit",
+      "status": "blocked",
+      "reason": "An independent WCAG 2.2 AA and EN 301 549 audit is required."
+    },
+    {
+      "id": "security-and-load-review",
+      "status": "blocked",
+      "reason": "Production security review and measured 50× load-test evidence need an approved deployment environment."
+    },
+    {
+      "id": "legal-licence-attribution-sign-off",
+      "status": "blocked",
+      "reason": "Counsel and rights holders must approve the complete production release, licence, attribution, terms, privacy, and disclaimer materials."
+    },
+    {
+      "id": "production-operations",
+      "status": "blocked",
+      "reason": "The owner-approved handbook exists. An accountable operational owner must still establish the on-call rota, monitoring, backups, and staffed escalation operation."
+    },
+    {
+      "id": "admitted-production-data-and-delivery",
+      "status": "blocked",
+      "reason": "The admitted province-level technical-preview tile and four boundary-only reference archives have CDN deployment and exact delivery/readback evidence, and the bounded CSV and GeoPackage release is public and independently verified. Complete deployed-browser PMTiles rendering evidence and the remaining production data gates are still required before production delivery can open."
+    }
+  ],
+  "nonProductionBoundary": "The public site, delivery-validated province-level CDN tile, four exact-readback reference-boundary archives, and bounded bulk release remain a technical preview. Deployed-browser PMTiles rendering is observed against the Site itself, most recently on 2026-09-03 after the Site was redeployed to this branch. This record does not claim per-cell production geometry, Phase 2 completion, reviewed translation, accessibility conformance, security review, load result, backup, live operations, or general production readiness."
+}

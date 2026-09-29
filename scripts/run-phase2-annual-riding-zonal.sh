@@ -99,16 +99,25 @@ run_one bc-provincial-ridings-2023 BC \
   "$DATA_ROOT/staging/bc-provincial-electoral-2023/bc-provincial-electoral-districts-2023.geojson" \
   ELECTORAL_DISTRICT_ID ED_NAME bc-electoral-districts-2023
 
-run_one ab-provincial-ridings-2019 AB \
-  "$DATA_ROOT/staging/ab-electoral-2019/EDS_ENACTED_BILL33_15DEC2017.shp" \
-  EDNumber20 EDName2017 ab-electoral-divisions-2019
+# Alberta is read from the Government of Alberta's copy of the same 87
+# divisions, published under the Open Government Licence - Alberta, which allows
+# the modification this product makes. The earlier Elections Alberta shapefile
+# allows reproduction only without modification. Its outputs under the old slug
+# are kept as run; see data/provincial-electoral-sources-2026-09-18.json.
+run_one ab-provincial-ridings-2019-goa AB \
+  "$DATA_ROOT/raw/alberta-provincial-electoral-divisions-2019/2026-09-18/provincial-electoral-division-current-2019.geojson" \
+  EDNUMBER EDNAME ab-electoral-divisions-2019
 
 run_one on-provincial-ridings-2022 ON \
   "/vsizip/$DATA_ROOT/staging/on-provincial-electoral-2022/electoral-district-shapefile-2022.zip/Electoral District Shapefile - 2022 General Election/ELECTORAL_DISTRICT.shp" \
   ED_ID ENGLISH_NA on-electoral-districts-2022
 
-run_one qc-provincial-ridings-2026 QC \
-  "$DATA_ROOT/staging/qc-electoral-2026-sanseau/qc-electoral-districts-2026-sans-eau.geojson" \
+# Québec is read from Élections Québec's published bytes, unchanged. The
+# earlier sans-eau copy carried one district name the project had rewritten,
+# which is an adaptation the publisher's terms do not allow without written
+# permission. Its outputs under the old slug are kept as run.
+run_one qc-provincial-ridings-2026-published QC \
+  "$DATA_ROOT/staging/qc-electoral-2026/qc-electoral-2026.geojson" \
   CO_CEP NM_CEP qc-electoral-districts-2026
 
 echo "all five district summaries complete"

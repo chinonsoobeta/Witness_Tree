@@ -1,0 +1,280 @@
+{
+ "schemaVersion": "witness-tree/coarse-grid-9600m-admission-record/1",
+ "status": "recorded-admission",
+ "ownerDecision": {
+  "decisionId": "coarse-grid-9600m-province-span-map-admission-v1",
+  "decidedOn": "2026-09-21",
+  "decision": "approve-admission-and-release",
+  "items": [
+   "G"
+  ],
+  "payload": "one-file-per-province-and-start-year",
+  "ownerWords": [
+   "I fully approve the admission packet."
+  ],
+  "interpretation": "The owner approved the whole packet without choosing among its options. 'Fully' is read as the packet's widest approvable decision, admission and release of its only item, with its recommended payload. The owner can narrow this by a later dated record; this record is not edited to do so.",
+  "recordedFrom": "the owner's message in the Claude Code session of 2026-09-21, given after the packet was committed to main and presented to the owner",
+  "acknowledgementsStated": "The owner stated no acknowledgement line beyond the words above. The packet's limits, prohibited claims and not-approvable items bind this admission regardless.",
+  "packet": {
+   "path": "data/coarse-grid-9600m-owner-admission-packet.json",
+   "byteLength": 14872,
+   "sha256": "ac41b1a7663c598ead819160659b67e0642163e9d0302f45d59d6969c0bf0f36"
+  }
+ },
+ "admittedItems": {
+  "G-province-pieces-9600m": "For every 9.6 km cell and every province piece inside it: cells, unmapped cells, forest known at each of the 39 years, eligible loss in each of the 38 annual steps, and first loss at or after each start year, which gives item C's union for all 741 spans. 46,008 rows over 45,649 cells; 359 cells are split between two provinces and carry one row per piece."
+ },
+ "bindingsRevalidated": {
+  "count": 23,
+  "allMatch": true,
+  "entries": [
+   {
+    "at": ".items.G-province-pieces-9600m.output",
+    "path": "derived/coarse-grid-9600m-v1/run-20260922T035220Z/province-pieces/province-pieces-9600m.npz",
+    "root": "data root",
+    "byteLength": 37022595,
+    "sha256": "2be062f793780d221741b51a0331e69e7c941a51bd3207e6e5c712125b5ae8e7",
+    "matches": true
+   },
+   {
+    "at": ".items.G-province-pieces-9600m.manifest",
+    "path": "derived/coarse-grid-9600m-v1/run-20260922T035220Z/province-pieces/manifest.json",
+    "root": "data root",
+    "byteLength": 2349,
+    "sha256": "8336401a7aebddcea784479cc77d9d1da88b57f78f71545e951082abf2ca9602",
+    "matches": true
+   },
+   {
+    "at": ".items.G-province-pieces-9600m.code",
+    "path": "derived/coarse-grid-9600m-v1/run-20260922T035220Z/province-pieces/coarse_grid_9600m_province_pass.py",
+    "root": "data root",
+    "byteLength": 18199,
+    "sha256": "8a5a8417267a111241817df58eb97edcdb701ef69c480f64312ab8c1ea4886d3",
+    "matches": true
+   },
+   {
+    "at": ".items.G-province-pieces-9600m.inputs.itemCPieces",
+    "path": "data/phase3-province-interval-spans-1984-2022.pieces.jsonl.gz",
+    "root": "repository",
+    "byteLength": 1934417,
+    "sha256": "54d1fc50bd9a972a506ad60183865439e27492ae2cc661e2ee2d3608239e532d",
+    "matches": true
+   },
+   {
+    "at": ".items.G-province-pieces-9600m.inputs.itemCOutput",
+    "path": "data/phase3-province-interval-spans-1984-2022.json",
+    "root": "repository",
+    "byteLength": 299946,
+    "sha256": "215b3b6ae49844afb24f544c6927963d8a49680f93c127bda5a8dc10da7964f2",
+    "matches": true
+   },
+   {
+    "at": ".items.G-province-pieces-9600m.inputs.driver",
+    "path": "scripts/phase3-province-interval-spans-block-partition.py",
+    "root": "repository",
+    "byteLength": 12914,
+    "sha256": "8b859aacf6a132329d680774d872a1a40eea031befdb1aaa3f3dbcd28ef8e8c1",
+    "matches": true
+   },
+   {
+    "at": ".items.G-province-pieces-9600m.inputs.worker",
+    "path": "scripts/phase3_interval_zonal_aggregate.py",
+    "root": "repository",
+    "byteLength": 29161,
+    "sha256": "e8705301aaf5ae6e1812e6f80f5f8ff3707411c56fe631fd4dc0f8eeeac94674",
+    "matches": true
+   },
+   {
+    "at": ".items.G-province-pieces-9600m.inputs.helper",
+    "path": "scripts/phase2_annual_zonal_aggregate_v2.py",
+    "root": "repository",
+    "byteLength": 39075,
+    "sha256": "44c86765b4f1a0ba527f7ed7cb91f95b1d490af404f9d783a84ffdf208a13958",
+    "matches": true
+   },
+   {
+    "at": ".items.G-province-pieces-9600m.verification.record",
+    "path": "derived/coarse-grid-9600m-v1/run-20260922T035220Z/province-pieces/verification.json",
+    "root": "data root",
+    "byteLength": 1276,
+    "sha256": "ca20595b22de80270a31e524d464861adb0dc8efb52961126035aa7f6e47f624",
+    "matches": true
+   },
+   {
+    "at": ".items.G-province-pieces-9600m.verification.payloadMeasurement",
+    "path": "derived/coarse-grid-9600m-v1/run-20260922T035220Z/province-pieces/payload-measurement.json",
+    "root": "data root",
+    "byteLength": 792,
+    "sha256": "faf61344a87f9b39903974d1428ac60cfe9295451a8b12b7c6e17e1d75bd38a7",
+    "matches": true
+   },
+   {
+    "at": ".payloadOptions.measurement",
+    "path": "derived/coarse-grid-9600m-v1/run-20260922T035220Z/province-pieces/payload-measurement-by-start-year.json",
+    "root": "data root",
+    "byteLength": 3994,
+    "sha256": "5ddee236ae653b6c0513c22530d1f9e7a6e7cbd3596e614399cb5efe3a7c49b3",
+    "matches": true
+   },
+   {
+    "at": ".ownerAttention.evidence",
+    "path": "derived/coarse-grid-9600m-v1/run-20260922T035220Z/union-definition-divergence.json",
+    "root": "data root",
+    "byteLength": 1989,
+    "sha256": "32158734b0679b810d7e1f5bcf08132dd7e529d6a0bb6774ef6261f99671e784",
+    "matches": true
+   },
+   {
+    "at": ".ownerAttention.whereItShows[0]",
+    "path": "data/phase6-coarse-grid-release.json",
+    "root": "repository",
+    "byteLength": 1955,
+    "sha256": "ae895107ec95f3958cd9d5b4eace306ac2cc9b28f81c630bb6192d14ed54c949",
+    "matches": true
+   },
+   {
+    "at": ".ownerAttention.whereItShows[1]",
+    "path": "lib/shapes/measure.ts",
+    "root": "repository",
+    "byteLength": 6180,
+    "sha256": "2e7afd2df611ba30d802e3bbd61dfd672da9e43006e90fc9b189ae8c625e0c99",
+    "matches": true
+   },
+   {
+    "at": ".notApprovable.aggregate.npz",
+    "path": "derived/coarse-grid-9600m-v1/run-20260922T035220Z/aggregate.npz",
+    "root": "data root",
+    "byteLength": 24303676,
+    "sha256": "23a9da89471d404ad5087129b7babdb466c9492d80ca577bfd08b7ba199af0e2",
+    "matches": true
+   },
+   {
+    "at": ".notApprovable.aggregate.npz.manifest",
+    "path": "derived/coarse-grid-9600m-v1/run-20260922T035220Z/manifest.json",
+    "root": "data root",
+    "byteLength": 2146,
+    "sha256": "1ba6b29a79d26efce54f6cd279c2cb3cb4685d468332ae433beade119cc12322",
+    "matches": true
+   },
+   {
+    "at": ".notApprovable.aggregate.npz.verification",
+    "path": "derived/coarse-grid-9600m-v1/run-20260922T035220Z/verification.json",
+    "root": "data root",
+    "byteLength": 870,
+    "sha256": "c24f2a8966ac8f34e75a5e9de67d6f093d0b327efc53a1674815b0ab70a319f2",
+    "matches": true
+   },
+   {
+    "at": ".formalGateAssessment.statusRecords[0]",
+    "path": "data/phase2-formal-exit-status.json",
+    "root": "repository",
+    "byteLength": 1510,
+    "sha256": "45ce097b7f6f5029d3bdf0667d4c3b319a080e1da6030ab61ae35134311c8048",
+    "matches": true
+   },
+   {
+    "at": ".formalGateAssessment.statusRecords[1]",
+    "path": "data/phase8-launch-readiness-exit-status.json",
+    "root": "repository",
+    "byteLength": 36358,
+    "sha256": "877c888d85a57986a0e4e4b25102f8558faa8c231f5578d68ca056dc54506a61",
+    "matches": true
+   },
+   {
+    "at": ".doesNotTouch[0]",
+    "path": "data/phase2-1984-2022-admission-record-2026-09-18.json",
+    "root": "repository",
+    "byteLength": 13116,
+    "sha256": "4fc4382364576404af0a231eb0e1fef676b52f73627805605bca5e80a4bf60ee",
+    "matches": true
+   },
+   {
+    "at": ".doesNotTouch[1]",
+    "path": "data/phase2-1984-2022-owner-admission-packet.json",
+    "root": "repository",
+    "byteLength": 16483,
+    "sha256": "52faeca923f5697a65c6e18b206072412c739ca9ee2a03856a1b263fb32d7083",
+    "matches": true
+   },
+   {
+    "at": ".doesNotTouch[2]",
+    "path": "data/phase2-admission-record-2026-08-26.json",
+    "root": "repository",
+    "byteLength": 14873,
+    "sha256": "58147c088d12190f8882d0c493364cd07cf7c176d4fafbc266421bf337ca7d82",
+    "matches": true
+   },
+   {
+    "at": ".doesNotTouch[3]",
+    "path": "data/phase6-coarse-grid-release.json",
+    "root": "repository",
+    "byteLength": 1955,
+    "sha256": "ae895107ec95f3958cd9d5b4eace306ac2cc9b28f81c630bb6192d14ed54c949",
+    "matches": true
+   }
+  ]
+ },
+ "limits": [
+  "Every province is partial-with-unknown, so every figure is a minimum. Unmapped share of the cartographic province: QC 15.04962%, ON 9.03031%, AB 24.02146%, BC 0.00446%.",
+  "Loss is counted once per place, against the forest known at the start year. Yearly losses added together carry no percentage.",
+  "Unmapped and nodata cells stay Unknown and are never shown as no loss.",
+  "A 9.6 km cell is a summary of about 102,400 raster cells, not a map of individual patches.",
+  "Nothing has been expert reviewed. Independent comparisons are not published."
+ ],
+ "permittedClaims": [
+  "Item G is admitted for 1984-2022 under the bound method and limits.",
+  "Each province's 9.6 km grid adds up exactly to that province's admitted span figure.",
+  "If release is chosen: item G may be published on the site with the limits above shown next to it."
+ ],
+ "prohibitedClaims": [
+  "expert review completed",
+  "independent comparison completed or published",
+  "accuracy, completeness or causal attribution",
+  "any figure as a complete-province total",
+  "net forest change or regrowth",
+  "patch-level or per-cell geometry",
+  "that item F or draw and measure is corrected",
+  "admission of any unbound output or of the notApprovable items"
+ ],
+ "notAdmitted": [
+  "aggregate.npz",
+  "trial outputs under work/"
+ ],
+ "itemFFinding": {
+  "ownerWords": "That said, I want to fix and rebuild item F and see what it gives us.",
+  "meaning": "The owner asked for item F to be rebuilt with item C's union term, to see the result. A rebuilt item F is new bytes. This record does not admit it, and it does not change item F's release record or draw and measure."
+ },
+ "formalGates": {
+  "phase2FormalExit": "stays 2 of 4: expert review was retired, not met, and the comparisons are unpublished",
+  "phase8LaunchReadiness": "stays 8 of 16 on main until the real external events occur; wiring the map mode reopens the render gate for one deploy cycle, as any map client change does",
+  "honestConclusion": "Approval admits and can release bytes. It completes no formal gate.",
+  "statusRecords": [
+   {
+    "path": "data/phase2-formal-exit-status.json",
+    "byteLength": 1510,
+    "sha256": "45ce097b7f6f5029d3bdf0667d4c3b319a080e1da6030ab61ae35134311c8048"
+   },
+   {
+    "path": "data/phase8-launch-readiness-exit-status.json",
+    "byteLength": 36358,
+    "sha256": "877c888d85a57986a0e4e4b25102f8558faa8c231f5578d68ca056dc54506a61"
+   }
+  ]
+ },
+ "claims": {
+  "admitted": true,
+  "releaseApproved": true,
+  "released": false,
+  "releasedMeaning": "Set by item G's own release record when its files are actually published and read back; this record does not claim any release happened.",
+  "expertReviewed": false,
+  "complete": false,
+  "formalGatesChanged": false
+ },
+ "doesNotEdit": [
+  "data/coarse-grid-9600m-owner-admission-packet.json",
+  "data/phase2-1984-2022-admission-record-2026-09-18.json",
+  "data/phase2-admission-record-2026-08-26.json",
+  "data/phase6-coarse-grid-release.json",
+  "historical readback evidence"
+ ]
+}

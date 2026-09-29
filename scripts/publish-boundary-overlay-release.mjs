@@ -11,7 +11,7 @@ import os from "node:os";
 import path from "node:path";
 
 const DATA_ROOT = process.env.WITNESS_TREE_DATA_ROOT ?? "/Volumes/Extended_SSD/Witness_Tree-data";
-const PRODUCT_ID = "boundary-overlays-v3";
+const PRODUCT_ID = "boundary-overlays-v4";
 const OUT_DIR = path.join(DATA_ROOT, "derived", PRODUCT_ID);
 const BUCKET = "witness-tree-public-delivery-ca-central-1";
 const DISTRIBUTION = "https://d3g1406o0uekin.cloudfront.net";

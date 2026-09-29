@@ -1,11 +1,13 @@
 import { CoverageStatement } from "@/components/policy/CoverageStatement";
-import { EvidenceLegend } from "@/components/policy/EvidenceLegend";
 import { colon, formatYearRangeKey, type Locale } from "@/lib/domain";
+import { HARVEST_FIRE_ROUTES } from "@/lib/harvest-fire";
 import { SourceCurrency } from "./SourceCurrency";
 import {
   PROVINCE_BULK_TIME_RANGE,
+  PROVINCE_SPAN_TIME_RANGE,
   provinceBulkManifestUrl,
   provinceBulkRelease,
+  provinceSpanRelease,
 } from "@/lib/downloads/releases";
 
 const COPY = {
@@ -13,26 +15,38 @@ const COPY = {
     title: "Data and transparency",
     accessTitle: "What you can download",
     accessSummary:
-      `A bounded four-province technical preview for ${formatYearRangeKey(PROVINCE_BULK_TIME_RANGE, "en", "span")} is available as a CSV table and a GeoPackage. Both files contain the same province-level values for British Columbia, Alberta, Ontario and Quebec.`,
+      `An early preview of the province figures for ${formatYearRangeKey(PROVINCE_BULK_TIME_RANGE, "en", "span")} is available as a spreadsheet (CSV) and a map file (GeoPackage). Both hold the same figures for British Columbia, Alberta, Ontario and Québec.`,
     notice:
-      "These are province summaries for reading and analysis. They are not per-cell geometry or a live data service.",
+      "These are province-level summaries, not detailed map shapes or a live data feed.",
     csv: "Download province values (CSV)",
     geopackage: "Download province values (GeoPackage)",
+    spanTitle: "Every span, 1984 to 2022",
+    spanSummary:
+      `Detected forest loss for every span of years ${formatYearRangeKey(PROVINCE_SPAN_TIME_RANGE, "en", "from")} (741 in all), one row per province per span, matching the Explore page. Each row shows the forest at the start, the forest lost at least once and its share, the yearly losses added together, and the land with no data at the start.`,
+    spanLimits:
+      "Every figure is a minimum, because each province has land with no data in the start year; that land counts as Unknown, never as no loss. The yearly losses added together count a place lost twice as two, so they are in hectares with no percentage. No expert has reviewed these figures, and they don’t say whether harvest or wildfire caused the loss.",
+    spanCsv: "Download every span (CSV)",
+    spanJson: "Download every span (JSON)",
+    spanManifest: "Open the span download manifest",
+    harvestTitle: "What was logged, and what burned",
+    harvestLead: "A satellite can see that trees are gone, but not why. These pages bring in official harvest statistics, British Columbia’s timber volumes, and Natural Resources Canada’s yearly maps of harvest and fire.",
     comparison: "Compare the values with official harvest statistics",
+    harvestVolume: "BC harvest volume and allowable annual cut",
+    harvestFire: "Harvest and fire by province, 1985 to 2022: build a chart and download it",
     releases: "Read the release notes and citation format",
     limitsTitle: "Limits to understand first",
     limits:
-      "All four provinces include some area where a required mapped input is unknown, so every detected-loss figure is a minimum for the known mapped area. The files do not establish cause, responsibility, legality, compliance, merchantable timber or conditions on the ground.",
+      "Every province has some land with no data, so every loss figure is a minimum. These files don’t show what caused a loss, who is responsible, whether it was legal, how much sellable timber there is, or conditions on the ground.",
     previewLimits:
-      "This technical preview does not complete the formal Phase 2 production gate. Use the evidence class, coverage state and confidence reason shown with a public claim; do not extend a result beyond its stated boundary edition and period.",
+      "This is an early preview, not the final release. Always read a figure with its evidence label, coverage and confidence, and don’t apply it beyond the boundaries and years it covers.",
     recordsTitle: "Source records and documentation",
     description:
-      "The source ledger records dataset name, publisher, licence, version, retrieval date, coverage limits and provenance. Its examples remain illustrative and must be replaced by verified source metadata and immutable archive checksums before production ingestion.",
-    ledger: "Open the illustrative source ledger",
+      "The source ledger lists the 31 sources the plan names, with the evidence we hold for each and anything still blocking its use. Not all of them are used: four reserve and treaty sources were withdrawn, because we don’t publish that geography.",
+    ledger: "Open the source ledger",
     docs: "Read the source-ledger documentation",
     technicalTitle: "Technical release details",
     gate:
-      "Release identifiers, checksums and gate language are provided here for verification. They do not change the reader-facing limits above.",
+      "Release IDs and checksums, so you can verify the files. They don’t change the limits above.",
     release: "Release identifier",
     csvArtifact: "CSV artifact",
     geopackageArtifact: "GeoPackage artifact",
@@ -41,37 +55,49 @@ const COPY = {
     licence: "Licence and attribution",
     attribution:
       "Contains information licensed under the Open Government Licence - Canada. Adapted from Natural Resources Canada, Annual High-resolution forest land cover for Canada (1984-2022). Adapted from Statistics Canada, 2021 Census Province/Territory Cartographic Boundary File, reference date January 1, 2021. These adaptations do not constitute endorsement by Natural Resources Canada or Statistics Canada.",
-    stagingTitle: "Technical staging evidence",
+    stagingTitle: "Data being prepared",
     staging:
-      "Two source archives have verified byte lengths, ZIP integrity and SHA-256 checksums in a separate local staging area. Quebec attribution is verified from official metadata. A lossless local copy of the two clean Quebec layers is checksum-bound and validated; it is not ingested, immutable, or production data. Profiling found 608 self-intersections in Alberta, so Alberta remains blocked.",
-    stagingEvidence: "Review the staged-acquisition evidence",
-    profileEvidence: "Review the geospatial profile",
-    transformationEvidence: "Review the Quebec transformation evidence",
+      "Two source archives have been checked in a separate test area, and Québec’s attribution was confirmed from official metadata. A verified copy of two Québec layers exists but is not yet used on the site. Alberta is on hold because checks found 608 self-intersections in Alberta (shapes that cross over themselves).",
+    stagingEvidence: "See the archive checks",
+    profileEvidence: "See the shape checks",
+    transformationEvidence: "See the Québec conversion record",
   },
   fr: {
     title: "Données et transparence",
     accessTitle: "Ce que vous pouvez télécharger",
     accessSummary:
-      `Un aperçu technique limité à quatre provinces pour ${formatYearRangeKey(PROVINCE_BULK_TIME_RANGE, "fr", "span")} est offert sous forme de tableau CSV et de GeoPackage. Les deux fichiers contiennent les mêmes valeurs au niveau provincial pour la Colombie-Britannique, l’Alberta, l’Ontario et le Québec.`,
+      `Un aperçu préliminaire des chiffres provinciaux pour ${formatYearRangeKey(PROVINCE_BULK_TIME_RANGE, "fr", "span")} est offert en tableur (CSV) et en fichier cartographique (GeoPackage). Les deux contiennent les mêmes chiffres pour la Colombie-Britannique, l’Alberta, l’Ontario et le Québec.`,
     notice:
-      "Il s’agit de résumés provinciaux destinés à la lecture et à l’analyse. Ils ne constituent ni une géométrie par cellule ni un service de données en direct.",
+      "Il s’agit de résumés provinciaux, et non de formes cartographiques détaillées ni d’un flux de données en direct.",
     csv: "Télécharger les valeurs provinciales (CSV)",
     geopackage: "Télécharger les valeurs provinciales (GeoPackage)",
+    spanTitle: "Toutes les périodes, de 1984 à 2022",
+    spanSummary:
+      `La perte forestière détectée pour chaque période ${formatYearRangeKey(PROVINCE_SPAN_TIME_RANGE, "fr", "from")} (741 au total), une ligne par province et par période, comme sur la page Explorer. Chaque ligne donne la forêt au départ, la forêt perdue au moins une fois et sa part, les pertes annuelles additionnées et le territoire sans données au départ.`,
+    spanLimits:
+      "Chaque valeur est un minimum, car chaque province compte un territoire sans données l’année de départ\u202F; ce territoire est Inconnu, jamais une absence de perte. Les pertes annuelles additionnées comptent deux fois un lieu perdu deux fois\u202F: elles sont donc en hectares, sans pourcentage. Aucun spécialiste n’a examiné ces chiffres, et ils n’indiquent pas si la récolte ou un incendie a causé la perte.",
+    spanCsv: "Télécharger toutes les périodes (CSV)",
+    spanJson: "Télécharger toutes les périodes (JSON)",
+    spanManifest: "Ouvrir le manifeste du téléchargement par période",
+    harvestTitle: "Ce qui a été récolté, et ce qui a brûlé",
+    harvestLead: "Un satellite peut voir que des arbres ont disparu, mais pas pourquoi. Ces pages font appel aux statistiques officielles sur la récolte, aux volumes de bois de la Colombie-Britannique et aux cartes annuelles de la récolte et des feux de Ressources naturelles Canada.",
     comparison: "Comparer les valeurs aux statistiques officielles sur la récolte",
+    harvestVolume: "Volume récolté et possibilité annuelle de coupe en C.-B.",
+    harvestFire: "Récolte et feu par province, de 1985 à 2022\u202F: créer un graphique et le télécharger",
     releases: "Lire les notes de version et le format de citation",
     limitsTitle: "Limites à comprendre d’abord",
     limits:
-      "Les quatre provinces comprennent une superficie où un intrant cartographié requis est inconnu; chaque valeur de perte détectée est donc un minimum pour la zone cartographiée connue. Les fichiers n’établissent ni cause, ni responsabilité, ni légalité, ni conformité, ni volume de bois marchand, ni conditions sur le terrain.",
+      "Chaque province compte un territoire sans données\u202F; chaque chiffre de perte est donc un minimum. Ces fichiers n’indiquent ni la cause d’une perte, ni qui en est responsable, ni sa légalité, ni la quantité de bois vendable, ni les conditions sur le terrain.",
     previewLimits:
-      "Cet aperçu technique ne satisfait pas au critère formel de production de la phase 2. Utilisez la catégorie de preuves, l’état de couverture et la raison de confiance affichés avec une affirmation publique; ne prolongez pas un résultat au-delà de l’édition de limite et de la période indiquées.",
+      "Il s’agit d’un aperçu préliminaire, et non de la version définitive. Lisez toujours un chiffre avec sa catégorie de preuve, sa couverture et sa confiance, et ne l’appliquez pas au-delà des limites et des années qu’il couvre.",
     recordsTitle: "Registres des sources et documentation",
     description:
-      "Le registre des sources consigne le nom du jeu de données, l’éditeur, la licence, la version, la date de récupération, les limites de couverture et la provenance. Ses exemples demeurent illustratifs et doivent être remplacés par des métadonnées de source vérifiées et des sommes de contrôle d’archives immuables avant toute ingestion de production.",
-    ledger: "Ouvrir le registre illustratif des sources",
+      "Le registre des sources énumère les 31 sources prévues par le plan, avec les preuves que nous avons pour chacune et ce qui bloque encore son usage. Elles ne sont pas toutes utilisées\u202F: quatre sources sur les réserves et les traités ont été retirées, car nous ne publions pas cette géographie.",
+    ledger: "Ouvrir le registre des sources",
     docs: "Lire la documentation du registre des sources",
     technicalTitle: "Détails techniques de la version",
     gate:
-      "Les identifiants de version, les sommes de contrôle et le libellé du critère sont fournis ici aux fins de vérification. Ils ne modifient pas les limites destinées aux lecteurs ci-dessus.",
+      "Identifiants de version et sommes de contrôle, pour vérifier les fichiers. Ils ne modifient pas les limites ci-dessus.",
     release: "Identifiant de version",
     csvArtifact: "Artefact CSV",
     geopackageArtifact: "Artefact GeoPackage",
@@ -80,12 +106,12 @@ const COPY = {
     licence: "Licence et attribution",
     attribution:
       "Contient des informations octroyées sous licence en vertu de la Licence du gouvernement ouvert - Canada. Adapté de Ressources naturelles Canada, Couverture terrestre annuelle à haute résolution des forêts du Canada (1984-2022). Adapté de Statistique Canada, Fichier des limites cartographiques des provinces et territoires du Recensement de 2021, date de référence le 1er janvier 2021. Ces adaptations ne constituent pas une approbation de Ressources naturelles Canada ni de Statistique Canada.",
-    stagingTitle: "Preuves techniques de mise en attente",
+    stagingTitle: "Données en préparation",
     staging:
-      "Deux archives sources ont une taille en octets, une intégrité ZIP et une somme de contrôle SHA-256 vérifiées dans une zone locale distincte. L’attribution du Québec est vérifiée à partir des métadonnées officielles. Une copie locale sans perte des deux couches québécoises propres est liée par somme de contrôle et validée; elle n’est ni ingérée, ni immuable, ni une donnée de production. Le profilage a relevé 608 auto-intersections en Alberta; l’Alberta demeure donc bloquée.",
-    stagingEvidence: "Consulter les preuves de mise en attente",
-    profileEvidence: "Consulter le profil géospatial",
-    transformationEvidence: "Consulter les preuves de transformation du Québec",
+      "Deux archives sources ont été vérifiées dans une zone d’essai distincte, et l’attribution du Québec a été confirmée à partir des métadonnées officielles. Une copie vérifiée de deux couches québécoises existe, mais n’est pas encore utilisée sur le site. L’Alberta est en attente, car les vérifications ont relevé 608 auto-intersections (des formes qui se croisent elles-mêmes).",
+    stagingEvidence: "Voir les vérifications des archives",
+    profileEvidence: "Voir les vérifications des formes",
+    transformationEvidence: "Voir le registre de conversion du Québec",
   },
 } as const;
 
@@ -98,28 +124,71 @@ export function DataPage({ locale }: Readonly<{ locale: Locale }>) {
         <h1>{copy.title}</h1>
       </header>
       <CoverageStatement locale={locale}><p>{copy.limits}</p></CoverageStatement>
-      <EvidenceLegend locale={locale} />
       <div className="data-layout">
       <div className="data-reader">
 
-      <section className="content-section prose-measure">
-        <h2>{copy.accessTitle}</h2>
-        <p>{copy.accessSummary}</p>
-        <p className="notice card--sand"><strong>{copy.notice}</strong></p>
+      <section className="content-section prose-measure" aria-labelledby="harvest-and-fire-sources">
+        <h2 id="harvest-and-fire-sources">{copy.harvestTitle}</h2>
+        <p>{copy.harvestLead}</p>
         <ul className="link-list">
-          <li className="card card--lift">
-            <a className="btn btn--primary" href={csv.url}>{copy.csv}</a>
-          </li>
-          <li className="card card--lift">
-            <a className="btn btn--primary" href={geopackage.url}>{copy.geopackage}</a>
-          </li>
           <li className="card card--lift">
             <a href={locale === "en" ? "/en/data/official-harvest-comparison" : "/fr/donnees/comparaison-recolte-officielle"}>
               {copy.comparison}
             </a>
           </li>
           <li className="card card--lift">
+            <a href={HARVEST_FIRE_ROUTES[locale]}>{copy.harvestFire}</a>
+          </li>
+          <li className="card card--lift">
+            <a href={locale === "en" ? "/en/data/bc-harvest-volume" : "/fr/donnees/volume-recolte-bc"}>{copy.harvestVolume}</a>
+          </li>
+        </ul>
+      </section>
+
+      <section className="content-section prose-measure">
+        <h2>{copy.accessTitle}</h2>
+        <p>{copy.accessSummary}</p>
+        <p className="notice card--sand"><strong>{copy.notice}</strong></p>
+        <ul className="link-list">
+          <li className="card card--lift file-tile">
+            <span className="file-tile-format" aria-hidden="true">CSV</span>
+            <span className="file-tile-body">
+              <a href={csv.url}>{copy.csv}</a>
+            </span>
+          </li>
+          <li className="card card--lift file-tile">
+            <span className="file-tile-format" aria-hidden="true">GPKG</span>
+            <span className="file-tile-body">
+              <a href={geopackage.url}>{copy.geopackage}</a>
+            </span>
+          </li>
+          <li className="card card--lift">
             <a href={locale === "en" ? "/en/releases" : "/fr/versions"}>{copy.releases}</a>
+          </li>
+        </ul>
+      </section>
+
+      <section className="content-section prose-measure">
+        <h2>{copy.spanTitle}</h2>
+        <p>{copy.spanSummary}</p>
+        <p className="notice card--sand">{copy.spanLimits}</p>
+        <ul className="link-list">
+          <li className="card card--lift file-tile">
+            <span className="file-tile-format" aria-hidden="true">CSV</span>
+            <span className="file-tile-body">
+              <a href={provinceSpanRelease.csv.url}>{copy.spanCsv}</a>
+              <small>{copy.checksum}{colon(locale)} <code>{provinceSpanRelease.csv.sha256}</code></small>
+            </span>
+          </li>
+          <li className="card card--lift file-tile">
+            <span className="file-tile-format" aria-hidden="true">JSON</span>
+            <span className="file-tile-body">
+              <a href={provinceSpanRelease.json.url}>{copy.spanJson}</a>
+              <small>{copy.checksum}{colon(locale)} <code>{provinceSpanRelease.json.sha256}</code></small>
+            </span>
+          </li>
+          <li className="card card--lift">
+            <a href={provinceSpanRelease.manifestUrl}>{copy.spanManifest}</a>
           </li>
         </ul>
       </section>
@@ -138,10 +207,10 @@ export function DataPage({ locale }: Readonly<{ locale: Locale }>) {
         <p>{copy.description}</p>
         <ul className="link-list">
           <li className="card card--lift">
-            <a href="https://github.com/chinonsoobeta/Witness_Tree/blob/main/data/source-ledger.json">{copy.ledger}</a>
+            <a href="https://github.com/chinonsoobeta/Witness_Tree/blob/main/data/phase1-production-source-ledger.json">{copy.ledger}</a>
           </li>
           <li className="card card--lift">
-            <a href="https://github.com/chinonsoobeta/Witness_Tree/blob/main/docs/SOURCE_LEDGER.md">{copy.docs}</a>
+            <a href="https://github.com/chinonsoobeta/Witness_Tree/blob/main/docs/PHASE1_PRODUCTION_SOURCE_LEDGER.md">{copy.docs}</a>
           </li>
         </ul>
       </section>

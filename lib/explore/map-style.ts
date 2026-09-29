@@ -11,6 +11,8 @@ export const EXPLORE_MAP_COLOURS = Object.freeze({
   loss1: "#a9cf9b",
   loss2: "#57935a",
   loss3: "#1f5f38",
+  loss4: "#0b3320",
+  neither: "#7a6a58",
 } as const);
 
 export const EXPLORE_PRODUCTION_LAYER = Object.freeze({
@@ -23,7 +25,7 @@ export const EXPLORE_PRODUCTION_LAYER = Object.freeze({
   period: "2020-2022",
   attribution: {
     en: "Statistics Canada 2021 cartographic boundaries; province aggregate derived from Natural Resources Canada VLCE2.",
-    fr: "Limites cartographiques de 2021 de Statistique Canada; agrégat provincial dérivé de VLCE2 de Ressources naturelles Canada.",
+    fr: "Limites cartographiques de 2021 de Statistique Canada\u202F; agrégat provincial dérivé de VLCE2 de Ressources naturelles Canada.",
     href: "https://www150.statcan.gc.ca/n1/en/catalogue/92-160-X",
   },
   /*
@@ -76,18 +78,6 @@ export const EXPLORE_PRODUCTION_LAYER = Object.freeze({
     {
       id: "59",
       name: { en: "British Columbia", fr: "Colombie-Britannique" },
-      /*
-       * Against the authoritative GeoBC terrestrial boundary, most of BC's
-       * gap is shoreline and boundary-edition disagreement, unlike Alberta's
-       * ecological footprint gap. Treating the rows identically would imply
-       * that all of BC's gap is unmeasured forest. This optional qualifier
-       * explains its character without changing any coverage or loss value.
-       * See data/coverage-gap-investigation-2026-09-08.json.
-       */
-      unmappedCharacter: {
-        en: "mostly shoreline and boundary-edition disagreement against the GeoBC terrestrial boundary",
-        fr: "écart surtout lié au littoral et aux différences entre éditions des limites, par comparaison avec la limite terrestre de GeoBC",
-      },
       observedLossHectares: 800473.32,
       observedLossPercent: 1.3917693193039167,
       unknownRequiredInputHectares: 4095.27,

@@ -2,29 +2,33 @@
 
 import { useEffect, useRef, useState } from "react";
 import type {
+  ExpressionSpecification,
   FilterSpecification,
   Map as MapLibreMap,
-  MapLayerMouseEvent,
+  MapMouseEvent,
   StyleSpecification,
 } from "maplibre-gl";
-import { colon, formatNumber, formatPercent, formatYearRangeKey, labelled, PRODUCT_NAME, type Locale } from "@/lib/domain";
+import { colon, formatNumber, formatPercent, formatYearRange, labelled, PRODUCT_NAME, yearRange, type Locale } from "@/lib/domain";
 import { chooseScaleBar, metresPerPixel, type ScaleBar } from "@/lib/explore/map-scale";
+import { panLimitFor } from "@/lib/explore/map-camera";
+import { CAUSE_BREAKS, CAUSE_RAMPS, provinceCauseColours, type ProvinceCause } from "@/lib/explore/province-cause-shares";
 import {
-  annualIntervalCoverage,
+  perCellArchiveSpan,
   BOUNDARY_OVERLAYS,
   EXPLORE_MAP_COLOURS,
   EXPLORE_PER_CELL_LAYER,
+  EXPLORE_PER_CELL_SPAN_LAYER,
   EXPLORE_PRODUCTION_LAYER,
   EXPLORE_YEAR_MAX,
-  formatUnknownSharePercent,
-  perCellArchiveForYear,
   perCellCauseForMode,
-  perCellSourceLayer,
-  productionAggregatePeriod,
+  perCellSpanYears,
+  provinceSpanMeasurements,
+  provinceSpanReach,
+  SPAN_SHARE_BREAKS,
+  spanShareClass,
   type BoundaryOverlayId,
   type ExploreMapView,
   type ExploreMode,
-  type PerCellArchive,
   type PerCellCause,
 } from "@/lib/explore";
 import {
@@ -32,6 +36,17 @@ import {
   type BoundarySelection,
   type RidingBoundaryMeasurement,
 } from "@/lib/explore/boundary-readout";
+import {
+  boundaryHighlightFilter,
+  pickBoundary,
+  type BoundaryFeature,
+} from "@/lib/explore/boundary-pick";
+import {
+  censusSubdivisionMeasurement,
+  censusSubdivisionProvince,
+  loadCensusSubdivisionFigures,
+  type CensusSubdivisionFigures,
+} from "@/lib/explore/census-subdivisions";
 import { ProvinceBar } from "@/components/site";
 
 const text = {
@@ -39,155 +54,139 @@ const text = {
     label: "Forest loss map",
     loading: "Loading the map layers for the selected year.",
     ready:
-      `Showing the provisional province aggregate, which covers ${productionAggregatePeriod("en", "span")} and does not follow the year control. Display boundaries are simplified and omit small islands.`,
+      `Each province is shaded by how much of its forest was lost in the years you chose, with each place counted once. Pick any years from ${provinceSpanReach("en", "span")}. Boundaries are simplified and leave out small islands.`,
     readyPerCell:
-      `Showing detected forest-loss patches for the selected annual interval, traced from the 30 m grid. Patches are held for every interval from ${annualIntervalCoverage("en")}; the year control chooses which one is drawn.`,
+      `Showing every patch of detected forest loss in the years you chose, in all four provinces. Pick any years within ${perCellArchiveSpan("en")}.`,
     readyHarvest:
-      "Showing only the detected forest-loss patches that the national disturbance record marks as harvest in the selected interval.",
+      "Showing only the loss patches that the national record lists as harvested in the year they were lost.",
     readyFire:
-      "Showing only the detected forest-loss patches that the national disturbance record marks as fire in the selected interval.",
+      "Showing only the loss patches that the national record lists as burned in the year they were lost.",
     readyBoth:
-      `Showing two layers with different periods: detected forest-loss patches for the selected annual interval, drawn as you zoom in and available for every interval from ${annualIntervalCoverage("en")}, over the provisional province aggregate, which covers ${productionAggregatePeriod("en", "span")} and does not follow the year control. Province display boundaries are simplified and omit small islands.`,
+      `Provinces are shaded by how much forest they lost in the years you chose, and zooming in shows each patch of loss. Pick any years from ${provinceSpanReach("en", "span")}. Boundaries are simplified and leave out small islands.`,
     fallbackTimeout:
-      "The interactive map is taking too long to load. A static map is shown instead. The figures below are unaffected. You can retry the interactive map.",
+      "The interactive map is taking too long, so a still map is shown instead. The figures below are not affected.",
     fallbackError:
-      "The interactive map could not be loaded. A static map is shown instead. The figures below are unaffected. You can retry the interactive map.",
+      "The interactive map didn’t load, so a still map is shown instead. The figures below are not affected.",
     unavailable:
-      "Condition and recovery needs the annual land-cover class series, which has not been acquired or admitted. It is not shown for any year. Forest loss, Recorded harvest and Wildfire are unaffected.",
+      "Condition and recovery isn’t available yet. We have decided what counts as trees growing back, but a map built on that decision hasn’t been reviewed yet. The other layers are not affected.",
     unavailableYear:
-      `Detected patches cover the annual intervals from ${annualIntervalCoverage("en")}. Choose ${EXPLORE_YEAR_MAX} or an earlier year to see this mode.`,
+      `Loss patches cover ${perCellArchiveSpan("en")}. Choose ${EXPLORE_YEAR_MAX} or earlier to see this layer.`,
     error:
-      "The map could not be loaded. The figures below are unaffected. You can retry the interactive map or use the list and table.",
+      "The map didn’t load. The figures below are not affected, and you can try again or use the table below.",
     errorTimeout:
-      "The interactive map is taking too long to load, and no static map is available for this selection. The figures below are unaffected. You can retry the interactive map or use the list and table.",
+      "The map is taking too long to load. The figures below are not affected, and you can try again or use the table below.",
     retry: "Retry the interactive map",
     attribution: "Map sources",
     perCell:
-      `Zoom in to see individual patches of detected forest loss, traced from the 30 m grid rather than generalized from it. One annual interval is drawn at a time, chosen by the year control, from the intervals running ${annualIntervalCoverage("en")}.`,
+      `Zoom in to see each patch of detected forest loss in the years you chose. A place lost in more than one year is drawn once for each year.`,
     perCellLimits:
-      "These patches are drawn, not counted. Below the closest zoom the map simplifies them and leaves out the smallest ones, so adding them up would come out short; the annual figures are counted from the exact cell inventory instead. Nobody has checked these patches against conditions on the ground. An area with no patch is not a claim that no loss happened there.",
-    perCellLegend: "Detected loss patch, by what the official record shows",
+      "These patches are for viewing, not counting: when zoomed out, the map simplifies them and drops the smallest. Nobody has checked them on the ground, and an area with no patch doesn’t mean no loss happened there.",
+    perCellLegend: "Loss patch, by what the official record shows",
     perCellLegendHarvest: "Detected loss patch with a recorded harvest",
     perCellLegendFire: "Detected loss patch with a recorded fire",
     perCellFilteredLimits:
-      "Only patches the disturbance record marks this way are drawn. The record cannot tell nothing-recorded apart from outside the area it maps, so an empty area is not a claim that nothing happened there.",
-    perCellHarvest: "A harvest is recorded in the same interval",
-    perCellFire: "A fire is recorded in the same interval",
-    perCellNeither:
-      "Neither is recorded. The disturbance record cannot distinguish nothing recorded from outside the area it maps, so this is not evidence that neither happened.",
-    legend: "Detected forest loss, percent of known forested hectares",
-    province: "Province",
-    period: "Period",
-    lossHectares: "Detected loss (ha)",
-    lossPercent: "Detected loss (%)",
+      "Only patches the official record marks this way are drawn. An empty area doesn’t mean nothing happened there; the record may just not cover it.",
+    legend: "Detected forest loss in these years, as a share of the forest at the start",
+    legendHeading: "Detected forest loss",
+    legendCaption: "As a share of the forest at the start",
+    causeLegendHeading: { harvest: "Recorded harvest", fire: "Recorded fire" },
+    causeLegendCaption: "Average share of the forest per year",
     coverage: "Coverage",
-    complete: "Every input pixel present",
-    partial: "Some pixels unknown, so this is a minimum",
-    unknownArea: "ha unknown",
     zoomIn: "Zoom in",
     zoomOut: "Zoom out",
     resetView: "Reset the view",
     zoomControls: "Map zoom",
     scale: "Scale",
     scaleBar: "Scale bar",
-    mapPanel: "Map layers and legend",
-    mapLayers: "Layers shown",
+    mapPanel: "Map legend",
+    boundariesShown: "Boundaries shown",
     boundary: "Boundary",
     jurisdiction: "Jurisdiction",
+    province: "Province",
+    placeFiguresLoading: "Loading this place’s figures…",
+    placeFiguresFailed: "This place’s figures didn’t load. Try again later.",
     clearBoundary: "Clear boundary",
     interval: "Interval",
     normalizedShare: "Detected loss share",
     totalLoss: "Detected loss",
     knownObservedSubtotal: "Known detected subtotal",
-    provinceAggregate: `Provisional aggregate, ${productionAggregatePeriod("en")}`,
-    detectedPatches: "Detected-loss patches",
-    zoomToPatches: "Zoom to patches",
-    patchesVisible: "Patches are already visible at this zoom.",
-    patchesUnavailable: "No patch layer is available for this selection.",
-    mapNotReady: "The map is not ready yet.",
+    zoomToPatches: "Zoom in to see the patches",
+    patchHint: "Loss patches appear when you zoom in close.",
     enterFullscreen: "View map full screen",
     exitFullscreen: "Exit full screen",
     mapPanelHarvest: "Harvest recorded",
     mapPanelFire: "Fire recorded",
-    mapPanelNeither: "Neither recorded",
+    mapPanelNeither: "Neither recorded; the record may not cover it",
   },
   fr: {
     label: "Carte des pertes forestières",
     loading:
       "Chargement des couches cartographiques pour l’année choisie.",
     ready:
-      `Affichage de l’agrégat provincial provisoire, qui couvre ${productionAggregatePeriod("fr", "span")} et ne suit pas la commande d’année. Les limites d’affichage sont simplifiées et omettent les petites îles.`,
+      `Chaque province est ombrée selon la part de sa forêt perdue pendant les années choisies, chaque lieu étant compté une seule fois. Choisissez n’importe quelles années ${provinceSpanReach("fr", "from")}. Les limites sont simplifiées et omettent les petites îles.`,
     readyPerCell:
-      `Affichage des parcelles de perte forestière détectée pour l’intervalle annuel choisi, tracées à partir de la grille de 30 m. Des parcelles existent pour chaque intervalle ${annualIntervalCoverage("fr")}; la commande d’année détermine celui qui est dessiné.`,
+      `Affichage de chaque parcelle de perte forestière détectée pendant les années choisies, dans les quatre provinces. Choisissez n’importe quelles années comprises dans ${perCellArchiveSpan("fr")}.`,
     readyHarvest:
-      "Affichage des seules parcelles de perte forestière détectée que le registre national des perturbations désigne comme récolte pour l’intervalle choisi.",
+      "Affichage des seules parcelles de perte que le registre national indique comme récoltées l’année où elles ont été perdues.",
     readyFire:
-      "Affichage des seules parcelles de perte forestière détectée que le registre national des perturbations désigne comme incendie pour l’intervalle choisi.",
+      "Affichage des seules parcelles de perte que le registre national indique comme brûlées l’année où elles ont été perdues.",
     readyBoth:
-      `Affichage de deux couches aux périodes différentes : les parcelles de perte forestière détectée pour l’intervalle annuel choisi, dessinées au fur et à mesure du zoom et offertes pour chaque intervalle ${annualIntervalCoverage("fr")}, par-dessus l’agrégat provincial provisoire, qui couvre ${productionAggregatePeriod("fr", "span")} et ne suit pas la commande d’année. Les limites provinciales affichées sont simplifiées et omettent les petites îles.`,
+      `Les provinces sont ombrées selon la forêt perdue pendant les années choisies, et le zoom avant montre chaque parcelle de perte. Choisissez n’importe quelles années ${provinceSpanReach("fr", "from")}. Les limites sont simplifiées et omettent les petites îles.`,
     fallbackTimeout:
-      "La carte interactive met trop de temps à se charger. Une carte statique est affichée à sa place. Les chiffres ci-dessous restent inchangés. Vous pouvez réessayer de charger la carte interactive.",
+      "La carte interactive tarde à se charger\u202F; une carte fixe est donc affichée à sa place. Les chiffres ci-dessous ne sont pas touchés.",
     fallbackError:
-      "La carte interactive n’a pas pu être chargée. Une carte statique est affichée à sa place. Les chiffres ci-dessous restent inchangés. Vous pouvez réessayer de charger la carte interactive.",
+      "La carte interactive ne s’est pas chargée\u202F; une carte fixe est donc affichée à sa place. Les chiffres ci-dessous ne sont pas touchés.",
     unavailable:
-      "L’état et le rétablissement exigent la série annuelle des classes de couverture terrestre, qui n’a été ni acquise ni admise. Ce mode n’est affiché pour aucune année. La perte forestière, les récoltes consignées et les incendies ne sont pas touchés.",
+      "L’état et le rétablissement ne sont pas encore offerts. Nous avons décidé ce qui compte comme des arbres qui repoussent, mais la carte fondée sur cette décision n’a pas encore été examinée. Les autres couches ne sont pas touchées.",
     unavailableYear:
-      `Les parcelles détectées couvrent les intervalles annuels ${annualIntervalCoverage("fr")}. Choisissez ${EXPLORE_YEAR_MAX} ou une année antérieure pour voir ce mode.`,
+      `Les parcelles de perte couvrent ${perCellArchiveSpan("fr")}. Choisissez ${EXPLORE_YEAR_MAX} ou une année antérieure pour voir cette couche.`,
     error:
-      "La carte n’a pas pu être chargée. Les chiffres ci-dessous restent inchangés. Vous pouvez réessayer de charger la carte interactive ou utiliser la liste et le tableau.",
+      "La carte ne s’est pas chargée. Les chiffres ci-dessous ne sont pas touchés\u202F; vous pouvez réessayer ou consulter le tableau ci-dessous.",
     errorTimeout:
-      "La carte interactive met trop de temps à se charger, et aucune carte statique n’est disponible pour cette sélection. Les chiffres ci-dessous restent inchangés. Vous pouvez réessayer de charger la carte interactive ou utiliser la liste et le tableau.",
+      "La carte tarde à se charger. Les chiffres ci-dessous ne sont pas touchés\u202F; vous pouvez réessayer ou consulter le tableau ci-dessous.",
     retry: "Réessayer la carte interactive",
     attribution: "Sources de la carte",
     perCell:
-      `Faites un zoom avant pour voir chaque parcelle de perte forestière détectée, tracée à partir de la grille de 30 m plutôt que généralisée. Un seul intervalle annuel est dessiné à la fois, choisi par la commande d’année, parmi les intervalles ${annualIntervalCoverage("fr")}.`,
+      `Faites un zoom avant pour voir chaque parcelle de perte forestière détectée pendant les années choisies. Un lieu perdu au cours de plusieurs années est dessiné une fois pour chacune.`,
     perCellLimits:
-      "Ces parcelles sont dessinées, et non comptées. Sous le zoom le plus rapproché, la carte les simplifie et omet les plus petites ; les additionner donnerait donc un total trop faible. Les chiffres annuels sont plutôt comptés à partir de l’inventaire exact des cellules. Personne n’a vérifié ces parcelles sur le terrain. Une zone sans parcelle n’affirme pas qu’aucune perte n’y est survenue.",
-    perCellLegend: "Parcelle de perte détectée, selon ce que montre le registre officiel",
+      "Ces parcelles servent à la visualisation, pas au calcul\u202F: en zoom arrière, la carte les simplifie et omet les plus petites. Personne ne les a vérifiées sur le terrain, et une zone sans parcelle ne veut pas dire qu’aucune perte n’y est survenue.",
+    perCellLegend: "Parcelle de perte, selon ce que montre le registre officiel",
     perCellLegendHarvest: "Parcelle de perte détectée avec récolte consignée",
     perCellLegendFire: "Parcelle de perte détectée avec incendie consigné",
     perCellFilteredLimits:
-      "Seules les parcelles ainsi désignées par le registre des perturbations sont dessinées. Le registre ne distingue pas l’absence de mention de l’extérieur de la zone qu’il cartographie; une zone vide n’affirme donc pas que rien ne s’y est produit.",
-    perCellHarvest: "Une récolte est consignée pour le même intervalle",
-    perCellFire: "Un incendie est consigné pour le même intervalle",
-    perCellNeither:
-      "Ni l’un ni l’autre n’est consigné. Le registre des perturbations ne distingue pas l’absence de mention de l’extérieur de la zone qu’il cartographie; ce n’est donc pas une preuve que rien ne s’est produit.",
+      "Seules les parcelles ainsi désignées par le registre officiel sont dessinées. Une zone vide ne veut pas dire que rien ne s’y est produit\u202F; le registre ne la couvre peut-être pas.",
     legend:
-      "Perte forestière détectée, en pourcentage des hectares forestiers connus",
-    province: "Province",
-    period: "Période",
-    lossHectares: "Perte détectée (ha)",
-    lossPercent: "Perte détectée (%)",
+      "Perte forestière détectée pendant ces années, en part de la forêt au début",
+    legendHeading: "Perte forestière détectée",
+    legendCaption: "En part de la forêt au début",
+    causeLegendHeading: { harvest: "Récoltes consignées", fire: "Incendies consignés" },
+    causeLegendCaption: "Part moyenne de la forêt par année",
     coverage: "Couverture",
-    complete: "Tous les pixels d’entrée sont présents",
-    partial: "Certains pixels sont inconnus; il s’agit donc d’un minimum",
-    unknownArea: "ha inconnus",
     zoomIn: "Zoom avant",
     zoomOut: "Zoom arrière",
     resetView: "Réinitialiser la vue",
     zoomControls: "Zoom de la carte",
     scale: "Échelle",
     scaleBar: "Barre d’échelle",
-    mapPanel: "Couches et légende de la carte",
-    mapLayers: "Couches affichées",
+    mapPanel: "Légende de la carte",
+    boundariesShown: "Limites affichées",
     boundary: "Limite",
     jurisdiction: "Autorité compétente",
+    province: "Province",
+    placeFiguresLoading: "Chargement des chiffres de ce lieu…",
+    placeFiguresFailed: "Les chiffres de ce lieu n’ont pas pu être chargés. Réessayez plus tard.",
     clearBoundary: "Effacer la limite",
     interval: "Intervalle",
     normalizedShare: "Part de perte détectée",
     totalLoss: "Perte détectée",
     knownObservedSubtotal: "Sous-total détecté connu",
-    provinceAggregate: `Agrégat provisoire, ${productionAggregatePeriod("fr")}`,
-    detectedPatches: "Parcelles de perte détectée",
-    zoomToPatches: "Zoomer vers les parcelles",
-    patchesVisible: "Les parcelles sont déjà visibles à ce niveau de zoom.",
-    patchesUnavailable: "Aucune couche de parcelles n’est offerte pour cette sélection.",
-    mapNotReady: "La carte n’est pas encore prête.",
+    zoomToPatches: "Zoomer pour voir les parcelles",
+    patchHint: "Les parcelles de perte apparaissent en zoom rapproché.",
     enterFullscreen: "Afficher la carte en plein écran",
     exitFullscreen: "Quitter le plein écran",
     mapPanelHarvest: "Récolte consignée",
     mapPanelFire: "Incendie consigné",
-    mapPanelNeither: "Ni l’un ni l’autre consigné",
+    mapPanelNeither: "Ni l’un ni l’autre consigné\u202F; le registre ne couvre peut-être pas cette zone",
   },
 } as const;
 
@@ -201,11 +200,36 @@ const PMTILES_LOAD_TIMEOUT_MS = 10_000;
 // by the server and client trees having different positions around this island.
 const STATUS_ID = "explore-map-status";
 const ATTRIBUTION_ID = "explore-map-attribution";
-const PATCH_ZOOM_REASON_ID = "explore-map-patch-zoom-reason";
 
 // The default camera and pan limit share this one four-province envelope so
 // they cannot drift apart. It frames all four provinces but is not a button.
+/*
+ * Where "Zoom in to see the patches" goes when the view is centred outside
+ * the four provinces. The four-province view is centred in northern Manitoba,
+ * which the record does not cover, so zooming on the centre landed on empty
+ * ground. Each point sits in the province's commercial forest, where detected
+ * loss is common in any year.
+ */
+const PATCH_FOCUS: Readonly<Record<ExploreMapView, Position>> = {
+  bc: [-122.5, 53.5],
+  ab: [-116.5, 54.5],
+  on: [-84.5, 48.5],
+  qc: [-75.5, 48.5],
+};
+
+/*
+ * The patch archive starts at zoom 8, but its zoom-8 tiles keep only the
+ * largest few patches of all 38 years (3 to 7 a tile at the focus points
+ * below); hundreds appear from zoom 9. So the offer to zoom in stays until
+ * zoom 9, and following it goes to zoom 10, where a single year's patches of
+ * a few tens of hectares are several pixels across.
+ */
+const PATCH_READABLE_ZOOM = 9;
+const PATCH_TARGET_ZOOM = 10;
+
 const COMBINED_PROVINCE_BOUNDS: MapBounds = [-139.1, 41.5, -57, 62.1];
+// Space kept around the four provinces when the map opens.
+const FRAME_PADDING = 36;
 
 // These are only camera extents for the province buttons. They neither filter
 // a layer nor imply that a layer supplies a provincial measurement there.
@@ -214,6 +238,19 @@ const MAP_VIEW_BOUNDS: Readonly<Record<ExploreMapView, MapBounds>> = {
   ab: [-120, 48.9, -109, 60.1],
   on: [-95.2, 41.5, -74.1, 56.9],
   qc: [-79.9, 45, -57, 62.1],
+};
+
+/** Zoom where the reader is if that is in a province; otherwise to the nearest province's forest. */
+const patchZoomCentre = ({ lng, lat }: Readonly<{ lng: number; lat: number }>): Position => {
+  const views = Object.keys(MAP_VIEW_BOUNDS) as ExploreMapView[];
+  const inside = views.some((view) => {
+    const [west, south, east, north] = MAP_VIEW_BOUNDS[view];
+    return lng >= west && lng <= east && lat >= south && lat <= north;
+  });
+  if (inside) return [lng, lat];
+  const distance = ([focusLng, focusLat]: Position) =>
+    Math.hypot((focusLng - lng) * Math.cos((lat * Math.PI) / 180), focusLat - lat);
+  return views.map((view) => PATCH_FOCUS[view]).reduce((best, focus) => (distance(focus) < distance(best) ? focus : best));
 };
 
 // MapLibre resolves its worker as `new URL("./maplibre-gl-worker.mjs",
@@ -227,6 +264,7 @@ const MAPLIBRE_WORKER_URL = `/maplibre/${MAPLIBRE_WORKER_VERSION}/maplibre-gl-wo
 type ProvinceFeature = {
   id: string;
   properties: {
+    province_id: string;
     observed_loss_percent: number;
     province_name_en: string;
     province_name_fr: string;
@@ -250,22 +288,66 @@ const featurePath = (feature: ProvinceFeature) => {
       : (feature.geometry.coordinates as Position[][][]);
   return polygons.flatMap((polygon) => polygon.map(ringPath)).join(" ");
 };
-const lossColour = (value: number) =>
-  value >= 3
-    ? EXPLORE_MAP_COLOURS.loss3
-    : value >= 2
-      ? EXPLORE_MAP_COLOURS.loss2
-      : value >= 1
-        ? EXPLORE_MAP_COLOURS.loss1
-        : EXPLORE_MAP_COLOURS.loss0;
+const SPAN_CLASS_COLOURS = [
+  EXPLORE_MAP_COLOURS.loss0,
+  EXPLORE_MAP_COLOURS.loss1,
+  EXPLORE_MAP_COLOURS.loss2,
+  EXPLORE_MAP_COLOURS.loss3,
+  EXPLORE_MAP_COLOURS.loss4,
+] as const;
 
-const boundaryLineLayerIds = (overlays: readonly BoundaryOverlayId[]) =>
+/*
+ * One colour per province for the span on display. A province whose share
+ * cannot be computed gets the ground colour, not the lightest band: the
+ * lightest band says "under 1 percent", and nobody measured that.
+ */
+const provinceSpanColours = (fromYear: number, toYear: number): Readonly<Record<string, string>> =>
+  Object.fromEntries(
+    provinceSpanMeasurements({ fromYear, toYear }).map((row) => {
+      const band = spanShareClass(row.unionLossPercent);
+      return [row.id, band === null ? EXPLORE_MAP_COLOURS.ground : SPAN_CLASS_COLOURS[band]];
+    }),
+  );
+
+/** What the province fill shows: detected loss, or recorded harvest or fire. */
+type ProvinceShading = "loss" | ProvinceCause;
+
+const provinceFillColour = (fromYear: number, toYear: number, shading: ProvinceShading = "loss") => {
+  const colours = shading === "loss" ? provinceSpanColours(fromYear, toYear) : provinceCauseColours(shading, fromYear, toYear);
+  return [
+    "match",
+    ["get", "province_id"],
+    ...Object.entries(colours).flat(),
+    EXPLORE_MAP_COLOURS.ground,
+  ] as unknown as string;
+};
+
+const PROVINCE_FILL_LAYER_ID = `${EXPLORE_PRODUCTION_LAYER.sourceLayer}-fill`;
+
+const boundaryLayerIds = (overlays: readonly BoundaryOverlayId[]) =>
   overlays.flatMap((id) => {
     const overlay = BOUNDARY_OVERLAYS[id];
     return overlay.available && overlay.url && overlay.sourceLayer
-      ? [`boundary-${id}-line`]
+      ? [`boundary-${id}-fill`, `boundary-${id}-line`, `boundary-${id}-selected`]
       : [];
   });
+
+const boundaryPickLayerIds = (overlays: readonly BoundaryOverlayId[]) =>
+  boundaryLayerIds(overlays).filter((id) => id.endsWith("-fill") || id.endsWith("-line"));
+
+const PROVINCE_CODE_FOR_PRUID: Readonly<Record<string, string>> = { "59": "BC", "48": "AB", "35": "ON", "24": "QC" };
+
+/**
+ * The province an economic region or census subdivision lies in. Their tiles
+ * carry the national jurisdiction, but "Canada" tells a reader nothing about
+ * where a town is.
+ */
+const boundaryProvince = (boundary: BoundarySelection): string | null =>
+  boundary.overlay === "census-subdivisions"
+    ? censusSubdivisionProvince(boundary.boundaryId)
+    : boundary.overlay === "economic-regions"
+      ? PROVINCE_CODE_FOR_PRUID[boundary.boundaryId.slice(12, 14)] ?? null
+      : null;
 
 const boundaryJurisdiction = (locale: Locale, jurisdiction: string) =>
   ({
@@ -273,27 +355,20 @@ const boundaryJurisdiction = (locale: Locale, jurisdiction: string) =>
     AB: { en: "Alberta", fr: "Alberta" },
     BC: { en: "British Columbia", fr: "Colombie-Britannique" },
     ON: { en: "Ontario", fr: "Ontario" },
-    QC: { en: "Quebec", fr: "Québec" },
+    QC: { en: "Québec", fr: "Québec" },
   })[jurisdiction]?.[locale] ?? jurisdiction;
 
-const provinceLayers: StyleSpecification["layers"] = [
+// The tiles carry only the province geometry and its id that matter here; the
+// 2020-2022 figures baked into them are not read. The colour comes from the
+// span release, so it follows the year control without a new tile request.
+const provinceLayers = (fromYear: number, toYear: number, shading: ProvinceShading = "loss"): StyleSpecification["layers"] => [
   {
-    id: `${EXPLORE_PRODUCTION_LAYER.sourceLayer}-fill`,
+    id: PROVINCE_FILL_LAYER_ID,
     type: "fill",
     source: EXPLORE_PRODUCTION_LAYER.sourceLayer,
     "source-layer": EXPLORE_PRODUCTION_LAYER.sourceLayer,
     paint: {
-      "fill-color": [
-        "step",
-        ["get", "observed_loss_percent"],
-        EXPLORE_MAP_COLOURS.loss0,
-        1,
-        EXPLORE_MAP_COLOURS.loss1,
-        2,
-        EXPLORE_MAP_COLOURS.loss2,
-        3,
-        EXPLORE_MAP_COLOURS.loss3,
-      ],
+      "fill-color": provinceFillColour(fromYear, toYear, shading),
       "fill-opacity": 0.88,
     },
   },
@@ -309,27 +384,44 @@ const provinceLayers: StyleSpecification["layers"] = [
   },
 ];
 
+/*
+ * The province outlines alone, for the modes that shade nothing. Without them
+ * a patch mode opened on an empty ground: the patches only draw from zoom 8,
+ * so at the four-province view there was nothing to see or steer by.
+ */
+const provinceOutlineLayer = (): StyleSpecification["layers"][number] => provinceLayers(EXPLORE_YEAR_MAX - 1, EXPLORE_YEAR_MAX)[1]!;
+
 const PER_CELL_LAYER_ID = `${EXPLORE_PER_CELL_LAYER.sourceId}-fill`;
 
-const perCellStyle = (archive: PerCellArchive, cause: PerCellCause) => {
-  const source: StyleSpecification["sources"][string] = {
-    type: "vector",
-    url: `pmtiles://${archive.url}`,
-    bounds: [-141, 41, -52, 84],
-  };
-  const causeFilter: FilterSpecification | undefined =
-    cause === "harvest"
-      ? [">", ["get", "harvest"], 0]
-      : cause === "fire"
-        ? [">", ["get", "fire"], 0]
-        : undefined;
-  const layer: StyleSpecification["layers"][number] = {
+type PerCellSpanYears = NonNullable<ReturnType<typeof perCellSpanYears>>;
+
+const perCellSource = (): StyleSpecification["sources"][string] => ({
+  type: "vector",
+  url: `pmtiles://${EXPLORE_PER_CELL_SPAN_LAYER.url}`,
+  bounds: [-141, 41, -52, 84],
+});
+
+/**
+ * One layer over the span archive. The span is a filter on each patch's
+ * closing year, and the cause a filter on its recorded harvest or fire, so a
+ * new span or mode rebuilds this layer while the source and its loaded tiles
+ * stay put.
+ */
+const perCellLayer = (years: PerCellSpanYears, cause: PerCellCause): StyleSpecification["layers"][number] => {
+  const year: ExpressionSpecification = ["get", EXPLORE_PER_CELL_SPAN_LAYER.yearProperty];
+  const filters: ExpressionSpecification[] = [
+    [">", year, years.after],
+    ["<=", year, years.through],
+  ];
+  if (cause === "harvest") filters.push([">", ["get", "harvest"], 0]);
+  if (cause === "fire") filters.push([">", ["get", "fire"], 0]);
+  return {
     id: PER_CELL_LAYER_ID,
     type: "fill",
-    source: EXPLORE_PER_CELL_LAYER.sourceId,
-    "source-layer": perCellSourceLayer(archive.interval),
+    source: EXPLORE_PER_CELL_SPAN_LAYER.sourceId,
+    "source-layer": EXPLORE_PER_CELL_SPAN_LAYER.sourceLayer,
     minzoom: EXPLORE_PER_CELL_LAYER.minZoom,
-    ...(causeFilter ? { filter: causeFilter } : {}),
+    filter: ["all", ...filters],
     paint: {
       "fill-color":
         cause === "harvest"
@@ -342,39 +434,39 @@ const perCellStyle = (archive: PerCellArchive, cause: PerCellCause) => {
                 EXPLORE_MAP_COLOURS.harvest,
                 [">", ["get", "fire"], 0],
                 EXPLORE_MAP_COLOURS.wildfire,
-                EXPLORE_MAP_COLOURS.loss3,
+                EXPLORE_MAP_COLOURS.neither,
               ],
-      "fill-opacity": 0.9,
+      // Opaque, because a place lost in more than one year of the span is
+      // drawn once per year, and translucent fills would darken it as if it
+      // had lost more.
+      "fill-opacity": 1,
     },
   };
-  return { source, layer };
 };
 
-/** Replace only the selected annual patch source; the map and camera stay live. */
+/** Rebuild only the patch layer; the source, the map and the camera stay live. */
 function swapPerCellLayer(
   map: MapLibreMap,
-  archive: PerCellArchive | null,
+  years: PerCellSpanYears | null,
   cause: PerCellCause,
   beforeLayerId?: string,
 ) {
   if (map.getLayer(PER_CELL_LAYER_ID)) map.removeLayer(PER_CELL_LAYER_ID);
-  if (map.getSource(EXPLORE_PER_CELL_LAYER.sourceId))
-    map.removeSource(EXPLORE_PER_CELL_LAYER.sourceId);
-  if (!archive) return;
-
-  const { source, layer } = perCellStyle(archive, cause);
-  map.addSource(EXPLORE_PER_CELL_LAYER.sourceId, source);
+  if (!years) return;
+  if (!map.getSource(EXPLORE_PER_CELL_SPAN_LAYER.sourceId))
+    map.addSource(EXPLORE_PER_CELL_SPAN_LAYER.sourceId, perCellSource());
   map.addLayer(
-    layer,
+    perCellLayer(years, cause),
     beforeLayerId && map.getLayer(beforeLayerId) ? beforeLayerId : undefined,
   );
 }
 
 const buildStyle = (
-  province: boolean,
-  archive: PerCellArchive | null,
+  province: ProvinceShading | null,
+  years: PerCellSpanYears | null,
   overlays: readonly BoundaryOverlayId[],
   cause: PerCellCause,
+  span: Readonly<{ fromYear: number; toYear: number }>,
 ): StyleSpecification => {
   const sources: StyleSpecification["sources"] = {};
   const layers: StyleSpecification["layers"] = [
@@ -386,35 +478,56 @@ const buildStyle = (
     // same ground, so this also makes the two paths agree.
     { id: "ground", type: "background", paint: { "background-color": EXPLORE_MAP_COLOURS.ground } },
   ];
-  if (province) {
-    sources[EXPLORE_PRODUCTION_LAYER.sourceLayer] = {
-      type: "vector",
-      url: `pmtiles://${EXPLORE_PRODUCTION_LAYER.url}`,
-      bounds: [-141, 41, -52, 70],
-    };
-    layers.push(...provinceLayers);
+  // The province archive is always loaded: shaded in forest-loss mode,
+  // outlines only in every other mode, so the map always shows where it is.
+  sources[EXPLORE_PRODUCTION_LAYER.sourceLayer] = {
+    type: "vector",
+    url: `pmtiles://${EXPLORE_PRODUCTION_LAYER.url}`,
+    bounds: [-141, 41, -52, 70],
+  };
+  if (province) layers.push(...provinceLayers(span.fromYear, span.toYear, province));
+  else layers.push(provinceOutlineLayer());
+  if (years) {
+    sources[EXPLORE_PER_CELL_SPAN_LAYER.sourceId] = perCellSource();
+    // Every patch carries its closing year and the harvest and fire counts the
+    // disturbance record holds for its own interval, so every span and all
+    // three modes are this one archive filtered rather than another to load.
+    layers.push(perCellLayer(years, cause));
   }
-  if (archive) {
-    const perCell = perCellStyle(archive, cause);
-    sources[EXPLORE_PER_CELL_LAYER.sourceId] = perCell.source;
-    // Every patch carries the harvest and fire counts the disturbance record
-    // holds for its own interval, so the harvest and wildfire modes are this
-    // same archive filtered rather than a second layer to load. Filtering in
-    // the style keeps one network request serving all three modes.
-    layers.push(perCell.layer);
-  }
-  // Boundaries are drawn last so they sit above the data they frame, and as
-  // lines only. A filled boundary would compete with the loss ramp and invite
-  // reading a district's colour as a measurement of that district.
-  for (const id of overlays) {
+  // Boundaries are drawn last so they sit above the data they frame. Their
+  // fills paint nothing and exist only so the whole area answers the pointer:
+  // a filled boundary would compete with the loss ramp and invite reading a
+  // district's colour as a measurement of that district.
+  const availableOverlays = overlays.filter((id) => {
     const overlay = BOUNDARY_OVERLAYS[id];
-    if (!overlay.available || !overlay.url || !overlay.sourceLayer) continue;
+    return overlay.available && overlay.url && overlay.sourceLayer;
+  });
+  for (const id of availableOverlays) {
+    const overlay = BOUNDARY_OVERLAYS[id];
     const sourceId = `boundary-${id}`;
     sources[sourceId] = {
       type: "vector",
       url: `pmtiles://${overlay.url}`,
       bounds: [-141, 41, -52, 84],
     };
+  }
+  for (const id of availableOverlays) {
+    const overlay = BOUNDARY_OVERLAYS[id];
+    const sourceId = `boundary-${id}`;
+    layers.push({
+      id: `${sourceId}-fill`,
+      type: "fill",
+      source: sourceId,
+      "source-layer": overlay.sourceLayer,
+      paint: {
+        "fill-color": EXPLORE_MAP_COLOURS.ink,
+        "fill-opacity": 0,
+      },
+    });
+  }
+  for (const id of availableOverlays) {
+    const overlay = BOUNDARY_OVERLAYS[id];
+    const sourceId = `boundary-${id}`;
     layers.push({
       id: `${sourceId}-line`,
       type: "line",
@@ -432,10 +545,26 @@ const buildStyle = (
       },
     });
   }
+  for (const id of availableOverlays) {
+    const overlay = BOUNDARY_OVERLAYS[id];
+    const sourceId = `boundary-${id}`;
+    layers.push({
+      id: `${sourceId}-selected`,
+      type: "line",
+      source: sourceId,
+      "source-layer": overlay.sourceLayer,
+      filter: ["all", ["==", ["get", "id"], ""], ["==", ["get", "juris"], ""]],
+      paint: {
+        "line-color": overlay.colour ?? EXPLORE_MAP_COLOURS.ink,
+        "line-width": ["interpolate", ["linear"], ["zoom"], 0, 1.5, 5, 2, 10, 3],
+        "line-opacity": 1,
+      },
+    });
+  }
 
   return {
     version: 8,
-    name: `${PRODUCT_NAME.en} provisional province forest-loss map`,
+    name: `${PRODUCT_NAME.en} province forest-loss map`,
     sources,
     layers,
   };
@@ -456,14 +585,42 @@ type MapView = Readonly<{
 
 const SCALE_MAX_PIXELS = 120;
 
+/*
+ * A swatch and nothing else. The patch keys once carried a glyph each, which
+ * the map never draws, so the legend promised shapes a reader could not find.
+ */
 const symbol = (className: string) => (
   <span className="map-legend-key" aria-hidden="true">
     <i className={`loss-swatch ${className}`} />
-    {className.startsWith("patch-") ? <span className="map-legend-shape">
-      {className === "patch-harvest" ? "●" : className === "patch-fire" ? "◆" : "○"}
-    </span> : null}
   </span>
 );
+
+// Worded rather than written as "5–<10%", which a screen reader reads as
+// symbols, and built from the breaks so the legend cannot drift from the fill.
+const spanLegend = (locale: Locale) => {
+  const pct = (value: number) => formatPercent(value, locale);
+  const [first] = SPAN_SHARE_BREAKS;
+  const last = SPAN_SHARE_BREAKS[SPAN_SHARE_BREAKS.length - 1];
+  return [
+    locale === "fr" ? `Moins de ${pct(first)}` : `Under ${pct(first)}`,
+    ...SPAN_SHARE_BREAKS.slice(1).map((edge, i) =>
+      locale === "fr" ? `${pct(SPAN_SHARE_BREAKS[i])} à moins de ${pct(edge)}` : `${pct(SPAN_SHARE_BREAKS[i])} to under ${pct(edge)}`),
+    locale === "fr" ? `${pct(last)} ou plus` : `${pct(last)} or more`,
+  ].map((label, band) => [`loss-${band}`, label] as const);
+};
+
+// The same wording, on the per-year breaks the harvest and fire shading uses.
+const causeLegend = (locale: Locale) => {
+  const pct = (value: number) => formatPercent(value, locale);
+  const [first] = CAUSE_BREAKS;
+  const last = CAUSE_BREAKS[CAUSE_BREAKS.length - 1];
+  return [
+    locale === "fr" ? `Moins de ${pct(first)}` : `Under ${pct(first)}`,
+    ...CAUSE_BREAKS.slice(1).map((edge, i) =>
+      locale === "fr" ? `${pct(CAUSE_BREAKS[i])} à moins de ${pct(edge)}` : `${pct(CAUSE_BREAKS[i])} to under ${pct(edge)}`),
+    locale === "fr" ? `${pct(last)} ou plus` : `${pct(last)} or more`,
+  ];
+};
 
 export function ExploreMapClient({
   locale,
@@ -479,9 +636,10 @@ export function ExploreMapClient({
   /**
    * The opening year of the span on display.
    *
-   * The district shading covers the whole span. The per-cell detail is an
-   * annual product and covers the closing year alone, which the legend says
-   * out loud rather than letting the two layers look like one measurement.
+   * The province shading and the district readout cover the whole span. The
+   * per-cell detail is an annual product and covers the closing year alone,
+   * which the legend says out loud rather than letting the two layers look
+   * like one measurement.
    */
   fromYear: number;
   overlays?: readonly BoundaryOverlayId[];
@@ -504,14 +662,20 @@ export function ExploreMapClient({
   const [selectedMapView, setSelectedMapView] = useState<ExploreMapView | null>(null);
   const [fullscreenAvailable, setFullscreenAvailable] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  // The provisional province aggregate covers 2020-2022 only. The per-cell
-  // detail covers every annual interval from 1984-1985 to 2021-2022, so the
-  // map is now offered for the whole series and the two layers are shown
-  // wherever each one actually has something to say.
+  // The province shading answers any span from 1984 to 2022 and the per-cell
+  // detail every annual interval inside it, so the map is offered for the
+  // whole series and each layer is shown wherever it has something to say.
   const cause = perCellCauseForMode(mode);
-  const perCellArchive = cause ? perCellArchiveForYear(year) : null;
+  const perCellYears = cause ? perCellSpanYears(fromYear, year) : null;
+  // A primitive for effect dependencies, so a fresh object each render does
+  // not rebuild the layer.
+  const perCellKey = perCellYears ? `${perCellYears.after}-${perCellYears.through}` : "";
   const provinceAvailable = mode === "forest-change";
-  const available = provinceAvailable || perCellArchive !== null;
+  // Harvest and wildfire shade the provinces too, in their own colour, so the
+  // map is not bare outlines until the patches draw at zoom 8.
+  const shading: ProvinceShading | null = provinceAvailable ? "loss" : mode === "recorded-harvest" ? "harvest" : mode === "wildfire" ? "fire" : null;
+  const shaded = shading !== null;
+  const available = provinceAvailable || perCellYears !== null;
   // A stable primitive, so the effect re-runs when the selection changes
   // rather than on every render of a fresh array literal.
   const overlayKey = overlays.join(",");
@@ -555,9 +719,10 @@ export function ExploreMapClient({
     };
   }, []);
 
+  // Whether the map may zoom to the patch layer. It is fixed when the map is
+  // built, so a change of it rebuilds the map.
+  const patchCapable = cause !== null;
   useEffect(() => {
-    if (!available) return;
-
     const controller = new AbortController();
     let active = true;
     let fallbackStarted = false;
@@ -566,6 +731,7 @@ export function ExploreMapClient({
     let protocolRegistered = false;
     let pmtilesLoaded = false;
     let pmtilesTimeout: ReturnType<typeof setTimeout> | null = null;
+    let hoverFrame: number | null = null;
 
     void Promise.resolve().then(() => {
       if (!active) return;
@@ -583,10 +749,10 @@ export function ExploreMapClient({
       if (fallbackStarted) return;
       fallbackStarted = true;
       if (active) setFailureKind(kind);
-      // The compatibility fallback is the province aggregate and nothing
-      // else. For a year the aggregate does not cover there is nothing to
-      // fall back to, and drawing 2020-2022 provinces under a 1995 label
-      // would be worse than showing the failure.
+      // The compatibility fallback is the province outlines and nothing
+      // else, coloured by the span release. A mode with no province layer has
+      // nothing to fall back to, and drawing forest-loss provinces under a
+      // harvest or fire label would be worse than showing the failure.
       if (!provinceAvailable) {
         if (active) setFailed(true);
         return;
@@ -655,18 +821,28 @@ export function ExploreMapClient({
         protocolRegistered = true;
         map = new maplibre.Map({
           container: mapContainerRef.current,
-          style: buildStyle(provinceAvailable, null, overlays, "all"),
+          style: buildStyle(shading, null, overlays, "all", { fromYear, toYear: year }),
           bounds: COMBINED_PROVINCE_BOUNDS,
-          fitBoundsOptions: { padding: 36, maxZoom: 6 },
-          maxBounds: COMBINED_PROVINCE_BOUNDS,
-          minZoom: 1.5,
+          fitBoundsOptions: { padding: FRAME_PADDING, maxZoom: 6 },
+          // The pan limit is the same envelope widened to what the framed
+          // view shows, or it would crop the provinces it is meant to frame.
+          maxBounds: panLimitFor(
+            COMBINED_PROVINCE_BOUNDS,
+            mapContainerRef.current.clientWidth,
+            mapContainerRef.current.clientHeight,
+            FRAME_PADDING,
+          ),
+          // Low enough that a phone can frame all four provinces with their
+          // padding; the pan limit above still stops the map zooming out past them.
+          minZoom: 1,
           // The per-cell layer is only drawn from zoom 8, so the map has to
           // reach it. Without an archive there is nothing past the province
           // aggregate to magnify and the old ceiling still applies.
-          maxZoom: cause !== null ? EXPLORE_PER_CELL_LAYER.maxZoom : 6,
+          maxZoom: patchCapable ? EXPLORE_PER_CELL_SPAN_LAYER.maxZoom : 6,
           attributionControl: false,
         });
         mapRef.current = map;
+        if (!map) return;
         const publishView = () => {
           if (!active || !map) return;
           setView({
@@ -680,6 +856,12 @@ export function ExploreMapClient({
           });
         };
         map.on("move", publishView);
+        // A rotated phone or full screen changes the frame, and so the limit.
+        map.on("resize", () => {
+          if (!map) return;
+          const container = map.getContainer();
+          map.setMaxBounds(panLimitFor(COMBINED_PROVINCE_BOUNDS, container.clientWidth, container.clientHeight, FRAME_PADDING));
+        });
         map.once("load", () => {
           if (!active) return;
           if (pmtilesTimeout) clearTimeout(pmtilesTimeout);
@@ -689,47 +871,58 @@ export function ExploreMapClient({
           setFailureKind(null);
           setMapReady(true);
           publishView();
-          const selectBoundary = (
-            event: MapLayerMouseEvent,
-            persistent: boolean,
-            overlay: BoundaryOverlayId,
-          ) => {
-            const properties = event.features?.[0]?.properties;
-            const boundaryId = properties?.id;
-            const name = properties?.[locale === "fr" ? "name_fr" : "name_en"];
-            const jurisdiction = properties?.juris;
-            if (
-              typeof boundaryId !== "string" ||
-              typeof name !== "string" ||
-              typeof jurisdiction !== "string"
-            )
-              return;
-            const selection: BoundarySelection = {
-              overlay,
-              boundaryId,
-              name,
-              jurisdiction,
-            };
-            if (persistent) setPinnedBoundary(selection);
-            else setHoveredBoundary(selection);
+          let latestPoint: MapMouseEvent["point"] | null = null;
+          let lastHoverKey = "";
+          const queryBoundary = (point: MapMouseEvent["point"]) => {
+            const layers = boundaryPickLayerIds(overlays).filter((layerId) => map?.getLayer(layerId));
+            if (layers.length === 0) return null;
+            const currentMap = map;
+            if (!currentMap) return null;
+            return pickBoundary(
+              currentMap.queryRenderedFeatures(point, { layers }) as readonly BoundaryFeature[],
+              overlays,
+              locale,
+            );
           };
-          for (const layerId of boundaryLineLayerIds(overlays)) {
-            const overlay = overlays.find((candidate) => `boundary-${candidate}-line` === layerId);
-            if (!overlay) continue;
-            map?.on("mouseenter", layerId, (event) => {
-              if (!active || !map) return;
+          const selectionKey = (selection: BoundarySelection | null) =>
+            selection ? `${selection.overlay}:${selection.jurisdiction}:${selection.boundaryId}` : "";
+          const runHoverQuery = () => {
+            hoverFrame = null;
+            if (!active || !map || !latestPoint) return;
+            const selection = queryBoundary(latestPoint);
+            const key = selectionKey(selection);
+            if (key === lastHoverKey) return;
+            lastHoverKey = key;
+            if (selection) {
               map.getCanvas().style.cursor = "pointer";
-              selectBoundary(event, false, overlay);
-            });
-            map?.on("mouseleave", layerId, () => {
-              if (!active || !map) return;
+              setHoveredBoundary(selection);
+            } else {
               map.getCanvas().style.cursor = "";
               setHoveredBoundary(null);
-            });
-            map?.on("click", layerId, (event) => {
-              if (active) selectBoundary(event, true, overlay);
-            });
-          }
+            }
+          };
+          const onMouseMove = (event: MapMouseEvent) => {
+            if (!active || !map) return;
+            latestPoint = event.point;
+            if (hoverFrame === null) hoverFrame = window.requestAnimationFrame(runHoverQuery);
+          };
+          const onMouseOut = () => {
+            if (!active || !map) return;
+            if (hoverFrame !== null) window.cancelAnimationFrame(hoverFrame);
+            hoverFrame = null;
+            latestPoint = null;
+            lastHoverKey = "";
+            map.getCanvas().style.cursor = "";
+            setHoveredBoundary(null);
+          };
+          const onClick = (event: MapMouseEvent) => {
+            if (!active || !map) return;
+            const selection = queryBoundary(event.point);
+            if (selection) setPinnedBoundary(selection);
+          };
+          map!.on("mousemove", onMouseMove);
+          map!.on("mouseout", onMouseOut);
+          map!.on("click", onClick);
         });
         map.on("error", (event) => {
           console.error("Explore PMTiles map error", event.error ?? event);
@@ -754,6 +947,8 @@ export function ExploreMapClient({
     return () => {
       active = false;
       controller.abort();
+      if (hoverFrame !== null) window.cancelAnimationFrame(hoverFrame);
+      hoverFrame = null;
       if (pmtilesTimeout) clearTimeout(pmtilesTimeout);
       map?.remove();
       mapRef.current = null;
@@ -765,7 +960,7 @@ export function ExploreMapClient({
     // and rebuild the whole map each time. The key changes exactly when the
     // selected overlay set changes, which is the only thing the style needs.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [available, provinceAvailable, overlayKey, retryNonce]);
+  }, [patchCapable, shaded, overlayKey, retryNonce]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -774,12 +969,12 @@ export function ExploreMapClient({
     try {
       swapPerCellLayer(
         map,
-        perCellArchive,
+        perCellYears,
         cause ?? "all",
-        boundaryLineLayerIds(overlays)[0],
+        boundaryLayerIds(overlays)[0],
       );
     } catch (error: unknown) {
-      console.error("Explore annual patch source swap error", error);
+      console.error("Explore patch layer swap error", error);
       void Promise.resolve().then(() => {
         if (!active) return;
         setFailureKind("error");
@@ -789,11 +984,22 @@ export function ExploreMapClient({
     return () => {
       active = false;
     };
-    // overlayKey stands in for the fresh overlays array.
+    // overlayKey and perCellKey stand in for the fresh overlays array and
+    // perCellYears object.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mapReady, perCellArchive, cause, overlayKey]);
+  }, [mapReady, perCellKey, cause, overlayKey]);
+
+  // The span moves without rebuilding the map: only the province colours change.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!mapReady || !map || !shading || !map.getLayer(PROVINCE_FILL_LAYER_ID)) return;
+    map.setPaintProperty(PROVINCE_FILL_LAYER_ID, "fill-color", provinceFillColour(fromYear, year, shading));
+  }, [mapReady, shading, fromYear, year]);
+  const spanRows = provinceAvailable ? provinceSpanMeasurements({ fromYear, toYear: year }) : [];
+  const fallbackColours = provinceSpanColours(fromYear, year);
+  const spanLabel = formatYearRange(yearRange(fromYear, year), locale);
   const readyKey = provinceAvailable
-    ? perCellArchive
+    ? perCellYears
       ? "readyBoth"
       : "ready"
     : cause === "harvest"
@@ -803,7 +1009,7 @@ export function ExploreMapClient({
         : "readyPerCell";
   // Two different absences, two different sentences. A mode with no archive
   // for the selected year is a year problem the reader can fix; condition and
-  // recovery is a missing source they cannot.
+  // recovery is waiting on a decision and an admitted, reviewed product.
   const message =
     state === "unavailable"
       ? cause === null
@@ -835,13 +1041,58 @@ export function ExploreMapClient({
   const scaleLabel = scale
     ? `${formatNumber(scale.value, locale)} ${scale.unit}`
     : "";
-  const boundary = hoveredBoundary ?? pinnedBoundary;
-  const readout = boundary
-    ? boundaryReadout(boundary, ridingMeasurements, locale, { fromYear, toYear: year })
+  const activeBoundary = hoveredBoundary ?? pinnedBoundary;
+  const activeBoundaryKey = activeBoundary
+    ? `${activeBoundary.overlay}:${activeBoundary.jurisdiction}:${activeBoundary.boundaryId}`
+    : "";
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!mapReady || !map) return;
+    for (const id of overlays) {
+      const layerId = `boundary-${id}-selected`;
+      if (!map.getLayer(layerId)) continue;
+      const selection = activeBoundary?.overlay === id ? activeBoundary : null;
+      map.setFilter(layerId, boundaryHighlightFilter(selection) as FilterSpecification);
+    }
+    // overlayKey and activeBoundaryKey stand in for the fresh arrays and
+    // selection object used here.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mapReady, overlayKey, activeBoundaryKey]);
+  const boundary = activeBoundary;
+  // A town's figures come from its province's file, fetched the first time a
+  // reader points at a town there.
+  const [placeFigures, setPlaceFigures] = useState<Readonly<Record<string, CensusSubdivisionFigures | "failed">>>({});
+  const placeProvince = boundary?.overlay === "census-subdivisions" ? censusSubdivisionProvince(boundary.boundaryId) : null;
+  const placeEntry = placeProvince ? placeFigures[placeProvince] : undefined;
+  useEffect(() => {
+    if (!placeProvince || placeEntry !== undefined) return;
+    let live = true;
+    loadCensusSubdivisionFigures(placeProvince)
+      .then((figures) => { if (live) setPlaceFigures((loaded) => ({ ...loaded, [placeProvince]: figures })); })
+      .catch((error: unknown) => {
+        console.error("Explore place figures error", error);
+        if (live) setPlaceFigures((loaded) => ({ ...loaded, [placeProvince]: "failed" }));
+      });
+    return () => { live = false; };
+  }, [placeProvince, placeEntry]);
+  const placeState = placeProvince ? (placeEntry === undefined ? "loading" : placeEntry === "failed" ? "failed" : "ready") : null;
+  const placeMeasurement = boundary && placeEntry && placeEntry !== "failed"
+    ? censusSubdivisionMeasurement(placeEntry, boundary.boundaryId, { fromYear, toYear: year })
     : null;
+  const readout = boundary && (placeState === null || placeState === "ready")
+    ? boundaryReadout(
+      boundary,
+      placeMeasurement ? [...ridingMeasurements, placeMeasurement] : ridingMeasurements,
+      locale,
+      { fromYear, toYear: year },
+    )
+    : null;
+  const province = boundary ? boundaryProvince(boundary) : null;
   const fitMapToView = (mapView: ExploreMapView) => {
+    // The controls sit along the bottom edge, so the fitted province keeps
+    // clear of them rather than sliding underneath.
     mapRef.current?.fitBounds(MAP_VIEW_BOUNDS[mapView], {
-      padding: 36,
+      padding: { top: 32, right: 32, bottom: 72, left: 32 },
       duration: 350,
       maxZoom: 6,
     });
@@ -850,8 +1101,8 @@ export function ExploreMapClient({
     const map = mapRef.current;
     if (!map) return;
     map.easeTo({
-      center: map.getCenter(),
-      zoom: EXPLORE_PER_CELL_LAYER.minZoom,
+      center: patchZoomCentre(map.getCenter()),
+      zoom: PATCH_TARGET_ZOOM,
       duration: 350,
     });
   };
@@ -863,13 +1114,9 @@ export function ExploreMapClient({
     setMapReady(false);
     setRetryNonce((attempt) => attempt + 1);
   };
-  const patchZoomDisabledReason = !perCellArchive
-    ? text[locale].patchesUnavailable
-    : !view
-      ? text[locale].mapNotReady
-      : view.zoom >= EXPLORE_PER_CELL_LAYER.minZoom
-        ? text[locale].patchesVisible
-        : null;
+  // Offered only while it would do something: patches exist for this
+  // selection and the map is still zoomed out past the point they appear.
+  const patchZoomOffered = perCellYears !== null && view !== null && view.zoom < PATCH_READABLE_ZOOM;
   const toggleFullscreen = async () => {
     const frame = mapFrameRef.current;
     if (!frame || !fullscreenAvailable) return;
@@ -880,8 +1127,93 @@ export function ExploreMapClient({
       console.error("Explore map full-screen error", error);
     }
   };
+  /*
+   * Nothing that grows with content floats over the map.
+   *
+   * The province chooser used to be pinned to the top of the frame and the
+   * layer panel hung from its bottom, both absolutely positioned, so neither
+   * added any height, and when the span legend grew the panel rose over the
+   * chooser and covered it. Both are in normal flow, the chooser above the
+   * frame and this legend below it, so a legend that grows pushes its own
+   * column instead. Only the scale and the zoom cluster float, because they
+   * describe and operate the canvas itself and neither grows with content.
+   *
+   * This is the map's one legend. The province scale and the patch key used
+   * to be drawn twice, once here and again under the map beside a table that
+   * repeated the figures section; the figures now live only in that section.
+   */
+  const layerPanel = state === "ready" ? (
+    <div
+      className="explore-map-layer-panel"
+      tabIndex={0}
+      role="region"
+      aria-label={text[locale].mapPanel}
+    >
+      {provinceAvailable ? (
+        <div className="explore-map-key">
+          <p className="explore-map-key-title">
+            <strong>{`${text[locale].legendHeading}, ${spanLabel}`}</strong>
+            <span>{text[locale].legendCaption}</span>
+          </p>
+          <ol className="explore-map-legend explore-map-legend--scale" aria-label={text[locale].legend}>
+            {spanLegend(locale).map(([band, label]) => <li key={band}>{symbol(band)}<span>{label}</span></li>)}
+          </ol>
+        </div>
+      ) : null}
+      {shading === "harvest" || shading === "fire" ? (
+        <div className="explore-map-key">
+          <p className="explore-map-key-title">
+            <strong>{`${text[locale].causeLegendHeading[shading]}, ${spanLabel}`}</strong>
+            <span>{text[locale].causeLegendCaption}</span>
+          </p>
+          <ol className="explore-map-legend explore-map-legend--scale" aria-label={text[locale].legend}>
+            {causeLegend(locale).map((label, band) => (
+              <li key={band}>
+                <span className="map-legend-key" aria-hidden="true">
+                  <i className="loss-swatch" style={{ background: CAUSE_RAMPS[shading][band] }} />
+                </span>
+                <span>{label}</span>
+              </li>
+            ))}
+          </ol>
+        </div>
+      ) : null}
+      {perCellYears ? (
+        <div className="explore-map-key explore-map-data">
+          <p className="explore-map-key-title">
+            <strong>{`${legendTitle}, ${spanLabel}`}</strong>
+          </p>
+          <ul className="explore-map-legend" aria-label={legendTitle}>
+            {cause === "fire" ? null : <li>{symbol("patch-harvest")}{text[locale].mapPanelHarvest}</li>}
+            {cause === "harvest" ? null : <li>{symbol("patch-fire")}{text[locale].mapPanelFire}</li>}
+            {cause === "all" ? <li>{symbol("patch-none")}{text[locale].mapPanelNeither}</li> : null}
+          </ul>
+          <p>{text[locale].perCell}</p>
+          <p>{text[locale].perCellLimits}</p>
+          {cause === "all" ? null : <p>{text[locale].perCellFilteredLimits}</p>}
+        </div>
+      ) : null}
+      {overlays.length > 0 ? (
+        <p className="explore-map-key-boundaries">
+          {text[locale].boundariesShown}{colon(locale)}{" "}
+          {overlays.map((id) => BOUNDARY_OVERLAYS[id].label[locale]).join(" · ")}
+        </p>
+      ) : null}
+    </div>
+  ) : null;
+
   return (
-    <section aria-label={text[locale].label}>
+    <div className="explore-map-client">
+      <div className="explore-map-stack">
+      <ProvinceBar
+        locale={locale}
+        placement="map"
+        selected={selectedMapView}
+        onSelect={(mapView) => {
+          setSelectedMapView(mapView);
+          fitMapToView(mapView);
+        }}
+      />
       <div
         ref={mapFrameRef}
         className="explore-map"
@@ -893,17 +1225,7 @@ export function ExploreMapClient({
           source === "geojson" ? "geojson-fallback" : source ?? undefined
         }
       >
-        <ProvinceBar
-          locale={locale}
-          placement="map"
-          selected={selectedMapView}
-          onSelect={(mapView) => {
-            setSelectedMapView(mapView);
-            fitMapToView(mapView);
-          }}
-        />
-        {available ? (
-          <>
+        <>
             <div
               ref={mapContainerRef}
               className="explore-map-canvas"
@@ -924,35 +1246,45 @@ export function ExploreMapClient({
               <path
                 key={feature.id}
                 d={featurePath(feature)}
-                fill={lossColour(feature.properties.observed_loss_percent)}
+                fill={fallbackColours[feature.properties.province_id] ?? EXPLORE_MAP_COLOURS.ground}
                 stroke={EXPLORE_MAP_COLOURS.ink}
                 strokeWidth="1.5"
                 fillRule="evenodd"
               >
                 <title>
-                  {labelled(
-                    locale,
-                    locale === "fr"
-                      ? feature.properties.province_name_fr
-                      : feature.properties.province_name_en,
-                    formatPercent(feature.properties.observed_loss_percent, locale),
-                  )}
+                  {(() => {
+                    // The page's own names, so English reads Québec; the published fallback keeps its spelling.
+                    const code = PROVINCE_CODE_FOR_PRUID[feature.properties.province_id];
+                    const name = code ? boundaryJurisdiction(locale, code) : locale === "fr" ? feature.properties.province_name_fr : feature.properties.province_name_en;
+                    const share = spanRows.find((row) => row.id === feature.properties.province_id)?.unionLossPercent;
+                    return typeof share === "number" ? labelled(locale, name, formatPercent(share, locale)) : name;
+                  })()}
                 </title>
               </path>
             ))}
           </svg>
             ) : null}
             {state !== "ready" ? (
-              <p className="explore-map-panel">{message}</p>
+              <p className="explore-map-panel"><span>{message}</span></p>
+            ) : null}
+            {state === "ready" && source === "pmtiles" && patchZoomOffered ? (
+              <div className="explore-map-patch-hint">
+                <p>{text[locale].patchHint}</p>
+                <button type="button" className="explore-map-patch-zoom" onClick={zoomToPatches}>
+                  {text[locale].zoomToPatches}
+                </button>
+              </div>
             ) : null}
             {state === "ready" && source === "pmtiles" && boundary ? (
               <aside className="explore-map-boundary-status" role="status">
                 <strong>{text[locale].boundary}</strong>
                 <p>{boundary.name}</p>
                 <p>
-                  {text[locale].jurisdiction}
-                  {colon(locale)} {boundaryJurisdiction(locale, boundary.jurisdiction)}
+                  {province ? text[locale].province : text[locale].jurisdiction}
+                  {colon(locale)} {boundaryJurisdiction(locale, province ?? boundary.jurisdiction)}
                 </p>
+                {placeState === "loading" ? <p>{text[locale].placeFiguresLoading}</p> : null}
+                {placeState === "failed" ? <p>{text[locale].placeFiguresFailed}</p> : null}
                 {readout?.kind === "boundary-only" ? <p>{readout.note}</p> : null}
                 {readout?.kind === "riding-measurement" ? (
                   <>
@@ -965,16 +1297,16 @@ export function ExploreMapClient({
                   </>
                 ) : null}
                 {pinnedBoundary ? (
-                  <button type="button" onClick={() => setPinnedBoundary(null)}>
+                  <button type="button" onClick={() => {
+                    setHoveredBoundary(null);
+                    setPinnedBoundary(null);
+                  }}>
                     {text[locale].clearBoundary}
                   </button>
                 ) : null}
               </aside>
             ) : null}
-          </>
-        ) : (
-          <p className="explore-map-panel">{message}</p>
-        )}
+        </>
         <div className="explore-map-controls">
           {scale && view ? (
             <div
@@ -990,70 +1322,26 @@ export function ExploreMapClient({
               <span aria-hidden="true">{scaleLabel}</span>
             </div>
           ) : null}
-          {state === "ready" ? (
-            <div
-              className="explore-map-layer-panel"
-              tabIndex={0}
-              role="region"
-              aria-label={text[locale].mapPanel}
-            >
-              <strong>{text[locale].mapLayers}</strong>
-              <ul className="explore-map-layer-list">
-                {provinceAvailable ? <li>{text[locale].provinceAggregate}</li> : null}
-                {perCellArchive ? (
-                  <li>{`${text[locale].detectedPatches}, ${formatYearRangeKey(perCellArchive.interval, locale)}`}</li>
-                ) : null}
-                {overlays.map((id) => <li key={id}>{BOUNDARY_OVERLAYS[id].label[locale]}</li>)}
-              </ul>
-              {provinceAvailable ? (
-                <ul className="explore-map-legend" aria-label={text[locale].legend}>
-                  <li>{symbol("loss-0")}0–&lt;1%</li>
-                  <li>{symbol("loss-1")}1–&lt;2%</li>
-                  <li>{symbol("loss-2")}2–&lt;3%</li>
-                  <li>{symbol("loss-3")}3%+</li>
-                </ul>
-              ) : null}
-              {perCellArchive ? (
-                <ul className="explore-map-legend" aria-label={legendTitle}>
-                  {cause === "fire" ? null : <li>{symbol("patch-harvest")}{text[locale].mapPanelHarvest}</li>}
-                  {cause === "harvest" ? null : <li>{symbol("patch-fire")}{text[locale].mapPanelFire}</li>}
-                  {cause === "all" ? <li>{symbol("patch-none")}{text[locale].mapPanelNeither}</li> : null}
-                </ul>
-              ) : null}
-            </div>
-          ) : null}
           <div className="explore-map-control-cluster">
-            <span
-              className="explore-map-patch-control"
-            >
-              <button
-                type="button"
-                className="explore-map-corner-button"
-                onClick={zoomToPatches}
-                disabled={patchZoomDisabledReason !== null}
-                title={patchZoomDisabledReason ?? undefined}
-                aria-describedby={patchZoomDisabledReason ? PATCH_ZOOM_REASON_ID : undefined}
-              >
-                {text[locale].zoomToPatches}
-              </button>
-              {patchZoomDisabledReason ? (
-                <span
-                  id={PATCH_ZOOM_REASON_ID}
-                  className="explore-map-patch-tooltip"
-                  role="tooltip"
-                >
-                  {patchZoomDisabledReason}
-                </span>
-              ) : null}
-            </span>
             {fullscreenAvailable ? (
               <button
                 type="button"
                 className="explore-map-corner-button explore-map-fullscreen-button"
                 onClick={() => void toggleFullscreen()}
                 aria-label={isFullscreen ? text[locale].exitFullscreen : text[locale].enterFullscreen}
+                title={isFullscreen ? text[locale].exitFullscreen : text[locale].enterFullscreen}
               >
-                {isFullscreen ? text[locale].exitFullscreen : text[locale].enterFullscreen}
+                <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+                  <title>{isFullscreen ? text[locale].exitFullscreen : text[locale].enterFullscreen}</title>
+                  <path
+                    d={isFullscreen ? "M7 3v4H3M11 3v4h4M7 15v-4H3M11 15v-4h4" : "M3 7V3h4M15 7V3h-4M3 11v4h4M15 11v4h-4"}
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.7"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
               </button>
             ) : null}
             <div
@@ -1084,6 +1372,8 @@ export function ExploreMapClient({
           </div>
         </div>
       </div>
+      {layerPanel}
+      </div>
       <p
         id={statusId}
         className="explore-map-status"
@@ -1104,76 +1394,6 @@ export function ExploreMapClient({
           {EXPLORE_PRODUCTION_LAYER.attribution[locale]}
         </a>
       </p>
-      {perCellArchive ? (
-        <div className="explore-map-data">
-          <strong>{legendTitle}</strong>
-          <ul className="explore-map-legend" aria-label={legendTitle}>
-            {cause === "fire" ? null : (
-              <li>
-                {symbol("patch-harvest")}
-                {text[locale].perCellHarvest}
-              </li>
-            )}
-            {cause === "harvest" ? null : (
-              <li>
-                {symbol("patch-fire")}
-                {text[locale].perCellFire}
-              </li>
-            )}
-            {cause === "all" ? (
-              <li>
-                {symbol("patch-none")}
-                {text[locale].perCellNeither}
-              </li>
-            ) : null}
-          </ul>
-          <p>{text[locale].perCell}</p>
-          <p>{text[locale].perCellLimits}</p>
-          {cause === "all" ? null : (
-            <p>{text[locale].perCellFilteredLimits}</p>
-          )}
-        </div>
-      ) : null}
-      {provinceAvailable ? (
-        <div className="explore-map-data">
-          <strong>{text[locale].legend}</strong>
-          <ul className="explore-map-legend" aria-label={text[locale].legend}>
-            <li>{symbol("loss-0")}0–&lt;1%</li>
-            <li>{symbol("loss-1")}1–&lt;2%</li>
-            <li>{symbol("loss-2")}2–&lt;3%</li>
-            <li>{symbol("loss-3")}3%+</li>
-          </ul>
-          <div className="table-scroll" tabIndex={0} role="region" aria-labelledby="explore-map-table-caption">
-            <table>
-              <caption id="explore-map-table-caption">
-                {labelled(locale, text[locale].label, productionAggregatePeriod(locale))}
-              </caption>
-              <thead>
-                <tr>
-                  <th scope="col">{text[locale].province}</th>
-                  <th scope="col">{text[locale].period}</th>
-                  <th scope="col">{text[locale].lossHectares}</th>
-                  <th scope="col">{text[locale].lossPercent}</th>
-                  <th scope="col">{text[locale].coverage}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {EXPLORE_PRODUCTION_LAYER.rows.map((row) => (
-                  <tr key={row.id}>
-                    <th scope="row">{row.name[locale]}</th>
-                    <td>{productionAggregatePeriod(locale)}</td>
-                    <td>{formatNumber(row.observedLossHectares, locale)}</td>
-                    <td>{formatNumber(row.observedLossPercent, locale)}</td>
-                    <td>
-                      {`${text[locale].partial} (${formatUnknownSharePercent(row.unknownSharePercent, locale)}; ${formatNumber(row.unknownRequiredInputHectares, locale)} ${text[locale].unknownArea})${"unmappedCharacter" in row ? `; ${row.unmappedCharacter[locale]}` : ""}`}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      ) : null}
-    </section>
+    </div>
   );
 }

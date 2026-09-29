@@ -4,12 +4,9 @@
 
 ## Current Phase 1 and 2 position
 
-### Phase 1 – 2/4 (50%) formal exit criteria
+### Phase 1 – 3/3 formal exit criteria, complete
 
-Two criteria pass: national coverage geometry and the corruption-validation suite. Two do not:
-
-- The production source ledger is incomplete: **2/22 core rows** have every required field and production admission.
-- Archive/refetch/restore evidence is not yet universal for every required raw file.
+On 2026-09-26 the owner removed the gate requiring every raw file to be re-fetchable or restorable from the archive, and withdrew the four reserve and treaty rows from the ledger core. See [the phase scope decision](PHASE_SCOPE_DECISION_2026-09-26.md). The same day every one of the 18 core rows received every required ledger field, bound to [the ledger facts](../data/phase1-ledger-facts-2026-09-26.json), whose publisher facts come from each publisher's catalogue record ([readback](../data/phase1-catalogue-readback-2026-09-26.json)). The checker derives the ledger gate from the field audit. Production admission is separate and remains 2/18. The history below records the position before that decision.
 
 The recovered federal-electoral pair, four current-wildfire raw payload/manifest pairs, two derived wildfire payload/manifest pairs, Québec fourth-inventory's 62-object product, and the NBAC primary payload have checksum-bound exact-version evidence. NBAC's receipt proves primary readback and COMPLIANCE retention but not recovery. The normal archive-control exercise also completed its legal-hold, denied-delete, unchanged-retention, and bounded recovery-replica checks. The canonical external-SSD inventory verifies all 120 listed physical artifacts; 17 core rows have all listed canonical local bytes, the provincial-boundary row is partial, and four rows are unstaged. These facts do not satisfy universal archive recovery or prove remaining transformations, admission, or release. See [Phase 1 exit status](PHASE1_EXIT_STATUS.md), [canonical raw inventory](PHASE1_CANONICAL_RAW_INVENTORY.md), [federal recovery evidence](FEDERAL_ELECTORAL_ARCHIVE_RECOVERY_2026-08-25.md), [current-wildfire exact capture](CURRENT_WILDFIRE_EXACT_RAW_ARCHIVE_CAPTURE_2026-08-25.md), and [Québec fourth-inventory promotion/readback](QC_FOURTH_INVENTORY_IMMUTABLE_PROMOTION.md).
 
@@ -19,7 +16,9 @@ The current Phase 1 ledger is **17.00/31 raw credits**, with a bounded evidence-
 
 The exact NBAC ZIP was acquired on 2026-08-27 under the current official Open Government Licence - Canada metadata. It is 1,257,052,370 bytes with SHA-256 `c42740eb9d2fe3991a27344d0c33927705ec3e78c277efc5311b502439cb2165`; ZIP integrity passed, and the local profile records 52,610 polygons with 49 ring self-intersections quarantined. The durable receipt proves exact-version primary payload readback and COMPLIANCE retention. Recovery, transformation, ingestion, release, publication, and production admission remain false. See [`NBAC profile`](../data/phase1-nbac-profile-2026-08-27.json), [`archive receipt`](../data/nbac-archive-receipt-2026-08-27.json), and [`IAM readback`](../data/nbac-archive-iam-applied-2026-08-27.json).
 
-### Phase 2 – 2/4 (50%) formal exit criteria
+### Phase 2 – 2/2 formal exit criteria, complete
+
+On 2026-09-26 the owner removed the expert-review and published-independent-comparison criteria from the count, so the two admitted criteria make Phase 2 complete. Neither removed criterion was met, and neither is claimed. See [the phase scope decision](PHASE_SCOPE_DECISION_2026-09-26.md). The history below records the position before that decision.
 
 The local Version 2.1 implementation contract specifies **11 national snapshots** and **10 whole-interval rasters**, calculates each interval across every annual pair, and fails closed for incompatible grid/CRS/nodata/Unknown/lineage/sidecar conditions.
 
@@ -29,7 +28,7 @@ The corrected annual province execution now measures the mapped-extent defect ra
 
 The local federal riding comparison now uses the corrected 2021-2022 interval for all 343 districts under the 2023 Representation Order. Exactly 69 districts have complete mapped coverage; 57 of them meet the 500-hectare ranking floor and are rankable by detected-loss share, while 12 complete districts remain unranked below that floor. Another 91 retain partial coverage and 183 have no mapped coverage; those 274 keep total loss and share Unknown. The 205,143-byte generated comparison record has SHA-256 `84a5cf39868390bfacd9cfd7ac24045150f95c6527a7d34b58ca9d04313dc1c7` and binds the exact annual output, sidecar, mapped-extent verification and bilingual Elections Canada geometry.
 
-The corrected district execution is also complete for the four provincial editions. The final 774-row map join contains 188 complete, 171 partial and 415 none-mapped districts. Every one of the 586 incomplete rows retains null total loss and share. The 517,447-byte checked-in record has SHA-256 `b0a3c6fb715ebd37630154b277b443f41078dcd4d44c140f30634317a25f2c92`; its converter requires all five exact output/sidecar/marker sets before writing. Both localized Explore maps consume it through a runtime validator and expose only complete normalized shares and totals, while keeping known mapped-part loss separately labelled. These riding records remain local, non-admitted, non-released and nonproduction, and they do not satisfy the separate formal independent-comparison gate.
+The corrected district execution is also complete for the four provincial editions. The final 774-row map join contains 188 complete, 171 partial and 415 none-mapped districts. Every one of the 586 incomplete rows retains null total loss and share. On 2026-09-18 Alberta was re-sourced from the Government of Alberta's open-licence copy and Québec was re-read from Élections Québec's published bytes ([record](../data/provincial-electoral-sources-2026-09-18.json)); the grade counts did not change. The 517,524-byte checked-in record now has SHA-256 `a5adc6db951c5edde6515ef602443780067b2dbe717f5441e58f0f5414ddfc2b` (it was 517,447 bytes, `b0a3c6fb…`, before the re-source); its converter requires all five exact output/sidecar/marker sets before writing. Both localized Explore maps consume it through a runtime validator and expose only complete normalized shares and totals, while keeping known mapped-part loss separately labelled. These riding records remain local, non-admitted, non-released and nonproduction, and they do not satisfy the separate formal independent-comparison gate.
 
 ### VLCE accuracy boundary
 
@@ -45,7 +44,36 @@ The exact Statistics Canada 2021 economic-region geometry is source-admitted:
 76 features and 76 distinct DGUIDs, including 44 regions in the four initial
 provinces. The bilingual immutable v3 tile archive contains those 44 regions
 clipped to the official province boundaries and passed exact S3 and CloudFront
-readback. A regional forest-loss aggregate remains unreleased.
+readback.
+
+Since 2026-09-27 each region has forest-loss figures for every span, in
+[the region file](../data/phase3-economic-region-interval-measurements.json). The
+riding method (`scripts/phase3_interval_zonal_aggregate.py`) was run over the
+3,033 census subdivisions of the four provinces (2021 cartographic file, 10
+workers, peak 534 MB, 38 minutes), and
+`scripts/build-place-region-measurements.mjs` adds each subdivision into the region
+its point on surface falls in. The 44 regions add up to the province figures to
+within rounding. The same run gives the 2,291 published places their own figures:
+the whole record for search in
+[the place file](../data/place-whole-record-measurements.json) (read by
+`lib/search/place-figures.ts`, so a town result leads with its own figure and
+then its ridings), and every span for
+the map's cities-and-towns layer, built by
+`scripts/build-census-subdivision-overlay-tiles.mjs`. That layer's tiles and
+per-province figure files are their own immutable release
+([record](../data/census-subdivision-overlay-release.json)), uploaded with the
+owner's approval on 2026-09-27 and read back exactly from S3 and CloudFront
+([readback](../data/census-subdivision-overlay-release-readback.json)).
+`npm run check:census-subdivision-overlay` holds the loader's pinned URLs to that
+record and fails without the readback. Reserves, settlements and treaty or agreement lands get no figures of
+their own; their land counts in the region totals.
+
+On 2026-09-27 the owner decided that an economic region with less than 1% of its
+forest unmapped at a span's start is treated as fully measured
+(`REGION_UNKNOWN_TOLERANCE_PERCENT` in `lib/explore/region-intervals.ts`). Eight
+regions meet it over 1984-2022. Their share is taken over the mapped forest, and
+the readout names the unmapped share beside it. Ridings, census subdivisions and
+provinces keep the strict rule: any unknown area withholds the share.
 
 The source-admitted watershed geometry is NRCan's national Water Survey of Canada
 sub-drainage-area rollup archive, version 6.0 at 1:1,000,000 scale. It is a
@@ -67,6 +95,87 @@ SVG renditions of all four flags. Public-domain source files are recorded in
 `docs/THIRD_PARTY.md`, and no flag image is hotlinked at runtime. The owner
 directed this use on 2 September 2026 without a separate authorization gate.
 
+### Condition and recovery
+
+On 2026-09-23 the owner recorded a scoped decision in
+[the forest-mask decision record](VLCE2_FOREST_MASK_DECISION.md). For the Explore
+"Condition and recovery" mode only, VLCE2 classes 210, 220 and 230 count as treed.
+The decision resolves no register row and does not permit a forest mask.
+
+`scripts/phase4_condition_recovery_v2.py` walks every cell of the four provinces
+through 1984 to 2022 in one pass. It computes the three-class headline set and a
+comparison-only set that adds class 81. Across the four provinces, 55.13 Mha was
+lost, and 36.7% of it was treed again for three consecutive years after its latest
+loss. 46.42 Mha is Unknown and excluded, never counted as zero. The run reproduces
+the recorded federal recovery run within 0.01% of lost area per province, and the
+recorded provincial annual series within 0.15 ha per year. See
+[the evidence record](../data/phase4-condition-recovery-v2.json), checked by
+`npm run check:phase4-condition-recovery-v2`.
+
+Cause of the latest loss comes from the NTEMS fire and harvest year rasters with a
+one-year window. Across the four provinces, 40.2% of lost area has no fire or harvest
+recorded near its loss year and is shown as "cause not recorded", never as
+undisturbed. `scripts/phase4_condition_recovery_results_check.py` compares our
+recovery calls with BC RESULTS forest cover (OGL-BC) on the rule fixed before any
+figure was computed. The comparison agreed on 61.1% of 25,295 polygons against an
+80% target, so the target was not met. Agreement was 95.8% where RESULTS says not
+restocked and 45.6% where it says regenerated, so the recovery figures likely
+understate recovery. See [the cause and check record](../data/phase4-condition-recovery-cause-and-check.json),
+checked by `npm run check:phase4-condition-recovery-cause-and-check`. The RESULTS
+pages are bound in that record, not entered as a staged acquisition.
+
+Both records are `local-nonproduction-executed` and nothing in them is admitted.
+
+The figures the mode would show are in
+[the Explore figures file](../data/phase4-condition-recovery-explore.json), built by
+`scripts/build-phase4-condition-recovery-explore.mjs` from the v2 run output. It has
+the four provinces and the 44 StatCan 2021 economic regions, each with its unknown
+area, a coverage grade, recovery after the latest loss and after any loss, decades
+and cause. A row, decade or cause with less than 500 ha lost shows its lost area and
+withholds recovery; seven all-unknown southern regions are withheld this way. The
+2015-2022 decade is labelled too recent to judge and 2005-2014 partial follow-up.
+`scripts/phase4_condition_recovery_tiles.py` built per-cell tiles (z8 to 14) on the
+data root. They are recorded in the same file and have not been uploaded. The
+builder keeps memory bounded: GDAL 3.13's Python JSON export leaks about 3.6 KB per
+feature and exhausted the machine twice, so geometry leaves GDAL as WKB, strips are
+polygonized in 1024-column blocks, and four workers run by default. On macOS,
+launch it with `caffeinate` and without zsh's background nice, or idle sleep and
+I/O throttling stretch the run from hours to days. The PMTiles conversion reads a
+temporary copy of the tile set on the local disk, because the USB data root
+serves its random reads at about 15 tiles a second.
+`lib/explore/condition-recovery.ts` reads the file and returns nothing unless it is
+admitted and owner reviewed, so the mode stays empty. Checked by
+`npm run check:phase4-condition-recovery-explore`. The French strings are drafts
+awaiting bilingual review. The view itself is a separate change.
+
+### Phase 4 provincial matching run
+
+On 2026-09-26 the first Phase 4 matching run was computed for British Columbia and Québec: 11.1% of 100,731,284 detected changes match an official harvest, fire, insect or windthrow record (56% by area). An independent recount agrees exactly on four intervals. The owner admitted the run the same day ([admission](../data/phase4-provincial-matching-admission-2026-09-26.json)); it is published on the methods page in both languages ([publication](../data/phase4-provincial-matching-publication-2026-09-26.json)) and released as `phase4-provincial-matching-v1` ([release](../data/phase4-provincial-matching-release-2026-09-26.json)). The owner retired the outside provincial review checkpoint ([scope decision](PHASE_SCOPE_DECISION_2026-09-26.md)); no outside review took place. Phase 4 is 4/4. See [the run record](PHASE4_PROVINCIAL_MATCHING_RUN.md). A cross-tabulation of the same run shows what the provincial records add where the national rasters record no cause: in BC and Québec, 19% of that loss lies in changes matching a provincial harvest, fire, insect or windthrow record ([cross-tabulation](../data/phase4-provincial-cause-crosstab.json)).
+
+### Harvest and fire by province
+
+On 2026-09-25 the owner decided to publish the four provincial harvest and fire
+series and to allow multi-year totals in that view only. See
+[the decision record](HARVEST_FIRE_SERIES_DECISION.md). The series is
+[the harvest and fire record](../data/harvest-fire-province-annual-series.json),
+built by `scripts/build-harvest-fire-province-series.mjs` from the four WP2
+provincial annual-series files and checked by
+`npm run check:harvest-fire-province-series`, which rebuilds it byte for byte
+when the data root is mounted. It holds harvest and fire cells per province for
+1985 to 2022; 1984 is Unknown, and each province's unmapped part is Unknown and
+equals the province span release's unmapped cells.
+
+The Data page "Harvest and fire by province" (`/en/data/harvest-and-fire`,
+`/fr/donnees/recolte-et-incendies`) builds a chart per province from the page
+address: provinces, first and last year, single, five-year, ten-year or whole
+span intervals, a shared or per-chart scale, and a table view. A reader can
+download each chart as a PNG, drawn in the browser with its flag, notes and
+sources, and the rows on screen as CSV. The Explore "Recorded harvest" and
+"Wildfire" modes now show the same figures for the selected years in place of
+example data, with a link to the page. The series is not expert reviewed, not a
+formal release and not production eligible; the French strings are drafts
+awaiting bilingual review.
+
 ## Other formal phase counts
 
 Version 2.1 does not assign Phase 3 a cumulative percentage. Its five literal published exit criteria are nonetheless gated and counted, at 4/5 with moderated bilingual usability testing owner-blocked; that count is not a maturity score and does not mean the phase is four fifths complete. Its historical checkpoint records four completed technical-foundation evidence groups and one execution-ready, empty external-checkpoint envelope; that shorthand is not a Phase 3 exit result or a production-readiness measure.
@@ -77,11 +186,11 @@ Phase 0 is complete under its recorded scope: seven of its eight literal gates p
 | --- | --- | --- |
 | Phase 0 | **7/8 passed-only (87.5%); complete under recorded scope** | Seven literal gates pass. The eighth is the explicit accountable-owner-approved Indigenous-engagement exclusion, not an engagement result. Legal sign-off is owner-recorded and bilingual name registration is owner-attested complete. No engagement route, test, or engagement occurred. Phase 7 production source and right-of-reply gates remain open. |
 | Phase 3 | **No cumulative percentage (Version 2.1)**; literal exit criteria **4/5** | Four historical technical-foundation evidence groups are recorded; real national place content, admitted Phase 2 aggregates, and required human/release checkpoints remain open. |
-| Phase 4 | **3/4 (75%)** | Provincial safeguards exist; admitted enhancement inputs and published match results do not. |
-| Phase 5 | **3/4 (75%) local; production blocked** | The safety and simulation controls pass, but the dated 100-run receipt records zero real refresh successes. The bot-branch pull-request path still needs observed scheduled execution. |
+| Phase 4 | **4/4, complete** | Provincial safeguards pass, and the 2026-09-26 BC and Québec matching run is admitted, published in both languages and released. The owner retired the outside provincial review checkpoint; no outside review took place. |
+| Phase 5 | **3/4 (75%) local; production blocked** | The safety and simulation controls pass. The dated 100-run receipt records zero real refresh successes; the observed runs of 2026-09-13 and 2026-09-14 record the first three, each archived and read back. The scheduled cadence still needs observation over a longer window that crosses a daylight saving transition. |
 | Phase 6 | **4/5 (80%)** | Managed Canadian database isolation is proven. Sender infrastructure and the independent timed kill-switch rehearsal remain absent. |
-| Phase 7 | **14/16 (87.5%)** | The Mistik outcome is recorded as not pursued. Indigenous-source authority and a named tested reply operation remain missing. The modes-and-overlays gate now covers the released federal-riding, provincial-riding, economic-region and watershed reference boundaries; reserve and treaty geography is tracked only by the still-failed reserve-and-treaty gate. |
-| Phase 8 | **7/16 (43.75%)** | Raw-archive reproducibility, the operations handbook and bounded independently retrieved bulk downloads pass. CDN and tile validation passed on 2026-08-30, when the deployed Site was driven in a real browser and answered with HTTP 206 PMTiles range responses, no GeoJSON fallback fetch, and a painted loss ramp. That gate is stale as of 2026-09-01: the Explore map client changed, and the observation is bound to the client it observed, so it clears only when the Site is redeployed and the observation is taken again. Other operated production evidence remains incomplete. |
+| Phase 7 | **14/14, complete** | On 2026-09-26 the owner removed the reserve-and-treaty layer gate and the right-of-reply gate, which the Plan scopes to reserve and treaty pages, because Witness Tree will not publish that geography. No reserve or treaty geometry, name or reply route exists. The modes-and-overlays gate covers the released federal-riding, provincial-riding, economic-region and watershed reference boundaries. |
+| Phase 8 | **8/16 (50%)** | Raw-archive reproducibility, the operations handbook, bounded independently retrieved bulk downloads, and CDN/tile validation pass. Sites version 47 deployed main commit `2ecefdf812e5f49ae827275e95c07eb867ca6753` (#202) through Sites-history reconciliation merge `ec4bc74abb1802649ec34dd560e15b6559d08c65`. Live checks passed for `/en` and `/fr`; 10 federal and 10 provincial riding rankings; city ranks 1–10, including the localized Campbell River province names with no `BC ·` city figure; the four French comparer optgroups and updated coverage labels; Prince George search wording; French wildfire narrow no-break spacing; and the Explore map smoke check. The map gate passed with the existing observation at `data/deployed-map-render-evidence-2026-09-27-v45.json`; neither gated map file changed. Version 47 replaced version 46, deployed from main commit `8485d77679b216faf1ca2844b573d7800e744de4` (#200) through reconciliation merge `31f26986e9715f73198db7a90c1f6f629a24b4b7`. Version 46 replaced version 45, deployed from main commit `3e68029df6e8e045f477d8909606fde13c912138` (#199) through reconciliation merge `4b97fba6017770767f474420b6911ca179130f4b`. `npm run verify:deploy-source <commit>` proves a deploy carries the tree of a commit on `main`. Other operated release evidence remains incomplete. |
 | Phase 9 | **0/4 (0%)** | No operated beta, real correction metrics, source-agency confirmation, or quarterly published-figure reproduction. |
 
 The underlying machine-checked records are [Phase 4](../data/phase4-exit-status.json), [Phase 5](../data/phase5-live-wildfire-exit-status.json), [Phase 6](../data/phase6-account-alert-exit-status.json), [Phase 7](../data/phase7-indigenous-explore-comparison-exit-status.json), [Phase 8](../data/phase8-launch-readiness-exit-status.json), and [Phase 9](../data/phase9-public-beta-launch-exit-status.json).

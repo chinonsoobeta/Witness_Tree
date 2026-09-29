@@ -87,14 +87,19 @@ test('the workflow declares one entry per slot and passes the triggering express
   assert.match(workflow, /run: sleep 900 && node scripts\/wildfire\/refresh\.mjs/);
 });
 
-test('workflow writes through a bot branch and pull request instead of protected main', async () => {
+test('workflow archives a successful refresh through OIDC and never writes back to the repository', async () => {
   const workflow = await readFile(new URL('../.github/workflows/wildfire-refresh.yml', import.meta.url), 'utf8');
-  assert.match(workflow, /permissions:\n {6}contents: write\n {6}pull-requests: write/);
-  assert.match(workflow, /BRANCH="automation\/wildfire-refresh-\$\{GITHUB_RUN_ID\}-\$\{GITHUB_RUN_ATTEMPT\}"/);
-  assert.match(workflow, /git push --set-upstream origin "\$BRANCH"/);
-  assert.match(workflow, /gh pr create[\s\S]*--base main[\s\S]*--head "\$BRANCH"/);
-  const pushLines = workflow.split('\n').map((line) => line.trim()).filter((line) => line.startsWith('git push'));
-  assert.deepEqual(pushLines, ['git push --set-upstream origin "$BRANCH"']);
+  assert.match(workflow, /permissions:\n {6}contents: read\n {6}id-token: write\n/);
+  assert.doesNotMatch(workflow, /pull-requests:|contents: write|git push|git commit|gh pr/);
+  assert.doesNotMatch(workflow, /AWS_ACCESS_KEY_ID|AWS_SECRET_ACCESS_KEY|secrets\./, 'the archive role is assumed, never keyed');
+  // The role comes from a repository variable, and its absence stops the run instead of skipping the archive.
+  assert.match(workflow, /if \[ -z "\$WILDFIRE_ARCHIVE_ROLE_ARN" \]; then[\s\S]*?exit 1/);
+  assert.match(workflow, /aws-actions\/configure-aws-credentials@[0-9a-f]{40}\n/);
+  assert.match(workflow, /role-to-assume: \$\{\{ vars\.WILDFIRE_ARCHIVE_ROLE_ARN \}\}/);
+  assert.match(workflow, /aws-region: ca-central-1/);
+  assert.match(workflow, /steps\.archive-role\.outcome == 'success'\n\s+run: node scripts\/wildfire\/archive-upload\.mjs/);
+  assert.match(workflow, /WILDFIRE_ARCHIVE_RETENTION_MODE: COMPLIANCE\n\s+WILDFIRE_ARCHIVE_RETENTION_PERIOD: P2Y\n/);
+  assert.match(workflow, /if: steps\.gate\.outputs\.run == 'true' && steps\.refresh\.outcome == 'failure' && steps\.retry\.outcome == 'failure'\n\s+run: exit 1/);
 });
 
 test('an existing timestamped snapshot is never overwritten', async () => {
@@ -135,14 +140,14 @@ test('empty data is never published and the last good data remains', async () =>
   assert.equal(await readFile(path.join(directory, 'current.json'), 'utf8'), before);
 });
 
-test('an uncleared configured endpoint is blocked before any remote refresh', async () => {
+test('an endpoint supplied at run time is refused before any remote refresh', async () => {
   const directory = await root();
   await assert.rejects(() => execFile(process.execPath, ['scripts/wildfire/refresh.mjs'], {
     cwd: new URL('..', import.meta.url),
     env: { ...process.env, WILDFIRE_DATA_DIR: directory, WILDFIRE_SOURCE_URLS: JSON.stringify([{ id: 'uncleared', url: 'https://example.test/never-requested' }]) },
   }));
   const state = JSON.parse(await readFile(path.join(directory, 'state.json'), 'utf8'));
-  assert.match(state.error, /No cleared live-wildfire feed/);
+  assert.match(state.error, /WILDFIRE_SOURCE_URLS is set; refusing remote refresh/);
 });
 
 test('two failures produce degraded state and 15-minute retry metadata', async () => {

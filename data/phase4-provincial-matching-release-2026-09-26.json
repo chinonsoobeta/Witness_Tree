@@ -1,0 +1,11 @@
+{
+ "schemaVersion": "witness-tree/phase4-provincial-matching-release/1",
+ "status": "released-production",
+ "released": true,
+ "productionEligible": true,
+ "version": "phase4-provincial-matching-v1 (2026-09-26)",
+ "reportSha256": "97e310229163ca4c4eac7ea54045a21be8255991f449bcdc1244891e24836844",
+ "admissionSha256": "1584c05a7ee36ef50092d28be164204ca08d70120488b04d254f9558c92e2fed",
+ "publicationSha256": "d2692abfe712fd218f39a6703f4fe454dd052fdb5c0db784774d5b9845c98ef8",
+ "outsideReview": "retired by the owner on 2026-09-26; see data/phase-scope-decision-2026-09-26.json"
+}

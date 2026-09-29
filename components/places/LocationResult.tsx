@@ -1,5 +1,4 @@
 import { CoverageStatement } from "@/components/policy/CoverageStatement";
-import { EvidenceLegend } from "@/components/policy/EvidenceLegend";
 import { NoRecordResult } from "@/components/search/NoRecordResult";
 import { colon, type Locale } from "@/lib/domain";
 import type { Location, Place } from "@/lib/places";
@@ -41,10 +40,9 @@ export function LocationResult({
 
       <CoverageStatement locale={locale}>
         <p>{locale === "en"
-          ? "This location is an illustrative fixture. Its containing geographies and events describe the example, not a measured record at these coordinates."
-          : "Cet emplacement est un exemple illustratif. Les géographies et les événements associés décrivent l’exemple, et non un registre mesuré à ces coordonnées."}</p>
+          ? "This location is a made-up example. The places and events shown describe the example, not real records at these coordinates."
+          : "Cet emplacement est un exemple inventé. Les lieux et les événements affichés décrivent l’exemple, et non de vrais registres à ces coordonnées."}</p>
       </CoverageStatement>
-      <EvidenceLegend locale={locale} />
       <section className="record-block">
         <h2>{text.coordinates}</h2>
         <p className="coordinates">
@@ -81,7 +79,7 @@ export function LocationResult({
           {location.events.map((event) => (
             <article className="card event-card" key={event.id}>
               <h3>
-                {event.year}: {event.title[locale]}
+                {event.year}{colon(locale)} {event.title[locale]}
               </h3>
               <p className="cluster">
                 <EvidenceChip evidence={event.evidence} locale={locale} />

@@ -1,4 +1,4 @@
-import type { Metadata } from "next"; import { SiteShell } from "@/components/site"; import { SearchPage } from "@/components/search"; import { localizedAlternates } from "@/lib/site-metadata";
+import type { Metadata } from "next"; import { SiteShell } from "@/components/site"; import { SearchPage } from "@/components/search/SearchPage"; import { localizedAlternates } from "@/lib/site-metadata";
 import { addressLookupConfigured } from "@/lib/address/runtime";
 import { districtIndexAvailable } from "@/lib/districts/runtime";
 export const metadata: Metadata = { title: "Rechercher des lieux", alternates: localizedAlternates("fr", { en: "/en/search", fr: "/fr/recherche" }) };

@@ -43,9 +43,9 @@ const PRODUCT_DIRECTORY = "derived/phase3-interval-riding-zonal-v1";
 export const SOURCES = Object.freeze([
   { slug: "federal-ridings-2023", jurisdiction: "CA", overlay: "federal-2023", districts: 343 },
   { slug: "bc-provincial-ridings-2023", jurisdiction: "BC", overlay: "bc-2023", districts: 93 },
-  { slug: "ab-provincial-ridings-2019", jurisdiction: "AB", overlay: "ab-2019", districts: 87 },
+  { slug: "ab-provincial-ridings-2019-goa", jurisdiction: "AB", overlay: "ab-2019", districts: 87 },
   { slug: "on-provincial-ridings-2022", jurisdiction: "ON", overlay: "on-2022", districts: 124 },
-  { slug: "qc-provincial-ridings-2026", jurisdiction: "QC", overlay: "qc-2022", districts: 127 },
+  { slug: "qc-provincial-ridings-2026-published", jurisdiction: "QC", overlay: "qc-2022", districts: 127 },
 ]);
 
 const STEPS = 38;

@@ -2,6 +2,8 @@
 import { handleImageOptimization, DEFAULT_DEVICE_SIZES, DEFAULT_IMAGE_SIZES } from "vinext/server/image-optimization";
 import handler from "vinext/server/app-router-entry";
 import { ADDRESS_SEARCH_PATH, addressLookupConfigured, handleAddressSearch, withAddressFlag, type AddressEnv } from "./address";
+import { DISTRICT_SPANS_PATH, handleDistrictSpans } from "./district-spans";
+import { SEARCH_SUGGEST_PATH, handleSearchSuggest } from "./search-suggest";
 import { DISTRICT_RESOLVE_PATH, districtIndexConfigured, handleDistrictResolve, withDistrictFlag, type DistrictEnv } from "./district";
 import { SHAPE_MEASURE_PATH, coarseGridConfigured, handleShapeMeasure, withShapeFlag, type ShapeEnv } from "./shape";
 
@@ -36,12 +38,25 @@ const CONTENT_SECURITY_POLICY = [
   "worker-src 'self'",
 ].join("; ");
 
+// The site uses no camera, microphone, location, payment or USB access, so a
+// page or a script it loads cannot ask for them. Full screen stays open to the
+// site itself, because the Explore map offers it.
+const PERMISSIONS_POLICY = [
+  "camera=()",
+  "microphone=()",
+  "geolocation=()",
+  "payment=()",
+  "usb=()",
+  "fullscreen=(self)",
+].join(", ");
+
 const SECURITY_HEADERS = {
   "Content-Security-Policy": CONTENT_SECURITY_POLICY,
   "Strict-Transport-Security": "max-age=31536000",
   "X-Content-Type-Options": "nosniff",
   "Referrer-Policy": "strict-origin-when-cross-origin",
   "X-Frame-Options": "DENY",
+  "Permissions-Policy": PERMISSIONS_POLICY,
 } as const;
 
 function withSecurityHeaders(response: Response): Response {
@@ -89,6 +104,19 @@ const worker = {
     // with no-store and it must not be cached by locale or by page.
     if (url.pathname === DISTRICT_RESOLVE_PATH) {
       return withSecurityHeaders(await handleDistrictResolve(request, env));
+    }
+
+    // One span's district figures, so the readout follows the year control
+    // without a navigation. It reads only committed data and needs no binding.
+    if (url.pathname === DISTRICT_SPANS_PATH) {
+      return withSecurityHeaders(handleDistrictSpans(request));
+    }
+
+    // Search suggestions read only committed data, like the district spans.
+    // They stay off the app router so the index behind them is never bundled
+    // into a page and a typed query never becomes a page cache key.
+    if (url.pathname === SEARCH_SUGGEST_PATH) {
+      return withSecurityHeaders(handleSearchSuggest(request));
     }
 
     // Measuring a drawn shape reads whole grid tiles. It stays off the app

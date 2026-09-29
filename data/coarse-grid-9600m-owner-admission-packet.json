@@ -1,0 +1,233 @@
+{
+ "schemaVersion": "witness-tree/coarse-grid-9600m-owner-admission-packet/1",
+ "status": "template-not-approved",
+ "decisionId": "coarse-grid-9600m-province-span-map-admission-v1",
+ "preparedOn": "2026-09-21",
+ "ownerDirection": {
+  "date": "2026-09-18",
+  "words": "All the map data should be admitted and published to the site from 1984 to 2022.",
+  "standing": "A direction given in chat, already recorded in data/phase2-1984-2022-owner-admission-packet.json. It is not an admission decision and names no bytes. The 9.6 km grid is new derived bytes that did not exist when the 2026-09-18 record was made, so that record cannot cover it. Only an owner decision recorded against this packet's SHA-256 can admit them."
+ },
+ "purpose": "Let a visitor select a province and see, on a 9.6 km grid, where forest loss happened over any span from 1984 to 2022, coloured by the legend's share classes. The figures use item C's definition exactly, so every province's grid adds up to its admitted province span figure.",
+ "requestedDecision": {
+  "ownerMayChoose": [
+   "approve-admission-and-release",
+   "approve-admission-only",
+   "reject",
+   "defer"
+  ],
+  "itemsMayBeChosenIndividually": false,
+  "approvalScope": "Admit (and, if chosen, release) only item G bound below, under the stated method and limits. Items listed under notApprovable cannot be admitted by this packet whatever the decision.",
+  "futureRecordRule": "If approved, create a new dated immutable admission record that names this decisionId and this packet's SHA-256 and revalidates every binding. Do not edit this packet, the 2026-09-18 record, the 2026-08-26 record, or any historical readback evidence.",
+  "releaseMeans": "A release record for item G; static files derived from the bound output, each checked by readback to reproduce the output's values exactly; the files uploaded to the delivery bucket behind the CDN; a map mode that loads a province's file only when that province is selected; deployment only through the ChatGPT Sites control plane, by the owner. The map wiring changes the render-gated map client, so it needs its own deploy and render settlement."
+ },
+ "items": {
+  "G-province-pieces-9600m": {
+   "what": "For every 9.6 km cell and every province piece inside it: cells, unmapped cells, forest known at each of the 39 years, eligible loss in each of the 38 annual steps, and first loss at or after each start year, which gives item C's union for all 741 spans. 46,008 rows over 45,649 cells; 359 cells are split between two provinces and carry one row per piece.",
+   "output": {
+    "path": "derived/coarse-grid-9600m-v1/run-20260922T035220Z/province-pieces/province-pieces-9600m.npz",
+    "byteLength": 37022595,
+    "sha256": "2be062f793780d221741b51a0331e69e7c941a51bd3207e6e5c712125b5ae8e7",
+    "rows": 46008
+   },
+   "artifactRoot": "/Volumes/Extended_SSD/Witness_Tree-data/derived/coarse-grid-9600m-v1/run-20260922T035220Z/province-pieces",
+   "manifest": {
+    "path": "derived/coarse-grid-9600m-v1/run-20260922T035220Z/province-pieces/manifest.json",
+    "byteLength": 2349,
+    "sha256": "8336401a7aebddcea784479cc77d9d1da88b57f78f71545e951082abf2ca9602"
+   },
+   "code": {
+    "path": "derived/coarse-grid-9600m-v1/run-20260922T035220Z/province-pieces/coarse_grid_9600m_province_pass.py",
+    "byteLength": 18199,
+    "sha256": "8a5a8417267a111241817df58eb97edcdb701ef69c480f64312ab8c1ea4886d3"
+   },
+   "inputs": {
+    "rasters": "the admitted national raster batch phase2-real-national-1984-2022-v1 (item A of the 2026-09-18 record), read in place, unchanged",
+    "mappedExtent": "derived/phase2-vlce2-mapped-extent-v1/mapped-extent.tif, the extent item C used",
+    "boundaries": "Statistics Canada 2021 province and territory cartographic boundary file, PRUID field (source input admitted 2026-08-26)",
+    "itemCPieces": {
+     "path": "data/phase3-province-interval-spans-1984-2022.pieces.jsonl.gz",
+     "byteLength": 1934417,
+     "sha256": "54d1fc50bd9a972a506ad60183865439e27492ae2cc661e2ee2d3608239e532d"
+    },
+    "itemCOutput": {
+     "path": "data/phase3-province-interval-spans-1984-2022.json",
+     "byteLength": 299946,
+     "sha256": "215b3b6ae49844afb24f544c6927963d8a49680f93c127bda5a8dc10da7964f2"
+    },
+    "driver": {
+     "path": "scripts/phase3-province-interval-spans-block-partition.py",
+     "byteLength": 12914,
+     "sha256": "8b859aacf6a132329d680774d872a1a40eea031befdb1aaa3f3dbcd28ef8e8c1",
+     "changed": false
+    },
+    "worker": {
+     "path": "scripts/phase3_interval_zonal_aggregate.py",
+     "byteLength": 29161,
+     "sha256": "e8705301aaf5ae6e1812e6f80f5f8ff3707411c56fe631fd4dc0f8eeeac94674",
+     "changed": false
+    },
+    "helper": {
+     "path": "scripts/phase2_annual_zonal_aggregate_v2.py",
+     "byteLength": 39075,
+     "sha256": "44c86765b4f1a0ba527f7ed7cb91f95b1d490af404f9d783a84ffdf208a13958",
+     "changed": false
+    }
+   },
+   "method": "The pass re-cuts item C's 383 pieces with item C's own driver and the worker's centre-rule mask, so every raster cell falls in exactly one piece, then bins each piece's cells into 320 by 320 pixel (9.6 km) cells on the national raster origin. Every field is a cell count. A cell's union over a span is the cells forest at the span's start year that lost forest at least once inside the span, which is item C's term; its share is that union over forest known at the start year. Nothing is resampled, smoothed or imputed.",
+   "unionDefinition": "item C's: cells forest in the span's start year that lost forest at least once inside the span",
+   "verification": {
+    "record": {
+     "path": "derived/coarse-grid-9600m-v1/run-20260922T035220Z/province-pieces/verification.json",
+     "byteLength": 1276,
+     "sha256": "ca20595b22de80270a31e524d464861adb0dc8efb52961126035aa7f6e47f624"
+    },
+    "allPass": true,
+    "checks": [
+     "the driver, worker, helper and item C pieces match their bound SHA-256 values",
+     "the 383 pieces are reproduced exactly from the boundaries",
+     "every piece's summed fields equal item C's committed piece, all 741 spans, 0 mismatches",
+     "every province's summed fields equal item C's province figure exactly: QC (24) 16,907 rows, ON (35) 11,236, AB (48) 7,182, BC (59) 10,683",
+     "no mapped nodata cell",
+     "no negative count",
+     "every value fits a 32-bit integer"
+    ],
+    "payloadMeasurement": {
+     "path": "derived/coarse-grid-9600m-v1/run-20260922T035220Z/province-pieces/payload-measurement.json",
+     "byteLength": 792,
+     "sha256": "faf61344a87f9b39903974d1428ac60cfe9295451a8b12b7c6e17e1d75bd38a7"
+    },
+    "unionNeverExceedsStartYearForest": "true for every row and every span"
+   },
+   "currentClaims": {
+    "admitted": false,
+    "released": false,
+    "productionEligible": false,
+    "expertReviewed": false
+   },
+   "uploaded": false
+  }
+ },
+ "payloadOptions": {
+  "measurement": {
+   "path": "derived/coarse-grid-9600m-v1/run-20260922T035220Z/province-pieces/payload-measurement-by-start-year.json",
+   "byteLength": 3994,
+   "sha256": "5ddee236ae653b6c0513c22530d1f9e7a6e7cbd3596e614399cb5efe3a7c49b3"
+  },
+  "recommended": "one-file-per-province-and-start-year",
+  "options": {
+   "one-file-per-province-and-start-year": "152 files. The map loads one when a province and start year are chosen; any end year is then exact without another request. Largest file 895,876 bytes gzipped (QC, 1984); 116,364 at the smallest QC start year; 55,372,452 bytes for all 152.",
+   "one-file-per-province": "4 files holding all 741 spans. Largest 12,220,563 bytes gzipped (QC). Too heavy to load on a province click.",
+   "precomputed-colour-classes": "Not measured. Would bake the legend's class boundaries into the files, so a later legend change would need a new release. Not proposed."
+  },
+  "note": "The format is a release choice, not an admission choice. Whatever the format, every released file must reproduce the admitted output's values exactly, checked by readback, before it is published."
+ },
+ "unmappedRule": "A cell with unmapped area follows the class-certain rule the plan sets for coloured ridings: it takes a colour only if its class is the same whatever its unmapped area holds; otherwise it shows the Unknown hatch. The output carries unmapped cells per row, so the rule is applied from the bytes, never by zero-filling.",
+ "ownerAttention": {
+  "title": "The released 960 m grid (item F) uses a different union from item C",
+  "evidence": {
+   "path": "derived/coarse-grid-9600m-v1/run-20260922T035220Z/union-definition-divergence.json",
+   "byteLength": 1989,
+   "sha256": "32158734b0679b810d7e1f5bcf08132dd7e529d6a0bb6774ef6261f99671e784"
+  },
+  "finding": "Item F counts a loss only where the cell was forest in the year of that loss, and its union over a span is any such loss inside the span. Item C counts only cells that were forest at the span's start year. Item F therefore also counts cells that were not forest at the start, regrew and were lost later.",
+  "size": "On 36,103 cells of 9.6 km lying wholly inside one province, item F's union over item C's is 1.213 for 1984-2022, 1.164 for 2000-2021, 1.196 for 2003-2017 and 1.163 for 2017-2022. One-year spans agree exactly. On one raster window, 2003-2017 gives 1,223,406 cells for item F against 265,881 for item C.",
+  "whereItShows": [
+   {
+    "path": "data/phase6-coarse-grid-release.json",
+    "byteLength": 1955,
+    "sha256": "ae895107ec95f3958cd9d5b4eace306ac2cc9b28f81c630bb6192d14ed54c949",
+    "why": "lists the limit that loss is counted once per place against the forest known at the start year, which item F's union does not meet for multi-year spans"
+   },
+   {
+    "path": "lib/shapes/measure.ts",
+    "byteLength": 6180,
+    "sha256": "2e7afd2df611ba30d802e3bbd61dfd672da9e43006e90fc9b189ae8c625e0c99",
+    "why": "draw and measure divides item F's union by start-year forest, so a multi-year share for a drawn area can overstate item C's term"
+   }
+  ],
+  "consequence": "This is why item G is built from the rasters with item C's term, not summed from item F. The F-based aggregate (aggregate.npz) passes its own checks but cannot match item C per province and is not proposed.",
+  "notDecidedHere": "This packet does not change item F, its release record or draw and measure. Correcting them is a separate decision: either rebuild item F with item C's term under a new packet, or restate item F's limit. Until then the released limit wording is not accurate for multi-year spans."
+ },
+ "notApprovable": {
+  "aggregate.npz": {
+   "path": "derived/coarse-grid-9600m-v1/run-20260922T035220Z/aggregate.npz",
+   "byteLength": 24303676,
+   "sha256": "23a9da89471d404ad5087129b7babdb466c9492d80ca577bfd08b7ba199af0e2",
+   "why": "summed from item F, so it carries item F's union; bounded only by summed loss, not by start-year forest. Kept on the SSD as evidence for the divergence finding.",
+   "manifest": {
+    "path": "derived/coarse-grid-9600m-v1/run-20260922T035220Z/manifest.json",
+    "byteLength": 2146,
+    "sha256": "1ba6b29a79d26efce54f6cd279c2cb3cb4685d468332ae433beade119cc12322"
+   },
+   "verification": {
+    "path": "derived/coarse-grid-9600m-v1/run-20260922T035220Z/verification.json",
+    "byteLength": 870,
+    "sha256": "c24f2a8966ac8f34e75a5e9de67d6f093d0b327efc53a1674815b0ab70a319f2"
+   }
+  },
+  "trial outputs under work/": "the earlier trial directory is not a candidate and is not bound"
+ },
+ "limitsEveryItemCarries": [
+  "Every province is partial-with-unknown, so every figure is a minimum. Unmapped share of the cartographic province: QC 15.04962%, ON 9.03031%, AB 24.02146%, BC 0.00446%.",
+  "Loss is counted once per place, against the forest known at the start year. Yearly losses added together carry no percentage.",
+  "Unmapped and nodata cells stay Unknown and are never shown as no loss.",
+  "A 9.6 km cell is a summary of about 102,400 raster cells, not a map of individual patches.",
+  "Nothing has been expert reviewed. Independent comparisons are not published."
+ ],
+ "permittedClaimsAfterAdmission": [
+  "Item G is admitted for 1984-2022 under the bound method and limits.",
+  "Each province's 9.6 km grid adds up exactly to that province's admitted span figure.",
+  "If release is chosen: item G may be published on the site with the limits above shown next to it."
+ ],
+ "prohibitedClaimsEvenAfterAdmission": [
+  "expert review completed",
+  "independent comparison completed or published",
+  "accuracy, completeness or causal attribution",
+  "any figure as a complete-province total",
+  "net forest change or regrowth",
+  "patch-level or per-cell geometry",
+  "that item F or draw and measure is corrected",
+  "admission of any unbound output or of the notApprovable items"
+ ],
+ "formalGateAssessment": {
+  "phase2FormalExit": "stays 2 of 4: expert review was retired, not met, and the comparisons are unpublished",
+  "phase8LaunchReadiness": "stays 8 of 16 on main until the real external events occur; wiring the map mode reopens the render gate for one deploy cycle, as any map client change does",
+  "honestConclusion": "Approval admits and can release bytes. It completes no formal gate.",
+  "statusRecords": [
+   {
+    "path": "data/phase2-formal-exit-status.json",
+    "byteLength": 1510,
+    "sha256": "45ce097b7f6f5029d3bdf0667d4c3b319a080e1da6030ab61ae35134311c8048"
+   },
+   {
+    "path": "data/phase8-launch-readiness-exit-status.json",
+    "byteLength": 36358,
+    "sha256": "877c888d85a57986a0e4e4b25102f8558faa8c231f5578d68ca056dc54506a61"
+   }
+  ]
+ },
+ "doesNotTouch": [
+  {
+   "path": "data/phase2-1984-2022-admission-record-2026-09-18.json",
+   "byteLength": 13116,
+   "sha256": "4fc4382364576404af0a231eb0e1fef676b52f73627805605bca5e80a4bf60ee"
+  },
+  {
+   "path": "data/phase2-1984-2022-owner-admission-packet.json",
+   "byteLength": 16483,
+   "sha256": "52faeca923f5697a65c6e18b206072412c739ca9ee2a03856a1b263fb32d7083"
+  },
+  {
+   "path": "data/phase2-admission-record-2026-08-26.json",
+   "byteLength": 14873,
+   "sha256": "58147c088d12190f8882d0c493364cd07cf7c176d4fafbc266421bf337ca7d82"
+  },
+  {
+   "path": "data/phase6-coarse-grid-release.json",
+   "byteLength": 1955,
+   "sha256": "ae895107ec95f3958cd9d5b4eace306ac2cc9b28f81c630bb6192d14ed54c949"
+  }
+ ],
+ "ownerCopyPaste": "5B OWNER INPUT: 9.6 KM PROVINCE SPAN GRID\ndecision_id=coarse-grid-9600m-province-span-map-admission-v1\npacket_sha256=<the SHA-256 of data/coarse-grid-9600m-owner-admission-packet.json as committed>\ndecision=<OWNER: approve-admission-and-release | approve-admission-only | reject | defer>\nitems=G\npayload=<OWNER: one-file-per-province-and-start-year | other>\nacknowledge=exact bindings, limits, the item F finding, not-approvable items, permitted and prohibited claims reviewed\nFORMAL_GATES_UNCHANGED=true\nDO_NOT_EDIT=the 2026-09-18 record, the 2026-08-26 record, item F's release record, historical readback evidence, or this packet"
+}

@@ -2,6 +2,11 @@ import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { relative, resolve } from "node:path";
+import {
+  OBSERVED_RUNS_EVIDENCE_PATH,
+  checkWildfireScheduledArchiveObservedRuns,
+  validateWildfireScheduledArchiveObservedRuns,
+} from "./check-wildfire-scheduled-archive-observed-runs.mjs";
 
 const ROOT = fileURLToPath(new URL("../", import.meta.url));
 const RUN_HISTORY_PATH = new URL("../data/wildfire-refresh-run-history-2026-08-31.json", import.meta.url);
@@ -29,7 +34,7 @@ async function verifyEvidence(evidence) {
   }
 }
 
-export async function validatePhase5LiveWildfireExitStatus(record) {
+export async function validatePhase5LiveWildfireExitStatus(record, { observedRuns } = {}) {
   if (record?.schemaVersion !== "witness-tree/phase5-live-wildfire-exit-status/1" || record.phase !== 5) throw new Error("Phase 5 status must be a Version 2.1 record.");
   if (!Array.isArray(record.exitCriteria) || record.exitCriteria.length !== CRITERIA.size) throw new Error("Phase 5 requires exactly the four local exit criteria.");
   const seen = new Set();
@@ -45,9 +50,16 @@ export async function validatePhase5LiveWildfireExitStatus(record) {
   const scheduledJob = record.exitCriteria.find(({ id }) => id === "pacific-dst-schedule");
   if (!scheduledJob.evidence.some(({ path }) => path === RUN_HISTORY_EVIDENCE_PATH)) throw new Error("The scheduled-job criterion must cite the dated workflow run history.");
   const runHistory = JSON.parse(await readFile(RUN_HISTORY_PATH, "utf8"));
-  const realRefreshSuccesses = runHistory?.classifications?.realRefreshSuccesses?.count;
-  if (!Number.isInteger(realRefreshSuccesses) || realRefreshSuccesses < 0) throw new Error("The workflow run history must report a non-negative real-refresh success count.");
+  const historicalSuccesses = runHistory?.classifications?.realRefreshSuccesses?.count;
+  if (!Number.isInteger(historicalSuccesses) || historicalSuccesses < 0) throw new Error("The workflow run history must report a non-negative real-refresh success count.");
+  // The 2026-08-31 receipt stays the historical record; the dated observed-run record
+  // after it is where real refreshes are counted. Both must be cited, and the observed
+  // record is validated here, not trusted.
+  if (!scheduledJob.evidence.some(({ path }) => path === OBSERVED_RUNS_EVIDENCE_PATH)) throw new Error("The scheduled-job criterion must cite the dated observed scheduled runs.");
+  const observed = observedRuns ? await validateWildfireScheduledArchiveObservedRuns(observedRuns) : await checkWildfireScheduledArchiveObservedRuns();
+  const realRefreshSuccesses = historicalSuccesses + observed.classifications.realRefreshSuccesses.count;
   if (realRefreshSuccesses === 0 && scheduledJob.status !== "fail") throw new Error("The scheduled-job criterion cannot pass with zero observed real refresh successes.");
+  if (observed.claims.crossesDaylightSavingTransition !== true && scheduledJob.status !== "fail") throw new Error("The scheduled-job criterion cannot pass before an observed scheduled run crosses a daylight saving transition.");
   const percentage = passed / CRITERIA.size * 100;
   if (record.completedCriteria !== passed || record.totalCriteria !== CRITERIA.size || record.percentage !== percentage) throw new Error("Phase 5 percentage must equal the unweighted formal exit-criterion result.");
   if (record.localImplementationStatus !== (passed === CRITERIA.size ? "complete" : "incomplete")) throw new Error("Local implementation status must be derived from the four criteria.");

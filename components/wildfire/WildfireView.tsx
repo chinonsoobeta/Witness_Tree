@@ -1,6 +1,4 @@
-import { CoverageStatement } from "@/components/policy/CoverageStatement";
-import { EvidenceLegend } from "@/components/policy/EvidenceLegend";
-import { PRODUCT_NAME, type Locale } from "@/lib/domain";
+import { colon, PRODUCT_NAME, type Locale } from "@/lib/domain";
 
 const AGENCIES = [
   {
@@ -25,7 +23,7 @@ const AGENCIES = [
     url: { en: "https://www.ontario.ca/page/forest-fires", fr: "https://www.ontario.ca/fr/page/incendies-de-foret" },
   },
   {
-    province: { en: "Quebec", fr: "Québec" },
+    province: { en: "Québec", fr: "Québec" },
     name: {
       en: "Société de protection des forêts contre le feu (SOPFEU)",
       fr: "Société de protection des forêts contre le feu (SOPFEU)",
@@ -40,18 +38,18 @@ const COPY = {
     eyebrow: "Official agency directory",
     title: "Wildfire information",
     context:
-      `${PRODUCT_NAME.en} does not publish a live wildfire feed. Use the responsible public agency for current fires, restrictions, evacuation information and emergency instructions.`,
+      `${PRODUCT_NAME.en} doesn’t show live wildfires. For current fires, restrictions, evacuations and emergency instructions, go to your provincial agency.`,
     urgent: "For an immediate threat to life or property, call 911 and follow local emergency instructions.",
     directory: "Provincial wildfire agencies",
     timing:
-      "Wildfire conditions and agency notices can change quickly. Confirm the update time and limits on the agency page before acting.",
-    status: "Product feed status",
+      "Fire conditions change quickly. Check when the agency page was last updated before you act.",
+    status: "Live feed status",
     sourceUpdated: "Source updated",
     sourceUpdatedValue: "Unavailable; no live feed is connected.",
     lastRefresh: `Last successful ${PRODUCT_NAME.en} refresh`,
     lastRefreshValue: "None; no live refresh has run.",
     agency: "Source agency",
-    agencyValue: "Use the responsible provincial agency listed below.",
+    agencyValue: "Use the provincial agency listed below.",
     nextRefresh: "Next scheduled refresh",
     nextRefreshValue: "Not scheduled.",
     emergency: "Official emergency information",
@@ -61,18 +59,18 @@ const COPY = {
     eyebrow: "Répertoire des organismes officiels",
     title: "Information sur les feux de forêt",
     context:
-      `${PRODUCT_NAME.fr} ne publie pas de flux en direct sur les feux de forêt. Consultez l’organisme public responsable pour connaître les feux actuels, les restrictions, les renseignements sur les évacuations et les consignes d’urgence.`,
+      `${PRODUCT_NAME.fr} n’affiche pas les feux en direct. Pour les feux actuels, les restrictions, les évacuations et les consignes d’urgence, consultez votre organisme provincial.`,
     urgent: "En cas de menace immédiate pour la vie ou les biens, composez le 911 et suivez les consignes d’urgence locales.",
     directory: "Organismes provinciaux responsables des feux de forêt",
     timing:
-      "Les conditions et les avis des organismes peuvent changer rapidement. Vérifiez l’heure de mise à jour et les limites indiquées sur la page de l’organisme avant d’agir.",
-    status: "État du flux du produit",
+      "Les conditions changent rapidement. Vérifiez l’heure de la dernière mise à jour sur la page de l’organisme avant d’agir.",
+    status: "État du flux en direct",
     sourceUpdated: "Mise à jour de la source",
-    sourceUpdatedValue: "Indisponible; aucun flux en direct n’est connecté.",
+    sourceUpdatedValue: "Indisponible\u202F; aucun flux en direct n’est connecté.",
     lastRefresh: `Dernière actualisation réussie d’${PRODUCT_NAME.fr}`,
-    lastRefreshValue: "Aucune; aucune actualisation en direct n’a été exécutée.",
+    lastRefreshValue: "Aucune\u202F; aucune actualisation en direct n’a été exécutée.",
     agency: "Organisme source",
-    agencyValue: "Consultez l’organisme provincial responsable indiqué ci-dessous.",
+    agencyValue: "Consultez l’organisme provincial indiqué ci-dessous.",
     nextRefresh: "Prochaine actualisation prévue",
     nextRefreshValue: "Aucune actualisation n’est prévue.",
     emergency: "Information d’urgence officielle",
@@ -91,16 +89,15 @@ export function WildfireView({ locale }: WildfireViewProps) {
         <h1>{copy.title}</h1>
       </header>
 
-      <CoverageStatement locale={locale}><p>{copy.context}</p></CoverageStatement>
       <aside className="notice notice--alert wildfire-disclaimer" role="note">
         <span className="wildfire-disclaimer-symbol" aria-hidden="true">△</span>
         <div>
           <h2>{locale === "en" ? "Use official emergency instructions" : "Suivez les consignes officielles des services d’urgence"}</h2>
+          <p>{copy.context}</p>
           <p><strong>{copy.urgent}</strong></p>
           <a href="#wildfire-directory-heading">{copy.emergencyValue}</a>
         </div>
       </aside>
-      <EvidenceLegend locale={locale} />
 
       <section className="content-section" aria-labelledby="wildfire-status-heading">
         <h2 id="wildfire-status-heading">{copy.status}</h2>
@@ -123,7 +120,7 @@ export function WildfireView({ locale }: WildfireViewProps) {
             <li className="card card--lift" key={agency.url.en}>
               <p className="eyebrow">{agency.province[locale]}</p>
               <a href={agency.url[locale]}>
-                {agency.name[locale]}: {agency.destination[locale]}
+                {agency.name[locale]}{colon(locale)} {agency.destination[locale]}
               </a>
             </li>
           ))}

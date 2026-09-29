@@ -1,0 +1,1177 @@
+{
+  "schemaVersion": "witness-tree/bc-timber-harvest-aac-indicator/1",
+  "status": "prepared-not-released",
+  "source": {
+    "manifestId": "bc-timber-harvesting-indicator-harvest-2026-09-12",
+    "sha256": "3203c78735b881b83b9a66609c139d61975762aaed3617c6d71503bd666b0029",
+    "byteLength": 13800,
+    "sourceUrl": "https://catalogue.data.gov.bc.ca/dataset/18754165-1daa-42ea-8c43-fef0e8cf4598/resource/16a9e4fc-b0a2-4b6d-af94-676039facf47/download/bctimberharvest.xlsx",
+    "licenceId": "ogl-bc",
+    "licenceUrl": "https://www2.gov.bc.ca/gov/content?id=A519A56BC2BF44E4A008B33FCF527F61",
+    "attribution": "Contains information licensed under the Open Government Licence – British Columbia. Source: Environmental Reporting BC, Trends in Timber Harvesting in BC, summary data.",
+    "publisherLastModified": "publisher-last-modified-2025-11-21"
+  },
+  "units": "million cubic metres per year",
+  "method": {
+    "mapping": "Workbook columns are mapped by exact header name. Values are rounded to the two decimals the indicator publishes.",
+    "blanks": "A blank workbook cell is unknown and stays null. It is never zero.",
+    "derivation": "None. No per-hectare, per-cell or area-joined figure is derived from these volumes."
+  },
+  "summary": {
+    "rows": 114,
+    "firstYear": 1910,
+    "lastYear": 2023,
+    "allowableCutUnknownRows": 32
+  },
+  "claims": {
+    "measurement": "scaled-harvest-volume",
+    "allowableAnnualCut": "administrative-determination",
+    "stumpage": "not-included",
+    "perHectareDerivation": false,
+    "admitted": false,
+    "released": false,
+    "productionEligible": false
+  },
+  "rows": [
+    {
+      "year": 1910,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 0,
+      "harvestRegulatedByAacMillionCubicMetres": 0,
+      "harvestNotRegulatedByAacMillionCubicMetres": 0,
+      "allowableAnnualCutMillionCubicMetres": null,
+      "coverageGrade": "allowable-cut-unknown"
+    },
+    {
+      "year": 1911,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 0,
+      "harvestRegulatedByAacMillionCubicMetres": 0,
+      "harvestNotRegulatedByAacMillionCubicMetres": 0,
+      "allowableAnnualCutMillionCubicMetres": null,
+      "coverageGrade": "allowable-cut-unknown"
+    },
+    {
+      "year": 1912,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 6.68,
+      "harvestRegulatedByAacMillionCubicMetres": 0,
+      "harvestNotRegulatedByAacMillionCubicMetres": 6.68,
+      "allowableAnnualCutMillionCubicMetres": null,
+      "coverageGrade": "allowable-cut-unknown"
+    },
+    {
+      "year": 1913,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 6.86,
+      "harvestRegulatedByAacMillionCubicMetres": 0,
+      "harvestNotRegulatedByAacMillionCubicMetres": 6.86,
+      "allowableAnnualCutMillionCubicMetres": null,
+      "coverageGrade": "allowable-cut-unknown"
+    },
+    {
+      "year": 1914,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 4.62,
+      "harvestRegulatedByAacMillionCubicMetres": 0,
+      "harvestNotRegulatedByAacMillionCubicMetres": 4.62,
+      "allowableAnnualCutMillionCubicMetres": null,
+      "coverageGrade": "allowable-cut-unknown"
+    },
+    {
+      "year": 1915,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 4.84,
+      "harvestRegulatedByAacMillionCubicMetres": 0,
+      "harvestNotRegulatedByAacMillionCubicMetres": 4.84,
+      "allowableAnnualCutMillionCubicMetres": null,
+      "coverageGrade": "allowable-cut-unknown"
+    },
+    {
+      "year": 1916,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 6.1,
+      "harvestRegulatedByAacMillionCubicMetres": 0,
+      "harvestNotRegulatedByAacMillionCubicMetres": 6.1,
+      "allowableAnnualCutMillionCubicMetres": null,
+      "coverageGrade": "allowable-cut-unknown"
+    },
+    {
+      "year": 1917,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 7.84,
+      "harvestRegulatedByAacMillionCubicMetres": 0,
+      "harvestNotRegulatedByAacMillionCubicMetres": 7.84,
+      "allowableAnnualCutMillionCubicMetres": null,
+      "coverageGrade": "allowable-cut-unknown"
+    },
+    {
+      "year": 1918,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 8.38,
+      "harvestRegulatedByAacMillionCubicMetres": 0,
+      "harvestNotRegulatedByAacMillionCubicMetres": 8.38,
+      "allowableAnnualCutMillionCubicMetres": null,
+      "coverageGrade": "allowable-cut-unknown"
+    },
+    {
+      "year": 1919,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 8.37,
+      "harvestRegulatedByAacMillionCubicMetres": 0,
+      "harvestNotRegulatedByAacMillionCubicMetres": 8.37,
+      "allowableAnnualCutMillionCubicMetres": null,
+      "coverageGrade": "allowable-cut-unknown"
+    },
+    {
+      "year": 1920,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 9.75,
+      "harvestRegulatedByAacMillionCubicMetres": 0,
+      "harvestNotRegulatedByAacMillionCubicMetres": 9.75,
+      "allowableAnnualCutMillionCubicMetres": null,
+      "coverageGrade": "allowable-cut-unknown"
+    },
+    {
+      "year": 1921,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 8.53,
+      "harvestRegulatedByAacMillionCubicMetres": 0,
+      "harvestNotRegulatedByAacMillionCubicMetres": 8.53,
+      "allowableAnnualCutMillionCubicMetres": null,
+      "coverageGrade": "allowable-cut-unknown"
+    },
+    {
+      "year": 1922,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 9.03,
+      "harvestRegulatedByAacMillionCubicMetres": 0,
+      "harvestNotRegulatedByAacMillionCubicMetres": 9.03,
+      "allowableAnnualCutMillionCubicMetres": null,
+      "coverageGrade": "allowable-cut-unknown"
+    },
+    {
+      "year": 1923,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 11.99,
+      "harvestRegulatedByAacMillionCubicMetres": 0,
+      "harvestNotRegulatedByAacMillionCubicMetres": 11.99,
+      "allowableAnnualCutMillionCubicMetres": null,
+      "coverageGrade": "allowable-cut-unknown"
+    },
+    {
+      "year": 1924,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 12.13,
+      "harvestRegulatedByAacMillionCubicMetres": 0,
+      "harvestNotRegulatedByAacMillionCubicMetres": 12.13,
+      "allowableAnnualCutMillionCubicMetres": null,
+      "coverageGrade": "allowable-cut-unknown"
+    },
+    {
+      "year": 1925,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 12.42,
+      "harvestRegulatedByAacMillionCubicMetres": 0,
+      "harvestNotRegulatedByAacMillionCubicMetres": 12.42,
+      "allowableAnnualCutMillionCubicMetres": null,
+      "coverageGrade": "allowable-cut-unknown"
+    },
+    {
+      "year": 1926,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 13.87,
+      "harvestRegulatedByAacMillionCubicMetres": 0,
+      "harvestNotRegulatedByAacMillionCubicMetres": 13.87,
+      "allowableAnnualCutMillionCubicMetres": null,
+      "coverageGrade": "allowable-cut-unknown"
+    },
+    {
+      "year": 1927,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 13.56,
+      "harvestRegulatedByAacMillionCubicMetres": 0,
+      "harvestNotRegulatedByAacMillionCubicMetres": 13.56,
+      "allowableAnnualCutMillionCubicMetres": null,
+      "coverageGrade": "allowable-cut-unknown"
+    },
+    {
+      "year": 1928,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 15.23,
+      "harvestRegulatedByAacMillionCubicMetres": 0,
+      "harvestNotRegulatedByAacMillionCubicMetres": 15.23,
+      "allowableAnnualCutMillionCubicMetres": null,
+      "coverageGrade": "allowable-cut-unknown"
+    },
+    {
+      "year": 1929,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 15.9,
+      "harvestRegulatedByAacMillionCubicMetres": 0,
+      "harvestNotRegulatedByAacMillionCubicMetres": 15.9,
+      "allowableAnnualCutMillionCubicMetres": null,
+      "coverageGrade": "allowable-cut-unknown"
+    },
+    {
+      "year": 1930,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 12.66,
+      "harvestRegulatedByAacMillionCubicMetres": 0,
+      "harvestNotRegulatedByAacMillionCubicMetres": 12.66,
+      "allowableAnnualCutMillionCubicMetres": null,
+      "coverageGrade": "allowable-cut-unknown"
+    },
+    {
+      "year": 1931,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 9.25,
+      "harvestRegulatedByAacMillionCubicMetres": 0,
+      "harvestNotRegulatedByAacMillionCubicMetres": 9.25,
+      "allowableAnnualCutMillionCubicMetres": null,
+      "coverageGrade": "allowable-cut-unknown"
+    },
+    {
+      "year": 1932,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 7.64,
+      "harvestRegulatedByAacMillionCubicMetres": 0,
+      "harvestNotRegulatedByAacMillionCubicMetres": 7.64,
+      "allowableAnnualCutMillionCubicMetres": null,
+      "coverageGrade": "allowable-cut-unknown"
+    },
+    {
+      "year": 1933,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 9,
+      "harvestRegulatedByAacMillionCubicMetres": 0,
+      "harvestNotRegulatedByAacMillionCubicMetres": 9,
+      "allowableAnnualCutMillionCubicMetres": null,
+      "coverageGrade": "allowable-cut-unknown"
+    },
+    {
+      "year": 1934,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 10.5,
+      "harvestRegulatedByAacMillionCubicMetres": 0,
+      "harvestNotRegulatedByAacMillionCubicMetres": 10.5,
+      "allowableAnnualCutMillionCubicMetres": null,
+      "coverageGrade": "allowable-cut-unknown"
+    },
+    {
+      "year": 1935,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 12.56,
+      "harvestRegulatedByAacMillionCubicMetres": 0,
+      "harvestNotRegulatedByAacMillionCubicMetres": 12.56,
+      "allowableAnnualCutMillionCubicMetres": null,
+      "coverageGrade": "allowable-cut-unknown"
+    },
+    {
+      "year": 1936,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 14.32,
+      "harvestRegulatedByAacMillionCubicMetres": 0,
+      "harvestNotRegulatedByAacMillionCubicMetres": 14.32,
+      "allowableAnnualCutMillionCubicMetres": null,
+      "coverageGrade": "allowable-cut-unknown"
+    },
+    {
+      "year": 1937,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 15.38,
+      "harvestRegulatedByAacMillionCubicMetres": 0,
+      "harvestNotRegulatedByAacMillionCubicMetres": 15.38,
+      "allowableAnnualCutMillionCubicMetres": null,
+      "coverageGrade": "allowable-cut-unknown"
+    },
+    {
+      "year": 1938,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 13.19,
+      "harvestRegulatedByAacMillionCubicMetres": 0,
+      "harvestNotRegulatedByAacMillionCubicMetres": 13.19,
+      "allowableAnnualCutMillionCubicMetres": null,
+      "coverageGrade": "allowable-cut-unknown"
+    },
+    {
+      "year": 1939,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 15.9,
+      "harvestRegulatedByAacMillionCubicMetres": 0,
+      "harvestNotRegulatedByAacMillionCubicMetres": 15.9,
+      "allowableAnnualCutMillionCubicMetres": null,
+      "coverageGrade": "allowable-cut-unknown"
+    },
+    {
+      "year": 1940,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 17.51,
+      "harvestRegulatedByAacMillionCubicMetres": 0,
+      "harvestNotRegulatedByAacMillionCubicMetres": 17.51,
+      "allowableAnnualCutMillionCubicMetres": null,
+      "coverageGrade": "allowable-cut-unknown"
+    },
+    {
+      "year": 1941,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 17.45,
+      "harvestRegulatedByAacMillionCubicMetres": 0,
+      "harvestNotRegulatedByAacMillionCubicMetres": 17.45,
+      "allowableAnnualCutMillionCubicMetres": null,
+      "coverageGrade": "allowable-cut-unknown"
+    },
+    {
+      "year": 1942,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 15.07,
+      "harvestRegulatedByAacMillionCubicMetres": 0,
+      "harvestNotRegulatedByAacMillionCubicMetres": 15.07,
+      "allowableAnnualCutMillionCubicMetres": 0,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1943,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 14.64,
+      "harvestRegulatedByAacMillionCubicMetres": 0,
+      "harvestNotRegulatedByAacMillionCubicMetres": 14.64,
+      "allowableAnnualCutMillionCubicMetres": 0,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1944,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 14.73,
+      "harvestRegulatedByAacMillionCubicMetres": 0,
+      "harvestNotRegulatedByAacMillionCubicMetres": 14.73,
+      "allowableAnnualCutMillionCubicMetres": 0,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1945,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 14.66,
+      "harvestRegulatedByAacMillionCubicMetres": 0,
+      "harvestNotRegulatedByAacMillionCubicMetres": 14.66,
+      "allowableAnnualCutMillionCubicMetres": 0.07,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1946,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 15.21,
+      "harvestRegulatedByAacMillionCubicMetres": 0,
+      "harvestNotRegulatedByAacMillionCubicMetres": 15.21,
+      "allowableAnnualCutMillionCubicMetres": 0.96,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1947,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 19.95,
+      "harvestRegulatedByAacMillionCubicMetres": 0,
+      "harvestNotRegulatedByAacMillionCubicMetres": 19.95,
+      "allowableAnnualCutMillionCubicMetres": 2.49,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1948,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 19.86,
+      "harvestRegulatedByAacMillionCubicMetres": 0,
+      "harvestNotRegulatedByAacMillionCubicMetres": 19.86,
+      "allowableAnnualCutMillionCubicMetres": 3.47,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1949,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 19.3,
+      "harvestRegulatedByAacMillionCubicMetres": 0,
+      "harvestNotRegulatedByAacMillionCubicMetres": 19.3,
+      "allowableAnnualCutMillionCubicMetres": 6.72,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1950,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 21.74,
+      "harvestRegulatedByAacMillionCubicMetres": 0,
+      "harvestNotRegulatedByAacMillionCubicMetres": 21.74,
+      "allowableAnnualCutMillionCubicMetres": 7.34,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1951,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 22.44,
+      "harvestRegulatedByAacMillionCubicMetres": 0.78,
+      "harvestNotRegulatedByAacMillionCubicMetres": 21.67,
+      "allowableAnnualCutMillionCubicMetres": 9.97,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1952,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 23.63,
+      "harvestRegulatedByAacMillionCubicMetres": 0.95,
+      "harvestNotRegulatedByAacMillionCubicMetres": 22.68,
+      "allowableAnnualCutMillionCubicMetres": 12.61,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1953,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 25.3,
+      "harvestRegulatedByAacMillionCubicMetres": 3.7,
+      "harvestNotRegulatedByAacMillionCubicMetres": 21.6,
+      "allowableAnnualCutMillionCubicMetres": 14.68,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1954,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 26.6,
+      "harvestRegulatedByAacMillionCubicMetres": 4.22,
+      "harvestNotRegulatedByAacMillionCubicMetres": 22.38,
+      "allowableAnnualCutMillionCubicMetres": 16.74,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1955,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 29.28,
+      "harvestRegulatedByAacMillionCubicMetres": 5.29,
+      "harvestNotRegulatedByAacMillionCubicMetres": 23.99,
+      "allowableAnnualCutMillionCubicMetres": 17.97,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1956,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 30.26,
+      "harvestRegulatedByAacMillionCubicMetres": 8.81,
+      "harvestNotRegulatedByAacMillionCubicMetres": 21.45,
+      "allowableAnnualCutMillionCubicMetres": 19.81,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1957,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 27.15,
+      "harvestRegulatedByAacMillionCubicMetres": 10.11,
+      "harvestNotRegulatedByAacMillionCubicMetres": 17.04,
+      "allowableAnnualCutMillionCubicMetres": 23.16,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1958,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 25.73,
+      "harvestRegulatedByAacMillionCubicMetres": 12.09,
+      "harvestNotRegulatedByAacMillionCubicMetres": 13.64,
+      "allowableAnnualCutMillionCubicMetres": 24.9,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1959,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 29.71,
+      "harvestRegulatedByAacMillionCubicMetres": 14.76,
+      "harvestNotRegulatedByAacMillionCubicMetres": 14.95,
+      "allowableAnnualCutMillionCubicMetres": 25.91,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1960,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 33.98,
+      "harvestRegulatedByAacMillionCubicMetres": 18.67,
+      "harvestNotRegulatedByAacMillionCubicMetres": 15.3,
+      "allowableAnnualCutMillionCubicMetres": 29.14,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1961,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 33.05,
+      "harvestRegulatedByAacMillionCubicMetres": 21.58,
+      "harvestNotRegulatedByAacMillionCubicMetres": 11.47,
+      "allowableAnnualCutMillionCubicMetres": 57.84,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1962,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 38.03,
+      "harvestRegulatedByAacMillionCubicMetres": 25.49,
+      "harvestNotRegulatedByAacMillionCubicMetres": 12.54,
+      "allowableAnnualCutMillionCubicMetres": 66.93,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1963,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 41.72,
+      "harvestRegulatedByAacMillionCubicMetres": 29.23,
+      "harvestNotRegulatedByAacMillionCubicMetres": 12.49,
+      "allowableAnnualCutMillionCubicMetres": 69.11,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1964,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 42.89,
+      "harvestRegulatedByAacMillionCubicMetres": 28.13,
+      "harvestNotRegulatedByAacMillionCubicMetres": 14.76,
+      "allowableAnnualCutMillionCubicMetres": 70.68,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1965,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 43.41,
+      "harvestRegulatedByAacMillionCubicMetres": 31.19,
+      "harvestNotRegulatedByAacMillionCubicMetres": 12.23,
+      "allowableAnnualCutMillionCubicMetres": 73.29,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1966,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 45.38,
+      "harvestRegulatedByAacMillionCubicMetres": 30.92,
+      "harvestNotRegulatedByAacMillionCubicMetres": 14.46,
+      "allowableAnnualCutMillionCubicMetres": 77.51,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1967,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 44.53,
+      "harvestRegulatedByAacMillionCubicMetres": 32.07,
+      "harvestNotRegulatedByAacMillionCubicMetres": 12.46,
+      "allowableAnnualCutMillionCubicMetres": 79.7,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1968,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 48.21,
+      "harvestRegulatedByAacMillionCubicMetres": 36.3,
+      "harvestNotRegulatedByAacMillionCubicMetres": 11.91,
+      "allowableAnnualCutMillionCubicMetres": 80.84,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1969,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 53.52,
+      "harvestRegulatedByAacMillionCubicMetres": 36.41,
+      "harvestNotRegulatedByAacMillionCubicMetres": 17.11,
+      "allowableAnnualCutMillionCubicMetres": 82.68,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1970,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 54.73,
+      "harvestRegulatedByAacMillionCubicMetres": 38.95,
+      "harvestNotRegulatedByAacMillionCubicMetres": 15.77,
+      "allowableAnnualCutMillionCubicMetres": 81.03,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1971,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 56.55,
+      "harvestRegulatedByAacMillionCubicMetres": 43.5,
+      "harvestNotRegulatedByAacMillionCubicMetres": 13.05,
+      "allowableAnnualCutMillionCubicMetres": 83.89,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1972,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 55.61,
+      "harvestRegulatedByAacMillionCubicMetres": 44.53,
+      "harvestNotRegulatedByAacMillionCubicMetres": 11.07,
+      "allowableAnnualCutMillionCubicMetres": 85.36,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1973,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 70.14,
+      "harvestRegulatedByAacMillionCubicMetres": 55.47,
+      "harvestNotRegulatedByAacMillionCubicMetres": 14.67,
+      "allowableAnnualCutMillionCubicMetres": 85.02,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1974,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 60.09,
+      "harvestRegulatedByAacMillionCubicMetres": 48.61,
+      "harvestNotRegulatedByAacMillionCubicMetres": 11.47,
+      "allowableAnnualCutMillionCubicMetres": 83.93,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1975,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 50.08,
+      "harvestRegulatedByAacMillionCubicMetres": 42.32,
+      "harvestNotRegulatedByAacMillionCubicMetres": 7.76,
+      "allowableAnnualCutMillionCubicMetres": 83.36,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1976,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 69.52,
+      "harvestRegulatedByAacMillionCubicMetres": 59.04,
+      "harvestNotRegulatedByAacMillionCubicMetres": 10.49,
+      "allowableAnnualCutMillionCubicMetres": 82.26,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1977,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 69.97,
+      "harvestRegulatedByAacMillionCubicMetres": 60.12,
+      "harvestNotRegulatedByAacMillionCubicMetres": 9.85,
+      "allowableAnnualCutMillionCubicMetres": 67.95,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1978,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 75.16,
+      "harvestRegulatedByAacMillionCubicMetres": 65.03,
+      "harvestNotRegulatedByAacMillionCubicMetres": 10.13,
+      "allowableAnnualCutMillionCubicMetres": 68.19,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1979,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 76.19,
+      "harvestRegulatedByAacMillionCubicMetres": 66.34,
+      "harvestNotRegulatedByAacMillionCubicMetres": 9.85,
+      "allowableAnnualCutMillionCubicMetres": 69.19,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1980,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 72.58,
+      "harvestRegulatedByAacMillionCubicMetres": 64.52,
+      "harvestNotRegulatedByAacMillionCubicMetres": 8.06,
+      "allowableAnnualCutMillionCubicMetres": 70.51,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1981,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 62.63,
+      "harvestRegulatedByAacMillionCubicMetres": 56.13,
+      "harvestNotRegulatedByAacMillionCubicMetres": 6.49,
+      "allowableAnnualCutMillionCubicMetres": 69.49,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1982,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 60.94,
+      "harvestRegulatedByAacMillionCubicMetres": 55.1,
+      "harvestNotRegulatedByAacMillionCubicMetres": 5.84,
+      "allowableAnnualCutMillionCubicMetres": 70.29,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1983,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 77.71,
+      "harvestRegulatedByAacMillionCubicMetres": 69.4,
+      "harvestNotRegulatedByAacMillionCubicMetres": 8.31,
+      "allowableAnnualCutMillionCubicMetres": 73.4,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1984,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 74.47,
+      "harvestRegulatedByAacMillionCubicMetres": 66.9,
+      "harvestNotRegulatedByAacMillionCubicMetres": 7.57,
+      "allowableAnnualCutMillionCubicMetres": 73.04,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1985,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 78.88,
+      "harvestRegulatedByAacMillionCubicMetres": 70.27,
+      "harvestNotRegulatedByAacMillionCubicMetres": 8.61,
+      "allowableAnnualCutMillionCubicMetres": 74.75,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1986,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 79.91,
+      "harvestRegulatedByAacMillionCubicMetres": 71.21,
+      "harvestNotRegulatedByAacMillionCubicMetres": 8.7,
+      "allowableAnnualCutMillionCubicMetres": 74.89,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1987,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 89.05,
+      "harvestRegulatedByAacMillionCubicMetres": 77.57,
+      "harvestNotRegulatedByAacMillionCubicMetres": 11.49,
+      "allowableAnnualCutMillionCubicMetres": 74.58,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1988,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 85.19,
+      "harvestRegulatedByAacMillionCubicMetres": 72.67,
+      "harvestNotRegulatedByAacMillionCubicMetres": 12.52,
+      "allowableAnnualCutMillionCubicMetres": 72.93,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1989,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 86.94,
+      "harvestRegulatedByAacMillionCubicMetres": 74.98,
+      "harvestNotRegulatedByAacMillionCubicMetres": 11.96,
+      "allowableAnnualCutMillionCubicMetres": 72.45,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1990,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 74.3,
+      "harvestRegulatedByAacMillionCubicMetres": 64.85,
+      "harvestNotRegulatedByAacMillionCubicMetres": 9.45,
+      "allowableAnnualCutMillionCubicMetres": 75.2,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1991,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 74.92,
+      "harvestRegulatedByAacMillionCubicMetres": 66.94,
+      "harvestNotRegulatedByAacMillionCubicMetres": 7.99,
+      "allowableAnnualCutMillionCubicMetres": 74.76,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1992,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 78.77,
+      "harvestRegulatedByAacMillionCubicMetres": 70.47,
+      "harvestNotRegulatedByAacMillionCubicMetres": 8.3,
+      "allowableAnnualCutMillionCubicMetres": 72.97,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1993,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 78.01,
+      "harvestRegulatedByAacMillionCubicMetres": 68.32,
+      "harvestNotRegulatedByAacMillionCubicMetres": 9.69,
+      "allowableAnnualCutMillionCubicMetres": 71.74,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1994,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 75.33,
+      "harvestRegulatedByAacMillionCubicMetres": 64.82,
+      "harvestNotRegulatedByAacMillionCubicMetres": 10.51,
+      "allowableAnnualCutMillionCubicMetres": 70.72,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1995,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 75.41,
+      "harvestRegulatedByAacMillionCubicMetres": 65.36,
+      "harvestNotRegulatedByAacMillionCubicMetres": 10.05,
+      "allowableAnnualCutMillionCubicMetres": 70.53,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1996,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 74.01,
+      "harvestRegulatedByAacMillionCubicMetres": 66.14,
+      "harvestNotRegulatedByAacMillionCubicMetres": 7.88,
+      "allowableAnnualCutMillionCubicMetres": 70.8,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1997,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 70.71,
+      "harvestRegulatedByAacMillionCubicMetres": 62.37,
+      "harvestNotRegulatedByAacMillionCubicMetres": 8.34,
+      "allowableAnnualCutMillionCubicMetres": 70.91,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1998,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 67.61,
+      "harvestRegulatedByAacMillionCubicMetres": 59.36,
+      "harvestNotRegulatedByAacMillionCubicMetres": 8.25,
+      "allowableAnnualCutMillionCubicMetres": 70.87,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 1999,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 79.72,
+      "harvestRegulatedByAacMillionCubicMetres": 71.11,
+      "harvestNotRegulatedByAacMillionCubicMetres": 8.62,
+      "allowableAnnualCutMillionCubicMetres": 71.09,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 2000,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 77.43,
+      "harvestRegulatedByAacMillionCubicMetres": 68.84,
+      "harvestNotRegulatedByAacMillionCubicMetres": 8.59,
+      "allowableAnnualCutMillionCubicMetres": 71.09,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 2001,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 69.76,
+      "harvestRegulatedByAacMillionCubicMetres": 62,
+      "harvestNotRegulatedByAacMillionCubicMetres": 7.76,
+      "allowableAnnualCutMillionCubicMetres": 73.47,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 2002,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 79.67,
+      "harvestRegulatedByAacMillionCubicMetres": 71.2,
+      "harvestNotRegulatedByAacMillionCubicMetres": 8.48,
+      "allowableAnnualCutMillionCubicMetres": 74.83,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 2003,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 66.34,
+      "harvestRegulatedByAacMillionCubicMetres": 58.52,
+      "harvestNotRegulatedByAacMillionCubicMetres": 7.82,
+      "allowableAnnualCutMillionCubicMetres": 75.67,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 2004,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 89.8,
+      "harvestRegulatedByAacMillionCubicMetres": 79.67,
+      "harvestNotRegulatedByAacMillionCubicMetres": 10.13,
+      "allowableAnnualCutMillionCubicMetres": 82.04,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 2005,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 90.54,
+      "harvestRegulatedByAacMillionCubicMetres": 80.3,
+      "harvestNotRegulatedByAacMillionCubicMetres": 10.24,
+      "allowableAnnualCutMillionCubicMetres": 83.7,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 2006,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 83.57,
+      "harvestRegulatedByAacMillionCubicMetres": 74.11,
+      "harvestNotRegulatedByAacMillionCubicMetres": 9.46,
+      "allowableAnnualCutMillionCubicMetres": 84.85,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 2007,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 74.06,
+      "harvestRegulatedByAacMillionCubicMetres": 66.51,
+      "harvestNotRegulatedByAacMillionCubicMetres": 7.55,
+      "allowableAnnualCutMillionCubicMetres": 87.13,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 2008,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 64.61,
+      "harvestRegulatedByAacMillionCubicMetres": 58.28,
+      "harvestNotRegulatedByAacMillionCubicMetres": 6.33,
+      "allowableAnnualCutMillionCubicMetres": 86.17,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 2009,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 51.66,
+      "harvestRegulatedByAacMillionCubicMetres": 47.39,
+      "harvestNotRegulatedByAacMillionCubicMetres": 4.28,
+      "allowableAnnualCutMillionCubicMetres": 86.61,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 2010,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 67.06,
+      "harvestRegulatedByAacMillionCubicMetres": 61.47,
+      "harvestNotRegulatedByAacMillionCubicMetres": 5.59,
+      "allowableAnnualCutMillionCubicMetres": 86.43,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 2011,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 73.26,
+      "harvestRegulatedByAacMillionCubicMetres": 67.13,
+      "harvestNotRegulatedByAacMillionCubicMetres": 6.14,
+      "allowableAnnualCutMillionCubicMetres": 81.63,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 2012,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 72.43,
+      "harvestRegulatedByAacMillionCubicMetres": 67.15,
+      "harvestNotRegulatedByAacMillionCubicMetres": 5.27,
+      "allowableAnnualCutMillionCubicMetres": 80.49,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 2013,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 75.27,
+      "harvestRegulatedByAacMillionCubicMetres": 68.48,
+      "harvestNotRegulatedByAacMillionCubicMetres": 6.79,
+      "allowableAnnualCutMillionCubicMetres": 80.29,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 2014,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 70.9,
+      "harvestRegulatedByAacMillionCubicMetres": 63.05,
+      "harvestNotRegulatedByAacMillionCubicMetres": 7.85,
+      "allowableAnnualCutMillionCubicMetres": 81.67,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 2015,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 71.9,
+      "harvestRegulatedByAacMillionCubicMetres": 64.76,
+      "harvestNotRegulatedByAacMillionCubicMetres": 7.14,
+      "allowableAnnualCutMillionCubicMetres": 79,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 2016,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 69.9,
+      "harvestRegulatedByAacMillionCubicMetres": 62.93,
+      "harvestNotRegulatedByAacMillionCubicMetres": 7,
+      "allowableAnnualCutMillionCubicMetres": 75.9,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 2017,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 68.5,
+      "harvestRegulatedByAacMillionCubicMetres": 61.29,
+      "harvestNotRegulatedByAacMillionCubicMetres": 7.25,
+      "allowableAnnualCutMillionCubicMetres": 68.9,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 2018,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 71,
+      "harvestRegulatedByAacMillionCubicMetres": 61.74,
+      "harvestNotRegulatedByAacMillionCubicMetres": 9.23,
+      "allowableAnnualCutMillionCubicMetres": 68.9,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 2019,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 57.3,
+      "harvestRegulatedByAacMillionCubicMetres": 48.55,
+      "harvestNotRegulatedByAacMillionCubicMetres": 8.73,
+      "allowableAnnualCutMillionCubicMetres": 67.9,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 2020,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 54.2,
+      "harvestRegulatedByAacMillionCubicMetres": 49.4,
+      "harvestNotRegulatedByAacMillionCubicMetres": 4.8,
+      "allowableAnnualCutMillionCubicMetres": 67.5,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 2021,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 55.5,
+      "harvestRegulatedByAacMillionCubicMetres": 47.3,
+      "harvestNotRegulatedByAacMillionCubicMetres": 8.2,
+      "allowableAnnualCutMillionCubicMetres": 67.6,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 2022,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 50.6,
+      "harvestRegulatedByAacMillionCubicMetres": 43.1,
+      "harvestNotRegulatedByAacMillionCubicMetres": 7.53,
+      "allowableAnnualCutMillionCubicMetres": 65.7,
+      "coverageGrade": "complete"
+    },
+    {
+      "year": 2023,
+      "region": "BC",
+      "sourceId": "bc-timber-harvesting-indicator",
+      "totalHarvestMillionCubicMetres": 39.2,
+      "harvestRegulatedByAacMillionCubicMetres": 33.16,
+      "harvestNotRegulatedByAacMillionCubicMetres": 6.02,
+      "allowableAnnualCutMillionCubicMetres": 62.3,
+      "coverageGrade": "complete"
+    }
+  ]
+}

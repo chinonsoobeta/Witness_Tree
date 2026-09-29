@@ -1,15 +1,17 @@
+import { CENSUS_SUBDIVISION_RELEASE } from "./census-subdivisions";
 import { EXPLORE_MAP_COLOURS } from "./map-style";
 
-// Reference geometry drawn over the loss map. These are not data layers: they
-// answer "where is this" and "who represents it", never "how much loss". They
-// are deliberately drawn in the neutral ink and observation greys rather than
-// in any of the disturbance colours, so that nothing on the map reads as a
-// measurement when it is only a boundary.
+// Boundaries drawn over the loss map. Ridings, economic regions and census
+// subdivisions carry forest-loss figures, shown when the reader points at one;
+// watersheds are reference only. All are drawn as outlines in the neutral ink
+// and observation greys rather than in any of the disturbance colours, so an
+// outline never reads as a measurement of the area it encloses.
 
 export const BOUNDARY_OVERLAY_IDS = [
   "federal-ridings",
   "provincial-ridings",
   "economic-regions",
+  "census-subdivisions",
   "watersheds",
 ] as const;
 export type BoundaryOverlayId = (typeof BOUNDARY_OVERLAY_IDS)[number];
@@ -18,8 +20,8 @@ export type BoundaryOverlayId = (typeof BOUNDARY_OVERLAY_IDS)[number];
 // scripts/publish-boundary-overlay-release.mjs. scripts/check-boundary-overlays.mjs
 // fails if this drifts from data/boundary-overlay-release.json.
 export const BOUNDARY_OVERLAY_RELEASE = Object.freeze({
-  releaseId: "4259310e49e4bf2a289463240a434529627415f81152f6104370764d07471339",
-  base: "https://d3g1406o0uekin.cloudfront.net/releases/boundary-overlays-v3/4259310e49e4bf2a289463240a434529627415f81152f6104370764d07471339/tiles",
+  releaseId: "594e33aa08fd7b60a21e6a17d43f7491757d99e7900fdd697230f6d1f52b78f0",
+  base: "https://d3g1406o0uekin.cloudfront.net/releases/boundary-overlays-v4/594e33aa08fd7b60a21e6a17d43f7491757d99e7900fdd697230f6d1f52b78f0/tiles",
 } as const);
 
 type Bilingual = Readonly<Record<"en" | "fr", string>>;
@@ -48,12 +50,12 @@ export const BOUNDARY_OVERLAYS: Readonly<Record<BoundaryOverlayId, BoundaryOverl
       id: "federal-ridings",
       label: { en: "Federal ridings", fr: "Circonscriptions fédérales" },
       available: true,
-      url: url("federal-ridings-v3.pmtiles"),
+      url: url("federal-ridings-v4.pmtiles"),
       sourceLayer: "federal_ridings",
       colour: EXPLORE_MAP_COLOURS.ink,
       note: {
-        en: "All 343 federal electoral districts under the 2023 representation order, used from the 45th general election.",
-        fr: "Les 343 circonscriptions électorales fédérales du décret de représentation de 2023, en usage depuis la 45e élection générale.",
+        en: "All 343 federal ridings, as drawn for elections from 2025 onward (the 2023 representation order).",
+        fr: "Les 343 circonscriptions fédérales, telles que tracées pour les élections depuis 2025 (décret de représentation de 2023).",
       },
       attribution: {
         en: "Elections Canada, 2023 representation order.",
@@ -64,47 +66,64 @@ export const BOUNDARY_OVERLAYS: Readonly<Record<BoundaryOverlayId, BoundaryOverl
       id: "provincial-ridings",
       label: { en: "Provincial ridings", fr: "Circonscriptions provinciales" },
       available: true,
-      url: url("provincial-ridings-v3.pmtiles"),
+      url: url("provincial-ridings-v4.pmtiles"),
       sourceLayer: "provincial_ridings",
       colour: EXPLORE_MAP_COLOURS.observation,
       dash: [3, 2],
       note: {
         en: "British Columbia, Alberta, Ontario and Québec · 431 ridings\nRepresentation orders: British Columbia 2023, Alberta 2019, Ontario 2022, Québec 2026.",
-        fr: "Colombie-Britannique, Alberta, Ontario et Québec · 431 circonscriptions\nDécrets de représentation : Colombie-Britannique 2023, Alberta 2019, Ontario 2022, Québec 2026.",
+        fr: "Colombie-Britannique, Alberta, Ontario et Québec · 431 circonscriptions\nDécrets de représentation\u202F: Colombie-Britannique 2023, Alberta 2019, Ontario 2022, Québec 2026.",
       },
       attribution: {
-        en: "Elections BC; Open Government Licence – Alberta; Elections Ontario; Élections Québec.",
-        fr: "Elections BC; Licence du gouvernement ouvert – Alberta; Élections Ontario; Élections Québec.",
+        en: "Elections BC. Alberta: Contains information licensed under the Open Government Licence – Alberta. Elections Ontario. Québec: Source: © Directeur général des élections du Québec and Commission de la représentation électorale, 2026.",
+        fr: "Elections BC. Alberta\u202F: Contains information licensed under the Open Government Licence – Alberta. Élections Ontario. Québec\u202F: Source\u202F: © Directeur général des élections du Québec et Commission de la représentation électorale, 2026.",
       },
     },
     "economic-regions": {
       id: "economic-regions",
       label: { en: "Economic regions", fr: "Régions économiques" },
       available: true,
-      url: url("economic-regions-v3.pmtiles"),
+      url: url("economic-regions-v4.pmtiles"),
       sourceLayer: "economic_regions",
       colour: EXPLORE_MAP_COLOURS.observation,
       dash: [5, 2],
       note: {
-        en: "The 44 Statistics Canada 2021 economic regions in British Columbia, Alberta, Ontario and Québec are clipped to those provinces and drawn as a bilingual reference framework.",
-        fr: "Les 44 régions économiques de Statistique Canada de 2021 situées en Colombie-Britannique, en Alberta, en Ontario et au Québec sont découpées selon ces provinces et tracées comme cadre de référence bilingue.",
+        en: "The 44 economic regions in the four provinces, as defined by Statistics Canada in 2021. Each region’s figures add up the cities, towns and other places inside it.",
+        fr: "Les 44 régions économiques des quatre provinces, telles que définies par Statistique Canada en 2021. Les chiffres de chaque région additionnent ceux des villes et autres lieux qu’elle contient.",
       },
       attribution: {
         en: "Statistics Canada, 2021 Economic Region Boundary File.",
         fr: "Statistique Canada, Fichier des limites des régions économiques de 2021.",
       },
     },
+    "census-subdivisions": {
+      id: "census-subdivisions",
+      label: { en: "Cities and towns", fr: "Villes et municipalités" },
+      available: true,
+      url: `${CENSUS_SUBDIVISION_RELEASE.base}/${CENSUS_SUBDIVISION_RELEASE.tiles}`,
+      sourceLayer: CENSUS_SUBDIVISION_RELEASE.sourceLayer,
+      colour: EXPLORE_MAP_COLOURS.observation,
+      dash: [1, 1.5],
+      note: {
+        en: "2,291 cities, towns, municipalities and unorganized areas in the four provinces (Statistics Canada census subdivisions, 2021). Reserves, settlements and treaty or agreement lands are not shown on their own; their land still counts in the economic-region totals.",
+        fr: "2\u202F291 villes, municipalités et territoires non organisés des quatre provinces (subdivisions de recensement de Statistique Canada, 2021). Les réserves, les établissements et les terres visées par un traité ou une entente ne sont pas affichés séparément\u202F; leurs terres comptent tout de même dans les totaux des régions économiques.",
+      },
+      attribution: {
+        en: "Statistics Canada, 2021 Census Subdivision Boundary File.",
+        fr: "Statistique Canada, Fichier des limites des subdivisions de recensement de 2021.",
+      },
+    },
     watersheds: {
       id: "watersheds",
       label: { en: "Watersheds", fr: "Bassins versants" },
       available: true,
-      url: url("watersheds-v3.pmtiles"),
+      url: url("watersheds-v4.pmtiles"),
       sourceLayer: "watersheds",
       colour: EXPLORE_MAP_COLOURS.ink,
       dash: [2, 2],
       note: {
-        en: "The 105 Canadian sub-drainage areas from NRCan's bilingual Water Survey of Canada rollup, version 6.0, that intersect British Columbia, Alberta, Ontario and Québec are clipped at those provincial boundaries and drawn as a reference framework.",
-        fr: "Les 105 aires canadiennes du regroupement bilingue des sous-aires de drainage de la Division des relevés hydrologiques du Canada de RNCan, version 6.0, qui touchent la Colombie-Britannique, l’Alberta, l’Ontario et le Québec sont découpées aux limites de ces provinces et tracées comme cadre de référence.",
+        en: "The 105 watersheds that touch the four provinces, cut off at the provincial borders.",
+        fr: "Les 105 bassins versants qui touchent les quatre provinces, coupés aux frontières provinciales.",
       },
       attribution: {
         en: "Natural Resources Canada, Atlas of Canada drainage areas, version 6.0 (2008).",

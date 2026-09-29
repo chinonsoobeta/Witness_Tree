@@ -37,6 +37,7 @@ work="${TMPDIR:-/tmp}/${interval}.mbtiles"
 rm -f "$work" "$output"
 tippecanoe \
   --output="$work" \
+  --temporary-directory="${TMPDIR:-/tmp}" \
   --layer="$layer" \
   --minimum-zoom=8 \
   --maximum-zoom=14 \

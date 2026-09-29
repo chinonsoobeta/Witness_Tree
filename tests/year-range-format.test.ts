@@ -16,7 +16,7 @@ from "../lib/domain/year-range.ts";
 import { EXPLORE_COVERAGE_PERIOD, EXPLORE_COVERAGE_SPAN }
 // @ts-expect-error -- Node's TypeScript runner requires explicit local extensions.
 from "../lib/explore/types.ts";
-import { annualIntervalCoverage, PRODUCTION_AGGREGATE_PERIOD, productionAggregatePeriod }
+import { annualIntervalCoverage, PRODUCTION_AGGREGATE_PERIOD, productionAggregatePeriod, provinceSpanReach }
 // @ts-expect-error -- Node's TypeScript runner requires explicit local extensions.
 from "../lib/explore/period.ts";
 import { EXPLORE_PRODUCTION_LAYER }
@@ -75,6 +75,8 @@ test("the published spans are derived from their artifacts, not spelled out agai
   assert.equal(EXPLORE_COVERAGE_PERIOD.fr, "1984 à 2022");
   assert.equal(annualIntervalCoverage("en"), `1984${EN_DASH}1985 to 2021${EN_DASH}2022`);
   assert.equal(annualIntervalCoverage("fr"), `de 1984${EN_DASH}1985 à 2021${EN_DASH}2022`);
+  assert.equal(provinceSpanReach("en"), "1984–2022");
+  assert.equal(provinceSpanReach("fr", "from"), "de 1984 à 2022");
 });
 
 test("the gate refuses the forms it exists to refuse, and holds quoted product titles as written", () => {

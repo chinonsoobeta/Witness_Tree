@@ -1,0 +1,425 @@
+{
+ "schemaVersion": "witness-tree/phase1-catalogue-readback/1",
+ "readOn": "2026-09-26",
+ "notice": "Facts as each publisher states them in its catalogue or service record. A field the publisher does not state is null. The SHA-256 binds the full response that was read.",
+ "entries": [
+  {
+   "row": "ab-avi-crown",
+   "host": "open.canada.ca",
+   "id": "64b0e73a-da5f-4f7f-bca1-b656b6e86c94",
+   "apiUrl": "https://open.canada.ca/data/api/3/action/package_show?id=64b0e73a-da5f-4f7f-bca1-b656b6e86c94",
+   "retrievedAt": "2026-09-26T23:12:47+00:00",
+   "responseSha256": "283df0e48e1111e5cc20a89f332ff0598c87357f7ce08d6392a8adc8239b14af",
+   "responseBytes": 9752,
+   "stated": {
+    "title": {
+     "en": "Alberta Vegetation Inventory (AVI) Crown",
+     "fr-t-en": "Inventaire de la végétation de l'Alberta (AVI) Couronne"
+    },
+    "organization": "Government of Alberta | Gouvernement de l'Alberta",
+    "licence": {
+     "id": "ab-ogla",
+     "title": "Open Government Licence - Alberta",
+     "url": "https://open.alberta.ca/licence"
+    },
+    "frequency": "irregular",
+    "contact": "FP.FMB-GIS@gov.ab.ca",
+    "published": "2022-01-26 00:00:00",
+    "modified": "2026-03-04T19:38:26.436524",
+    "version": null,
+    "resourceUrls": [
+     "https://geodiscover.alberta.ca/geoportal/rest/metadata/item/100b275712b442acbda4a0358d8a4951/html",
+     "https://open.alberta.ca/opendata/64b0e73a-da5f-4f7f-bca1-b656b6e86c94",
+     "https://geodiscover.alberta.ca/geoportal/rest/metadata/item/100b275712b442acbda4a0358d8a4951/xml",
+     "https://extranet.gov.ab.ca/srd/geodiscover/srd_pub/biota/AlbertaVegetationInventoryCrown.zip",
+     "https://www.alberta.ca/vegetation-inventory-standards.aspx"
+    ]
+   }
+  },
+  {
+   "row": "ab-primary-land-vegetation",
+   "host": "open.alberta.ca",
+   "id": "gda-f640cd9d-c232-481d-9cff-7a7b66e51e49",
+   "apiUrl": "https://open.alberta.ca/api/3/action/package_show?id=gda-f640cd9d-c232-481d-9cff-7a7b66e51e49",
+   "retrievedAt": "2026-09-26T23:12:47+00:00",
+   "responseSha256": "fbdfa62d763a8b4a936ca4279c76cfa439dfb4d02cd0b1021af3b69c80358b1f",
+   "responseBytes": 5652,
+   "stated": {
+    "title": "Primary Land and Vegetation Inventory (PLVI)",
+    "organization": "Environment and Parks",
+    "licence": {
+     "id": "OGLA",
+     "title": "Open Government Licence - Alberta",
+     "url": "https://open.alberta.ca/licence"
+    },
+    "frequency": null,
+    "contact": "fp.rangeland-gis@gov.ab.ca",
+    "published": "2020-04-30T04:12:34.548925",
+    "modified": "2020-02-11",
+    "version": null,
+    "resourceUrls": [
+     "https://geodiscover.alberta.ca/geoportal/rest/metadata/item/2d41d0e64a844a2fbf4485525e17178f/html",
+     "https://geodiscover.alberta.ca/geoportal/rest/metadata/item/2d41d0e64a844a2fbf4485525e17178f/xml"
+    ]
+   }
+  },
+  {
+   "row": "ab-wildfire",
+   "host": "geospatial.alberta.ca + www.alberta.ca",
+   "apiUrl": "https://geospatial.alberta.ca/mimas/rest/services/wildfire/alberta_fire_status/FeatureServer?f=json",
+   "pageUrl": "https://www.alberta.ca/wildfire-maps-and-data",
+   "retrievedAt": "2026-09-26T23:31:28+00:00",
+   "responseSha256": "8a0a0853867ac9570b47100e4bc99286ceb4c3bec6a44963e124f0f156952c58",
+   "pageSha256": "bcae4a3d452310ec648ae9cb64f60a3412d2d8d530e33047151c75c2cb75b688",
+   "stated": {
+    "title": "Alberta Fire Status - Wildfire Locations and Perimeters",
+    "organization": "Government of Alberta",
+    "copyright": "Copyright Government of Alberta",
+    "frequency": null,
+    "contact": "wildfireinfo@gov.ab.ca",
+    "contactSource": "the publisher's Wildfire maps and data page",
+    "published": null,
+    "modified": null,
+    "version": null
+   }
+  },
+  {
+   "row": "bc-wildfire",
+   "host": "catalogue.data.gov.bc.ca",
+   "id": "bc-wildfire-fire-perimeters-current",
+   "apiUrl": "https://catalogue.data.gov.bc.ca/api/3/action/package_show?id=bc-wildfire-fire-perimeters-current",
+   "retrievedAt": "2026-09-26T23:31:20+00:00",
+   "responseSha256": "36972ffce028fec6c14e9d10e2ecc0264c4a1b427449df9f9ece04d71003cbc4",
+   "responseBytes": 26392,
+   "stated": {
+    "title": "BC Wildfire Fire Perimeters - Current",
+    "organization": "BC Wildfire Service",
+    "licence": {
+     "id": "2",
+     "title": "Open Government Licence - British Columbia",
+     "url": "https://www2.gov.bc.ca/gov/content?id=A519A56BC2BF44E4A008B33FCF527F61"
+    },
+    "frequency": {
+     "Download Zipped Shapefile of Current Fire Perimeters": "continual"
+    },
+    "contact": "BCWILDFIREGEO@gov.bc.ca",
+    "published": "2011-03-09",
+    "modified": "2026-09-26",
+    "version": null,
+    "resourceUrls": [
+     "",
+     "https://governmentofbc.maps.arcgis.com/home/item.html?id=6ed3ec9b90f844fcaf9fea499bacae8e",
+     "https://pub.data.gov.bc.ca/datasets/cdfc2d7b-c046-4bf0-90ac-4897232619e1",
+     "https://openmaps.gov.bc.ca/geo/pub/WHSE_LAND_AND_NATURAL_RESOURCE.PROT_CURRENT_FIRE_POLYS_SP/ows?service=WMS&request=GetCapabilities",
+     "https://openmaps.gov.bc.ca/kml/geo/layers/WHSE_LAND_AND_NATURAL_RESOURCE.PROT_CURRENT_FIRE_POLYS_SP_loader.kml",
+     ""
+    ]
+   }
+  },
+  {
+   "row": "cwfis-historical",
+   "host": "cwfis.cfs.nrcan.gc.ca (ISO 19139 record)",
+   "apiUrl": "https://cwfis.cfs.nrcan.gc.ca/en/catalogue/results/537a1fd0-698e-4a7b-85a1-e02581ae78b2",
+   "localCopy": "raw/nrcan-nbac-1972-2025/2026-08-27/cwfis-catalogue-537a1fd0-698e-4a7b-85a1-e02581ae78b2.json",
+   "retrievedAt": "2026-08-27",
+   "responseSha256": "c38c3555da665884201e07c5c0b0a1dd46afb042b9b39466569ff6e39ac105c9",
+   "stated": {
+    "title": "National Burned Area Composite (NBAC)",
+    "organization": "Government of Canada; Natural Resources Canada; Canadian Forest Service",
+    "frequency": "annually",
+    "contact": "cwfissa-csscifv@nrcan-rncan.gc.ca",
+    "published": "2026-05-13",
+    "modified": "2026-06-10",
+    "version": null
+   }
+  },
+  {
+   "row": "ntems-annual-land-cover",
+   "host": "open.canada.ca",
+   "id": "2785c103-9c2d-429b-9f3d-89f5cd9ea94d",
+   "apiUrl": "https://open.canada.ca/data/api/3/action/package_show?id=2785c103-9c2d-429b-9f3d-89f5cd9ea94d",
+   "retrievedAt": "2026-09-26T23:12:46+00:00",
+   "responseSha256": "da9b826be2b50a74c350b31dbc708eef145a7dce0b0c477b0817723e27de0901",
+   "responseBytes": 47741,
+   "stated": {
+    "title": {
+     "en": "Annual High-resolution forest land cover for Canada (1984-2022)",
+     "fr": "Couverture forestière annuelle à haute résolution pour le Canada (1984-2022)"
+    },
+    "organization": "Natural Resources Canada | Ressources naturelles Canada",
+    "licence": {
+     "id": "ca-ogl-lgo",
+     "title": "Open Government Licence - Canada",
+     "url": "https://open.canada.ca/en/open-government-licence-canada"
+    },
+    "frequency": "as_needed",
+    "contact": "mike.wulder@canada.ca",
+    "published": "2025-12-16 00:00:00",
+    "modified": "2026-09-02T17:00:53.821689",
+    "version": null,
+    "resourceUrls": [
+     "https://opendata.nfis.org/downloads/forest_change/CA_forest_VLCE2_1984.zip",
+     "https://opendata.nfis.org/mapserver/cgi-bin/wms_change.cgi?request=GetCapabilities&service=WMS&version=1.3.0&layers=CA_forest_VLCE2_2022&legend_format=image%2Fpng&feature_info_type=text%2Fhtml",
+     "https://opendata.nfis.org/mapserver/cgi-bin/wms_change_fra.cgi?request=GetCapabilities&service=WMS&version=1.3.0&layers=CA_forest_VLCE2_2022&legend_format=image%2Fpng&feature_info_type=text%2Fhtml",
+     "https://opendata.nfis.org/downloads/forest_change/CA_forest_VLCE2_1985.zip",
+     "https://opendata.nfis.org/downloads/forest_change/CA_forest_VLCE2_1986.zip",
+     "https://opendata.nfis.org/downloads/forest_change/CA_forest_VLCE2_1987.zip",
+     "https://opendata.nfis.org/downloads/forest_change/CA_forest_VLCE2_1988.zip",
+     "https://opendata.nfis.org/downloads/forest_change/CA_forest_VLCE2_1989.zip",
+     "https://opendata.nfis.org/downloads/forest_change/CA_forest_VLCE2_1990.zip",
+     "https://opendata.nfis.org/downloads/forest_change/CA_forest_VLCE2_1991.zip",
+     "https://opendata.nfis.org/downloads/forest_change/CA_forest_VLCE2_1992.zip",
+     "https://opendata.nfis.org/downloads/forest_change/CA_forest_VLCE2_1993.zip"
+    ]
+   }
+  },
+  {
+   "row": "ntems-canopy-cover",
+   "host": "open.canada.ca",
+   "id": "5b905ab8-44dc-42b4-ad5b-3b1dde8423ab",
+   "apiUrl": "https://open.canada.ca/data/api/3/action/package_show?id=5b905ab8-44dc-42b4-ad5b-3b1dde8423ab",
+   "retrievedAt": "2026-09-26T23:12:46+00:00",
+   "responseSha256": "cd939399519744d0f983800f25f26491d666bc707e63eec472f96bffd88d6b8f",
+   "responseBytes": 15861,
+   "stated": {
+    "title": {
+     "en": "Forest Canopy Cover (2022)",
+     "fr": "Couverture de la canopée forestière (2022)"
+    },
+    "organization": "Natural Resources Canada | Ressources naturelles Canada",
+    "licence": {
+     "id": "ca-ogl-lgo",
+     "title": "Open Government Licence - Canada",
+     "url": "https://open.canada.ca/en/open-government-licence-canada"
+    },
+    "frequency": "as_needed",
+    "contact": "mike.wulder@canada.ca",
+    "published": "2023-01-01 00:00:00",
+    "modified": "2026-03-16T16:04:48.476047",
+    "version": null,
+    "resourceUrls": [
+     "https://opendata.nfis.org/mapserver/nfis-change_eng.html",
+     "https://opendata.nfis.org/mapserver/nfis-change_fra.html",
+     "http://www.sciencedirect.com/science/article/pii/S0034425717301360",
+     "https://opendata.nfis.org/mapserver/cgi-bin/wms_change_fra.cgi?request=GetCapabilities&service=WMS&version=1.3.0&layers=CA_canopy_cover_2022&legend_format=image%2Fpng&feature_info_type=text%2Fhtml",
+     "https://opendata.nfis.org/downloads/forest_change/CA_canopy_cover_2022.zip",
+     "https://opendata.nfis.org/mapserver/cgi-bin/wms_change.cgi?request=GetCapabilities&service=WMS&version=1.3.0&layers=CA_canopy_cover_2022&legend_format=image%2Fpng&feature_info_type=text%2Fhtml",
+     "https://doi.org/10.1016/j.rse.2018.07.024"
+    ]
+   }
+  },
+  {
+   "row": "ntems-canopy-height",
+   "host": "open.canada.ca",
+   "id": "016d2624-30b4-45f3-87d7-30b06c6a30ca",
+   "apiUrl": "https://open.canada.ca/data/api/3/action/package_show?id=016d2624-30b4-45f3-87d7-30b06c6a30ca",
+   "retrievedAt": "2026-09-26T23:12:46+00:00",
+   "responseSha256": "978148f861a55986464c604f9950d98e2c1f173533ad245ad03a5c746528fe86",
+   "responseBytes": 15873,
+   "stated": {
+    "title": {
+     "en": "Forest Canopy Height (2022)",
+     "fr": "Hauteur de la canopée forestière (2022)"
+    },
+    "organization": "Natural Resources Canada | Ressources naturelles Canada",
+    "licence": {
+     "id": "ca-ogl-lgo",
+     "title": "Open Government Licence - Canada",
+     "url": "https://open.canada.ca/en/open-government-licence-canada"
+    },
+    "frequency": "as_needed",
+    "contact": "mike.wulder@canada.ca",
+    "published": "2023-01-01 00:00:00",
+    "modified": "2026-03-16T16:04:45.233541",
+    "version": null,
+    "resourceUrls": [
+     "https://opendata.nfis.org/mapserver/nfis-change_eng.html",
+     "https://opendata.nfis.org/mapserver/nfis-change_fra.html",
+     "http://www.sciencedirect.com/science/article/pii/S0034425717301360",
+     "https://opendata.nfis.org/mapserver/cgi-bin/wms_change_fra.cgi?request=GetCapabilities&service=WMS&version=1.3.0&layers=CA_canopy_height_2022&legend_format=image%2Fpng&feature_info_type=text%2Fhtml",
+     "https://opendata.nfis.org/downloads/forest_change/CA_canopy_height_2022.zip",
+     "https://opendata.nfis.org/mapserver/cgi-bin/wms_change.cgi?request=GetCapabilities&service=WMS&version=1.3.0&layers=CA_canopy_height_2022&legend_format=image%2Fpng&feature_info_type=text%2Fhtml",
+     "https://doi.org/10.1016/j.rse.2018.07.024"
+    ]
+   }
+  },
+  {
+   "row": "ntems-forest-harvest",
+   "host": "open.canada.ca",
+   "id": "87e35bf0-b734-4c4e-9eb6-e08ffe80e3fe",
+   "apiUrl": "https://open.canada.ca/data/api/3/action/package_show?id=87e35bf0-b734-4c4e-9eb6-e08ffe80e3fe",
+   "retrievedAt": "2026-09-26T23:12:46+00:00",
+   "responseSha256": "06798f7a0a36f60d9c1994bcb5be7b48b5b665809b95f11e661aa456f7e64581",
+   "responseBytes": 20012,
+   "stated": {
+    "title": {
+     "en": "CA Forest Harvest (1985-2022)",
+     "fr": "CA Les Récolte Forestière (1985-2022)"
+    },
+    "organization": "Natural Resources Canada | Ressources naturelles Canada",
+    "licence": {
+     "id": "ca-ogl-lgo",
+     "title": "Open Government Licence - Canada",
+     "url": "https://open.canada.ca/en/open-government-licence-canada"
+    },
+    "frequency": "as_needed",
+    "contact": "mike.wulder@canada.ca",
+    "published": "2024-01-01 00:00:00",
+    "modified": "2026-03-16T16:03:01.021513",
+    "version": null,
+    "resourceUrls": [
+     "https://opendata.nfis.org/mapserver/nfis-change_eng.html",
+     "https://www.sciencedirect.com/science/article/pii/S0303243417301599",
+     "https://www.tandfonline.com/doi/full/10.1080/17538947.2016.1187673",
+     "https://opendata.nfis.org/mapserver/nfis-change_fra.html",
+     "https://www.sciencedirect.com/science/article/pii/S0034425714004453",
+     "https://opendata.nfis.org/mapserver/cgi-bin/wms_change_fra.cgi?request=GetCapabilities&service=WMS&version=1.3.0&layers=CA_Forest_Harvest_1985-2022&legend_format=image%2Fpng&feature_info_type=text%2Fhtml",
+     "https://opendata.nfis.org/downloads/forest_change/CA_Forest_Fire_1985-2022.zip",
+     "https://opendata.nfis.org/mapserver/cgi-bin/wms_change.cgi?request=GetCapabilities&service=WMS&version=1.3.0&layers=CA_Forest_Harvest_1985-2022&legend_format=image%2Fpng&feature_info_type=text%2Fhtml",
+     "https://www.sciencedirect.com/science/article/pii/S0034425715301279"
+    ]
+   }
+  },
+  {
+   "row": "on-fire-disturbance",
+   "host": "data.ontario.ca",
+   "id": "in-year-fire-perimeters",
+   "apiUrl": "https://data.ontario.ca/api/3/action/package_show?id=in-year-fire-perimeters",
+   "retrievedAt": "2026-09-26T23:12:46+00:00",
+   "responseSha256": "00825b660dc7e1f83cdb4495848b2aebdcf5aa2d4182ab2a5f741c2d3aac2fc5",
+   "responseBytes": 13076,
+   "stated": {
+    "title": {
+     "en": "In-year Fire Perimeters",
+     "fr": "Périmètres de fue en cours d'année"
+    },
+    "organization": "",
+    "licence": {
+     "id": "OGL-ON-1.0",
+     "title": "Open Government Licence – Ontario",
+     "url": "https://www.ontario.ca/page/open-government-licence-ontario"
+    },
+    "frequency": "daily",
+    "contact": "affes.gis@ontario.ca",
+    "published": "2026-01-12T18:37:43.665469",
+    "modified": "2026-01-12T18:44:55.328948",
+    "version": null,
+    "resourceUrls": [
+     "https://geohub.lio.gov.on.ca/datasets/lio::in-year-fire-perimeters/about",
+     "https://geohub-fr.lio.gov.on.ca/datasets/6970557e689d4aab97e033ec8bb126c6_51/about"
+    ]
+   }
+  },
+  {
+   "row": "qc-current-ecoforest",
+   "host": "donneesquebec.ca",
+   "id": "carte-ecoforestiere-avec-perturbations",
+   "apiUrl": "https://www.donneesquebec.ca/recherche/api/3/action/package_show?id=carte-ecoforestiere-avec-perturbations",
+   "retrievedAt": "2026-09-26T23:12:47+00:00",
+   "responseSha256": "65278ddd1078eacfb7db899be416f3443e837c70415df4b64dedbd5cc076a8a2",
+   "responseBytes": 36882,
+   "stated": {
+    "title": "Carte écoforestière à jour",
+    "organization": "Ministère des Ressources naturelles et des Forêts",
+    "licence": {
+     "id": "cc-by",
+     "title": "Attribution (CC-BY 4.0)",
+     "url": "https://www.donneesquebec.ca/licence/#cc-by"
+    },
+    "frequency": "annual",
+    "contact": "inventaires.forestiers@mrnf.gouv.qc.ca",
+    "published": "2017-10-25T17:29:36.084000",
+    "modified": "2026-07-13T17:35:04.327932",
+    "version": null,
+    "resourceUrls": [
+     "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Cartes_ecoforestieres_perturbations/03-Telechargement/URL_250K_MAJ.csv",
+     "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Cartes_ecoforestieres_perturbations/03-Telechargement/URL_250K_MAJ.geojson",
+     "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Cartes_ecoforestieres_perturbations/03-Telechargement/URL_Agences_MAJ.csv",
+     "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Cartes_ecoforestieres_perturbations/03-Telechargement/URL_Agences_MAJ.geojson",
+     "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Cartes_ecoforestieres_perturbations/02-Donnees/PROV/CARTE_ECO_MAJ_PROV_GPKG.zip",
+     "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Cartes_ecoforestieres_perturbations/02-Donnees/PROV/CARTE_ECO_MAJ_PROV_GDB.zip",
+     "https://geoegl.msp.gouv.qc.ca/ws/mffpecofor.fcgi?",
+     "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Cartes_ecoforestieres_perturbations/01-Documentation/LISEZ-MOI_carte-eco-maj.pdf",
+     "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Cartes_ecoforestieres_perturbations/01-Documentation/DICTIONNAIRE_CARTE_ECO_MAJ.xlsx",
+     "https://mrnf.gouv.qc.ca/documents/forets/inventaire/5e-disponibilite.pdf",
+     "https://mrnf.gouv.qc.ca/documents/forets/inventaire/carto_5E_methodes_donnees.pdf",
+     "https://mrnf.gouv.qc.ca/documents/forets/inventaire/acquisition_photo_5e.pdf"
+    ]
+   }
+  },
+  {
+   "row": "qc-fourth-inventory",
+   "host": "donneesquebec.ca",
+   "id": "resultats-d-inventaire-et-carte-ecoforestiere_4eme",
+   "apiUrl": "https://www.donneesquebec.ca/recherche/api/3/action/package_show?id=resultats-d-inventaire-et-carte-ecoforestiere_4eme",
+   "retrievedAt": "2026-09-26T23:12:47+00:00",
+   "responseSha256": "36b32369f97f087d0fe5b0ff5950d6c8e7109959f342de1613f425ca781ced71",
+   "responseBytes": 30953,
+   "stated": {
+    "title": "Carte écoforestière originale et résultats du quatrième inventaire",
+    "organization": "Ministère des Ressources naturelles et des Forêts",
+    "licence": {
+     "id": "cc-by",
+     "title": "Attribution (CC-BY 4.0)",
+     "url": "https://www.donneesquebec.ca/licence/#cc-by"
+    },
+    "frequency": "annual",
+    "contact": "inventaires.forestiers@mrnf.gouv.qc.ca",
+    "published": "2024-12-06T20:37:12.644194",
+    "modified": "2026-08-21T20:52:01.376617",
+    "version": null,
+    "resourceUrls": [
+     "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/03-Telechargement/URL_4e.csv",
+     "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/03-Telechargement/URL_4e.geojson",
+     "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/PROV/CARTE_ECO_ORI_4_PROV_gpkg.zip",
+     "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/PROV/CARTE_ECO_ORI_4_PROV_gdb.zip",
+     "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/01-Documentation/LISEZ-MOI_carteco-ori-res-4_DQ.pdf",
+     "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/01-Documentation/LISEZ-MOI_carte-eco-ori-4.pdf",
+     "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/05-Outils/Boite_a_outils.zip",
+     "https://mrnf.gouv.qc.ca/documents/forets/inventaire/Telechargement_rapide.pdf",
+     "https://mrnf.gouv.qc.ca/documents/forets/inventaire/resultats-compilations-forestieres.pdf",
+     "https://mrnf.gouv.qc.ca/documents/forets/inventaire/norme-stratification.pdf",
+     "https://mrnf.gouv.qc.ca/documents/forets/inventaire/Norme-photo-interpretation.pdf",
+     "https://mrnf.gouv.qc.ca//documents/forets/inventaire/methodologie-compilations-forestieres-4e-inventaire-ecoforestier-qc-meridional.pdf"
+    ]
+   }
+  },
+  {
+   "row": "qc-original-current-inventory",
+   "host": "donneesquebec.ca",
+   "id": "resultats-d-inventaire-et-carte-ecoforestiere_4eme",
+   "apiUrl": "https://www.donneesquebec.ca/recherche/api/3/action/package_show?id=resultats-d-inventaire-et-carte-ecoforestiere_4eme",
+   "retrievedAt": "2026-09-26T23:12:47+00:00",
+   "responseSha256": "36b32369f97f087d0fe5b0ff5950d6c8e7109959f342de1613f425ca781ced71",
+   "responseBytes": 30953,
+   "stated": {
+    "title": "Carte écoforestière originale et résultats du quatrième inventaire",
+    "organization": "Ministère des Ressources naturelles et des Forêts",
+    "licence": {
+     "id": "cc-by",
+     "title": "Attribution (CC-BY 4.0)",
+     "url": "https://www.donneesquebec.ca/licence/#cc-by"
+    },
+    "frequency": "annual",
+    "contact": "inventaires.forestiers@mrnf.gouv.qc.ca",
+    "published": "2024-12-06T20:37:12.644194",
+    "modified": "2026-08-21T20:52:01.376617",
+    "version": null,
+    "resourceUrls": [
+     "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/03-Telechargement/URL_4e.csv",
+     "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/03-Telechargement/URL_4e.geojson",
+     "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/PROV/CARTE_ECO_ORI_4_PROV_gpkg.zip",
+     "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/PROV/CARTE_ECO_ORI_4_PROV_gdb.zip",
+     "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/01-Documentation/LISEZ-MOI_carteco-ori-res-4_DQ.pdf",
+     "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/01-Documentation/LISEZ-MOI_carte-eco-ori-4.pdf",
+     "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/05-Outils/Boite_a_outils.zip",
+     "https://mrnf.gouv.qc.ca/documents/forets/inventaire/Telechargement_rapide.pdf",
+     "https://mrnf.gouv.qc.ca/documents/forets/inventaire/resultats-compilations-forestieres.pdf",
+     "https://mrnf.gouv.qc.ca/documents/forets/inventaire/norme-stratification.pdf",
+     "https://mrnf.gouv.qc.ca/documents/forets/inventaire/Norme-photo-interpretation.pdf",
+     "https://mrnf.gouv.qc.ca//documents/forets/inventaire/methodologie-compilations-forestieres-4e-inventaire-ecoforestier-qc-meridional.pdf"
+    ]
+   }
+  }
+ ]
+}

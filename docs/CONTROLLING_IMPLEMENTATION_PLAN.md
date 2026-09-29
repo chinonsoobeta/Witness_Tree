@@ -1040,7 +1040,7 @@ The core screen, reached by clicking the map or searching an address. It is orga
 
 - A Presentation toggle of Map or List, and a Chart or Table toggle, so every spatial view has a tabular equivalent at the same URL. That is the accessibility answer and it also makes the product usable on a train.
 
-- The time control is a native input of type range, so arrow keys step by year and screen readers announce it with no extra work. Most map products fail accessibility exactly here, on a custom slider built out of divs.
+- The time control is a pair of native year selects, so keyboard interaction changes the selected span and screen readers announce it with no extra work. Most map products fail accessibility exactly here, on a custom slider built out of divs.
 
 - Play through respects reduced motion preferences by advancing without the animated camera.
 
@@ -1557,7 +1557,7 @@ Privacy review sign-off, plus a live test of the kill switch and the deletion fl
 
 - Build reserve and treaty place pages with the safeguards in section 11.4 and the right of reply component.
 
-- Build the explore route: MapLibre, PMTiles, four view modes, boundary overlays, native range time control, map and list toggle.
+- Build the explore route: MapLibre, PMTiles, four view modes, boundary overlays, native year selects, map and list toggle.
 
 - Build two at a time comparison.
 

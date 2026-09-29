@@ -9,6 +9,7 @@ import {
   BREAK_GLASS_MAX_DAYS,
   BREAK_GLASS_PATH,
   BRANCH_EVIDENCE_PATH,
+  DEPLOYED_MAP_RENDER_WORKFLOW,
   DEPLOYED_ORIGIN,
   RENDER_EVIDENCE_PATH,
   RENDER_EVIDENCE_SCHEMA,
@@ -22,25 +23,34 @@ import { scopeOf } from "../scripts/verify-deployed-map-render.mjs";
 const loadRecord = async () =>
   JSON.parse(await readFile(new URL(`../${RENDER_EVIDENCE_PATH}`, import.meta.url), "utf8"));
 
-// Every rejection case starts from the record that a real browser run produced.
-// The current branch intentionally leaves that historical record stale, and
-// each mutation test below checks for its additional, distinct rejection.
+// Every rejection case starts from the record that a real browser run produced,
+// which is clean, so each mutation test below checks for its own distinct
+// rejection rather than one the starting record already carried.
 const withRecord = async (mutate) => {
   const record = await loadRecord();
   mutate(record);
   return validateDeployedMapRender({ record });
 };
 
-test("the committed observation is current for the deployed client", async () => {
-  // The Site was redeployed to this branch on 2026-09-05 and the harness was
-  // re-run against it, so the recorded observation once again describes the
-  // client the deployed origin serves. The staleness detector itself is still
-  // exercised synthetically below by mutating a bound source.
-  assert.deepEqual(validateDeployedMapRender(), []);
+test("the fresh Site observation settles the map render gate", async () => {
+  /*
+   * The version 45 observation covers the map client deployed from main commit
+   * 3e68029d through its Sites-history reconciliation merge. It replaces the
+   * version 44 observation of main commit 18427fde through merge 71fe20b4.
+   * The gate is now satisfied by the deployed Site; a failing check remains a
+   * failure (tested below).
+   */
+  const failures = validateDeployedMapRender();
+  assert.deepEqual(failures, []);
+  const gate = resolveDeployedMapRender();
+  assert.equal(gate.satisfiedBy, "deployed-site");
+  assert.deepEqual(gate.failures, []);
+  assert.deepEqual(gate.notes, []);
   const record = await loadRecord();
   assert.equal(record.schemaVersion, RENDER_EVIDENCE_SCHEMA);
   assert.ok(record.url.startsWith(DEPLOYED_ORIGIN));
   assert.equal(record.allChecksPassed, true);
+  assert.equal(record.siteObservationOwed, false);
 });
 
 test("the record claims no publication, admission or production eligibility", async () => {
@@ -200,12 +210,30 @@ const breakGlassRecord = async (overrides = {}) => ({
 
 const write = (root, relative, record) => writeFile(path.join(root, relative), `${JSON.stringify(record, null, 2)}\n`);
 
-test("a stale Site observation still fails when nothing stands in for it", async () => {
+test("a Site observation that is only stale waits for the next deploy", async () => {
   const root = await fixtureRoot();
   await write(root, RENDER_EVIDENCE_PATH, { ...(await loadRecord()), sources: [{ path: "lib/explore/map-style.ts", sha256: "0".repeat(64) }] });
-  const { satisfiedBy, failures } = resolveDeployedMapRender({ root, now: NOW });
-  assert.equal(satisfiedBy, null);
-  assert.ok(failures.some((message) => message.includes("changed since")));
+  const { satisfiedBy, failures, notes } = resolveDeployedMapRender({ root, now: NOW });
+  assert.equal(satisfiedBy, "awaiting-deploy");
+  assert.deepEqual(failures, []);
+  assert.ok(notes.join(" ").includes("changed since"));
+});
+
+test("a stale observation that is also broken fails, rather than waiting for a deploy", async () => {
+  // Awaiting deploy covers staleness only. A failed check, a missing check, a
+  // fallback fetch or the wrong origin is a real failure whatever the digests say.
+  const root = await fixtureRoot();
+  const failing = { ...(await loadRecord()), sources: [{ path: "lib/explore/map-style.ts", sha256: "0".repeat(64) }] };
+  failing.checks = failing.checks.map((entry) => (entry.id === "no-geojson-fallback" ? { ...entry, pass: false } : entry));
+  await write(root, RENDER_EVIDENCE_PATH, failing);
+  const broken = resolveDeployedMapRender({ root, now: NOW });
+  assert.equal(broken.satisfiedBy, null);
+  assert.ok(broken.failures.some((message) => message.startsWith("no-geojson-fallback did not pass")));
+
+  await write(root, RENDER_EVIDENCE_PATH, { ...(await loadRecord()), url: "http://localhost:5173/en/explore", sources: [{ path: "lib/explore/map-style.ts", sha256: "0".repeat(64) }] });
+  const elsewhere = resolveDeployedMapRender({ root, now: NOW });
+  assert.equal(elsewhere.satisfiedBy, null);
+  assert.ok(elsewhere.failures.some((message) => message.includes("not on the deployed origin")));
 });
 
 test("a preview observation answers the gate but leaves the Site observation owed", async () => {
@@ -333,15 +361,28 @@ test("a settled debt has to be deleted rather than left on the branch", async ()
   assert.ok(superseded.failures.some((message) => message.includes("is not needed. Delete it")));
 });
 
-test("neither weaker tier exists on this branch, so the gate is still the strong one", async () => {
-  // If either record is ever committed, this fails and the reviewer reads why.
+test("neither weaker tier exists on this branch, so nothing stands in for the Site", async () => {
+  /*
+   * The gate resolves a tier on presence, so a leftover file silently answers
+   * for a measurement nobody took. The deployed-site observation now settles
+   * the gate, so neither weaker tier is needed.
+   */
   for (const relative of [BRANCH_EVIDENCE_PATH, BREAK_GLASS_PATH]) {
     assert.equal(
       existsSync(new URL(`../${relative}`, import.meta.url)),
       false,
-      `${relative} is committed; the gate is being answered by something weaker than an observation of the Site`,
+      `${relative} is committed, but the deployed-site observation makes it unnecessary`,
     );
   }
+  assert.equal(resolveDeployedMapRender().satisfiedBy, "deployed-site");
+});
+
+test("the daily workflow drives the live Site with the same harness", async () => {
+  const workflow = await readFile(new URL(`../${DEPLOYED_MAP_RENDER_WORKFLOW}`, import.meta.url), "utf8");
+  assert.match(workflow, /schedule:\s*\n\s*- cron: "[^"]+"/);
+  assert.match(workflow, /workflow_dispatch:/);
+  assert.match(workflow, /node scripts\/verify-deployed-map-render\.mjs --browser/);
+  assert.doesNotMatch(workflow, /--write-evidence/, "the scheduled run measures; it never commits evidence");
 });
 
 test("the harness labels a run by the origin it measured, not by the file it is written to", async () => {

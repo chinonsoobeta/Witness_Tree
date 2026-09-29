@@ -9,17 +9,40 @@ test("Phase 8 records every literal launch-readiness gate without production inf
   assert.equal(await validatePhase8LaunchReadinessExitStatus(record), record);
   /*
    * Eight. CDN and tile validation passes only on the strength of a browser
-   * observation of the deployed Site bound to the client it observed. It spent
-   * this branch at fail, because merging main into the confidence-first
-   * redesign changed both the map style and the client and left the 2026-09-05
-   * observation describing something the Site no longer served. The owner
-   * redeployed on 2026-09-08 and the harness was re-run against the deployed
-   * Site, so the count moves because a measurement was taken, not because the
-   * code exists. Nothing weaker was used on the way: neither the preview tier
-   * nor a break-glass record is committed here, and the earlier observations
-   * stay on disk as true accounts of their own days. It stays a
-   * delivery-and-rendering gate: it asserts no production admission, and the
-   * remaining eight criteria are untouched by the deploy.
+   * observation of the deployed Site bound to the client it observed, so it
+   * moves in both directions as the client changes and is redeployed. It has
+   * failed on 2026-09-01, 09-02, 09-04, 09-08 and 09-19, and twice on 09-20:
+   * once on accepted debt, and once here, when this branch took the Explore
+   * map chrome out of the map frame and left the version 34 observation
+   * describing a client the Site no longer served. Sites version 36 deployed
+   * that client and the harness observed it, so this reads eight again. On
+   * 2026-09-21 this branch moved both map files, so the count was seven until
+   * Sites version 39 deployed the application commit and the harness observed
+   * it on 2026-09-22. On 2026-09-23 a plain-language wording pass changed the
+   * map client's captions, so the count returned to seven. Sites version 41
+   * deployed the application commit cf54e5a8, and the harness observed it at
+   * data/deployed-map-render-evidence-2026-09-23-v41.json; the count is eight
+   * again on a fresh measurement. Version 42 was observed the same day. On
+   * 2026-09-26 an Explore map fix moved the map client again, and the count
+   * stays eight on an owner-authorized break-glass until the next deploy is
+   * observed.
+   *
+   * The count is the thing to watch, and the thing not to read. It was eight
+   * while the criterion rested on a measurement, eight again while it rested
+   * on an owner-authorized break-glass that stated outright that nothing had
+   * been measured, and seven while it rested on nothing at all. A number that
+   * did not move when the criterion stopped being evidenced cannot be trusted
+   * to mean that it is, so read the criterion's own reason rather than the
+   * count. The assertion below this one is the real guard: it ties the
+   * criterion's status to the live gate, so neither can drift from the other.
+   *
+   * On 2026-09-27 Sites version 43 deployed the reconciled main tree and the
+   * fresh browser observation settled the gate by the deployed-site tier again.
+   * Later on 2026-09-26 the Explore map framing fix moved the map client; the
+   * count stayed eight on a break-glass, and then on the new awaiting-deploy
+   * tier, which answers a stale but sound observation until the next deploy
+   * while a daily workflow measures the live Site. The gate stays a delivery-and-rendering gate and asserts no
+   * production admission, and the other fifteen criteria are untouched.
    */
   assert.equal(record.completedCriteria, 8);
   assert.equal(record.totalCriteria, 16);

@@ -24,6 +24,7 @@ import {
 } from "../lib/shapes/coverage";
 import { measureShape, WindowError } from "../lib/shapes/measure";
 import { decodeTile, gunzip, tileForBlock, tileName, type PackedBlock } from "../lib/shapes/tiles";
+import { COARSE_GRID_TILES_WRITTEN } from "../lib/shapes/tiles-written";
 
 export const SHAPE_MEASURE_PATH = "/api/shape/measure";
 export const SHAPE_FLAG_HEADER = "x-witness-tree-shape";
@@ -150,6 +151,10 @@ export async function handleShapeMeasure(
   try {
     const tiles = await Promise.all(
       [...wanted.values()].map(async (tile) => {
+        // An unwritten tile holds nothing countable and is never requested:
+        // the CDN answers a missing object with 403, which would otherwise be
+        // indistinguishable from a real failure.
+        if (!COARSE_GRID_TILES_WRITTEN.has(`${tile.tileY}-${tile.tileX}`)) return null;
         const raw = await readTile(base, tileName(tile.tileX, tile.tileY), deps.fetch);
         return raw === null ? null : decodeTile(raw);
       }),

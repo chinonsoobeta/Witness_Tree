@@ -18,7 +18,7 @@ DATA_ROOT="${WITNESS_TREE_DATA_ROOT:-/Volumes/Extended_SSD/Witness_Tree-data}"
 REFERENCE="$DATA_ROOT/derived/phase2-real-national-1984-2022-v1/masks/forest-mask-1984.tif"
 STAGING="$DATA_ROOT/staging"
 FEDERAL="$DATA_ROOT/derived/phase1/federal-electoral-districts-2023-v1/4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93/phase1-federal-electoral-districts-2023-v1/federal-electoral-districts-2023.gpkg"
-OUT="$DATA_ROOT/derived/phase6-district-index-v1"
+OUT="$DATA_ROOT/derived/phase6-district-index-v2"
 BUILDER="$(cd "$(dirname "$0")" && pwd)/phase6_district_index.py"
 METHOD_VERSION="district-index-960m-all-touched-v1"
 CODE_VERSION="working-tree-$(git -C "$(dirname "$0")/.." rev-parse --short=12 HEAD)"
@@ -62,6 +62,9 @@ if [ -e "$MANIFEST" ] || [ -e "$MARKER" ]; then
   exit 1
 fi
 
+# Output v2 reads Alberta from the Government of Alberta copy and Québec from Élections
+# Québec's published bytes (data/provincial-electoral-sources-2026-09-18.json).
+# v1 is kept as built.
 LAYERS="$OUT/layers.json"
 cat > "$LAYERS" <<JSON
 [
@@ -70,11 +73,11 @@ cat > "$LAYERS" <<JSON
    "idField": "FED_NUM", "nameFieldEn": "ED_NAMEE", "nameFieldFr": "ED_NAMEF"},
   {"id": "bc-2023", "path": "$STAGING/bc-provincial-electoral-2023/bc-provincial-electoral-districts-2023.geojson",
    "idField": "ELECTORAL_DISTRICT_ID", "nameFieldEn": "ED_NAME", "nameFieldFr": "ED_NAME"},
-  {"id": "ab-2019", "path": "$STAGING/ab-electoral-2019/EDS_ENACTED_BILL33_15DEC2017.shp",
-   "idField": "EDNumber20", "nameFieldEn": "EDName2017", "nameFieldFr": "EDName2017"},
+  {"id": "ab-2019", "path": "$DATA_ROOT/raw/alberta-provincial-electoral-divisions-2019/2026-09-18/provincial-electoral-division-current-2019.geojson",
+   "idField": "EDNUMBER", "nameFieldEn": "EDNAME", "nameFieldFr": "EDNAME"},
   {"id": "on-2022", "path": "/vsizip/$STAGING/on-provincial-electoral-2022/electoral-district-shapefile-2022.zip/Electoral District Shapefile - 2022 General Election/ELECTORAL_DISTRICT.shp",
    "idField": "ED_ID", "nameFieldEn": "ENGLISH_NA", "nameFieldFr": "FRENCH_NAM"},
-  {"id": "qc-2026", "path": "$STAGING/qc-electoral-2026-sanseau/qc-electoral-districts-2026-sans-eau.geojson",
+  {"id": "qc-2026", "path": "$STAGING/qc-electoral-2026/qc-electoral-2026.geojson",
    "idField": "CO_CEP", "nameFieldEn": "NM_CEP", "nameFieldFr": "NM_CEP"}
 ]
 JSON

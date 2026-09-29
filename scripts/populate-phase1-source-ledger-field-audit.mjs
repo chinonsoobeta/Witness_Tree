@@ -148,6 +148,16 @@ for (const id of ["fed-2023-ridings", "elections-canada-45th-files"]) {
   }
 }
 
+// The 2026-09-26 ledger facts: every field the audit still reported missing on
+// the 16 incomplete core rows. Publisher facts come from the catalogue readback
+// (data/phase1-catalogue-readback-2026-09-26.json) and existing records; the
+// explanations, transformations and notices are Witness Tree's own, and the
+// facts record's basis block says which is which, field by field.
+const facts = (await source("data/phase1-ledger-facts-2026-09-26.json")).document;
+for (const [id, fields] of Object.entries(facts.rows)) {
+  for (const field of Object.keys(fields)) await bind(byId.get(id), field, "data/phase1-ledger-facts-2026-09-26.json", `/rows/${id}/${field}`);
+}
+
 for (const row of audit.rows) {
   const complete = Object.values(row.fields).every((field) => field.status === "verified");
   row.complete = complete;

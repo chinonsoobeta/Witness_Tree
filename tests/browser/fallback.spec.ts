@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { test, expect, type Route } from "@playwright/test";
 import { EXPLORE_PRODUCTION_LAYER } from "../../lib/explore/map-style";
-import { AVAILABLE_BOUNDARY_OVERLAYS } from "../../lib/explore/boundaries";
+import { AVAILABLE_BOUNDARY_OVERLAYS, BOUNDARY_OVERLAYS } from "../../lib/explore/boundaries";
 import { THEME_STORAGE_KEY } from "../../lib/theme";
 
 let publishedFallback: Buffer;
@@ -16,7 +16,7 @@ for (const locale of ["en", "fr"] as const) {
   for (const failure of ["error", "timeout", "both-maps-unavailable"] as const) {
     test(`fallback and keyboard retry ${locale} ${failure}`, async ({ page, colorScheme }, info) => {
       const theme = colorScheme === "dark" ? "dark" : "light";
-      const route = locale === "en" ? "/en/explore" : "/fr/explorer";
+      const route = locale === "en" ? "/en/explore?data=table" : "/fr/explorer?data=table";
       const pending: Route[] = [];
       let retrying = false;
       let tileRequests = 0;
@@ -40,20 +40,27 @@ for (const locale of ["en", "fr"] as const) {
       const map = page.locator(".explore-map");
       const canvas = page.locator(".explore-map-canvas");
       const status = page.locator(".explore-map-status");
-      const figures = page.locator(".explore-map-data table");
+      const figures = page.locator(".explore-table");
       const before = await figures.innerText();
-      expect(before).toContain(locale === "en" ? "Some pixels unknown" : "Certains pixels sont inconnus");
+      /*
+       * The figures the reader is told not to trust as a total carry their own
+       * unknown area, province by province, and are present before the map is
+       * faulted. They live in the figures section's table, the one table on
+       * the page since the duplicate under the map was removed.
+       */
+      expect(before).toContain(locale === "en" ? "ha unknown" : "ha inconnus");
+      expect(before).toContain(locale === "en" ? "The four provinces together" : "Les quatre provinces ensemble");
       const expectedState = failure === "both-maps-unavailable" ? "error" : "ready";
       await expect(map).toHaveAttribute("data-state", expectedState);
       if (failure === "both-maps-unavailable") {
         await expect(page.locator(".explore-map-fallback")).toHaveCount(0);
-        await expect(status).not.toContainText(locale === "en" ? "A static map is shown" : "Une carte statique est affichée");
+        await expect(status).not.toContainText(locale === "en" ? "a still map is shown" : "une carte fixe est donc affichée");
       } else {
         await expect(map).toHaveAttribute("data-map-source", "geojson-fallback");
         await expect(page.locator(".explore-map-fallback path")).toHaveCount(EXPLORE_PRODUCTION_LAYER.rows.length);
-        await expect(status).toContainText(locale === "en" ? "A static map is shown instead" : "Une carte statique est affichée à sa place");
+        await expect(status).toContainText(locale === "en" ? "a still map is shown instead" : "une carte fixe est donc affichée à sa place");
       }
-      await expect(status).toContainText(locale === "en" ? "The figures below are unaffected" : "Les chiffres ci-dessous restent inchangés");
+      await expect(status).toContainText(locale === "en" ? "The figures below are not affected" : "Les chiffres ci-dessous ne sont pas touchés");
       await expect(status).not.toContainText(/PMTiles|GeoJSON|compatibility/i);
       await expect(canvas).toHaveAttribute("inert", "");
       expect(await figures.innerText()).toBe(before);
@@ -101,13 +108,14 @@ for (const locale of ["en", "fr"] as const) {
     await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
     await expect(page.locator(".explore-map")).toHaveAttribute("data-map-source", "geojson-fallback");
     await page.evaluate(() => document.fonts.ready);
-    await expect(page.locator(".explore-map-layer-list li")).toHaveCount(2 + AVAILABLE_BOUNDARY_OVERLAYS.length);
+    // The legend names every boundary drawn on the map.
+    for (const id of AVAILABLE_BOUNDARY_OVERLAYS) await expect(page.locator(".explore-map-key-boundaries")).toContainText(BOUNDARY_OVERLAYS[id].label[locale]);
     const layout = await page.evaluate(() => {
       const box = (element: Element) => { const rect = element.getBoundingClientRect(); return { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom, width: rect.width, height: rect.height }; };
       const panel = document.querySelector(".explore-map-layer-panel")!;
       const nav = document.querySelector(".province-bar--map")!;
       const frame = document.querySelector(".explore-map")!;
-      const overflow = [...document.querySelectorAll(".explore-map-layer-panel, .explore-map-layer-list, .explore-map-legend, .province-bar--map, .explore-annual dl")]
+      const overflow = [...document.querySelectorAll(".explore-map-layer-panel, .explore-map-legend, .province-bar--map, .explore-annual dl")]
         .filter((element) => element.scrollWidth > element.clientWidth + 1)
         .map((element) => ({ className: element.getAttribute("class"), scroll: element.scrollWidth, client: element.clientWidth }));
       const clippedItems = [...panel.querySelectorAll("li")].filter((element) => box(element).left < box(panel).left || box(element).right > box(panel).right);
@@ -125,8 +133,16 @@ for (const locale of ["en", "fr"] as const) {
     expect(layout.overflow).toEqual([]);
     expect(layout.clippedItems).toBe(0);
     expect(layout.smallContainer.scroll).toBeLessThanOrEqual(layout.smallContainer.client + 1);
-    expect(layout.panel.top).toBeGreaterThanOrEqual(layout.nav.bottom + 4);
-    expect(layout.panel.bottom).toBeLessThanOrEqual(layout.frame.bottom);
+    /*
+     * The chooser and the layer panel are no longer drawn over the frame, so
+     * this stops measuring a clearance and measures the separation instead:
+     * chooser entirely above the map, panel entirely below it. A clearance can
+     * be exhausted by content that grows, which is how the panel came to cover
+     * the chooser when the span legend went from four short bands to five
+     * spelled-out ones. Stacking order cannot be exhausted.
+     */
+    expect(layout.nav.bottom).toBeLessThanOrEqual(layout.frame.top);
+    expect(layout.panel.top).toBeGreaterThanOrEqual(layout.frame.bottom);
     if (page.viewportSize()!.width < 760) {
       expect(new Set(layout.buttons.map((button) => Math.round(button.top))).size).toBe(2);
     }

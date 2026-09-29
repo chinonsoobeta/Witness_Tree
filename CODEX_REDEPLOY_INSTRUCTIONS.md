@@ -1,80 +1,146 @@
 # Owner redeploy instructions
 
-## Decision boundary
+This is the standing procedure for redeploying the site from `main`. It does not
+authorize or perform a deployment. Deployment is the owner's decision, made
+each time in the prompt the owner gives Codex, and that prompt names the exact
+commit and any history reconciliation it allows.
 
-Deployment is an owner-owned decision. This record does not authorize or perform a deployment. If the owner chooses to redeploy, update the existing ChatGPT Sites project. Do not create a new Site.
+## Current state
 
-- Existing project ID: `appgprj_6a7bea9e59988191a9304d4c5a3f379d`
-- Application commit to deploy: `2fe54b2f70201540cbf76936af45375c7c030569`
-- Source branch: `redesign/confidence-first-sweep`
-- Open integration: [PR #156](https://github.com/chinonsoobeta/Witness_Tree/pull/156)
+- Existing Sites project: `appgprj_6a7bea9e59988191a9304d4c5a3f379d`. Never create a new Site.
 - Canonical domain: `https://www.witnesstree.ca`
+- Last deployment this repository recorded: **Sites version 47**, completed on
+  2026-09-28. Its application tree is `main` at
+  `2ecefdf812e5f49ae827275e95c07eb867ca6753` (#202). Its Sites source commit
+  is the reconciliation merge `ec4bc74abb1802649ec34dd560e15b6559d08c65`.
+  Live checks passed for the English and French home pages, the 10 federal and
+  10 provincial riding rankings, the numbered top ten city rankings and
+  province names, the French comparer labels, Prince George search wording,
+  French wildfire punctuation, and the Explore map smoke check. The map gate
+  passed; the current browser observation remains
+  `data/deployed-map-render-evidence-2026-09-27-v45.json` because neither gated
+  map file changed.
+- Version 47 replaced **Sites version 46**, deployed from `main` at
+  `8485d77679b216faf1ca2844b573d7800e744de4` (#200) through Sites-history
+  reconciliation merge `31f26986e9715f73198db7a90c1f6f629a24b4b7`. Version 46
+  replaced version 45, deployed from `main` at
+  `3e68029df6e8e045f477d8909606fde13c912138` (#199) through reconciliation
+  merge `4b97fba6017770767f474420b6911ca179130f4b`.
+- The control plane records any later version; check it before relying on this list.
 
-The branch head may sit one commit ahead of the application commit above, where that later commit changes only this instruction file. Select the application commit explicitly so the deployed application stays traceable to the tree the checks ran against.
+## Why the Sites history needs reconciling
 
-## Why this deploy precedes the merge
+The Sites source copy keeps its own branch history. `save_site_version` accepts
+only that branch's current HEAD, and a push to it must fast-forward. GitHub
+`main` allows only squash merges, so the commit a previous deploy used is never
+in `main`'s history, and Sites reports "Local and remote Site history diverged".
 
-The named commit is not on `main` and is not the result of a protected merge. That is deliberate. `scripts/check-deployed-map-render.mjs` binds the deployed-Site map observation to the client that was observed, and this branch changes both `lib/explore/map-style.ts` and `components/explore/ExploreMapClient.tsx` relative to the 2026-09-05 observation. The gate is therefore failing, `verify` is the one required status check on `main`, and PR #156 cannot merge until the Site has been redeployed from this commit and the harness has been re-run against it.
+When the owner authorizes it for a deploy, reconcile like this:
 
-This is the ordinary order for a change that touches the map client: deploy the branch, observe the deployed Site, then merge. It is not a bypass of the gate. The gate stays red until a real observation of a real deployment replaces the stale one. No preview-tier record and no break-glass record is committed on this branch, and none is to be created for it.
+1. Create an isolated deploy branch from the `main` commit being deployed.
+2. Run `git merge -s ours --no-ff <current Sites source HEAD>`. The merge
+   commit's tree must equal the `main` commit's tree, and the old Sites HEAD
+   must now be an ancestor.
+3. Push that merge commit to the Sites source branch only, as a normal
+   fast-forward. Never reset, rebase, force-push or delete, and never push it
+   to GitHub.
 
-The deployment does not close any gate by itself. It supplies the evidence one gate requires.
+The deployed application is always the `main` commit's tree. Record both SHAs.
 
-## Pre-deploy verification
+**Deploy only from `main`.** Before saving a version, run
+`npm run verify:deploy-source -- <commit to be saved>` after `git fetch origin main`.
+It must name the `main` commit whose tree the saved commit carries. If it fails,
+stop: the commit carries code that isn't on `main`. On 2026-09-23 the Site ran an
+unmerged pull request for three days.
 
-Run these commands in a clean checkout of the exact application commit:
+## 1. Pre-deploy verification
+
+In a clean checkout of the commit to be saved (`git status --short` empty):
 
 ```sh
-git fetch origin redesign/confidence-first-sweep
-git switch --detach 2fe54b2f70201540cbf76936af45375c7c030569
-git status --short
 npm ci
-npm run typecheck
+npx tsc --noEmit
 npm run lint
 npm run build
+npm test
 npm run test:suite
-npm run check:claims
-npm run check:style-tokens
-npm run check:accessibility
-npm run check:brand-token
+npm run verify:checks
 npm run check:bilingual
-npm run check:budgets
-npm run check:contrast
-npm run check:hex-literals
-npm run check:persistent-identifiers
-npm run check:boundary-overlays
-npm run check:year-range-format
 ```
 
-`npm run build` must precede `npm run test:suite`. The rendered-page tests import `dist/server/index.js`, so running the suite first fails eight assertions with `ERR_MODULE_NOT_FOUND` in a clean checkout. This mirrors the workflow, which orders the two the same way for the same reason at `.github/workflows/ci.yml`.
+`npm run build` must come before `npm run test:suite`, because the
+rendered-page tests import `dist/server/index.js`. `verify:checks` should report
+every check passed. Suite files the runner excludes as `REQUIRES_DATA_ROOT` or
+`REQUIRES_MACOS_RUNNER` are expected; read the suite's `FAILED:` summary, not
+the TAP stream.
 
-Require a clean worktree and a successful build. Two known failures are expected at this commit and are the reason for the deploy, not a reason to withhold it:
+`check:deployed-map-render` reports "awaiting deploy" when
+`lib/explore/map-style.ts` or `components/explore/ExploreMapClient.tsx` changed
+after the last observation. That's expected: the deploy you're about to make
+owes the observation (section 4). Any other failure is real: stop and report.
 
-- `npm run check:deployed-map-render` fails, naming `lib/explore/map-style.ts` and `components/explore/ExploreMapClient.tsx`.
-- `npm run test:suite` reports exactly one failing assertion, `the committed observation is current for the deployed client`, which reads the same gate.
+## 2. Deploy
 
-Everything else must be green. Any further failure is a real regression and stops the deploy. The documented SSD-dependent receipt checks may skip when the external Witness Tree data root is detached; do not convert a skip into a pass claim.
+Save one version from the verified commit in the existing project, deploy it,
+and poll until it reports succeeded or failed. Confirm the control plane
+reports the saved commit as the deployed source.
 
-## Redeploy
+## 3. Post-deploy verification
 
-In the ChatGPT Sites control plane, open the existing project named above and deploy commit `2fe54b2f70201540cbf76936af45375c7c030569`. Do not use a create-site action. Record the resulting deployment version, deployment URL, start and completion timestamps, and source commit SHA.
+On `https://www.witnesstree.ca`, in both languages where it applies:
 
-## Post-deploy verification
+- `/en`, `/fr`, `/en/explore`, `/fr/explorer`, `/en/methods`, `/fr/methodes`,
+  `/en/data/harvest-and-fire` and `/fr/donnees/recolte-et-incendies` return 200.
+- Explore opens with all four provinces framed and the zoom hint on the map.
+- At 375 px wide, no page scrolls sideways.
+- `npm run verify:deployed-revision` exits 0.
 
-Verify from a browser and from an independent HTTP client:
+Don't state that a deploy closes production, Phase 2, Phase 8 or Phase 9. If
+the live Site itself is broken, roll back by redeploying the previous version
+through the same Site, and record the rollback. A failure in the map-check
+tooling alone is not grounds for a rollback.
 
-1. `https://www.witnesstree.ca/en` and `https://www.witnesstree.ca/fr` return 2xx and render in the correct language.
-2. `/en/explore` and `/fr/explorer` render the forest-change map, native time control, finder, and all four boundary choices: federal ridings, provincial ridings, economic regions, and watersheds.
-3. Federal and provincial riding selection shows the measured coverage readout. Incomplete coverage remains `Unknown`; economic regions and watersheds remain boundary-only.
-4. `/en/compare` and `/fr/comparer` load the real federal comparison rows, preserve the selected pair, view, and sort in the URL, and never rank an unknown share.
-5. `/en/search` and `/fr/recherche` find bilingual federal riding names with accent and punctuation normalization.
-6. The immutable province and boundary PMTiles origins return `206 Partial Content` for byte-range requests, include suitable CORS headers, and match the release URLs and checksums recorded in repository evidence. A `200` full-object response is not a successful PMTiles range check.
-7. MapLibre loads its worker asset without console errors. Confirm the PMTiles layers render from the external delivery origin and that an induced PMTiles failure activates the documented GeoJSON/SVG fallback rather than a blank map.
-8. This commit carries the confidence-first redesign, so confirm the surfaces it rebuilt: the language gate shows its four photographs with the location captions beneath them, the landing page puts the coverage statement and the evidence legend ahead of the first figure, a place page opens on the record composition, and the governance page carries the accountability plate with a reachable correction route.
-9. Record the final canonical URL, deployment version, deployed SHA, HTTP observations, browser observations, and any rollback action. Do not state that deployment closes production, Phase 2, Phase 8, or Phase 9 gates.
+## 4. Record the observation (only when the map client changed)
 
-## After a successful deploy
+The daily "Deployed map render" workflow drives the live Site in a real browser
+and fails if the map stops rendering, so a broken deploy is caught within a day
+either way. When either gated map file changed since the last committed
+observation, also commit a fresh one:
 
-Report the deployed SHA and the canonical URL back to the repository owner. The map-render harness is then re-run against the deployed Site, its observation is committed, the Phase 8 exit record moves `cdn-tile-validation` back to pass, and PR #156 merges through protected CI in the normal way. Do not edit the Phase 8 record or the observation file as part of the deployment.
+1. Run `npm run verify:deployed-map-render` once against the live Site. Save
+   the result as `data/deployed-map-render-evidence-<date>-v<version>.json`;
+   it must pass all five checks.
+2. Point `RENDER_EVIDENCE_PATH` in `scripts/check-deployed-map-render.mjs` at
+   it, and return the render-gate tests in `tests/deployed-map-render.test.mjs`
+   to the deployed-site tier.
+3. Rebind the evidence records, following the rule in
+   `docs/UI_REDESIGN_CONFIDENCE_FIRST_PLAN.md` (C5):
+   - re-read each bound criterion's reason, and confirm it still holds;
+   - confirm the gate count doesn't change;
+   - append a dated note to the reason;
+   - refresh the SHA-256 of the files that changed.
 
-If a blocking verification fails, redeploy the last known-good commit through the same existing Site and record the rollback. Do not mutate archive objects or the external data root as part of a Site rollback.
+   Refresh Phase 8 before Phase 9. Keep each file's JSON indentation.
+4. Update the Phase 8 row in `docs/IMPLEMENTATION_STATUS.md` and this file's
+   "Current state".
+5. Open a PR. Don't push to `main`, and don't merge it yourself.
+
+Leave these alone:
+
+- dated owner-admission records and packets;
+- the superseded Phase 8 record,
+  `data/phase8-launch-readiness-exit-status-as-admitted-2026-09-18.json`;
+- earlier observations, `data/deployed-map-render-evidence-*.json`.
+
+A stale pin in a frozen record is not a reason to edit it.
+
+If neither map file changed, the committed observation still describes the
+client. Run the harness against the live Site as a smoke check, and report
+without changing any file.
+
+## Limits
+
+- Don't upload anything to S3 or CloudFront.
+- Don't change data claims, gate counts or admission records beyond what a fresh observation proves.
+- Don't describe the site as production, beta or launched.
+- If a step needs credentials or an approval you don't have, or any SHA or invariant doesn't match, stop and report.

@@ -25,10 +25,20 @@
  *      authorized it, the exact digests it covers and the date the debt must be
  *      settled by, and it expires. It records the debt; it does not hide it.
  *
+ *   4. Awaiting deploy. The observation is sound but a bound source changed
+ *      since it was taken. Merging does not deploy, so until the next deploy
+ *      the Site still serves exactly the client that was observed, and the
+ *      observation still describes it. The debt starts at the deploy: the
+ *      "Deployed map render" workflow drives the live Site in a real browser
+ *      every day, so a deployed client that fails to render is caught within a
+ *      day, and the runbook commits the new observation after each deploy.
+ *
  * Tiers 2 and 3 exist because the gate was otherwise circular: a map fix could
  * not merge without being deployed and could not be deployed without merging.
- * PR #134 broke that circle by hand, once, with no artifact. This makes the same
- * move leave a record behind.
+ * PR #134 broke that circle by hand, once, with no artifact. Tier 4, added on
+ * 2026-09-26 by owner decision, removes the circle instead of bridging it: a
+ * map change no longer blocks its own merge, and the live Site is measured
+ * after every deploy rather than before.
  *
  * Read-only. It admits, releases and deploys nothing.
  */
@@ -39,12 +49,14 @@ import { fileURLToPath } from "node:url";
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
-export const RENDER_EVIDENCE_PATH = "data/deployed-map-render-evidence-2026-09-12.json";
+export const RENDER_EVIDENCE_PATH = "data/deployed-map-render-evidence-2026-09-27-v45.json";
 export const RENDER_EVIDENCE_SCHEMA = "witness-tree/deployed-map-render-evidence/1";
 export const BRANCH_EVIDENCE_PATH = "data/deployed-map-render-branch-observation.json";
 export const BREAK_GLASS_PATH = "data/deployed-map-render-break-glass.json";
 export const BREAK_GLASS_SCHEMA = "witness-tree/deployed-map-render-break-glass/1";
 export const DEPLOYED_ORIGIN = "https://www.witnesstree.ca";
+/** The scheduled workflow that drives the live Site in a real browser every day. */
+export const DEPLOYED_MAP_RENDER_WORKFLOW = ".github/workflows/deployed-map-render.yml";
 
 /** How long a break-glass record may stand before the Site observation is overdue. */
 export const BREAK_GLASS_MAX_DAYS = 14;
@@ -108,7 +120,7 @@ function readRecord(root, relative) {
 
 // `record` is injectable so the tests can exercise every rejection path without
 // overwriting the real record, which describes a run that actually happened.
-export function validateDeployedMapRender({ record: supplied, root = REPO_ROOT } = {}) {
+export function validateDeployedMapRender({ record: supplied, root = REPO_ROOT, ignoreStaleness = false } = {}) {
   const failures = [];
   const add = (message) => failures.push(message);
 
@@ -139,7 +151,7 @@ export function validateDeployedMapRender({ record: supplied, root = REPO_ROOT }
     add(`record url is ${record.url}, which is not on the deployed origin ${DEPLOYED_ORIGIN}. This criterion is scoped to the deployed Site.`);
   }
 
-  failures.push(...validateObservationBody(record, root));
+  failures.push(...validateObservationBody(record, root, { ignoreStaleness }));
   return failures;
 }
 
@@ -148,7 +160,7 @@ export function validateDeployedMapRender({ record: supplied, root = REPO_ROOT }
  * measured: the checks all ran, all passed, the archive answered range requests,
  * the fallback was never touched, and the bound sources still match the tree.
  */
-function validateObservationBody(record, root) {
+function validateObservationBody(record, root, { ignoreStaleness = false } = {}) {
   const failures = [];
   const add = (message) => failures.push(message);
 
@@ -182,7 +194,7 @@ function validateObservationBody(record, root) {
       add(`record binds ${relative}, which cannot be read.`);
       continue;
     }
-    if (current !== sha256) {
+    if (current !== sha256 && !ignoreStaleness) {
       add(`${relative} changed since the deployed Site was observed at ${record.observedAt}. Re-run the harness against the deployed Site.`);
     }
   }
@@ -368,6 +380,14 @@ export function resolveDeployedMapRender({ root = REPO_ROOT, now = new Date() } 
       notes,
       failures: [`The deployed Site observation is stale and ${BREAK_GLASS_PATH} does not stand in its place:`, ...breakGlassFailures.map((message) => `  ${message}`)],
     };
+  }
+
+  // Tier 4. Everything about the observation holds except that a bound source
+  // moved since it was taken, so it still describes what the Site serves until
+  // the next deploy.
+  if (validateDeployedMapRender({ root, ignoreStaleness: true }).length === 0) {
+    notes.push(`Awaiting deploy: the Site still serves the observed client until the next deploy, which owes a fresh observation (${DEPLOYED_MAP_RENDER_WORKFLOW} measures the live Site daily). ${siteFailures.join(" ")}`);
+    return { satisfiedBy: "awaiting-deploy", notes, failures: [] };
   }
 
   return { satisfiedBy: null, notes, failures: siteFailures };

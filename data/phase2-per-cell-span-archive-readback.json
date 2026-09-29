@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "witness-tree/phase2-per-cell-span-archive-readback/1",
+  "releaseId": "0de224ad834ba70a51d989f710157562d0b9fcd0a0d8e0f4a9929a2996dc0669",
+  "recordedAt": "2026-09-20T01:37:28.128Z",
+  "s3ExactReadback": {
+    "method": "head-object length and S3's stored SHA-256 (per-part composite for multipart objects) against the same digest of the local bytes, cut at the part boundaries the length and part count give",
+    "byteLength": 10335592172,
+    "s3ChecksumSha256": "xuFT3Li+PiV7djuPvN80ww/6eEsOciVoUZHKnZGmGQY=-1233",
+    "parts": 1233
+  },
+  "cloudFrontExactReadback": {
+    "method": "the archive fetched whole without caching and hashed with SHA-256 as it streamed",
+    "byteLength": 10335592172,
+    "sha256": "0de224ad834ba70a51d989f710157562d0b9fcd0a0d8e0f4a9929a2996dc0669"
+  }
+}

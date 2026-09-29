@@ -29,7 +29,7 @@ export function validateWildfireRouteSource(source: string) {
 
 test("the public wildfire page is an agency directory, not a product feed", () => {
   const english = renderToStaticMarkup(<WildfireView locale="en" />);
-  assert.match(english, /does not publish a live wildfire feed/);
+  assert.match(english, /doesn’t show live wildfires/);
   assert.match(english, /call 911/);
   for (const [agency, url] of officialDestinations) {
     assert.ok(english.includes(agency));
@@ -57,7 +57,7 @@ test("removing a required safety field fails the blocking validator", () => {
 
 test("the French directory uses the official French destinations where available", () => {
   const french = renderToStaticMarkup(<WildfireView locale="fr" />);
-  assert.match(french, /ne publie pas de flux en direct/);
+  assert.match(french, /n’affiche pas les feux en direct/);
   assert.match(french, /composez le 911/);
   assert.match(french, /Services d’urgence, d’aviation et de lutte contre les feux de forêt de l’Ontario/);
   assert.match(french, /https:\/\/www\.ontario\.ca\/fr\/page\/incendies-de-foret/);
@@ -78,10 +78,15 @@ test("locale routes no longer import or pass the illustrative feed", async () =>
 test("wildfire puts its limits and missing times before the directory without inventing an observation", () => {
   for (const locale of ["en", "fr"] as const) {
     const markup = renderToStaticMarkup(<WildfireView locale={locale} />);
-    assert.ok(markup.indexOf('class="coverage-statement"') < markup.indexOf('class="wildfire-disclaimer-symbol"'));
-    assert.match(markup, /class="evidence-legend"/);
-    assert.match(markup, /<dd>– (Unavailable|Indisponible);/);
-    assert.match(markup, /<dd>– (None|Aucune);/);
+    // The page shows no figures, so its limit is not tucked into a closed
+    // figures note: "no live wildfires" is said in the visible emergency notice,
+    // before the 911 line, and there is no evidence key with nothing to key.
+    const notice = markup.slice(markup.indexOf('class="notice notice--alert wildfire-disclaimer"'), markup.indexOf("</aside>"));
+    assert.match(notice, locale === "en" ? /doesn’t show live wildfires/ : /n’affiche pas les feux en direct/);
+    assert.ok(notice.indexOf(locale === "en" ? "live wildfires" : "feux en direct") < notice.indexOf("911"));
+    assert.doesNotMatch(markup, /coverage-note|evidence-key|evidence-legend/);
+    assert.match(markup, /<dd>– (Unavailable|Indisponible\u202F);/);
+    assert.match(markup, /<dd>– (None|Aucune\u202F);/);
     assert.ok(markup.indexOf('id="wildfire-status-heading"') < markup.indexOf('id="wildfire-directory-heading"'));
     assert.doesNotMatch(markup, /<time|datetime=/i);
     assert.match(markup, /aria-hidden="true">△/);

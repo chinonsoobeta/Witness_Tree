@@ -69,28 +69,89 @@ test("the entry gate has no figures or product navigation and tolerates the abse
   }
 });
 
-test("landing figures pair loss with unmapped area on one hectare scale in both languages", async () => {
-  const hectares = [680273.64, 22204952.19, 714701.7, 8843646.69, 748863.72, 15372023.76, 800473.32, 4095.27];
+test("landing figures show detected loss alone, on a scale of detected loss", async () => {
+  /*
+   * The card used to carry two measures side by side on one shared hectare
+   * scale, detected loss and unmapped area, which is what forced the page to
+   * print that the unmapped bar was not a measurement of forest loss. A
+   * disclaimer that exists to undo a drawing means the drawing is wrong, so the
+   * second bar is gone and the disclaimer with it.
+   *
+   * The cards are a ranked list now, and the unmapped share is a measure of
+   * its own behind a toggle rather than a clause inside the loss caveat. The
+   * assertions move with it at the same strictness: the server renders the
+   * loss measure, one value and one bar per row, scaled against the largest
+   * detected loss of the four, ranked by that same figure, with the unmapped
+   * share still in the sentence that says why the figure is a floor.
+   *
+   * The scale sentence stays gone. Each bar draws what the figure beside it
+   * says, so there is nothing for a sentence to undo.
+   */
+  const hectares = [18028529.19, 10823352.93, 9280647.27, 6842768.76];
+  const scale = Math.max(...hectares);
   for (const locale of ["en", "fr"]) {
     const html = await (await render(`/${locale}`)).text();
-    const cards = [...html.matchAll(/<article class="province-coverage-card"[^>]*>([\s\S]*?)<\/article>/g)].map((match) => match[1]);
-    assert.equal(cards.length, 4);
-    assert.ok(html.indexOf('class="coverage-statement"') < html.indexOf('class="province-coverage-card"'));
-    assert.ok(html.indexOf('class="evidence-legend"') < html.indexOf('class="province-coverage-card"'));
-    const values = cards.flatMap((card) => [...card.matchAll(/<strong class="province-coverage-value">([^<]+)<\/strong>/g)].map((match) => match[1]));
-    const format = new Intl.NumberFormat(`${locale}-CA`, { maximumFractionDigits: 2 });
-    assert.deepEqual(values, hectares.map((value) => `${format.format(value)} ha`));
-    const widths = cards.flatMap((card) => [...card.matchAll(/class="province-coverage-fill" style="width:([\d.]+)%"/g)].map((match) => Number(match[1])));
-    assert.equal(widths.length, 8);
-    widths.forEach((width, index) => assert.ok(Math.abs(width / hectares[index] - 100 / 22204952.19) < 1e-12));
-    for (const card of cards) {
-      assert.match(card, /province-coverage-unknown/);
-      assert.match(card, /of known mapped forest|de la forêt connue cartographiée/);
-      assert.match(card, /of the province|de la superficie provinciale/);
-      assert.match(card, /href="\/en\/data"|href="\/fr\/donnees"/);
+    const rows = [...html.matchAll(/<li class="province-list-row"[^>]*>([\s\S]*?)<\/li>/g)].map((match) => match[1]);
+    assert.equal(rows.length, 4);
+    // The headline states its own minimum, so the home page carries no separate caveat note.
+    assert.doesNotMatch(html, /class="coverage-(note|statement)"/);
+    assert.ok(html.indexOf('class="evidence-marks"') < html.indexOf('class="province-list-row"'));
+
+    // Whole hectares on the headline. Two decimal places on a satellite-derived
+    // floor claim centimetres no source can back.
+    const whole = new Intl.NumberFormat(`${locale}-CA`, { maximumFractionDigits: 0 });
+    // The unit is its own span now, so the figure and the word can share a
+    // baseline at different sizes. What the element renders is unchanged, and
+    // that is what this still asserts.
+    //
+    // The two spans are named rather than stripped with a tag regex. Naming
+    // them pins the structure as well as the text, and the separator is a
+    // literal space in the pattern rather than a whitespace class, because the
+    // French group separator is itself a space character: a pattern loose
+    // enough to skip over it would be comparing a different string.
+    const figure = /<p class="province-list-figure"><span class="province-list-value">([^<]*)<\/span> <span class="province-list-unit">([^<]*)<\/span><\/p>/g;
+    const values = rows.flatMap((row) =>
+      [...row.matchAll(figure)].map(([, value, unit]) => `${value} ${unit}`),
+    );
+    assert.deepEqual(values, hectares.map((value) => `${whole.format(value)} ha`));
+
+    // One bar per row, and the scale is detected loss. The unmapped hectares
+    // are deliberately not in this maximum: they never share the scale again.
+    const widths = rows.flatMap((row) => [...row.matchAll(/class="province-list-fill" style="width:([\d.]+)%"/g)].map((match) => Number(match[1])));
+    assert.equal(widths.length, 4);
+    widths.forEach((width, index) => assert.ok(Math.abs(width - (hectares[index] / scale) * 100) < 1e-9));
+    assert.equal(Math.max(...widths), 100);
+
+    // The unmapped measure is a measure, not a second bar on this one. Its
+    // own bar reaches the page only once the reader asks for it.
+    assert.doesNotMatch(html, /province-list-gap/);
+    assert.doesNotMatch(html, /hectare scale|échelle en hectares/);
+
+    // The exact value stays at the foot of the row, which is what makes the
+    // rounded headline cost nothing.
+    const exact = new Intl.NumberFormat(`${locale}-CA`, { maximumFractionDigits: 2 });
+    const unit = locale === "en" ? "ha detected" : "ha détectés";
+    const recorded = rows.flatMap((row) => [...row.matchAll(/class="province-list-foot"><span>([^<]+)</g)].map((match) => match[1]));
+    assert.deepEqual(recorded, hectares.map((value) => `${exact.format(value)} ${unit}`));
+
+    for (const row of rows) {
+      // The span rides on the figure now, not on a masthead badge that claimed
+      // 1984 to 2022 over figures covering three years.
+      assert.match(row, /class="province-list-span">\d{4}\u2013\d{4}</u);
+      assert.match(row, /of the forest mapped in 1984|de la forêt cartographiée en 1984/);
+      assert.match(row, /<strong>[^<]*%<\/strong>/);
+      assert.match(row, /counts as unknown, not zero|compte comme inconnue, pas comme nulle/);
+      // The unknown-area reason links to the Methods section that explains it.
+      assert.match(row, /href="\/en\/methods#coverage-gap"|href="\/fr\/methodes#coverage-gap"/);
+      assert.match(row, /href="\/en\/data"|href="\/fr\/donnees"/);
     }
-    assert.match(cards[3], /&lt;0[.,]01/);
-    assert.match(cards[3], /GeoBC/);
+    // British Columbia leads the loss ranking and carries the qualifier that
+    // stops its gap reading as unmeasured forest. It rides on this measure
+    // too, because a claim behind a control is a claim most readers never see.
+    const bcRow = rows.find((row) => /British Columbia|Colombie-Britannique/.test(row));
+    assert.ok(bcRow);
+    assert.match(bcRow, /&lt;0[.,]01/);
+    assert.match(bcRow, /shoreline|littoral/);
   }
 });
 
@@ -100,6 +161,7 @@ test("emits application security headers with the map delivery allowances", asyn
   assert.equal(response.headers.get("x-content-type-options"), "nosniff");
   assert.equal(response.headers.get("referrer-policy"), "strict-origin-when-cross-origin");
   assert.equal(response.headers.get("x-frame-options"), "DENY");
+  assert.equal(response.headers.get("permissions-policy"), "camera=(), microphone=(), geolocation=(), payment=(), usb=(), fullscreen=(self)");
 
   const policy = response.headers.get("content-security-policy");
   assert.ok(policy);
@@ -127,9 +189,9 @@ test("renders both localized public records with neutral non-claims", async () =
   assert.match(french, /<html lang="fr">/);
   assert.doesNotMatch(french, /<html lang="en">/);
   assert.match(english, /What happened to the forest here\?/);
-  assert.match(english, /does not estimate merchantable timber/);
-  assert.match(french, /Qu’est-il arrivé à la forêt ici\?/);
-  assert.match(french, /n’estime pas le bois marchand/);
+  assert.match(english, /How much sellable timber there is/);
+  assert.match(french, /Qu’est-il arrivé à la forêt ici\u202F\?/);
+  assert.match(french, /La quantité de bois vendable/);
   assert.doesNotMatch(`${english}\n${french}`, /the truth|real-time|complete record/i);
 });
 
@@ -162,39 +224,46 @@ test("renders localized place and location records with semantic content and pro
   assert.match(frenchLocation, /Provenance/);
 });
 
-test("renders localized search results and Explore list/table alternatives without browser JavaScript", async () => {
-  const [englishSearch, frenchSearch, englishExplore, frenchExplore] = await Promise.all([
+test("renders localized search results and the Explore table without browser JavaScript, including from an old List address", async () => {
+  const [englishSearch, frenchSearch, englishExplore, frenchExplore, englishFixtures, frenchFixtures] = await Promise.all([
     render("/en/search?q=British%20Columbia").then((response) => response.text()),
     render("/fr/recherche?q=Colombie-Britannique").then((response) => response.text()),
     render("/en/explore?mode=wildfire&presentation=list&data=table&year=2020").then((response) => response.text()),
     render("/fr/explorer?mode=wildfire&presentation=list&data=table&year=2020").then((response) => response.text()),
+    render("/en/explore?mode=condition-recovery&presentation=list&data=table&year=1988").then((response) => response.text()),
+    render("/fr/explorer?mode=condition-recovery&presentation=list&data=table&year=1988").then((response) => response.text()),
   ]);
 
   assert.match(englishSearch, /<main\b[^>]*id="main"/);
-  assert.match(englishSearch, /Search places/);
-  assert.match(englishSearch, /Place results are illustrative fixtures/);
-  assert.match(englishSearch, /District results are measured from the source grid/);
-  assert.match(englishSearch, /Illustrative British Columbia/);
+  assert.match(englishSearch, /<h2>Places<\/h2>/);
+  assert.match(englishSearch, /Search provinces, ridings and communities\. Figures cover 1984 to 2022\./);
+  assert.match(englishSearch, /British Columbia/);
   assert.match(frenchSearch, /<main\b[^>]*id="main"/);
-  assert.match(frenchSearch, /Rechercher des lieux/);
-  assert.match(frenchSearch, /Les résultats de lieux sont des exemples illustratifs/);
-  assert.match(frenchSearch, /circonscriptions sont mesurés à partir de la grille source/);
-  assert.match(frenchSearch, /Colombie-Britannique illustrative/);
+  assert.match(frenchSearch, /<h2>Lieux<\/h2>/);
+  assert.match(frenchSearch, /Recherchez une province, une circonscription ou une collectivité\. Les chiffres couvrent la période de 1984 à 2022\./);
+  assert.match(frenchSearch, /Colombie-Britannique/);
 
+  // Wildfire reads the national harvest and fire series, so its table shows
+  // real province figures served without browser JavaScript.
   assert.match(englishExplore, /<main\b[^>]*id="main"/);
   assert.match(englishExplore, /Explore forest loss/);
-  assert.match(englishExplore, /The list, chart, and table use illustrative fixtures/);
-  assert.match(englishExplore, /This view does not imply a production geographic layer/);
-  assert.match(englishExplore, /Reported fire perimeter/);
-  assert.match(englishExplore, /<table/);
+  assert.match(englishExplore, /add up harvest, and separately fire/);
+  assert.match(englishExplore, /<th scope="col">Harvest \(ha\)<\/th><th scope="col">Fire \(ha\)<\/th>/);
+  assert.match(englishExplore, /href="\/en\/data\/harvest-and-fire\?from=2020&amp;to=2020"/);
   assert.match(englishExplore, /Source attribution/);
+  assert.doesNotMatch(englishExplore, /made-up example data/);
   assert.match(frenchExplore, /<main\b[^>]*id="main"/);
   assert.match(frenchExplore, /Explorer les pertes forestières/);
-  assert.match(frenchExplore, /La liste, le graphique et le tableau utilisent des exemples illustratifs/);
-  assert.match(frenchExplore, /Cette vue n’implique aucune couche géographique de production/);
-  assert.match(frenchExplore, /Périmètre d’incendie déclaré/);
-  assert.match(frenchExplore, /<table/);
+  assert.match(frenchExplore, /<th scope="col">Récolte \(ha\)<\/th><th scope="col">Feu \(ha\)<\/th>/);
+  assert.match(frenchExplore, /href="\/fr\/donnees\/recolte-et-incendies\?from=2020&amp;to=2020"/);
   assert.match(frenchExplore, /Attribution de la source/);
+  // Condition and recovery is the one mode still on example data, and says so.
+  assert.match(englishFixtures, /The chart and table use made-up example data, not real records/);
+  assert.match(englishFixtures, /<table/);
+  assert.match(englishFixtures, /Source attribution/);
+  assert.match(frenchFixtures, /Le graphique et le tableau utilisent des données d’exemple inventées, et non de vrais registres/);
+  assert.match(frenchFixtures, /<table/);
+  assert.match(frenchFixtures, /Attribution de la source/);
 });
 
 // The synthetic uptime probe decides a route is healthy when the response body contains a

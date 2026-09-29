@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { usePathname } from "next/navigation";
 import {
   EXPLORE_INTERVAL_FIRST_YEAR,
@@ -19,10 +19,9 @@ const TEXT = {
     legend: "Years shown",
     firstYear: "First year",
     lastYear: "Last year",
-    help: "Move both handles to choose a span, for example 1990 to 1998. Leave them one year apart to see a single year on its own. The record runs from 1984 to 2022.",
+    help: "Choose a first and last year to set a span. The record runs from 1984 to 2022.",
     annual: (year: number) => `Change between ${year - 1} and ${year}`,
-    previous: "Earlier last year",
-    next: "Later last year",
+    moved: (which: "first" | "last", year: number) => `${which === "first" ? "First" : "Last"} year moved to ${year} so the span stays at least one year long.`,
     play: "Play through the years",
     pause: "Stop playing",
     playShort: "Play",
@@ -35,10 +34,9 @@ const TEXT = {
     legend: "Années affichées",
     firstYear: "Première année",
     lastYear: "Dernière année",
-    help: "Déplacez les deux curseurs pour choisir une période, par exemple de 1990 à 1998. Laissez-les à un an d’écart pour voir une seule année. Le relevé va de 1984 à 2022.",
+    help: "Choisissez une première et une dernière année pour établir une période. Le relevé va de 1984 à 2022.",
     annual: (year: number) => `Changement entre ${year - 1} et ${year}`,
-    previous: "Dernière année plus tôt",
-    next: "Dernière année plus tard",
+    moved: (which: "first" | "last", year: number) => `${which === "first" ? "La première" : "La dernière"} année a été déplacée à ${year} pour garder une période d’au moins un an.`,
     play: "Faire défiler les années",
     pause: "Arrêter le défilement",
     playShort: "Lecture",
@@ -48,14 +46,6 @@ const TEXT = {
     update: "Mettre à jour",
   },
 } as const;
-
-/** One tick every five years, plus both ends, so the scale is readable at any width. */
-const TICKS = (() => {
-  const years: number[] = [];
-  for (let year = EXPLORE_INTERVAL_FIRST_YEAR; year <= EXPLORE_YEAR_MAX; year += 5) years.push(year);
-  if (years[years.length - 1] !== EXPLORE_YEAR_MAX) years.push(EXPLORE_YEAR_MAX);
-  return years;
-})();
 
 const STEP_MS = 1500;
 
@@ -73,11 +63,10 @@ function writeHistory(method: "push" | "replace", url: string) {
  * around this island differ. Explore renders one year control, so a fixed string
  * cannot collide.
  */
-const FROM_SLIDER_ID = "explore-year-from-slider";
-const SLIDER_ID = "explore-year-slider";
+const FROM_SELECT_ID = "explore-year-from";
+const SELECT_ID = "explore-year";
 const READOUT_ID = "explore-year-readout";
 const HELP_ID = "explore-year-help";
-const TICKS_ID = "explore-year-ticks";
 
 /*
  * Whether the years are playing, held in the module rather than in the component.
@@ -133,8 +122,8 @@ function orderSpan(span: Span, moved: "from" | "to"): Span {
 }
 
 /**
- * The span control: two handles, the interval they select named in full, a step
- * either side of the closing year, and a play control that walks the record.
+ * The span control: two native selects, the interval they select named in full,
+ * and a play control that walks the record.
  *
  * It used to be one handle, because the record used to answer one question: a
  * year meant the single annual interval ending there. A reader who wants 1990
@@ -179,6 +168,8 @@ export function ExploreYearControl({
    */
   const [draft, setDraft] = useState<{ from: string; span: Span } | null>(null);
   const [playStatus, setPlayStatus] = useState<"idle" | "playing" | "complete">("idle");
+  const [orderStatus, setOrderStatus] = useState<{ which: "first" | "last"; year: number } | null>(null);
+  const changeGroup = useRef<{ name: "from" | "to"; started: number; span: Span } | null>(null);
   if (draft && draft.from !== committedKey) setDraft(null);
   const shown = draft && draft.from === committedKey ? draft.span : committed;
 
@@ -197,14 +188,30 @@ export function ExploreYearControl({
     setDraft({ from: committedKey, span: next });
     onYearChange(next.toYear);
     onIntervalChange?.(next);
-    const nextUrl = `${pathname}${exploreHref({ ...state, year: next.toYear, fromYear: next.fromYear })}`;
+    const href = exploreHref({ ...state, year: next.toYear, fromYear: next.fromYear });
+    const nextUrl = `${pathname}${href}${next.fromYear === next.toYear - 1 ? `&from=${next.fromYear}` : ""}`;
     writeHistory(history, nextUrl);
   };
 
-  const go = (span: Span) => {
+  const selectYear = (name: "from" | "to", value: number, timestamp: number) => {
     setPlaying(false);
     setPlayStatus("idle");
-    commit(span, "push");
+    const now = timestamp;
+    const group = changeGroup.current;
+    const grouped = group && group.name === name && now - group.started < 1000;
+    const base = grouped ? group.span : committed;
+    const ordered = orderSpan(
+      name === "from"
+        ? { fromYear: value, toYear: base.toYear }
+        : { fromYear: base.fromYear, toYear: value },
+      name,
+    );
+    changeGroup.current = { name, started: grouped ? group.started : now, span: grouped ? group.span : committed };
+    const moved = name === "from" ? ordered.toYear !== value : ordered.fromYear !== base.fromYear;
+    setOrderStatus(moved
+      ? { which: name === "from" ? "last" : "first", year: name === "from" ? ordered.toYear : ordered.fromYear }
+      : null);
+    commit(ordered, grouped ? "replace" : "push");
   };
 
   /*
@@ -266,84 +273,37 @@ export function ExploreYearControl({
     <div className="year-control">
       <div className="year-head">
         <span className="year-legend" id={`${READOUT_ID}-legend`}>{text.legend}</span>
-        <output className="year-readout" id={READOUT_ID} htmlFor={`${FROM_SLIDER_ID} ${SLIDER_ID}`}>
+        <output className="year-readout" id={READOUT_ID} htmlFor={`${FROM_SELECT_ID} ${SELECT_ID}`}>
           {readout}
         </output>
       </div>
-      <label className="year-handle-label" htmlFor={FROM_SLIDER_ID}>{text.firstYear}</label>
-      <input
-        type="range"
-        className="explore-slider"
-        id={FROM_SLIDER_ID}
+      <label className="year-handle-label" htmlFor={FROM_SELECT_ID}>{text.firstYear}</label>
+      <select
+        className="explore-year-select"
+        id={FROM_SELECT_ID}
         name="from"
-        list={TICKS_ID}
-        min={EXPLORE_INTERVAL_FIRST_YEAR}
-        max={EXPLORE_YEAR_MAX - 1}
-        step={1}
-        value={shown.fromYear}
+        value={String(shown.fromYear)}
         aria-describedby={HELP_ID}
-        aria-valuetext={`${text.firstYear}: ${shown.fromYear}`}
-        onChange={(event) =>
-          setDraft({
-            from: committedKey,
-            span: orderSpan({ fromYear: Number(event.target.value), toYear: shown.toYear }, "from"),
-          })
-        }
-        // A range fires change continuously while dragging, so the commit hangs off
-        // the release instead: one navigation per drag rather than one per pixel.
-        onKeyUp={(event) => { if (event.key.startsWith("Arrow")) go(shown); }}
-        onPointerUp={() => go(shown)}
-      />
-      <label className="year-handle-label" htmlFor={SLIDER_ID}>{text.lastYear}</label>
-      <input
-        type="range"
-        className="explore-slider"
-        id={SLIDER_ID}
+        onChange={(event) => selectYear("from", Number(event.target.value), event.timeStamp)}
+      >
+        {Array.from({ length: EXPLORE_YEAR_MAX - EXPLORE_INTERVAL_FIRST_YEAR }, (_, index) => EXPLORE_INTERVAL_FIRST_YEAR + index).map((year) => (
+          <option key={year} value={year}>{year}</option>
+        ))}
+      </select>
+      <label className="year-handle-label" htmlFor={SELECT_ID}>{text.lastYear}</label>
+      <select
+        className="explore-year-select"
+        id={SELECT_ID}
         name="year"
-        list={TICKS_ID}
-        min={EXPLORE_YEAR_MIN}
-        max={EXPLORE_YEAR_MAX}
-        step={1}
-        value={shown.toYear}
+        value={String(shown.toYear)}
         aria-describedby={HELP_ID}
-        aria-valuetext={readout}
-        onChange={(event) =>
-          setDraft({
-            from: committedKey,
-            span: orderSpan({ fromYear: shown.fromYear, toYear: Number(event.target.value) }, "to"),
-          })
-        }
-        onKeyUp={(event) => { if (event.key.startsWith("Arrow")) go(shown); }}
-        onPointerUp={() => go(shown)}
-      />
-      <datalist id={TICKS_ID}>
-        {TICKS.map((year) => <option key={year} value={year} label={String(year)} />)}
-      </datalist>
-      {/* A picture of the datalist, which browsers draw inconsistently or not at
-          all. Hidden from assistive technology because each slider already
-          announces its range, its value and the interval that value means. */}
-      <ul className="year-scale" aria-hidden="true">
-        {TICKS.map((year) => <li key={year}>{year}</li>)}
-      </ul>
+        onChange={(event) => selectYear("to", Number(event.target.value), event.timeStamp)}
+      >
+        {Array.from({ length: EXPLORE_YEAR_MAX - EXPLORE_YEAR_MIN + 1 }, (_, index) => EXPLORE_YEAR_MIN + index).map((year) => (
+          <option key={year} value={year}>{year}</option>
+        ))}
+      </select>
       <div className="year-row">
-        <button
-          type="button"
-          className="year-step"
-          onClick={() => go(orderSpan({ fromYear: shown.fromYear, toYear: shown.toYear - 1 }, "to"))}
-          disabled={!ready || shown.toYear <= EXPLORE_YEAR_MIN}
-          aria-label={text.previous}
-        >
-          <span aria-hidden="true">←</span>
-        </button>
-        <button
-          type="button"
-          className="year-step"
-          onClick={() => go(orderSpan({ fromYear: shown.fromYear, toYear: shown.toYear + 1 }, "to"))}
-          disabled={!ready || shown.toYear >= EXPLORE_YEAR_MAX}
-          aria-label={text.next}
-        >
-          <span aria-hidden="true">→</span>
-        </button>
         <button
           type="button"
           className="year-play"
@@ -359,6 +319,7 @@ export function ExploreYearControl({
         </button>
         <p className="year-help" id={HELP_ID}>{text.help}</p>
       </div>
+      {orderStatus !== null ? <p className="year-order-status" role="status">{text.moved(orderStatus.which, orderStatus.year)}</p> : null}
       {playStatus !== "idle" ? (
         <p className="year-play-status" role="status">
           {playStatus === "playing" ? text.playing : text.complete}

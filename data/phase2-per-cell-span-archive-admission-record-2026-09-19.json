@@ -1,0 +1,304 @@
+{
+  "schemaVersion": "witness-tree/phase2-per-cell-span-archive-admission/1",
+  "status": "admitted-and-released-under-prior-owner-authorization",
+  "ownerDecision": {
+    "decidedOn": "2026-09-19",
+    "ownerWords": "I approve the span-ready archive.",
+    "recordedFrom": "the owner's message in the Claude Code session of 2026-09-19, answering the report that P0-C had not been started because it was not approved",
+    "standingAuthorization": "The owner's standing authorization covers ingestion, release, upload and deployment steps; it does not make a formal evidence gate pass.",
+    "scope": "The approval is the owner decision the preview audit plan asked for: the 2026-08-29 amendment scoped the per-cell product to 38 annual intervals, and this archive serves those same 38 intervals in one layer so the map can show any span of them.",
+    "timing": "The owner approved the archive before it was built. The owner has not seen these bytes, their digest or this record; nothing here is a review of them by the owner or anyone else.",
+    "parentRecord": {
+      "path": "data/phase2-1984-2022-admission-record-2026-09-18.json",
+      "sha256": "4fc4382364576404af0a231eb0e1fef676b52f73627805605bca5e80a4bf60ee"
+    }
+  },
+  "admittedProduct": {
+    "productId": "phase2-per-cell-span-archive-four-province-v1",
+    "what": "One PMTiles archive, layer `spans`, holding every patch of the 38 four-province annual intervals, each with a `year` property naming the closing year of its interval. A span from A to B is every patch with A < year <= B.",
+    "design": "The plan described a 38-bit loss-year mask per patch. This archive keeps the admitted annual patches as they are and tags each with its year instead, which gives the same filter-not-source behaviour and the same drawn union at the maximum zoom without tracing new geometry. A place lost in two years is drawn twice."
+  },
+  "engineeringChecks": {
+    "emittedIntervals": [
+      {
+        "interval": "1984-1985",
+        "year": 1985,
+        "patchCount": 2337896,
+        "cellCount": 10667143
+      },
+      {
+        "interval": "1985-1986",
+        "year": 1986,
+        "patchCount": 2360239,
+        "cellCount": 11503890
+      },
+      {
+        "interval": "1986-1987",
+        "year": 1987,
+        "patchCount": 3512394,
+        "cellCount": 15781696
+      },
+      {
+        "interval": "1987-1988",
+        "year": 1988,
+        "patchCount": 3868180,
+        "cellCount": 17573082
+      },
+      {
+        "interval": "1988-1989",
+        "year": 1989,
+        "patchCount": 3656413,
+        "cellCount": 27642280
+      },
+      {
+        "interval": "1989-1990",
+        "year": 1990,
+        "patchCount": 3963029,
+        "cellCount": 20954214
+      },
+      {
+        "interval": "1990-1991",
+        "year": 1991,
+        "patchCount": 4027251,
+        "cellCount": 18956674
+      },
+      {
+        "interval": "1991-1992",
+        "year": 1992,
+        "patchCount": 3969741,
+        "cellCount": 15911925
+      },
+      {
+        "interval": "1992-1993",
+        "year": 1993,
+        "patchCount": 3355274,
+        "cellCount": 13669130
+      },
+      {
+        "interval": "1993-1994",
+        "year": 1994,
+        "patchCount": 4128066,
+        "cellCount": 16433291
+      },
+      {
+        "interval": "1994-1995",
+        "year": 1995,
+        "patchCount": 4371225,
+        "cellCount": 22185647
+      },
+      {
+        "interval": "1995-1996",
+        "year": 1996,
+        "patchCount": 4881304,
+        "cellCount": 26612309
+      },
+      {
+        "interval": "1996-1997",
+        "year": 1997,
+        "patchCount": 5356820,
+        "cellCount": 23026934
+      },
+      {
+        "interval": "1997-1998",
+        "year": 1998,
+        "patchCount": 5638603,
+        "cellCount": 23361185
+      },
+      {
+        "interval": "1998-1999",
+        "year": 1999,
+        "patchCount": 4810588,
+        "cellCount": 20553484
+      },
+      {
+        "interval": "1999-2000",
+        "year": 2000,
+        "patchCount": 4992726,
+        "cellCount": 18150639
+      },
+      {
+        "interval": "2000-2001",
+        "year": 2001,
+        "patchCount": 5231260,
+        "cellCount": 20235783
+      },
+      {
+        "interval": "2001-2002",
+        "year": 2002,
+        "patchCount": 5582984,
+        "cellCount": 33428448
+      },
+      {
+        "interval": "2002-2003",
+        "year": 2003,
+        "patchCount": 5259212,
+        "cellCount": 22150914
+      },
+      {
+        "interval": "2003-2004",
+        "year": 2004,
+        "patchCount": 4740134,
+        "cellCount": 20222252
+      },
+      {
+        "interval": "2004-2005",
+        "year": 2005,
+        "patchCount": 5185919,
+        "cellCount": 25101389
+      },
+      {
+        "interval": "2005-2006",
+        "year": 2006,
+        "patchCount": 5279939,
+        "cellCount": 21801965
+      },
+      {
+        "interval": "2006-2007",
+        "year": 2007,
+        "patchCount": 4734235,
+        "cellCount": 19650210
+      },
+      {
+        "interval": "2007-2008",
+        "year": 2008,
+        "patchCount": 5062755,
+        "cellCount": 15045411
+      },
+      {
+        "interval": "2008-2009",
+        "year": 2009,
+        "patchCount": 5219632,
+        "cellCount": 15793337
+      },
+      {
+        "interval": "2009-2010",
+        "year": 2010,
+        "patchCount": 5518987,
+        "cellCount": 19401068
+      },
+      {
+        "interval": "2010-2011",
+        "year": 2011,
+        "patchCount": 5832818,
+        "cellCount": 24902717
+      },
+      {
+        "interval": "2011-2012",
+        "year": 2012,
+        "patchCount": 6317253,
+        "cellCount": 23127615
+      },
+      {
+        "interval": "2012-2013",
+        "year": 2013,
+        "patchCount": 6528412,
+        "cellCount": 27939967
+      },
+      {
+        "interval": "2013-2014",
+        "year": 2014,
+        "patchCount": 5613310,
+        "cellCount": 21819324
+      },
+      {
+        "interval": "2014-2015",
+        "year": 2015,
+        "patchCount": 5483795,
+        "cellCount": 22776404
+      },
+      {
+        "interval": "2015-2016",
+        "year": 2016,
+        "patchCount": 4798614,
+        "cellCount": 19570187
+      },
+      {
+        "interval": "2016-2017",
+        "year": 2017,
+        "patchCount": 5796229,
+        "cellCount": 24862180
+      },
+      {
+        "interval": "2017-2018",
+        "year": 2018,
+        "patchCount": 4961364,
+        "cellCount": 22580913
+      },
+      {
+        "interval": "2018-2019",
+        "year": 2019,
+        "patchCount": 4233508,
+        "cellCount": 25023211
+      },
+      {
+        "interval": "2019-2020",
+        "year": 2020,
+        "patchCount": 4026021,
+        "cellCount": 15000467
+      },
+      {
+        "interval": "2020-2021",
+        "year": 2021,
+        "patchCount": 4299696,
+        "cellCount": 19672783
+      },
+      {
+        "interval": "2021-2022",
+        "year": 2022,
+        "patchCount": 3394782,
+        "cellCount": 15027427
+      }
+    ],
+    "patchCount": 178330608,
+    "cellCount": 778117495,
+    "clippedStoreMatchesAnchor": true,
+    "zoomRange": {
+      "minZoom": 8,
+      "maxZoom": 14,
+      "extendedBeyond14": false
+    }
+  },
+  "bound": {
+    "archive": {
+      "fileName": "spans.pmtiles",
+      "byteLength": 10335592172,
+      "sha256": "0de224ad834ba70a51d989f710157562d0b9fcd0a0d8e0f4a9929a2996dc0669"
+    },
+    "storeManifestSha256": "4e06e5cf89d12165d6a1b8a8d95dfdd5f993351d6a8a992f07b44a91c35c659a",
+    "annualRelease": {
+      "path": "data/phase2-per-cell-four-province-tile-release.json",
+      "sha256": "5dbd0b57efa281a552ff1f8faaeab841971e9ceb47813a4e18663a68e2cecc4a",
+      "releaseId": "01fed8f9dec607c0c5c62872ab5dda89bd22f22d97fa765004252484fefe27c1"
+    }
+  },
+  "limits": [
+    "Every province is partial-with-unknown, so every figure is a minimum. Unmapped share of the cartographic province: QC 15.04962%, ON 9.03031%, AB 24.02146%, BC 0.00446%.",
+    "Loss is counted once per place, against the forest known at the start year. Yearly losses added together carry no percentage.",
+    "Unmapped and nodata cells stay Unknown and are never shown as no loss.",
+    "Nothing has been expert reviewed. Independent comparisons are not published.",
+    "Harvest and wildfire on patches are overlaps with recorded events, not causal attribution."
+  ],
+  "prohibitedClaims": [
+    "expert review completed",
+    "independent comparison completed or published",
+    "accuracy, completeness or causal attribution",
+    "any figure as a complete-province total",
+    "net forest change or regrowth",
+    "admission of any unbound output or of the notApprovable items"
+  ],
+  "formalGates": {
+    "phase2FormalExit": "stays 2 of 4: expert review was retired, not met, and the comparisons are unpublished",
+    "phase8LaunchReadiness": "stays 8 of 16 until the real external events occur",
+    "honestConclusion": "Approval admits and can release bytes. It completes no formal gate."
+  },
+  "claims": {
+    "admitted": true,
+    "releaseApproved": true,
+    "ownerReviewedTheseBytes": false,
+    "expertReviewed": false,
+    "complete": false,
+    "countable": false,
+    "productionEligible": false,
+    "formalGatesChanged": false
+  }
+}

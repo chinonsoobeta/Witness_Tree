@@ -1,0 +1,278 @@
+{
+ "schemaVersion": "witness-tree/phase6-coarse-grid-v2-owner-admission-packet/1",
+ "status": "template-not-approved",
+ "decisionId": "phase6-coarse-grid-v2-start-year-union-admission-v1",
+ "preparedOn": "2026-09-22",
+ "ownerDirection": {
+  "date": "2026-09-21",
+  "words": [
+   "That said, I want to fix and rebuild item F and see what it gives us.",
+   "Yes please."
+  ],
+  "standing": "The first message asked for the rebuild; the second, given after the rebuild's results were reported, asked for this packet and a compact tile format test. Neither is an admission decision. This packet names the bytes; only an owner decision recorded against this packet's SHA-256 can admit them.",
+  "recordedIn": "data/coarse-grid-9600m-admission-record-2026-09-21.json records the first message"
+ },
+ "purpose": "Replace the released 960 m coarse grid (item F of the 2026-09-18 record) with a rebuild whose union counts only forest standing at the span's start year, which is item C's term. Draw and measure divides the union by start-year forest, so under item F a multi-year share could overstate that term; under the rebuild it cannot.",
+ "requestedDecision": {
+  "ownerMayChoose": [
+   "approve-admission-and-release",
+   "approve-admission-only",
+   "reject",
+   "defer"
+  ],
+  "itemsMayBeChosenIndividually": false,
+  "approvalScope": "Admit (and, if chosen, release) only item H bound below, under the stated method and limits. Items listed under notApprovable cannot be admitted by this packet whatever the decision.",
+  "futureRecordRule": "If approved, create a new dated immutable admission record that names this decisionId and this packet's SHA-256 and revalidates every binding. Do not edit this packet, item F's release record, the 2026-09-18 record, or any historical readback evidence.",
+  "releaseMeans": "Pack item H in the chosen tile format under a new release prefix, create-once, and read it back byte for byte from S3 and CloudFront; teach the tile reader and lib/shapes/measure.ts the new format and the new union; a new release record for item H that names item F's release as superseded without editing it; and the owner setting COARSE_GRID_BASE to the new base through the ChatGPT Sites control plane. Until that setting changes, the live draw and measure keeps item F. Item F's released tiles stay where they are, unaltered."
+ },
+ "items": {
+  "H-coarse-grid-v2": {
+   "what": "The national 960 m grid, 7,508,221 blocks, with v1's fields for every block (cells, mapped, countable, forest known in each opening year, eligible loss in each annual step) and, in place of v1's repeat-loss pairs, first[a][f]: cells forest in opening year a whose first loss at or after a is step f. A shape's union over [a, b] is the sum of its blocks' first[a][a..b].",
+   "output": {
+    "path": "derived/phase6-coarse-grid-v2/run-20260922T053226Z/blocks.jsonl",
+    "byteLength": 14337778310,
+    "sha256": "3a37f4b63bacc134f5ea3dbcc13a3ff7767b5f769cab574569c27501a0374861",
+    "blocks": 7508221
+   },
+   "provenance": {
+    "path": "derived/phase6-coarse-grid-v2/run-20260922T053226Z/blocks.provenance.json",
+    "byteLength": 253199882,
+    "sha256": "83478b2678520ef04951d4d37140d07d0aadb761e525c893972d0ce896a4e52c"
+   },
+   "completionMarker": {
+    "path": "derived/phase6-coarse-grid-v2/run-20260922T053226Z/blocks.complete.sha256",
+    "byteLength": 65,
+    "sha256": "2b118bd583de471df910be9e56bb0f761d9e2b099b687c3909868e002709b332"
+   },
+   "artifactRoot": "/Volumes/Extended_SSD/Witness_Tree-data/derived/phase6-coarse-grid-v2/run-20260922T053226Z",
+   "code": {
+    "builder": {
+     "path": "scripts/phase6_coarse_grid_aggregate_v2.py",
+     "byteLength": 21699,
+     "sha256": "f6efef376f02851fbb50f0c12a836ed2abe9be4df90e6f773d70e9c78b178682",
+     "runCopy": {
+      "path": "derived/phase6-coarse-grid-v2/run-20260922T053226Z/code/phase6_coarse_grid_aggregate_v2.py",
+      "byteLength": 21699,
+      "sha256": "f6efef376f02851fbb50f0c12a836ed2abe9be4df90e6f773d70e9c78b178682"
+     }
+    },
+    "helper": {
+     "path": "scripts/phase2_annual_zonal_aggregate_v2.py",
+     "byteLength": 39075,
+     "sha256": "44c86765b4f1a0ba527f7ed7cb91f95b1d490af404f9d783a84ffdf208a13958",
+     "changed": false
+    },
+    "derivedFrom": {
+     "path": "scripts/phase6_coarse_grid_aggregate.py",
+     "byteLength": 18488,
+     "sha256": "b6a00c72f1d69707c472fef884d9c81b5d6c49b18da146caa63a4ea5223962b0",
+     "changed": false,
+     "note": "item F's builder; v2 is a copy with the union term replaced"
+    }
+   },
+   "inputs": {
+    "rasters": "the admitted national raster batch phase2-real-national-1984-2022-v1 (item A of the 2026-09-18 record), read in place, unchanged; all 77 rasters and the mapped extent are hashed in the provenance before the pass",
+    "mappedExtent": "derived/phase2-vlce2-mapped-extent-v1/mapped-extent.tif",
+    "methodVersion": "coarse-grid-960m-start-year-union-1984-2022-v2"
+   },
+   "unionDefinition": "item C's: cells forest at the span's start year that lost forest at least once inside the span",
+   "verification": {
+    "record": {
+     "path": "derived/phase6-coarse-grid-v2/run-20260922T053226Z/verification.json",
+     "byteLength": 1910,
+     "sha256": "9ede05fff2103e1ab48c5dc177c89d6e7f7998faf7ddeee3eff70d782f1e7baa"
+    },
+    "script": {
+     "path": "derived/phase6-coarse-grid-v2/run-20260922T053226Z/code/verify_fv2.py",
+     "byteLength": 7435,
+     "sha256": "3a0c1a270820c8a53b4bad53a1a89599fadb7de0c0e148b08ec56e9450e5467b"
+    },
+    "allPass": true,
+    "checks": [
+     "block count, countable, mapped and annual loss totals equal item F's provenance",
+     "the same 7,508,221 blocks in the same order as item F, and every shared field equal to item F's, block by block",
+     "no raw loss on a cell that was not forest in that step (0 cell-steps), so raw and eligible loss agree",
+     "every one-step union equals that step's annual loss, in every block",
+     "no union exceeds start-year forest, in any block, for any start year",
+     "no union exceeds item F's union, in any block",
+     "on all 40,795 cells of 9.6 km lying wholly inside one province, the summed blocks equal the admitted item G row exactly: triangle, forest known, annual loss and mapped cells"
+    ]
+   },
+   "currentClaims": {
+    "admitted": false,
+    "released": false,
+    "productionEligible": false,
+    "expertReviewed": false
+   },
+   "uploaded": false
+  }
+ },
+ "whatChanges": {
+  "comparison": {
+   "path": "derived/phase6-coarse-grid-v2/run-20260922T053226Z/comparison.json",
+   "byteLength": 136268,
+   "sha256": "58d0bdcca3ac9df065176c0d97768ba3cde726d61667cc730b5fea71349226de"
+  },
+  "scope": "national, every countable cell; hectares at 0.09 ha per cell",
+  "spans": [
+   {
+    "span": "1984-2022",
+    "forestHectaresAtStart": 312146320,
+    "releasedUnionHectares": 101754164,
+    "rebuiltUnionHectares": 81626342,
+    "releasedShare": 0.326,
+    "rebuiltShare": 0.2615,
+    "releasedOverRebuilt": 1.2466
+   },
+   {
+    "span": "2000-2021",
+    "forestHectaresAtStart": 320591217,
+    "releasedUnionHectares": 61431982,
+    "rebuiltUnionHectares": 52208608,
+    "releasedShare": 0.1916,
+    "rebuiltShare": 0.1629,
+    "releasedOverRebuilt": 1.1767
+   },
+   {
+    "span": "2003-2017",
+    "forestHectaresAtStart": 320718308,
+    "releasedUnionHectares": 44936140,
+    "rebuiltUnionHectares": 37557556,
+    "releasedShare": 0.1401,
+    "rebuiltShare": 0.1171,
+    "releasedOverRebuilt": 1.1965
+   },
+   {
+    "span": "2017-2022",
+    "forestHectaresAtStart": 323571442,
+    "releasedUnionHectares": 13795661,
+    "rebuiltUnionHectares": 11894432,
+    "releasedShare": 0.0426,
+    "rebuiltShare": 0.0368,
+    "releasedOverRebuilt": 1.1598
+   },
+   {
+    "span": "2020-2022",
+    "forestHectaresAtStart": 325683097,
+    "releasedUnionHectares": 5765800,
+    "rebuiltUnionHectares": 5478463,
+    "releasedShare": 0.0177,
+    "rebuiltShare": 0.0168,
+    "releasedOverRebuilt": 1.0524
+   },
+   {
+    "span": "1984-1985",
+    "forestHectaresAtStart": 312146320,
+    "releasedUnionHectares": 1497456,
+    "rebuiltUnionHectares": 1497456,
+    "releasedShare": 0.0048,
+    "rebuiltShare": 0.0048,
+    "releasedOverRebuilt": 1.0
+   }
+  ],
+  "summary": "All 703 multi-year spans fall; item F's union is between 1.0 and 1.2566 times the rebuilt one. One-year spans and every yearly sum are unchanged.",
+  "forDrawAndMeasure": "A drawn shape's multi-year union and its share of start-year forest fall; its forest, its yearly sum, its coverage and its edge bracket do not change."
+ },
+ "payloadOptions": {
+  "measurement": {
+   "path": "derived/phase6-coarse-grid-v2/run-20260922T053226Z/tile-format-measurement.json",
+   "byteLength": 257,
+   "sha256": "46a3fcd19a8225e35e992ad0645e1bbb30312fba567cee824a327d9fc0a7fb5d"
+  },
+  "measurementScript": {
+   "path": "derived/phase6-coarse-grid-v2/run-20260922T053226Z/code/measure_fv2_formats.py",
+   "byteLength": 6402,
+   "sha256": "e758f9337ab5595e0f773e2ebdb32b752e9cf5adff4c1cfda0da62fd3d427551"
+  },
+  "method": "Every tile of the grid encoded both ways and gzipped at level 9, as item F's packer does; every block decoded back from both encodings and compared with its source: 0 mismatches. Both keep item F's fixed block fields and omit first[a][a], which equals the stored annual loss.",
+  "itemFReleasedGzipBytes": 496687280,
+  "recommended": "delta",
+  "options": {
+   "delta": {
+    "gzipBytes": 538408504,
+    "largestTileGzipBytes": 1082050,
+    "rawBytes": 1491630615,
+    "encoding": "rows rebuilt from the last start year down, first[a][f] = first[a+1][f] + d[a][f]; a bitmap of start years with any change, then per such year a bitmap of changed f and zigzag varints"
+   },
+   "sparse": {
+    "gzipBytes": 2425910414,
+    "largestTileGzipBytes": 3216144,
+    "rawBytes": 5747816046,
+    "encoding": "count, then (a, f, cells) per nonzero off-diagonal entry, 4 bytes each"
+   }
+  },
+  "tiles": 2067,
+  "note": "The format is a release choice. Whatever the format, the packer must re-verify every block against blocks.jsonl, and every uploaded tile must be read back byte for byte before COARSE_GRID_BASE changes."
+ },
+ "notApprovable": {
+  "aggregate.npz": "the 9.6 km grid summed from item F under derived/coarse-grid-9600m-v1; it carries item F's union",
+  "a corrected item F in place": "item F's released tiles and its release record are not edited or overwritten; item H is a new release beside it"
+ },
+ "limitsEveryItemCarries": [
+  "Every province is partial-with-unknown, so every figure is a minimum. Nodata and unmapped cells are Unknown, never zero.",
+  "Loss is counted once per place, against the forest known at the start year; the yearly sum is hectares only, never a share.",
+  "Edge blocks of a drawn shape are bracketed, not measured; the route reports the bracket.",
+  "A 960 m block is a count of about 1,024 raster cells, not a map of individual patches.",
+  "Nothing has been expert reviewed. Independent comparisons are not published."
+ ],
+ "permittedClaimsAfterAdmission": [
+  "Item H is admitted for 1984-2022 under the bound method and limits.",
+  "Item H's union counts only forest standing at the span's start year, and agrees exactly with the admitted 9.6 km grid wherever a 9.6 km cell lies wholly inside one province.",
+  "If release is chosen and COARSE_GRID_BASE names item H's base: draw and measure uses item H."
+ ],
+ "prohibitedClaimsEvenAfterAdmission": [
+  "expert review completed",
+  "independent comparison completed or published",
+  "accuracy, completeness or causal attribution",
+  "any figure as a complete-province total",
+  "net forest change or regrowth",
+  "that past draw-and-measure answers were correct for multi-year spans",
+  "that item F's release record was corrected or edited",
+  "admission of any unbound output or of the notApprovable items"
+ ],
+ "formalGateAssessment": {
+  "phase2FormalExit": "stays 2 of 4: expert review was retired, not met, and the comparisons are unpublished",
+  "phase8LaunchReadiness": "unchanged by this packet; draw and measure reads tiles through a worker route, not the render-gated map client, so the release is not expected to reopen the render gate, and the release work will confirm that before any deploy",
+  "honestConclusion": "Approval admits and can release bytes. It completes no formal gate.",
+  "statusRecords": [
+   {
+    "path": "data/phase2-formal-exit-status.json",
+    "byteLength": 1510,
+    "sha256": "45ce097b7f6f5029d3bdf0667d4c3b319a080e1da6030ab61ae35134311c8048"
+   },
+   {
+    "path": "data/phase8-launch-readiness-exit-status.json",
+    "byteLength": 38085,
+    "sha256": "fc7e90fd6c2c9162ed3922bab8edb1f70aa90f0c56741833d6b141ad8a23481b"
+   }
+  ]
+ },
+ "doesNotTouch": [
+  {
+   "path": "data/phase6-coarse-grid-release.json",
+   "byteLength": 1955,
+   "sha256": "ae895107ec95f3958cd9d5b4eace306ac2cc9b28f81c630bb6192d14ed54c949"
+  },
+  {
+   "path": "data/phase6-coarse-grid-tiles.json",
+   "byteLength": 487787,
+   "sha256": "f9c45f76b96d2daf0e194f3103d0d9eab18ea4b453533ac821b44987e40dcd0b"
+  },
+  {
+   "path": "data/phase2-1984-2022-admission-record-2026-09-18.json",
+   "byteLength": 13116,
+   "sha256": "4fc4382364576404af0a231eb0e1fef676b52f73627805605bca5e80a4bf60ee"
+  },
+  {
+   "path": "data/phase2-1984-2022-owner-admission-packet.json",
+   "byteLength": 16483,
+   "sha256": "52faeca923f5697a65c6e18b206072412c739ca9ee2a03856a1b263fb32d7083"
+  },
+  {
+   "path": "data/coarse-grid-9600m-admission-record-2026-09-21.json",
+   "byteLength": 11454,
+   "sha256": "f02eb6461f423fc8e1de8187c397d0107f496b0e36ac0d2a278c2d7b55208f00"
+  }
+ ],
+ "ownerCopyPaste": "ITEM F REBUILD OWNER INPUT: 960 M GRID, START-YEAR UNION\ndecision_id=phase6-coarse-grid-v2-start-year-union-admission-v1\npacket_sha256=<the SHA-256 of data/phase6-coarse-grid-v2-owner-admission-packet.json as committed>\ndecision=<OWNER: approve-admission-and-release | approve-admission-only | reject | defer>\nitems=H\npayload=<OWNER: delta | other>\nacknowledge=exact bindings, what changes, limits, not-approvable items, permitted and prohibited claims reviewed\nFORMAL_GATES_UNCHANGED=true\nDO_NOT_EDIT=item F's release record and tiles, the 2026-09-18 record, historical readback evidence, or this packet"
+}

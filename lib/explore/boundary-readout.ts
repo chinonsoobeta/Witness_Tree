@@ -1,5 +1,6 @@
 import { formatHectares, formatPercent, formatYearRange, SUM_TERM, yearRange, type Locale } from "@/lib/domain";
 import type { BoundaryOverlayId } from "./boundaries";
+import { formatUnknownSharePercent } from "./map-style";
 
 export type BoundaryMeasurementCoverage =
   | "complete"
@@ -13,9 +14,18 @@ export type BoundarySelection = Readonly<{
   jurisdiction: string;
 }>;
 
-/** A local riding measurement, keyed exactly as its boundary feature is. */
+/** The overlays whose areas carry forest-loss figures. Watersheds are drawn for reference only. */
+export const MEASURED_BOUNDARY_OVERLAYS = [
+  "federal-ridings",
+  "provincial-ridings",
+  "economic-regions",
+  "census-subdivisions",
+] as const satisfies readonly BoundaryOverlayId[];
+export type MeasuredBoundaryOverlayId = (typeof MEASURED_BOUNDARY_OVERLAYS)[number];
+
+/** One area's measurement, keyed exactly as its boundary feature is. */
 export type RidingBoundaryMeasurement = Readonly<{
-  overlay: "federal-ridings" | "provincial-ridings";
+  overlay: MeasuredBoundaryOverlayId;
   boundaryId: string;
   jurisdiction: string;
   coverage: BoundaryMeasurementCoverage;
@@ -33,6 +43,11 @@ export type RidingBoundaryMeasurement = Readonly<{
    * and invites them to read a distinction into numbers that do not differ.
    */
   summedLossHectares?: number | null;
+  /**
+   * An unknown share small enough that the owner admitted the area as
+   * complete. Only economic regions carry it, and only below 1%.
+   */
+  admittedUnknownPercent?: number;
 }>;
 
 export type BoundaryReadout =
@@ -55,25 +70,27 @@ export type BoundaryReadout =
 
 const words = {
   en: {
-    boundaryOnly: "Reference boundary only. No forest-loss measurement is available for this geography.",
-    complete: "Complete mapped coverage",
-    partial: "Partial mapped coverage; unknown area remains",
-    none: "No mapped coverage",
-    unavailable: "No local riding measurement",
+    boundaryOnly: "Reference boundary only. There is no forest-loss figure for this area.",
+    complete: "Fully mapped",
+    admitted: (share: string) => `Almost fully mapped; ${share} of the forest has no satellite data`,
+    partial: "Partly mapped; an unknown area remains",
+    none: "Not mapped",
+    unavailable: "No figure for this area",
     unknown: "Unknown",
   },
   fr: {
-    boundaryOnly: "Limite de référence seulement. Aucune mesure de perte forestière n’est disponible pour cette géographie.",
-    complete: "Couverture cartographiée complète",
-    partial: "Couverture cartographiée partielle; une zone inconnue demeure",
-    none: "Aucune couverture cartographiée",
-    unavailable: "Aucune mesure locale pour cette circonscription",
+    boundaryOnly: "Limite de référence seulement. Il n’y a aucun chiffre de perte forestière pour cette zone.",
+    complete: "Entièrement cartographiée",
+    admitted: (share: string) => `Presque entièrement cartographiée\u202F; ${share} de la forêt n’a aucune donnée satellitaire`,
+    partial: "Partiellement cartographiée\u202F; une zone inconnue demeure",
+    none: "Non cartographiée",
+    unavailable: "Aucun chiffre pour cette zone",
     unknown: "Inconnu",
   },
 } as const;
 
-const isRidingOverlay = (overlay: BoundaryOverlayId): overlay is RidingBoundaryMeasurement["overlay"] =>
-  overlay === "federal-ridings" || overlay === "provincial-ridings";
+const isMeasuredOverlay = (overlay: BoundaryOverlayId): overlay is MeasuredBoundaryOverlayId =>
+  (MEASURED_BOUNDARY_OVERLAYS as readonly BoundaryOverlayId[]).includes(overlay);
 
 const finiteNonNegative = (value: number | null | undefined) =>
   value !== null && value !== undefined && Number.isFinite(value) && value >= 0;
@@ -89,6 +106,11 @@ function assertMeasurement(measurement: RidingBoundaryMeasurement) {
   }
   if (!complete && (measurement.observedLossPercent !== null || measurement.observedLossHectares !== null)) {
     throw new Error("Incomplete riding coverage must not report a complete loss or share.");
+  }
+  const admitted = measurement.admittedUnknownPercent;
+  if (admitted !== undefined && (!complete || measurement.overlay !== "economic-regions" ||
+    !Number.isFinite(admitted) || admitted <= 0 || admitted >= 1)) {
+    throw new Error("Only an economic region may admit an unknown share, and only one below 1%.");
   }
   if (measurement.knownObservedSubtotalHectares !== undefined && measurement.knownObservedSubtotalHectares !== null && !finiteNonNegative(measurement.knownObservedSubtotalHectares)) {
     throw new Error("Known observed subtotal must be a non-negative finite number.");
@@ -119,7 +141,7 @@ export function boundaryReadout(
   interval: Readonly<{ fromYear: number; toYear: number }>,
 ): BoundaryReadout {
   const copy = words[locale];
-  if (!isRidingOverlay(selection.overlay)) return { kind: "boundary-only", note: copy.boundaryOnly };
+  if (!isMeasuredOverlay(selection.overlay)) return { kind: "boundary-only", note: copy.boundaryOnly };
 
   const measurement = measurements.find((candidate) =>
     candidate.overlay === selection.overlay &&
@@ -142,7 +164,9 @@ export function boundaryReadout(
     throw new Error("A riding measurement was resolved for a different span than the one on display.");
   }
   const coverage = measurement.coverage === "complete"
-    ? copy.complete
+    ? measurement.admittedUnknownPercent === undefined
+      ? copy.complete
+      : copy.admitted(formatUnknownSharePercent(measurement.admittedUnknownPercent, locale))
     : measurement.coverage === "partial-with-unknown"
       ? copy.partial
       : copy.none;
@@ -157,7 +181,8 @@ export function boundaryReadout(
     coverage,
     normalizedShare: complete ? formatPercent(measurement.observedLossPercent!, locale) : copy.unknown,
     absoluteLoss: complete ? formatHectares(measurement.observedLossHectares!, locale) : copy.unknown,
-    ...(finiteNonNegative(measurement.knownObservedSubtotalHectares)
+    // A complete figure is the whole answer; a subtotal beside it would read as a second one.
+    ...(!complete && finiteNonNegative(measurement.knownObservedSubtotalHectares)
       ? { knownObservedSubtotal: formatHectares(measurement.knownObservedSubtotalHectares!, locale) }
       : {}),
     ...(summedExceedsUnion

@@ -1,0 +1,45 @@
+name: Deployed map render
+
+# Drives the live Explore map in a real browser every day, with the same harness
+# that writes the committed observation. A map change no longer blocks its own
+# merge (the render gate waits for the deploy), so this is what catches a
+# deployed client that fails to render: within a day of the deploy, not at the
+# next merge. It measures only; it never writes or commits evidence.
+
+on:
+  schedule:
+    - cron: "23 14 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  observe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Observe the live Explore map
+        run: |
+          browser="$(node -e 'console.log(require("@playwright/test").chromium.executablePath())')"
+          node scripts/verify-deployed-map-render.mjs --browser "$browser" > deployed-map-render-result.json
+      - name: Preserve the observation
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: deployed-map-render-result
+          path: deployed-map-render-result.json
+          if-no-files-found: warn
+          retention-days: 90

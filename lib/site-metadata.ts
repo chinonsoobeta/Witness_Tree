@@ -6,11 +6,14 @@ export const SITE_ORIGIN = "https://www.witnesstree.ca";
 export const PUBLIC_LOCALE_ROUTE_PAIRS = [
   { en: "/en", fr: "/fr" },
   { en: "/en/explore", fr: "/fr/explorer" },
+  { en: "/en/explore/draw", fr: "/fr/explorer/dessiner" },
   { en: "/en/compare", fr: "/fr/comparer" },
   { en: "/en/search", fr: "/fr/recherche" },
   { en: "/en/methods", fr: "/fr/methodes" },
   { en: "/en/data", fr: "/fr/donnees" },
   { en: "/en/data/official-harvest-comparison", fr: "/fr/donnees/comparaison-recolte-officielle" },
+  { en: "/en/data/bc-harvest-volume", fr: "/fr/donnees/volume-recolte-bc" },
+  { en: "/en/data/harvest-and-fire", fr: "/fr/donnees/recolte-et-incendies" },
   { en: "/en/wildfire", fr: "/fr/incendies" },
   { en: "/en/about", fr: "/fr/a-propos" },
   { en: "/en/account", fr: "/fr/compte" },
@@ -54,9 +57,20 @@ export const siteMetadata: Metadata = {
   },
 };
 
-/** The shared record plus the served language, for a locale root layout. */
+/**
+ * The shared record in the served language, for a locale root layout. A French
+ * page is titled and described in French and ends in the French name, rather
+ * than every tab carrying the English name whatever language the page is in.
+ */
 export function localeMetadata(locale: Locale): Metadata {
-  return { ...siteMetadata, other: { "content-language": locale } };
+  return {
+    ...siteMetadata,
+    title: { default: PRODUCT_NAME[locale], template: `%s · ${PRODUCT_NAME[locale]}` },
+    description: PRODUCT_PURPOSE[locale],
+    openGraph: { ...siteMetadata.openGraph, title: PRODUCT_NAME[locale], description: PRODUCT_PURPOSE[locale], locale: locale === "en" ? "en_CA" : "fr_CA" },
+    twitter: { ...siteMetadata.twitter, title: PRODUCT_NAME[locale], description: PRODUCT_PURPOSE[locale] },
+    other: { "content-language": locale },
+  };
 }
 
 export function localizedAlternates(

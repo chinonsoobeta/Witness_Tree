@@ -20,8 +20,12 @@ import { PATCH_RECORD_BYTES, RUN_RECORD_BYTES, readPatchRecord } from "../lib/ph
 // records the coverage it actually had rather than implying the rest.
 
 const DATA_ROOT = process.env.WITNESS_TREE_DATA_ROOT ?? "/Volumes/Extended_SSD/Witness_Tree-data";
-const STORE = path.join(DATA_ROOT, "derived/phase2-per-cell-geometry-1984-2022-v1");
-const DISTURBANCE = path.join(STORE, "disturbance");
+// The national store by default. WITNESS_TREE_PER_CELL_STORE points this at a
+// derived store (the four-province clip) that shares the national disturbance
+// runs, since clipping changes which cells are kept, not what was recorded.
+const NATIONAL_STORE = path.join(DATA_ROOT, "derived/phase2-per-cell-geometry-1984-2022-v1");
+const STORE = process.env.WITNESS_TREE_PER_CELL_STORE ?? NATIONAL_STORE;
+const DISTURBANCE = path.join(NATIONAL_STORE, "disturbance");
 const GRID_WIDTH = 193936;
 
 async function readRunStore(file, runCount) {
@@ -208,7 +212,7 @@ await writeFile(
   path.join(STORE, "attribution-manifest.json"),
   `${JSON.stringify(
     {
-      product: "phase2-per-cell-geometry-1984-2022-v1",
+      product: manifest.product ?? "phase2-per-cell-geometry-1984-2022-v1",
       stage: "attribution",
       rule:
         "counts are cells with a recorded harvest or fire in the same interval; " +

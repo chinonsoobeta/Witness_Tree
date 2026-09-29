@@ -1,0 +1,2198 @@
+{
+ "schemaVersion": "witness-tree/phase4-provincial-cause-crosstab/1",
+ "status": "derived-from-admitted-run",
+ "runId": "phase4-provincial-matching-2026-09-26",
+ "reportSha256": "97e310229163ca4c4eac7ea54045a21be8255991f449bcdc1244891e24836844",
+ "cellHectares": 0.09,
+ "units": "cells of 30 m (0.09 ha)",
+ "outcomes": [
+  "harvest",
+  "fire",
+  "insect",
+  "windthrow",
+  "no-provincial-match"
+ ],
+ "causes": [
+  "harvest",
+  "fire",
+  "none"
+ ],
+ "definitions": {
+  "cause": "What the national disturbance rasters record for the cell in the interval: a harvest year, a fire year, or neither (none). A cell with both counts under each; overlapCells counts them so the total can be reconciled.",
+  "outcome": "What the cell's loss patch matched in the admitted provincial matching run: the kind of the selected provincial record, or no-provincial-match. The patch is judged whole, so every cell in it takes its outcome."
+ },
+ "byProvince": {
+  "BC": {
+   "intervals": {
+    "1984-1985": {
+     "harvest": {
+      "harvest": 959242,
+      "fire": 186454,
+      "none": 120927
+     },
+     "fire": {
+      "harvest": 9833,
+      "fire": 231320,
+      "none": 24555
+     },
+     "insect": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "windthrow": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "no-provincial-match": {
+      "harvest": 376543,
+      "fire": 80220,
+      "none": 1063362
+     }
+    },
+    "1985-1986": {
+     "harvest": {
+      "harvest": 1200125,
+      "fire": 63594,
+      "none": 258071
+     },
+     "fire": {
+      "harvest": 10261,
+      "fire": 53779,
+      "none": 17332
+     },
+     "insect": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "windthrow": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "no-provincial-match": {
+      "harvest": 410065,
+      "fire": 44443,
+      "none": 683083
+     }
+    },
+    "1986-1987": {
+     "harvest": {
+      "harvest": 1214998,
+      "fire": 51191,
+      "none": 381677
+     },
+     "fire": {
+      "harvest": 8187,
+      "fire": 30271,
+      "none": 18488
+     },
+     "insect": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "windthrow": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "no-provincial-match": {
+      "harvest": 383370,
+      "fire": 65234,
+      "none": 1257495
+     }
+    },
+    "1987-1988": {
+     "harvest": {
+      "harvest": 1448722,
+      "fire": 90528,
+      "none": 397829
+     },
+     "fire": {
+      "harvest": 7438,
+      "fire": 30150,
+      "none": 22596
+     },
+     "insect": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "windthrow": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "no-provincial-match": {
+      "harvest": 438043,
+      "fire": 27101,
+      "none": 1531262
+     }
+    },
+    "1988-1989": {
+     "harvest": {
+      "harvest": 1440238,
+      "fire": 35487,
+      "none": 432609
+     },
+     "fire": {
+      "harvest": 5078,
+      "fire": 41379,
+      "none": 11756
+     },
+     "insect": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "windthrow": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "no-provincial-match": {
+      "harvest": 394861,
+      "fire": 39633,
+      "none": 1148232
+     }
+    },
+    "1989-1990": {
+     "harvest": {
+      "harvest": 1458337,
+      "fire": 25387,
+      "none": 371254
+     },
+     "fire": {
+      "harvest": 7213,
+      "fire": 39656,
+      "none": 15037
+     },
+     "insect": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "windthrow": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "no-provincial-match": {
+      "harvest": 315440,
+      "fire": 23703,
+      "none": 1234558
+     }
+    },
+    "1990-1991": {
+     "harvest": {
+      "harvest": 1306758,
+      "fire": 107730,
+      "none": 349563
+     },
+     "fire": {
+      "harvest": 4861,
+      "fire": 206734,
+      "none": 44046
+     },
+     "insect": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "windthrow": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "no-provincial-match": {
+      "harvest": 291037,
+      "fire": 65649,
+      "none": 1286657
+     }
+    },
+    "1991-1992": {
+     "harvest": {
+      "harvest": 1352984,
+      "fire": 38984,
+      "none": 315830
+     },
+     "fire": {
+      "harvest": 1785,
+      "fire": 64581,
+      "none": 19586
+     },
+     "insect": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "windthrow": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "no-provincial-match": {
+      "harvest": 224099,
+      "fire": 35094,
+      "none": 1874966
+     }
+    },
+    "1992-1993": {
+     "harvest": {
+      "harvest": 1356581,
+      "fire": 28040,
+      "none": 311350
+     },
+     "fire": {
+      "harvest": 5014,
+      "fire": 42233,
+      "none": 10030
+     },
+     "insect": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "windthrow": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "no-provincial-match": {
+      "harvest": 195751,
+      "fire": 20881,
+      "none": 730505
+     }
+    },
+    "1993-1994": {
+     "harvest": {
+      "harvest": 1227328,
+      "fire": 15565,
+      "none": 309195
+     },
+     "fire": {
+      "harvest": 2076,
+      "fire": 3297,
+      "none": 11596
+     },
+     "insect": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "windthrow": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "no-provincial-match": {
+      "harvest": 195544,
+      "fire": 10790,
+      "none": 1808338
+     }
+    },
+    "1994-1995": {
+     "harvest": {
+      "harvest": 1098124,
+      "fire": 74572,
+      "none": 303040
+     },
+     "fire": {
+      "harvest": 2148,
+      "fire": 143839,
+      "none": 10823
+     },
+     "insect": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "windthrow": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "no-provincial-match": {
+      "harvest": 188445,
+      "fire": 33566,
+      "none": 1200049
+     }
+    },
+    "1995-1996": {
+     "harvest": {
+      "harvest": 1242417,
+      "fire": 4929,
+      "none": 299607
+     },
+     "fire": {
+      "harvest": 3520,
+      "fire": 50641,
+      "none": 14756
+     },
+     "insect": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "windthrow": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "no-provincial-match": {
+      "harvest": 176002,
+      "fire": 27395,
+      "none": 1642122
+     }
+    },
+    "1996-1997": {
+     "harvest": {
+      "harvest": 1193716,
+      "fire": 4664,
+      "none": 316530
+     },
+     "fire": {
+      "harvest": 9618,
+      "fire": 38191,
+      "none": 14632
+     },
+     "insect": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "windthrow": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "no-provincial-match": {
+      "harvest": 156211,
+      "fire": 13417,
+      "none": 1481976
+     }
+    },
+    "1997-1998": {
+     "harvest": {
+      "harvest": 1154869,
+      "fire": 2002,
+      "none": 276361
+     },
+     "fire": {
+      "harvest": 3017,
+      "fire": 72383,
+      "none": 8153
+     },
+     "insect": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "windthrow": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "no-provincial-match": {
+      "harvest": 188737,
+      "fire": 28104,
+      "none": 2003342
+     }
+    },
+    "1998-1999": {
+     "harvest": {
+      "harvest": 1115143,
+      "fire": 135231,
+      "none": 319446
+     },
+     "fire": {
+      "harvest": 2771,
+      "fire": 119136,
+      "none": 6945
+     },
+     "insect": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "windthrow": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "no-provincial-match": {
+      "harvest": 191712,
+      "fire": 76569,
+      "none": 1477068
+     }
+    },
+    "1999-2000": {
+     "harvest": {
+      "harvest": 1552038,
+      "fire": 6487,
+      "none": 391569
+     },
+     "fire": {
+      "harvest": 3665,
+      "fire": 26711,
+      "none": 8582
+     },
+     "insect": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "windthrow": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "no-provincial-match": {
+      "harvest": 219350,
+      "fire": 22504,
+      "none": 1838582
+     }
+    },
+    "2000-2001": {
+     "harvest": {
+      "harvest": 1384950,
+      "fire": 10167,
+      "none": 309313
+     },
+     "fire": {
+      "harvest": 4951,
+      "fire": 11099,
+      "none": 9052
+     },
+     "insect": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "windthrow": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "no-provincial-match": {
+      "harvest": 201830,
+      "fire": 13562,
+      "none": 1891766
+     }
+    },
+    "2001-2002": {
+     "harvest": {
+      "harvest": 1320433,
+      "fire": 23790,
+      "none": 352089
+     },
+     "fire": {
+      "harvest": 4488,
+      "fire": 30252,
+      "none": 21212
+     },
+     "insect": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "windthrow": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "no-provincial-match": {
+      "harvest": 221099,
+      "fire": 35992,
+      "none": 1962011
+     }
+    },
+    "2002-2003": {
+     "harvest": {
+      "harvest": 1730939,
+      "fire": 17519,
+      "none": 275205
+     },
+     "fire": {
+      "harvest": 11010,
+      "fire": 101889,
+      "none": 27232
+     },
+     "insect": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "windthrow": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "no-provincial-match": {
+      "harvest": 305445,
+      "fire": 19534,
+      "none": 1550037
+     }
+    },
+    "2003-2004": {
+     "harvest": {
+      "harvest": 1722745,
+      "fire": 611618,
+      "none": 324464
+     },
+     "fire": {
+      "harvest": 49340,
+      "fire": 1260967,
+      "none": 62503
+     },
+     "insect": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "windthrow": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "no-provincial-match": {
+      "harvest": 269426,
+      "fire": 145837,
+      "none": 1438147
+     }
+    },
+    "2004-2005": {
+     "harvest": {
+      "harvest": 1917564,
+      "fire": 17211,
+      "none": 348188
+     },
+     "fire": {
+      "harvest": 24845,
+      "fire": 384483,
+      "none": 49744
+     },
+     "insect": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "windthrow": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "no-provincial-match": {
+      "harvest": 324998,
+      "fire": 59413,
+      "none": 1500518
+     }
+    },
+    "2005-2006": {
+     "harvest": {
+      "harvest": 1688218,
+      "fire": 92253,
+      "none": 476149
+     },
+     "fire": {
+      "harvest": 9444,
+      "fire": 635516,
+      "none": 27956
+     },
+     "insect": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "windthrow": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "no-provincial-match": {
+      "harvest": 285488,
+      "fire": 27129,
+      "none": 2257962
+     }
+    },
+    "2006-2007": {
+     "harvest": {
+      "harvest": 1683617,
+      "fire": 15105,
+      "none": 559394
+     },
+     "fire": {
+      "harvest": 9364,
+      "fire": 143757,
+      "none": 21675
+     },
+     "insect": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "windthrow": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "no-provincial-match": {
+      "harvest": 311460,
+      "fire": 20665,
+      "none": 1585144
+     }
+    },
+    "2007-2008": {
+     "harvest": {
+      "harvest": 1235392,
+      "fire": 2416,
+      "none": 578480
+     },
+     "fire": {
+      "harvest": 27983,
+      "fire": 76573,
+      "none": 49015
+     },
+     "insect": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "windthrow": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "no-provincial-match": {
+      "harvest": 177639,
+      "fire": 15352,
+      "none": 1743041
+     }
+    },
+    "2008-2009": {
+     "harvest": {
+      "harvest": 1063274,
+      "fire": 24330,
+      "none": 431288
+     },
+     "fire": {
+      "harvest": 11233,
+      "fire": 306813,
+      "none": 50424
+     },
+     "insect": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "windthrow": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "no-provincial-match": {
+      "harvest": 152560,
+      "fire": 16906,
+      "none": 1585404
+     }
+    },
+    "2009-2010": {
+     "harvest": {
+      "harvest": 1470936,
+      "fire": 43217,
+      "none": 430241
+     },
+     "fire": {
+      "harvest": 23170,
+      "fire": 865978,
+      "none": 75297
+     },
+     "insect": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "windthrow": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "no-provincial-match": {
+      "harvest": 181765,
+      "fire": 161658,
+      "none": 1693453
+     }
+    },
+    "2010-2011": {
+     "harvest": {
+      "harvest": 1528793,
+      "fire": 116925,
+      "none": 531198
+     },
+     "fire": {
+      "harvest": 18384,
+      "fire": 991568,
+      "none": 91597
+     },
+     "insect": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "windthrow": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "no-provincial-match": {
+      "harvest": 226675,
+      "fire": 110866,
+      "none": 1416173
+     }
+    },
+    "2011-2012": {
+     "harvest": {
+      "harvest": 1523526,
+      "fire": 207,
+      "none": 655539
+     },
+     "fire": {
+      "harvest": 6225,
+      "fire": 86265,
+      "none": 76549
+     },
+     "insect": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "windthrow": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "no-provincial-match": {
+      "harvest": 173402,
+      "fire": 8467,
+      "none": 2001950
+     }
+    },
+    "2012-2013": {
+     "harvest": {
+      "harvest": 1667946,
+      "fire": 2570,
+      "none": 585963
+     },
+     "fire": {
+      "harvest": 18442,
+      "fire": 437066,
+      "none": 49967
+     },
+     "insect": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "windthrow": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "no-provincial-match": {
+      "harvest": 186096,
+      "fire": 17546,
+      "none": 1964636
+     }
+    },
+    "2013-2014": {
+     "harvest": {
+      "harvest": 1693207,
+      "fire": 115033,
+      "none": 525469
+     },
+     "fire": {
+      "harvest": 21773,
+      "fire": 919790,
+      "none": 136021
+     },
+     "insect": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "windthrow": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "no-provincial-match": {
+      "harvest": 240228,
+      "fire": 20837,
+      "none": 1950285
+     }
+    },
+    "2014-2015": {
+     "harvest": {
+      "harvest": 1721794,
+      "fire": 20041,
+      "none": 375651
+     },
+     "fire": {
+      "harvest": 106150,
+      "fire": 2092183,
+      "none": 242662
+     },
+     "insect": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "windthrow": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "no-provincial-match": {
+      "harvest": 248808,
+      "fire": 116677,
+      "none": 1663875
+     }
+    },
+    "2015-2016": {
+     "harvest": {
+      "harvest": 1586100,
+      "fire": 11365,
+      "none": 476846
+     },
+     "fire": {
+      "harvest": 104618,
+      "fire": 412580,
+      "none": 210066
+     },
+     "insect": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "windthrow": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "no-provincial-match": {
+      "harvest": 233920,
+      "fire": 27352,
+      "none": 1193481
+     }
+    },
+    "2016-2017": {
+     "harvest": {
+      "harvest": 1595332,
+      "fire": 351510,
+      "none": 423198
+     },
+     "fire": {
+      "harvest": 75468,
+      "fire": 1349229,
+      "none": 282436
+     },
+     "insect": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "windthrow": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "no-provincial-match": {
+      "harvest": 229904,
+      "fire": 15293,
+      "none": 2294945
+     }
+    },
+    "2017-2018": {
+     "harvest": {
+      "harvest": 1719593,
+      "fire": 559116,
+      "none": 344961
+     },
+     "fire": {
+      "harvest": 64558,
+      "fire": 2642176,
+      "none": 264502
+     },
+     "insect": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "windthrow": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "no-provincial-match": {
+      "harvest": 266238,
+      "fire": 62766,
+      "none": 1418260
+     }
+    },
+    "2018-2019": {
+     "harvest": {
+      "harvest": 1347051,
+      "fire": 214057,
+      "none": 299797
+     },
+     "fire": {
+      "harvest": 64305,
+      "fire": 4951687,
+      "none": 371223
+     },
+     "insect": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "windthrow": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "no-provincial-match": {
+      "harvest": 286303,
+      "fire": 107348,
+      "none": 1001835
+     }
+    },
+    "2019-2020": {
+     "harvest": {
+      "harvest": 887663,
+      "fire": 428,
+      "none": 251559
+     },
+     "fire": {
+      "harvest": 25498,
+      "fire": 65834,
+      "none": 114719
+     },
+     "insect": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "windthrow": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "no-provincial-match": {
+      "harvest": 179231,
+      "fire": 7557,
+      "none": 1773074
+     }
+    },
+    "2020-2021": {
+     "harvest": {
+      "harvest": 1149845,
+      "fire": 380640,
+      "none": 271787
+     },
+     "fire": {
+      "harvest": 42864,
+      "fire": 1529558,
+      "none": 147433
+     },
+     "insect": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "windthrow": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "no-provincial-match": {
+      "harvest": 270983,
+      "fire": 11760,
+      "none": 1714245
+     }
+    },
+    "2021-2022": {
+     "harvest": {
+      "harvest": 849017,
+      "fire": 156527,
+      "none": 99764
+     },
+     "fire": {
+      "harvest": 42485,
+      "fire": 1014211,
+      "none": 127251
+     },
+     "insect": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "windthrow": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 0
+     },
+     "no-provincial-match": {
+      "harvest": 208038,
+      "fire": 29946,
+      "none": 1167401
+     }
+    }
+   },
+   "totals": {
+    "harvest": {
+     "harvest": 52809555,
+     "fire": 3656890,
+     "none": 14081401
+    },
+    "fire": {
+     "harvest": 853083,
+     "fire": 21503775,
+     "none": 2767449
+    },
+    "insect": {
+     "harvest": 0,
+     "fire": 0,
+     "none": 0
+    },
+    "windthrow": {
+     "harvest": 0,
+     "fire": 0,
+     "none": 0
+    },
+    "no-provincial-match": {
+     "harvest": 9526746,
+     "fire": 1666766,
+     "none": 59029240
+    }
+   },
+   "overlapCells": 222,
+   "reproduction": {
+    "assessedChanges": 33943585,
+    "matchedChanges": 4292031,
+    "assessedHectares": 14930521.47,
+    "matchedHectares": 8610486.12
+   }
+  },
+  "QC": {
+   "intervals": {
+    "1984-1985": {
+     "harvest": {
+      "harvest": 693692,
+      "fire": 55252,
+      "none": 87364
+     },
+     "fire": {
+      "harvest": 4454,
+      "fire": 412911,
+      "none": 34330
+     },
+     "insect": {
+      "harvest": 54,
+      "fire": 2,
+      "none": 234
+     },
+     "windthrow": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 49
+     },
+     "no-provincial-match": {
+      "harvest": 268722,
+      "fire": 38039,
+      "none": 766394
+     }
+    },
+    "1985-1986": {
+     "harvest": {
+      "harvest": 960347,
+      "fire": 21892,
+      "none": 137911
+     },
+     "fire": {
+      "harvest": 8846,
+      "fire": 1258629,
+      "none": 80334
+     },
+     "insect": {
+      "harvest": 95,
+      "fire": 28,
+      "none": 991
+     },
+     "windthrow": {
+      "harvest": 44,
+      "fire": 16,
+      "none": 198
+     },
+     "no-provincial-match": {
+      "harvest": 340195,
+      "fire": 14721,
+      "none": 1447791
+     }
+    },
+    "1986-1987": {
+     "harvest": {
+      "harvest": 1324954,
+      "fire": 18237,
+      "none": 233367
+     },
+     "fire": {
+      "harvest": 6058,
+      "fire": 421469,
+      "none": 133251
+     },
+     "insect": {
+      "harvest": 119,
+      "fire": 0,
+      "none": 754
+     },
+     "windthrow": {
+      "harvest": 165,
+      "fire": 0,
+      "none": 230
+     },
+     "no-provincial-match": {
+      "harvest": 365615,
+      "fire": 6554,
+      "none": 1694319
+     }
+    },
+    "1987-1988": {
+     "harvest": {
+      "harvest": 1467375,
+      "fire": 2675,
+      "none": 236747
+     },
+     "fire": {
+      "harvest": 46532,
+      "fire": 802302,
+      "none": 330145
+     },
+     "insect": {
+      "harvest": 55,
+      "fire": 20,
+      "none": 1172
+     },
+     "windthrow": {
+      "harvest": 34,
+      "fire": 36,
+      "none": 857
+     },
+     "no-provincial-match": {
+      "harvest": 372450,
+      "fire": 12190,
+      "none": 2036966
+     }
+    },
+    "1988-1989": {
+     "harvest": {
+      "harvest": 1622658,
+      "fire": 4897,
+      "none": 323766
+     },
+     "fire": {
+      "harvest": 79131,
+      "fire": 10485975,
+      "none": 1476607
+     },
+     "insect": {
+      "harvest": 71,
+      "fire": 2,
+      "none": 1118
+     },
+     "windthrow": {
+      "harvest": 444,
+      "fire": 36,
+      "none": 5100
+     },
+     "no-provincial-match": {
+      "harvest": 399677,
+      "fire": 32450,
+      "none": 1828409
+     }
+    },
+    "1989-1990": {
+     "harvest": {
+      "harvest": 1568428,
+      "fire": 8481,
+      "none": 277460
+     },
+     "fire": {
+      "harvest": 31093,
+      "fire": 4426463,
+      "none": 649769
+     },
+     "insect": {
+      "harvest": 26,
+      "fire": 0,
+      "none": 1613
+     },
+     "windthrow": {
+      "harvest": 31,
+      "fire": 7,
+      "none": 1098
+     },
+     "no-provincial-match": {
+      "harvest": 355528,
+      "fire": 21235,
+      "none": 1888472
+     }
+    },
+    "1990-1991": {
+     "harvest": {
+      "harvest": 1346415,
+      "fire": 82583,
+      "none": 299904
+     },
+     "fire": {
+      "harvest": 11342,
+      "fire": 2866076,
+      "none": 331108
+     },
+     "insect": {
+      "harvest": 52,
+      "fire": 44,
+      "none": 2588
+     },
+     "windthrow": {
+      "harvest": 286,
+      "fire": 1223,
+      "none": 2425
+     },
+     "no-provincial-match": {
+      "harvest": 317755,
+      "fire": 20747,
+      "none": 2481949
+     }
+    },
+    "1991-1992": {
+     "harvest": {
+      "harvest": 1045754,
+      "fire": 64995,
+      "none": 246950
+     },
+     "fire": {
+      "harvest": 19440,
+      "fire": 296666,
+      "none": 389299
+     },
+     "insect": {
+      "harvest": 27,
+      "fire": 0,
+      "none": 1176
+     },
+     "windthrow": {
+      "harvest": 4939,
+      "fire": 109,
+      "none": 6544
+     },
+     "no-provincial-match": {
+      "harvest": 284609,
+      "fire": 7167,
+      "none": 1874410
+     }
+    },
+    "1992-1993": {
+     "harvest": {
+      "harvest": 1398841,
+      "fire": 10051,
+      "none": 365566
+     },
+     "fire": {
+      "harvest": 17508,
+      "fire": 850490,
+      "none": 370179
+     },
+     "insect": {
+      "harvest": 2,
+      "fire": 0,
+      "none": 196
+     },
+     "windthrow": {
+      "harvest": 1467,
+      "fire": 1,
+      "none": 3268
+     },
+     "no-provincial-match": {
+      "harvest": 303749,
+      "fire": 7213,
+      "none": 1932290
+     }
+    },
+    "1993-1994": {
+     "harvest": {
+      "harvest": 1297261,
+      "fire": 33483,
+      "none": 419701
+     },
+     "fire": {
+      "harvest": 37416,
+      "fire": 974546,
+      "none": 609115
+     },
+     "insect": {
+      "harvest": 117,
+      "fire": 0,
+      "none": 304
+     },
+     "windthrow": {
+      "harvest": 2066,
+      "fire": 44,
+      "none": 2352
+     },
+     "no-provincial-match": {
+      "harvest": 244748,
+      "fire": 9860,
+      "none": 2206118
+     }
+    },
+    "1994-1995": {
+     "harvest": {
+      "harvest": 1944334,
+      "fire": 11042,
+      "none": 372011
+     },
+     "fire": {
+      "harvest": 35975,
+      "fire": 2486031,
+      "none": 513627
+     },
+     "insect": {
+      "harvest": 48,
+      "fire": 0,
+      "none": 129
+     },
+     "windthrow": {
+      "harvest": 1893,
+      "fire": 27,
+      "none": 4390
+     },
+     "no-provincial-match": {
+      "harvest": 357092,
+      "fire": 14054,
+      "none": 2567635
+     }
+    },
+    "1995-1996": {
+     "harvest": {
+      "harvest": 1875223,
+      "fire": 404734,
+      "none": 352105
+     },
+     "fire": {
+      "harvest": 61147,
+      "fire": 5187979,
+      "none": 603194
+     },
+     "insect": {
+      "harvest": 80,
+      "fire": 0,
+      "none": 51
+     },
+     "windthrow": {
+      "harvest": 1214,
+      "fire": 148,
+      "none": 10335
+     },
+     "no-provincial-match": {
+      "harvest": 317373,
+      "fire": 41107,
+      "none": 2730610
+     }
+    },
+    "1996-1997": {
+     "harvest": {
+      "harvest": 1562999,
+      "fire": 152226,
+      "none": 412255
+     },
+     "fire": {
+      "harvest": 44302,
+      "fire": 4509602,
+      "none": 769851
+     },
+     "insect": {
+      "harvest": 16,
+      "fire": 0,
+      "none": 79
+     },
+     "windthrow": {
+      "harvest": 2708,
+      "fire": 100,
+      "none": 37353
+     },
+     "no-provincial-match": {
+      "harvest": 276933,
+      "fire": 28259,
+      "none": 3456769
+     }
+    },
+    "1997-1998": {
+     "harvest": {
+      "harvest": 1901573,
+      "fire": 70878,
+      "none": 441888
+     },
+     "fire": {
+      "harvest": 35448,
+      "fire": 2231530,
+      "none": 444331
+     },
+     "insect": {
+      "harvest": 41,
+      "fire": 201,
+      "none": 445
+     },
+     "windthrow": {
+      "harvest": 2174,
+      "fire": 0,
+      "none": 10096
+     },
+     "no-provincial-match": {
+      "harvest": 353783,
+      "fire": 24428,
+      "none": 3162323
+     }
+    },
+    "1998-1999": {
+     "harvest": {
+      "harvest": 2145345,
+      "fire": 10622,
+      "none": 358724
+     },
+     "fire": {
+      "harvest": 7402,
+      "fire": 1519867,
+      "none": 156166
+     },
+     "insect": {
+      "harvest": 14209,
+      "fire": 21943,
+      "none": 12828
+     },
+     "windthrow": {
+      "harvest": 1756,
+      "fire": 36,
+      "none": 5077
+     },
+     "no-provincial-match": {
+      "harvest": 412549,
+      "fire": 224301,
+      "none": 3200630
+     }
+    },
+    "1999-2000": {
+     "harvest": {
+      "harvest": 2259930,
+      "fire": 19462,
+      "none": 385571
+     },
+     "fire": {
+      "harvest": 3649,
+      "fire": 330606,
+      "none": 136343
+     },
+     "insect": {
+      "harvest": 1335,
+      "fire": 852,
+      "none": 11042
+     },
+     "windthrow": {
+      "harvest": 837,
+      "fire": 68,
+      "none": 3798
+     },
+     "no-provincial-match": {
+      "harvest": 402500,
+      "fire": 38643,
+      "none": 3680944
+     }
+    },
+    "2000-2001": {
+     "harvest": {
+      "harvest": 2008269,
+      "fire": 11509,
+      "none": 322473
+     },
+     "fire": {
+      "harvest": 5073,
+      "fire": 256607,
+      "none": 201306
+     },
+     "insect": {
+      "harvest": 5293,
+      "fire": 126,
+      "none": 20996
+     },
+     "windthrow": {
+      "harvest": 2382,
+      "fire": 0,
+      "none": 1833
+     },
+     "no-provincial-match": {
+      "harvest": 365170,
+      "fire": 15318,
+      "none": 3107524
+     }
+    },
+    "2001-2002": {
+     "harvest": {
+      "harvest": 1924554,
+      "fire": 123367,
+      "none": 293472
+     },
+     "fire": {
+      "harvest": 2397,
+      "fire": 7260959,
+      "none": 622454
+     },
+     "insect": {
+      "harvest": 79,
+      "fire": 11,
+      "none": 33665
+     },
+     "windthrow": {
+      "harvest": 2373,
+      "fire": 1489,
+      "none": 15330
+     },
+     "no-provincial-match": {
+      "harvest": 384588,
+      "fire": 31780,
+      "none": 2688681
+     }
+    },
+    "2002-2003": {
+     "harvest": {
+      "harvest": 2037195,
+      "fire": 9820,
+      "none": 264982
+     },
+     "fire": {
+      "harvest": 21261,
+      "fire": 953237,
+      "none": 243812
+     },
+     "insect": {
+      "harvest": 244,
+      "fire": 0,
+      "none": 65
+     },
+     "windthrow": {
+      "harvest": 7843,
+      "fire": 1141,
+      "none": 8371
+     },
+     "no-provincial-match": {
+      "harvest": 383519,
+      "fire": 12642,
+      "none": 3612824
+     }
+    },
+    "2003-2004": {
+     "harvest": {
+      "harvest": 1843037,
+      "fire": 5078,
+      "none": 348083
+     },
+     "fire": {
+      "harvest": 15348,
+      "fire": 271261,
+      "none": 319768
+     },
+     "insect": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 6
+     },
+     "windthrow": {
+      "harvest": 14562,
+      "fire": 65,
+      "none": 13257
+     },
+     "no-provincial-match": {
+      "harvest": 366531,
+      "fire": 7813,
+      "none": 3067511
+     }
+    },
+    "2004-2005": {
+     "harvest": {
+      "harvest": 2047926,
+      "fire": 137557,
+      "none": 307399
+     },
+     "fire": {
+      "harvest": 19442,
+      "fire": 4785472,
+      "none": 484827
+     },
+     "insect": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 95
+     },
+     "windthrow": {
+      "harvest": 1878,
+      "fire": 201,
+      "none": 15427
+     },
+     "no-provincial-match": {
+      "harvest": 399638,
+      "fire": 33430,
+      "none": 2984158
+     }
+    },
+    "2005-2006": {
+     "harvest": {
+      "harvest": 1665983,
+      "fire": 18302,
+      "none": 250862
+     },
+     "fire": {
+      "harvest": 155228,
+      "fire": 1232507,
+      "none": 216302
+     },
+     "insect": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 315
+     },
+     "windthrow": {
+      "harvest": 6111,
+      "fire": 50,
+      "none": 20467
+     },
+     "no-provincial-match": {
+      "harvest": 315465,
+      "fire": 14714,
+      "none": 2982536
+     }
+    },
+    "2006-2007": {
+     "harvest": {
+      "harvest": 1405587,
+      "fire": 107333,
+      "none": 221875
+     },
+     "fire": {
+      "harvest": 7816,
+      "fire": 2387600,
+      "none": 202355
+     },
+     "insect": {
+      "harvest": 8,
+      "fire": 0,
+      "none": 48
+     },
+     "windthrow": {
+      "harvest": 1829,
+      "fire": 146,
+      "none": 4177
+     },
+     "no-provincial-match": {
+      "harvest": 272726,
+      "fire": 31697,
+      "none": 2776851
+     }
+    },
+    "2007-2008": {
+     "harvest": {
+      "harvest": 939404,
+      "fire": 1116,
+      "none": 199697
+     },
+     "fire": {
+      "harvest": 30851,
+      "fire": 89949,
+      "none": 67612
+     },
+     "insect": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 48
+     },
+     "windthrow": {
+      "harvest": 440,
+      "fire": 49,
+      "none": 800
+     },
+     "no-provincial-match": {
+      "harvest": 223330,
+      "fire": 8788,
+      "none": 3339625
+     }
+    },
+    "2008-2009": {
+     "harvest": {
+      "harvest": 895809,
+      "fire": 3828,
+      "none": 223975
+     },
+     "fire": {
+      "harvest": 2955,
+      "fire": 1079977,
+      "none": 148595
+     },
+     "insect": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 23
+     },
+     "windthrow": {
+      "harvest": 1385,
+      "fire": 0,
+      "none": 979
+     },
+     "no-provincial-match": {
+      "harvest": 205857,
+      "fire": 17707,
+      "none": 3440244
+     }
+    },
+    "2009-2010": {
+     "harvest": {
+      "harvest": 1068914,
+      "fire": 174519,
+      "none": 198753
+     },
+     "fire": {
+      "harvest": 3498,
+      "fire": 2181220,
+      "none": 155079
+     },
+     "insect": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 478
+     },
+     "windthrow": {
+      "harvest": 356,
+      "fire": 13,
+      "none": 1140
+     },
+     "no-provincial-match": {
+      "harvest": 282311,
+      "fire": 35491,
+      "none": 4149167
+     }
+    },
+    "2010-2011": {
+     "harvest": {
+      "harvest": 1049701,
+      "fire": 3586,
+      "none": 228771
+     },
+     "fire": {
+      "harvest": 31346,
+      "fire": 180232,
+      "none": 318251
+     },
+     "insect": {
+      "harvest": 91,
+      "fire": 1,
+      "none": 4097
+     },
+     "windthrow": {
+      "harvest": 759,
+      "fire": 0,
+      "none": 1941
+     },
+     "no-provincial-match": {
+      "harvest": 273533,
+      "fire": 9038,
+      "none": 4077098
+     }
+    },
+    "2011-2012": {
+     "harvest": {
+      "harvest": 715163,
+      "fire": 27363,
+      "none": 294499
+     },
+     "fire": {
+      "harvest": 9289,
+      "fire": 903562,
+      "none": 890163
+     },
+     "insect": {
+      "harvest": 0,
+      "fire": 74,
+      "none": 5043
+     },
+     "windthrow": {
+      "harvest": 1150,
+      "fire": 0,
+      "none": 3537
+     },
+     "no-provincial-match": {
+      "harvest": 329264,
+      "fire": 24903,
+      "none": 3974824
+     }
+    },
+    "2012-2013": {
+     "harvest": {
+      "harvest": 1062559,
+      "fire": 397,
+      "none": 189715
+     },
+     "fire": {
+      "harvest": 2045,
+      "fire": 7121265,
+      "none": 760380
+     },
+     "insect": {
+      "harvest": 0,
+      "fire": 0,
+      "none": 5178
+     },
+     "windthrow": {
+      "harvest": 1495,
+      "fire": 0,
+      "none": 6083
+     },
+     "no-provincial-match": {
+      "harvest": 404238,
+      "fire": 47771,
+      "none": 4000277
+     }
+    },
+    "2013-2014": {
+     "harvest": {
+      "harvest": 1365969,
+      "fire": 34350,
+      "none": 217244
+     },
+     "fire": {
+      "harvest": 6983,
+      "fire": 1901787,
+      "none": 252842
+     },
+     "insect": {
+      "harvest": 1468,
+      "fire": 1,
+      "none": 5005
+     },
+     "windthrow": {
+      "harvest": 5850,
+      "fire": 0,
+      "none": 5309
+     },
+     "no-provincial-match": {
+      "harvest": 430971,
+      "fire": 29789,
+      "none": 3950756
+     }
+    },
+    "2014-2015": {
+     "harvest": {
+      "harvest": 1289559,
+      "fire": 5115,
+      "none": 228275
+     },
+     "fire": {
+      "harvest": 3912,
+      "fire": 32389,
+      "none": 67147
+     },
+     "insect": {
+      "harvest": 34,
+      "fire": 0,
+      "none": 2827
+     },
+     "windthrow": {
+      "harvest": 6165,
+      "fire": 0,
+      "none": 4491
+     },
+     "no-provincial-match": {
+      "harvest": 353344,
+      "fire": 9009,
+      "none": 3526304
+     }
+    },
+    "2015-2016": {
+     "harvest": {
+      "harvest": 1404605,
+      "fire": 808,
+      "none": 254860
+     },
+     "fire": {
+      "harvest": 3653,
+      "fire": 125273,
+      "none": 39387
+     },
+     "insect": {
+      "harvest": 906,
+      "fire": 0,
+      "none": 2661
+     },
+     "windthrow": {
+      "harvest": 5780,
+      "fire": 0,
+      "none": 13347
+     },
+     "no-provincial-match": {
+      "harvest": 367022,
+      "fire": 10307,
+      "none": 4119368
+     }
+    },
+    "2016-2017": {
+     "harvest": {
+      "harvest": 1531176,
+      "fire": 18340,
+      "none": 269284
+     },
+     "fire": {
+      "harvest": 1254,
+      "fire": 210809,
+      "none": 28972
+     },
+     "insect": {
+      "harvest": 108,
+      "fire": 0,
+      "none": 6019
+     },
+     "windthrow": {
+      "harvest": 2048,
+      "fire": 0,
+      "none": 4785
+     },
+     "no-provincial-match": {
+      "harvest": 426303,
+      "fire": 9895,
+      "none": 4795257
+     }
+    },
+    "2017-2018": {
+     "harvest": {
+      "harvest": 1392018,
+      "fire": 12177,
+      "none": 306951
+     },
+     "fire": {
+      "harvest": 5616,
+      "fire": 410441,
+      "none": 46239
+     },
+     "insect": {
+      "harvest": 598,
+      "fire": 12,
+      "none": 52776
+     },
+     "windthrow": {
+      "harvest": 326,
+      "fire": 0,
+      "none": 2421
+     },
+     "no-provincial-match": {
+      "harvest": 358059,
+      "fire": 19898,
+      "none": 3158089
+     }
+    },
+    "2018-2019": {
+     "harvest": {
+      "harvest": 1277423,
+      "fire": 880,
+      "none": 311654
+     },
+     "fire": {
+      "harvest": 9914,
+      "fire": 91048,
+      "none": 19366
+     },
+     "insect": {
+      "harvest": 1084,
+      "fire": 42,
+      "none": 54002
+     },
+     "windthrow": {
+      "harvest": 3410,
+      "fire": 0,
+      "none": 4447
+     },
+     "no-provincial-match": {
+      "harvest": 352590,
+      "fire": 6670,
+      "none": 2825460
+     }
+    },
+    "2019-2020": {
+     "harvest": {
+      "harvest": 1164342,
+      "fire": 169640,
+      "none": 343509
+     },
+     "fire": {
+      "harvest": 1901,
+      "fire": 244999,
+      "none": 19249
+     },
+     "insect": {
+      "harvest": 294,
+      "fire": 706,
+      "none": 25791
+     },
+     "windthrow": {
+      "harvest": 1435,
+      "fire": 0,
+      "none": 1282
+     },
+     "no-provincial-match": {
+      "harvest": 364154,
+      "fire": 9020,
+      "none": 2411128
+     }
+    },
+    "2020-2021": {
+     "harvest": {
+      "harvest": 1092642,
+      "fire": 17867,
+      "none": 321356
+     },
+     "fire": {
+      "harvest": 71003,
+      "fire": 313840,
+      "none": 77630
+     },
+     "insect": {
+      "harvest": 745,
+      "fire": 81,
+      "none": 10784
+     },
+     "windthrow": {
+      "harvest": 819,
+      "fire": 0,
+      "none": 2153
+     },
+     "no-provincial-match": {
+      "harvest": 374255,
+      "fire": 6320,
+      "none": 2228016
+     }
+    },
+    "2021-2022": {
+     "harvest": {
+      "harvest": 932426,
+      "fire": 367,
+      "none": 311265
+     },
+     "fire": {
+      "harvest": 22315,
+      "fire": 127863,
+      "none": 151513
+     },
+     "insect": {
+      "harvest": 193,
+      "fire": 0,
+      "none": 5020
+     },
+     "windthrow": {
+      "harvest": 17,
+      "fire": 0,
+      "none": 1829
+     },
+     "no-provincial-match": {
+      "harvest": 220768,
+      "fire": 7494,
+      "none": 2002702
+     }
+    }
+   },
+   "totals": {
+    "harvest": {
+     "harvest": 54529390,
+     "fire": 1854829,
+     "none": 10860244
+    },
+    "fire": {
+     "harvest": 882843,
+     "fire": 71223439,
+     "none": 12360898
+    },
+    "insect": {
+     "harvest": 27492,
+     "fire": 24146,
+     "none": 269662
+    },
+    "windthrow": {
+     "harvest": 88471,
+     "fire": 5005,
+     "none": 226576
+    },
+    "no-provincial-match": {
+     "harvest": 12826914,
+     "fire": 940462,
+     "none": 110174429
+    }
+   },
+   "overlapCells": 949,
+   "reproduction": {
+    "assessedChanges": 66787699,
+    "matchedChanges": 6905933,
+    "assessedHectares": 24866446.59,
+    "matchedHectares": 13711728.42
+   }
+  }
+ },
+ "inputBindings": [
+  {
+   "path": "data/phase4-provincial-matching-report.json",
+   "sha256": "97e310229163ca4c4eac7ea54045a21be8255991f449bcdc1244891e24836844"
+  },
+  {
+   "path": "scripts/phase4-match-provincial.mts",
+   "sha256": "64dcc7f4a3ffe63d82ef55d1ecac746a64872625ad7948c421b8154174187303"
+  },
+  {
+   "path": "scripts/phase4-match-provincial-crosstab.mts",
+   "sha256": "f7360d267f43742d95e87c8568dc2d512fad9e56d6bc24a04e8c44c7a3fe3a80"
+  },
+  {
+   "path": "scripts/run-phase4-cause-crosstab.mjs",
+   "sha256": "9183a8ccc869ed53f9f2087ece9100e8f79176e9c676493cff754b719c377894"
+  },
+  {
+   "path": "lib/pipeline/matching.ts",
+   "sha256": "ccde63ade96901a040dc9b896b57fcd6588e4d90c2ebe75ca4ecbfffb4badef8"
+  }
+ ],
+ "dataRootBindings": [
+  {
+   "path": "derived/phase2-per-cell-geometry-1984-2022-four-province-v1/attribution-manifest.json",
+   "sha256": "93e4e20bfad1be85f97f2f36d730647419799524b5c1f8a9ef2967f1c22943c6"
+  },
+  {
+   "path": "derived/phase4-provincial-cause-crosstab-2026-09-26/match",
+   "files": 76,
+   "sha256": "dfe5a8984536854ead8cdadc6374314318696ea8645c68e7063cef0b4e65e6e4",
+   "note": "SHA-256 over each interval output's file name then bytes, in name order."
+  }
+ ],
+ "basis": {
+  "ownerAuthorization": "On 2026-09-26 the owner approved feeding the admitted Phase 4 matching run into the cause breakdown for British Columbia and Québec, in these words: \"Proceed with all 5.\"",
+  "reproduction": "The rerun that produced these tables reproduced the admitted report's counts, reasons, record kinds and hectares exactly, per province.",
+  "separatelyReviewed": false
+ },
+ "limitations": [
+  "A provincial match is the repository's matching policy (at least half the smaller area, within ±2 years, ±3 before 1995), not a finding of cause on the ground.",
+  "A change with no national cause and no provincial record is not evidence that nothing happened: records can be missing, unpublished, outside a reporting boundary, or on private land.",
+  "Alberta and Ontario have no admitted provincial records, so they are not in this table."
+ ]
+}

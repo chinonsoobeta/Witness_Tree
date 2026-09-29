@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "witness-tree/phase2-per-cell-span-archive-release/1",
+  "releaseId": "0de224ad834ba70a51d989f710157562d0b9fcd0a0d8e0f4a9929a2996dc0669",
+  "releaseIdMeaning": "SHA-256 of the archive",
+  "productId": "phase2-per-cell-span-archive-four-province-v1",
+  "url": "https://d3g1406o0uekin.cloudfront.net/releases/phase2-per-cell-span-archive-four-province-v1/0de224ad834ba70a51d989f710157562d0b9fcd0a0d8e0f4a9929a2996dc0669/spans.pmtiles",
+  "sourceLayer": "spans",
+  "yearProperty": "year",
+  "firstYear": 1985,
+  "lastYear": 2022,
+  "byteLength": 10335592172,
+  "sha256": "0de224ad834ba70a51d989f710157562d0b9fcd0a0d8e0f4a9929a2996dc0669",
+  "minZoom": 8,
+  "maxZoom": 14,
+  "generalizedBelowZoom": 14,
+  "countable": false,
+  "expertReviewed": false,
+  "productionEligible": false,
+  "admission": {
+    "path": "data/phase2-per-cell-span-archive-admission-record-2026-09-19.json",
+    "sha256": "04784f321f7926c9a40a96c53679d94b0a0b37d79d353bf7708864a3b0fff123"
+  },
+  "annualRelease": {
+    "path": "data/phase2-per-cell-four-province-tile-release.json",
+    "releaseId": "01fed8f9dec607c0c5c62872ab5dda89bd22f22d97fa765004252484fefe27c1"
+  },
+  "readback": "data/phase2-per-cell-span-archive-readback.json",
+  "recordedAt": "2026-09-20T01:37:28.128Z"
+}

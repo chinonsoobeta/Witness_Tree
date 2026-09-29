@@ -1,65 +1,93 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ProvinceBar, SiteShell } from "@/components/site";
-import { ProvinceCoverageCard } from "@/components/site/ProvinceCoverageCard";
-import { CoverageStatement } from "@/components/policy/CoverageStatement";
-import { EvidenceLegend } from "@/components/policy/EvidenceLegend";
+import { HomeSearch, ProvinceBar, SiteShell } from "@/components/site";
+import { ProvinceRecordList } from "@/components/site/ProvinceRecordList";
+import { CumulativeHeadline } from "@/components/site/CumulativeHeadline";
+import { CitiesMostLost, RidingsMostLost } from "@/components/site/RidingsMostLost";
+import { HarvestSources } from "@/components/site/HarvestSources";
+import { EvidenceMarks } from "@/components/policy/EvidenceMarks";
 import { PRODUCT_NAME } from "@/lib/domain";
-import { EXPLORE_COVERAGE_PERIOD, EXPLORE_PRODUCTION_LAYER, formatUnknownSharePercent } from "@/lib/explore";
-import { productionAggregatePeriod } from "@/lib/explore/period";
+import { EXPLORE_PRODUCTION_LAYER, formatUnknownSharePercent, provinceSpanDisplayRows } from "@/lib/explore";
+import { provinceSpanReach } from "@/lib/explore/period";
 import { localizedAlternates } from "@/lib/site-metadata";
 
 export const metadata: Metadata = { title: "Registre public des pertes forestières", alternates: localizedAlternates("fr", { en: "/en", fr: "/fr" }) };
 
-function coverageLabel(row: (typeof EXPLORE_PRODUCTION_LAYER.rows)[number]) {
-  return `${formatUnknownSharePercent(row.unknownSharePercent, "fr")} de la superficie provinciale n’a pas été cartographiée par la source${"unmappedCharacter" in row ? `; ${row.unmappedCharacter.fr}` : ""}`;
+const SPAN_ROWS = provinceSpanDisplayRows({ fromYear: 1984, toYear: 2022 });
+
+function coverageLabel(row: (typeof SPAN_ROWS)[number]) {
+  return `${formatUnknownSharePercent(row.unknownSharePercent, "fr")} de la province n’a pas de données satellitaires\u202F: ${row.unmappedCharacter.fr}`;
 }
 
+const UNKNOWN_CONTEXTS = Object.fromEntries(
+  SPAN_ROWS.map((row) => [row.id, coverageLabel(row)]),
+);
+
+/* Voir la note sur app/en/page.tsx : mêmes trois changements, mêmes retraits. */
 export default function FrenchHome() {
   return <SiteShell locale="fr"><main id="main" className="page-wrap">
     <header className="masthead masthead--record">
-      <p className="eyebrow">Registre de preuves · {EXPLORE_COVERAGE_PERIOD.fr}</p>
-      <h1>Qu’est-il arrivé à la forêt ici?</h1>
-      <p className="dek">{PRODUCT_NAME.fr} aide à comprendre les pertes forestières consignées et détectées dans quatre provinces.</p>
+      <h1>{"Qu’est-il arrivé à la forêt ici\u202F?"}</h1>
+      <p className="dek">{PRODUCT_NAME.fr} montre les pertes forestières dans quatre provinces canadiennes, à partir d’images satellites et de registres publics.</p>
+      <HomeSearch locale="fr" />
       <ProvinceBar locale="fr" />
     </header>
-    <CoverageStatement locale="fr"><p>La perte détectée est un minimum de la zone cartographiée dans quatre provinces. Les superficies non cartographiées par la source restent inconnues, même là où la perte détectée est faible.</p></CoverageStatement>
-    <EvidenceLegend locale="fr" />
+
+    {/*
+      The answer to the question in the h1, immediately under it.
+      It carries its own denominator, its own unmapped share, its own
+      minimum and its own refusal of the annual sum, so it stays honest
+      when it is read alone.
+    */}
+    <CumulativeHeadline locale="fr" />
+
+
+    {/* Voir la note sur app/en/page.tsx : une seule liste des quatre marques. */}
+    <section className="content-section evidence-band">
+      <p className="evidence-band-lead">Chaque chiffre de ce site indique le type de preuve qui le soutient.</p>
+      <EvidenceMarks locale="fr" />
+    </section>
+
     <section className="content-section landing-coverage" aria-labelledby="registre-actuel">
-      <div className="section-heading"><span className="num">01</span><h2 id="registre-actuel">Commencer par le registre actuel</h2></div>
-      <p className="lead">L’agrégat provincial provisoire et limité {productionAggregatePeriod("fr", "from")} est prêt à explorer. Il présente la perte forestière détectée avec un état de couverture pour chaque province. La vérification de l’étendue cartographiée pour chacune des années de {EXPLORE_COVERAGE_PERIOD.fr} est terminée. Ses résultats déterminent désormais le classement des superficies non cartographiées par la source.</p>
-      <p className="prose-measure">Toutes les barres partagent une échelle en hectares. La superficie non cartographiée n’est pas une mesure de perte forestière.</p>
-      <div className="province-coverage-grid">
-        {EXPLORE_PRODUCTION_LAYER.rows.map((row) => <ProvinceCoverageCard key={row.id} row={row} locale="fr" unknownContext={coverageLabel(row)} />)}
-      </div>
+      <h2 id="registre-actuel">Le registre publié</h2>
+      <p className="lead">La superficie forestière que les satellites ont détectée comme perdue dans chaque province, {provinceSpanReach("fr", "from")}.</p>
+      <ProvinceRecordList rows={SPAN_ROWS} locale="fr" unknownContexts={UNKNOWN_CONTEXTS} />
       <p><Link href="/fr/methodes#coverage-gap">Pourquoi ces superficies ne sont pas cartographiées et ce que nous en savons</Link></p>
-      <p><Link className="btn btn--primary" href="/fr/explorer">Explorer l’agrégat provincial</Link></p>
-      <p><small>D’autres provinces s’ajouteront bientôt.</small></p>
+      <p><Link className="btn btn--primary" href="/fr/explorer">Explorer le registre</Link></p>
+      <p><small>Le registre ne couvre que ces quatre provinces.</small></p>
     </section>
-    <section className="content-section prose-measure">
-      <div className="section-heading"><span className="num">02</span><h2>Un registre, pas un tableau de bord</h2></div>
-      <p className="lead">Cherchez un lieu ou ouvrez un dossier. Consultez l’historique daté des récoltes consignées, des incendies, des perturbations et des changements détectés par satellite, avec la source jointe à chaque affirmation.</p>
-      <dl className="principles">
-        <div className="principle"><dt>Registre officiel</dt><dd>Une autorité publique consigne un événement, un périmètre, une intervention ou un rôle désigné.</dd></div>
-        <div className="principle"><dt>Observation satellitaire</dt><dd>Les images montrent une réduction du couvert arboré ou une reprise ultérieure du couvert. À elles seules, elles n’en établissent pas la cause.</dd></div>
-        <div className="principle"><dt>Estimation dérivée</dt><dd>Un calcul fondé sur des registres documentés et une méthode publiée.</dd></div>
-        <div className="principle"><dt>Inconnu</dt><dd>Aucun registre public faisant autorité n’a été intégré pour la question. Une absence dans ce registre n’est pas une affirmation sur ce qui s’est produit dans le monde.</dd></div>
-      </dl>
-    </section>
+
+    <HarvestSources locale="fr" />
+
+    <RidingsMostLost locale="fr" />
+
+    <CitiesMostLost locale="fr" />
+
     <section className="content-section">
-      <div className="section-heading"><span className="num">03</span><h2>Consulter le registre</h2></div>
+      <h2>Consulter le registre</h2>
       <div className="record-grid">
-        <article className="record-card"><p className="eyebrow">Composants</p><h3>Les preuves avant les chiffres</h3><p>Examinez la présentation des valeurs, des inconnues, de la confiance, de la couverture et de la provenance dans le registre public.</p><Link href="/fr/composants">Ouvrir la galerie de composants</Link></article>
-        <article className="record-card"><p className="eyebrow">Méthodes</p><h3>Les définitions avant les chiffres</h3><p>Consultez le dénominateur forestier, les catégories de preuves, les règles de confiance, les niveaux de couverture et la méthode d’appariement.</p><Link href="/fr/methodes">Lire les méthodes</Link></article>
-        <article className="record-card"><p className="eyebrow">État des données</p><h3>Version provinciale limitée</h3><p>L’agrégat provincial {productionAggregatePeriod("fr", "from")} est publié avec sa source, son état de couverture et ses limites. D’autres vues peuvent encore utiliser des exemples clairement identifiés.</p><Link href="/fr/donnees">Consulter la transparence des données</Link></article>
+        <article className="record-card"><p className="eyebrow">Comment lire</p><h3>Ce que signifient les marques</h3><p>Chaque chiffre indique son type de preuve, notre degré de certitude et la part cartographiée.</p><Link href="/fr/composants">Voir les marques et les étiquettes</Link></article>
+        <article className="record-card"><p className="eyebrow">Méthodes</p><h3>Les définitions avant les chiffres</h3><p>Ce qui compte comme forêt, comment les chiffres sont calculés et quel est notre degré de certitude.</p><Link href="/fr/methodes">Lire les méthodes</Link></article>
+        <article className="record-card"><p className="eyebrow">Données</p><h3>Télécharger les chiffres</h3><p>Téléchargez les chiffres provinciaux {provinceSpanReach("fr", "from")}, avec leurs sources et leurs limites.</p><Link href="/fr/donnees">Voir les téléchargements et les sources</Link></article>
       </div>
-      <aside className="notice"><h3>Ce que ce registre n’affirme pas</h3><p>{PRODUCT_NAME.fr} n’estime pas le bois marchand, ne prédit pas la propagation des incendies, ne qualifie pas un changement détecté d’exploitation ou de déforestation, ne formule aucune conclusion juridique ou de conformité et ne déduit aucune responsabilité de la proximité.</p></aside>
     </section>
-    <section className="content-section prose-measure" aria-labelledby="consequences">
-      <div className="section-heading"><span className="num">04</span><h2 id="consequences">Pourquoi le contexte importe</h2></div>
-      <p>La perte forestière détectée est une mesure dérivée de l’observation satellitaire, et non une conclusion sur la cause. Une réduction détectée du couvert arboré n’établit pas à elle seule l’exploitation, la déforestation, la responsabilité ou la conformité. <Link href="/fr/methodes">Lire les définitions de méthode et de preuve</Link>.</p>
-      <p>La version disponible est un aperçu technique déterministe au niveau provincial, limité à quatre provinces, pour {productionAggregatePeriod("fr", "span")}. Elle ne fournit pas une géométrie par cellule et ne satisfait pas au critère formel de la phase 2. <Link href="/fr/donnees">Lire la portée de la version, la provenance et l’attribution de licence</Link>.</p>
-      <p><small>Source du contexte : {EXPLORE_PRODUCTION_LAYER.attribution.fr} <a href={EXPLORE_PRODUCTION_LAYER.attribution.href}>Catalogue source</a>.</small></p>
+
+    <section className="content-section limits-block" aria-labelledby="limites">
+      <h2 id="limites">Ce que ce registre n’affirme pas</h2>
+      <div className="limits-body">
+        <ul className="limits-list">
+          <li>Qu’une perte soit due à l’exploitation forestière ou à la déforestation.</li>
+          <li>Toute conclusion juridique ou de conformité.</li>
+          <li>La quantité de bois vendable.</li>
+          <li>Qui est responsable, selon qui se trouve à proximité.</li>
+          <li>Comment un incendie se propagera.</li>
+          <li>Un total complet. La perte détectée est un minimum.</li>
+        </ul>
+        <p>{PRODUCT_NAME.fr} rapporte seulement ce que ses sources consignent et ce que les images satellites détectent.</p>
+        <p>Un satellite peut voir que des arbres ont disparu, mais pas pourquoi. <Link href="/fr/methodes">Comment fonctionnent les méthodes</Link>.</p>
+        <p>Ces chiffres pour {provinceSpanReach("fr", "span")} sont un premier aperçu, et non la version définitive. Les parcelles de perte de la carte Explorer servent à regarder, pas à additionner, et aucun spécialiste ne les a examinées. <Link href="/fr/donnees">Données, sources et licences</Link>.</p>
+        <p><small>{"Source du contexte\u202F: "}{EXPLORE_PRODUCTION_LAYER.attribution.fr} <a href={EXPLORE_PRODUCTION_LAYER.attribution.href}>Catalogue source</a>.</small></p>
+      </div>
     </section>
   </main></SiteShell>;
 }

@@ -1,5 +1,6 @@
 import type { ComparisonPlace } from "@/lib/comparison";
 import type { Locale } from "@/lib/domain";
+import { provinceSpanDisplayRows } from "@/lib/explore/province-spans";
 
 type SelectedFederalRidings = Readonly<{
   left: ComparisonPlace;
@@ -38,6 +39,35 @@ export function selectFederalRidings(
   return { left, right };
 }
 
+/** Province names by federal district prefix, west to east, spelled as the rest of the site spells them. */
+const PROVINCES = provinceSpanDisplayRows({ fromYear: 1984, toYear: 2022 }).map((row) => ({ prefix: row.id, name: row.name }));
+
+/**
+ * The ridings under one heading per province, alphabetical within it, so a
+ * reader finds a riding among the four provinces’ by where it is. Rows whose id carries
+ * no province are listed as they came.
+ */
+function RidingOptions({ rows, locale }: { rows: readonly ComparisonPlace[]; locale: Locale }) {
+  const groups = PROVINCES.map((province) => ({
+    ...province,
+    rows: rows
+      .filter((row) => row.id.startsWith(`federal-${province.prefix}`))
+      .sort((a, b) => a.name[locale].localeCompare(b.name[locale], locale)),
+  }));
+  if (groups.reduce((total, group) => total + group.rows.length, 0) !== rows.length) {
+    return <>{rows.map((row) => <option key={row.id} value={row.id}>{row.name[locale]}</option>)}</>;
+  }
+  return (
+    <>
+      {groups.filter((group) => group.rows.length > 0).map((group) => (
+        <optgroup key={group.prefix} label={group.name[locale]}>
+          {group.rows.map((row) => <option key={row.id} value={row.id}>{row.name[locale]}</option>)}
+        </optgroup>
+      ))}
+    </>
+  );
+}
+
 export function FederalRidingPicker({
   rows,
   locale,
@@ -64,7 +94,7 @@ export function FederalRidingPicker({
         right: "Right riding",
         submit: "Compare",
         fallback: (side: string, requested: string, shown: string) =>
-          `Requested ${side} riding “${requested}” is not available in this four-province comparison. Showing ${shown} instead.`,
+          `The ${side} riding “${requested}” isn’t available here, since this comparison covers four provinces only. Showing ${shown} instead.`,
       }
     : {
         title: "Choisir les circonscriptions à comparer",
@@ -72,7 +102,7 @@ export function FederalRidingPicker({
         right: "Circonscription de droite",
         submit: "Comparer",
         fallback: (side: string, requested: string, shown: string) =>
-          `La circonscription de ${side} demandée « ${requested} » n’est pas offerte dans cette comparaison limitée à quatre provinces. ${shown} est affichée à la place.`,
+          `La circonscription de ${side} «\u00A0${requested}\u00A0» n’est pas offerte ici, car cette comparaison ne couvre que quatre provinces. ${shown} est affichée à la place.`,
       };
   const missing = [
     leftId && !candidates.some((row) => row.id === leftId)
@@ -91,13 +121,13 @@ export function FederalRidingPicker({
         <label>
           {labels.left}
           <select name="left" defaultValue={selected.left.id}>
-            {candidates.map((row) => <option key={row.id} value={row.id}>{row.name[locale]}</option>)}
+            <RidingOptions rows={candidates} locale={locale} />
           </select>
         </label>
         <label>
           {labels.right}
           <select name="right" defaultValue={selected.right.id}>
-            {candidates.map((row) => <option key={row.id} value={row.id}>{row.name[locale]}</option>)}
+            <RidingOptions rows={candidates} locale={locale} />
           </select>
         </label>
         <button className="btn btn--primary" type="submit">{labels.submit}</button>

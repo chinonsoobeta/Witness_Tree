@@ -53,8 +53,8 @@ test("the real adapter keeps the 2021 denominator and Unknown semantics", () => 
   assert.equal(adapted.rows[0]?.detectedChangeHectares, null);
   assert.equal(adapted.rows[0]?.coverageGrade, "not-applicable");
   assert.equal(adapted.rows[0]?.sufficientCoverage, false);
-  assert.match(adapted.context.denominatorDefinition.en, /2021 first-year forest mask/);
-  assert.match(adapted.context.method.en, /at least 500 forested hectares/);
+  assert.match(adapted.context.denominatorDefinition.en, /mapped forest as it stood in 2021/);
+  assert.match(adapted.context.method.en, /at least 500 hectares of forest/);
 });
 
 test("the real adapter rejects a partial row restated as zero", () => {

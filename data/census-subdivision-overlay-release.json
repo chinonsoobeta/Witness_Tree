@@ -1,0 +1,65 @@
+{
+  "schemaVersion": "witness-tree/census-subdivision-overlay-release/1",
+  "productId": "census-subdivision-overlay-v1",
+  "releaseId": "dfba0ca5796496c84703f9602da6507a6b5a2f8f5dbc7e450a8790e2073e6482",
+  "base": "https://d3g1406o0uekin.cloudfront.net/releases/census-subdivision-overlay-v1/dfba0ca5796496c84703f9602da6507a6b5a2f8f5dbc7e450a8790e2073e6482",
+  "source": {
+    "path": "derived/phase3-interval-place-zonal-v1/csd-four-province-2021.gpkg",
+    "sha256": "c741c4cd3ee900c46cab0fd274751a9238e2982dca25701e180723e5b6b4c05f"
+  },
+  "zooms": [
+    0,
+    10
+  ],
+  "note": "The 2,291 places of data/place-name-index.json. Reserves, settlements and treaty or agreement lands are neither drawn nor given figures.",
+  "tiles": {
+    "fileName": "census-subdivisions-v1.pmtiles",
+    "layer": "census_subdivisions",
+    "featureCount": 2291,
+    "byteLength": 6888318,
+    "sha256": "9f72ce95e1f4aeb063cd669ca8de4de1d8d2dc45069601cf43df91763003117c",
+    "url": "https://d3g1406o0uekin.cloudfront.net/releases/census-subdivision-overlay-v1/dfba0ca5796496c84703f9602da6507a6b5a2f8f5dbc7e450a8790e2073e6482/census-subdivisions-v1.pmtiles"
+  },
+  "figures": [
+    {
+      "province": "BC",
+      "fileName": "census-subdivisions-BC.json",
+      "placeCount": 320,
+      "jsonSha256": "c632df08aadf30ca145d0fa7815aeff2894b65469c80774056bfd6a352dfe587",
+      "byteLength": 466461,
+      "sha256": "09316c623905ef7f09f7da0436b7b2a1cf9762f5bbfb71ede4880e986124b668",
+      "contentEncoding": "gzip",
+      "url": "https://d3g1406o0uekin.cloudfront.net/releases/census-subdivision-overlay-v1/dfba0ca5796496c84703f9602da6507a6b5a2f8f5dbc7e450a8790e2073e6482/census-subdivisions-BC.json"
+    },
+    {
+      "province": "AB",
+      "fileName": "census-subdivisions-AB.json",
+      "placeCount": 337,
+      "jsonSha256": "5e29d0297e8412c47dd4a50d4d21e50ec4fb0629ef306a9a1ec928c370199755",
+      "byteLength": 188397,
+      "sha256": "2df15c85cbffa70bcc0ef8629082fc79b3787f0e82e2042b7fad25c00d2dfb05",
+      "contentEncoding": "gzip",
+      "url": "https://d3g1406o0uekin.cloudfront.net/releases/census-subdivision-overlay-v1/dfba0ca5796496c84703f9602da6507a6b5a2f8f5dbc7e450a8790e2073e6482/census-subdivisions-AB.json"
+    },
+    {
+      "province": "ON",
+      "fileName": "census-subdivisions-ON.json",
+      "placeCount": 430,
+      "jsonSha256": "7f1d9e328937893ca189a90b594b785ac3990abe34e1a035bb709c05a3e57c53",
+      "byteLength": 305737,
+      "sha256": "494c706cd489be8551ad636f52f63f63715a7f0fb625df535b024301ec5355c9",
+      "contentEncoding": "gzip",
+      "url": "https://d3g1406o0uekin.cloudfront.net/releases/census-subdivision-overlay-v1/dfba0ca5796496c84703f9602da6507a6b5a2f8f5dbc7e450a8790e2073e6482/census-subdivisions-ON.json"
+    },
+    {
+      "province": "QC",
+      "fileName": "census-subdivisions-QC.json",
+      "placeCount": 1204,
+      "jsonSha256": "21a4ae8009baddbd764033a03e95f9f3cd14a2c9932f115a364eebe373d22f79",
+      "byteLength": 1260035,
+      "sha256": "f303d0bc84a37763cba7083368bec70b5f55360fb24b74fa0b62210c0b20bed6",
+      "contentEncoding": "gzip",
+      "url": "https://d3g1406o0uekin.cloudfront.net/releases/census-subdivision-overlay-v1/dfba0ca5796496c84703f9602da6507a6b5a2f8f5dbc7e450a8790e2073e6482/census-subdivisions-QC.json"
+    }
+  ]
+}

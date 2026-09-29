@@ -1,0 +1,1813 @@
+{
+ "schemaVersion": "witness-tree/phase4-provincial-matching-report/1",
+ "runId": "phase4-provincial-matching-2026-09-26",
+ "status": "admitted-production",
+ "productionEligible": true,
+ "claims": {
+  "comparisonResultsExist": true,
+  "productionEligible": true,
+  "released": false
+ },
+ "scope": {
+  "provinces": [
+   "BC",
+   "QC"
+  ]
+ },
+ "dataRoot": {
+  "derived": "derived/phase4-provincial-matching-2026-09-26",
+  "note": "Paths are relative to the data root; the run was computed on the internal disk and copied back byte for byte."
+ },
+ "readiness": {
+  "sourceRightsVerified": true,
+  "sourceEvidenceAdmitted": true,
+  "sourceTransformationApproved": true,
+  "sourceReleaseApproved": true,
+  "changeGeometryMaterialized": true
+ },
+ "readinessBasis": {
+  "sourceRightsVerified": "data/bc-harvest-source-rights-2026-09-26.json records BC rights; the Québec sources are CC BY 4.0.",
+  "changeGeometryMaterialized": "Detected changes are the per-cell loss patches of the admitted four-province store (data/phase2-per-cell-four-province-admission-record-2026-09-19.json).",
+  "ownerApproval": "The owner admitted the source evidence, the record transformation and the release on 2026-09-26; see data/phase4-provincial-matching-admission-2026-09-26.json."
+ },
+ "inputBindings": [
+  {
+   "path": "data/bc-harvest-source-rights-2026-09-26.json",
+   "sha256": "fa3b7c52a301a8e96acfcdd09ecb812416f24df2b2c8d11ccd16718a6fb1bfb8"
+  },
+  {
+   "path": "data/phase2-per-cell-four-province-admission-record-2026-09-19.json",
+   "sha256": "de9eb39a18f097802cc3ef61eca81fba3a010a103979fd6f84b46fdd18532243"
+  },
+  {
+   "path": "lib/pipeline/matching.ts",
+   "sha256": "ccde63ade96901a040dc9b896b57fcd6588e4d90c2ebe75ca4ecbfffb4badef8"
+  },
+  {
+   "path": "lib/phase4/provincial-matching.ts",
+   "sha256": "1b28cb6942ab8255a9c440ff1ab842a7854ec3222b2fd58a88d3c97dbf68e953"
+  },
+  {
+   "path": "scripts/phase4-match-provincial.mts",
+   "sha256": "64dcc7f4a3ffe63d82ef55d1ecac746a64872625ad7948c421b8154174187303"
+  },
+  {
+   "path": "scripts/phase4_rasterize_records.py",
+   "sha256": "55ad00c4695dd6b91d4a66e5b214998fc3204470fa7616aba19a8b05113f6573"
+  }
+ ],
+ "method": {
+  "detectedChanges": "Every per-cell loss patch of the four-province store, 1984-1985 to 2021-2022, in the province holding most of its cells. The observation year is the interval's closing year.",
+  "officialRecords": "Official harvest, fire, insect and windthrow records, reprojected to the national 30 m EPSG:3978 grid and rasterized one source at a time by GDAL's cell-centre rule (scripts/phase4_rasterize_records.py).",
+  "candidates": "A record is a candidate for a patch when they share at least one cell and its event year is within 5 years of the observation year, so date mismatches are seen as rejections.",
+  "matching": "lib/pipeline/matching.ts: overlap of at least half the smaller area; within 2 years, or 3 before 1995; the best overlap wins. Non-match reasons from lib/phase4/provincial-matching.ts.",
+  "runner": {
+   "path": "scripts/phase4-match-provincial.mts",
+   "sha256": "64dcc7f4a3ffe63d82ef55d1ecac746a64872625ad7948c421b8154174187303"
+  },
+  "pool": {
+   "path": "scripts/run-phase4-provincial-matching.mjs",
+   "sha256": "974af6d7508dbdb915163ed6ddd1c049682110a31a1ffb365cf6d8b460669d54",
+   "workers": 8,
+   "heapMegabytes": 2048,
+   "seconds": 93.811,
+   "peakRssMegabytesPerTask": 693
+  }
+ },
+ "counts": {
+  "assessedChanges": 100731284,
+  "matchedChanges": 11197964,
+  "unmatchedChanges": 89533320
+ },
+ "matchRate": 0.11116669574071944,
+ "nonMatchRate": 0.8888333042592805,
+ "nonMatchReasonDistribution": {
+  "below-spatial-tolerance": 249943,
+  "below-spatial-tolerance,outside-temporal-tolerance": 14178,
+  "no-official-record-candidates": 86411020,
+  "outside-temporal-tolerance": 2858179
+ },
+ "matchedByRecordKind": {
+  "fire": 5705243,
+  "harvest": 5302627,
+  "insect": 121043,
+  "windthrow": 69051
+ },
+ "areaWeighted": {
+  "assessedHectares": 39796968.06,
+  "matchedHectares": 22322214.540000007,
+  "matchedShare": 0.5609023910149603
+ },
+ "byProvince": {
+  "BC": {
+   "counts": {
+    "assessedChanges": 33943585,
+    "matchedChanges": 4292031,
+    "unmatchedChanges": 29651554
+   },
+   "matchRate": 0.12644601328940358,
+   "nonMatchRate": 0.8735539867105965,
+   "areaWeighted": {
+    "assessedHectares": 14930521.469999999,
+    "matchedHectares": 8610486.120000001,
+    "matchedShare": 0.5767036427562903
+   },
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 48669,
+    "below-spatial-tolerance,outside-temporal-tolerance": 5978,
+    "no-official-record-candidates": 28320867,
+    "outside-temporal-tolerance": 1276040
+   },
+   "matchedByRecordKind": {
+    "fire": 1408587,
+    "harvest": 2883444
+   }
+  },
+  "QC": {
+   "counts": {
+    "assessedChanges": 66787699,
+    "matchedChanges": 6905933,
+    "unmatchedChanges": 59881766
+   },
+   "matchRate": 0.1034012715425336,
+   "nonMatchRate": 0.8965987284574664,
+   "areaWeighted": {
+    "assessedHectares": 24866446.590000007,
+    "matchedHectares": 13711728.420000004,
+    "matchedShare": 0.551414870249863
+   },
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 201274,
+    "below-spatial-tolerance,outside-temporal-tolerance": 8200,
+    "no-official-record-candidates": 58090153,
+    "outside-temporal-tolerance": 1582139
+   },
+   "matchedByRecordKind": {
+    "fire": 4296656,
+    "harvest": 2419183,
+    "insect": 121043,
+    "windthrow": 69051
+   }
+  }
+ },
+ "intervals": [
+  {
+   "province": "BC",
+   "interval": "1984-1985",
+   "assessedChanges": 566841,
+   "matchedChanges": 57641,
+   "assessedHectares": 274721.04,
+   "matchedHectares": 137909.79,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 1150,
+    "below-spatial-tolerance,outside-temporal-tolerance": 147,
+    "no-official-record-candidates": 501116,
+    "outside-temporal-tolerance": 6787
+   },
+   "matchedByRecordKind": {
+    "fire": 12656,
+    "harvest": 44985
+   }
+  },
+  {
+   "province": "BC",
+   "interval": "1985-1986",
+   "assessedChanges": 404684,
+   "matchedChanges": 70971,
+   "assessedHectares": 246667.77,
+   "matchedHectares": 144284.58,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 1212,
+    "below-spatial-tolerance,outside-temporal-tolerance": 124,
+    "no-official-record-candidates": 326674,
+    "outside-temporal-tolerance": 5703
+   },
+   "matchedByRecordKind": {
+    "fire": 7895,
+    "harvest": 63076
+   }
+  },
+  {
+   "province": "BC",
+   "interval": "1986-1987",
+   "assessedChanges": 662475,
+   "matchedChanges": 81917,
+   "assessedHectares": 306974.7,
+   "matchedHectares": 153432.45,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 1479,
+    "below-spatial-tolerance,outside-temporal-tolerance": 143,
+    "no-official-record-candidates": 569497,
+    "outside-temporal-tolerance": 9439
+   },
+   "matchedByRecordKind": {
+    "fire": 6991,
+    "harvest": 74926
+   }
+  },
+  {
+   "province": "BC",
+   "interval": "1987-1988",
+   "assessedChanges": 720836,
+   "matchedChanges": 93781,
+   "assessedHectares": 359428.41,
+   "matchedHectares": 179751.87,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 1742,
+    "below-spatial-tolerance,outside-temporal-tolerance": 125,
+    "no-official-record-candidates": 616534,
+    "outside-temporal-tolerance": 8654
+   },
+   "matchedByRecordKind": {
+    "fire": 9064,
+    "harvest": 84717
+   }
+  },
+  {
+   "province": "BC",
+   "interval": "1988-1989",
+   "assessedChanges": 611920,
+   "matchedChanges": 90943,
+   "assessedHectares": 319434.57,
+   "matchedHectares": 176989.23,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 1538,
+    "below-spatial-tolerance,outside-temporal-tolerance": 96,
+    "no-official-record-candidates": 507369,
+    "outside-temporal-tolerance": 11974
+   },
+   "matchedByRecordKind": {
+    "fire": 5026,
+    "harvest": 85917
+   }
+  },
+  {
+   "province": "BC",
+   "interval": "1989-1990",
+   "assessedChanges": 669751,
+   "matchedChanges": 85949,
+   "assessedHectares": 314151.75,
+   "matchedHectares": 172519.56,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 1562,
+    "below-spatial-tolerance,outside-temporal-tolerance": 101,
+    "no-official-record-candidates": 570262,
+    "outside-temporal-tolerance": 11877
+   },
+   "matchedByRecordKind": {
+    "fire": 6007,
+    "harvest": 79942
+   }
+  },
+  {
+   "province": "BC",
+   "interval": "1990-1991",
+   "assessedChanges": 725735,
+   "matchedChanges": 84540,
+   "assessedHectares": 329673.15,
+   "matchedHectares": 181772.28,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 1631,
+    "below-spatial-tolerance,outside-temporal-tolerance": 109,
+    "no-official-record-candidates": 627645,
+    "outside-temporal-tolerance": 11810
+   },
+   "matchedByRecordKind": {
+    "fire": 8561,
+    "harvest": 75979
+   }
+  },
+  {
+   "province": "BC",
+   "interval": "1991-1992",
+   "assessedChanges": 876403,
+   "matchedChanges": 78833,
+   "assessedHectares": 353511.81,
+   "matchedHectares": 161437.5,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 1458,
+    "below-spatial-tolerance,outside-temporal-tolerance": 102,
+    "no-official-record-candidates": 786346,
+    "outside-temporal-tolerance": 9664
+   },
+   "matchedByRecordKind": {
+    "fire": 7359,
+    "harvest": 71474
+   }
+  },
+  {
+   "province": "BC",
+   "interval": "1992-1993",
+   "assessedChanges": 493582,
+   "matchedChanges": 73547,
+   "assessedHectares": 243034.65,
+   "matchedHectares": 157792.32,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 1260,
+    "below-spatial-tolerance,outside-temporal-tolerance": 81,
+    "no-official-record-candidates": 411524,
+    "outside-temporal-tolerance": 7170
+   },
+   "matchedByRecordKind": {
+    "fire": 5474,
+    "harvest": 68073
+   }
+  },
+  {
+   "province": "BC",
+   "interval": "1993-1994",
+   "assessedChanges": 828607,
+   "matchedChanges": 72264,
+   "assessedHectares": 322535.61,
+   "matchedHectares": 141215.13,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 1268,
+    "below-spatial-tolerance,outside-temporal-tolerance": 69,
+    "no-official-record-candidates": 743419,
+    "outside-temporal-tolerance": 11587
+   },
+   "matchedByRecordKind": {
+    "fire": 4246,
+    "harvest": 68018
+   }
+  },
+  {
+   "province": "BC",
+   "interval": "1994-1995",
+   "assessedChanges": 672698,
+   "matchedChanges": 69352,
+   "assessedHectares": 274912.92,
+   "matchedHectares": 146929.14,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 982,
+    "below-spatial-tolerance,outside-temporal-tolerance": 103,
+    "no-official-record-candidates": 583522,
+    "outside-temporal-tolerance": 18739
+   },
+   "matchedByRecordKind": {
+    "fire": 6649,
+    "harvest": 62703
+   }
+  },
+  {
+   "province": "BC",
+   "interval": "1995-1996",
+   "assessedChanges": 826884,
+   "matchedChanges": 75501,
+   "assessedHectares": 311525.01,
+   "matchedHectares": 145428.3,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 1182,
+    "below-spatial-tolerance,outside-temporal-tolerance": 110,
+    "no-official-record-candidates": 730033,
+    "outside-temporal-tolerance": 20058
+   },
+   "matchedByRecordKind": {
+    "fire": 6587,
+    "harvest": 68914
+   }
+  },
+  {
+   "province": "BC",
+   "interval": "1996-1997",
+   "assessedChanges": 845619,
+   "matchedChanges": 73442,
+   "assessedHectares": 290605.95,
+   "matchedHectares": 141961.59,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 1115,
+    "below-spatial-tolerance,outside-temporal-tolerance": 137,
+    "no-official-record-candidates": 752898,
+    "outside-temporal-tolerance": 18027
+   },
+   "matchedByRecordKind": {
+    "fire": 5387,
+    "harvest": 68055
+   }
+  },
+  {
+   "province": "BC",
+   "interval": "1997-1998",
+   "assessedChanges": 1073199,
+   "matchedChanges": 80342,
+   "assessedHectares": 336327.12,
+   "matchedHectares": 136510.65,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 1329,
+    "below-spatial-tolerance,outside-temporal-tolerance": 159,
+    "no-official-record-candidates": 968106,
+    "outside-temporal-tolerance": 23263
+   },
+   "matchedByRecordKind": {
+    "fire": 4357,
+    "harvest": 75985
+   }
+  },
+  {
+   "province": "BC",
+   "interval": "1998-1999",
+   "assessedChanges": 821541,
+   "matchedChanges": 78068,
+   "assessedHectares": 309961.71,
+   "matchedHectares": 152880.48,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 1159,
+    "below-spatial-tolerance,outside-temporal-tolerance": 140,
+    "no-official-record-candidates": 723244,
+    "outside-temporal-tolerance": 18930
+   },
+   "matchedByRecordKind": {
+    "fire": 8328,
+    "harvest": 69740
+   }
+  },
+  {
+   "province": "BC",
+   "interval": "1999-2000",
+   "assessedChanges": 912725,
+   "matchedChanges": 77793,
+   "assessedHectares": 366253.92,
+   "matchedHectares": 179014.68,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 1269,
+    "below-spatial-tolerance,outside-temporal-tolerance": 191,
+    "no-official-record-candidates": 808764,
+    "outside-temporal-tolerance": 24708
+   },
+   "matchedByRecordKind": {
+    "fire": 3327,
+    "harvest": 74466
+   }
+  },
+  {
+   "province": "BC",
+   "interval": "2000-2001",
+   "assessedChanges": 968158,
+   "matchedChanges": 77580,
+   "assessedHectares": 345302.1,
+   "matchedHectares": 155657.88,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 1239,
+    "below-spatial-tolerance,outside-temporal-tolerance": 105,
+    "no-official-record-candidates": 865021,
+    "outside-temporal-tolerance": 24213
+   },
+   "matchedByRecordKind": {
+    "fire": 4706,
+    "harvest": 72874
+   }
+  },
+  {
+   "province": "BC",
+   "interval": "2001-2002",
+   "assessedChanges": 1020619,
+   "matchedChanges": 83430,
+   "assessedHectares": 357422.94,
+   "matchedHectares": 157703.76,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 1391,
+    "below-spatial-tolerance,outside-temporal-tolerance": 210,
+    "no-official-record-candidates": 910919,
+    "outside-temporal-tolerance": 24669
+   },
+   "matchedByRecordKind": {
+    "fire": 7686,
+    "harvest": 75744
+   }
+  },
+  {
+   "province": "BC",
+   "interval": "2002-2003",
+   "assessedChanges": 952609,
+   "matchedChanges": 93238,
+   "assessedHectares": 363491.28,
+   "matchedHectares": 194741.46,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 1564,
+    "below-spatial-tolerance,outside-temporal-tolerance": 253,
+    "no-official-record-candidates": 832726,
+    "outside-temporal-tolerance": 24828
+   },
+   "matchedByRecordKind": {
+    "fire": 12947,
+    "harvest": 80291
+   }
+  },
+  {
+   "province": "BC",
+   "interval": "2003-2004",
+   "assessedChanges": 925362,
+   "matchedChanges": 108785,
+   "assessedHectares": 529654.23,
+   "matchedHectares": 362847.33,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 1517,
+    "below-spatial-tolerance,outside-temporal-tolerance": 219,
+    "no-official-record-candidates": 793522,
+    "outside-temporal-tolerance": 21319
+   },
+   "matchedByRecordKind": {
+    "fire": 36250,
+    "harvest": 72535
+   }
+  },
+  {
+   "province": "BC",
+   "interval": "2004-2005",
+   "assessedChanges": 930377,
+   "matchedChanges": 109149,
+   "assessedHectares": 416426.31,
+   "matchedHectares": 246783.15,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 1442,
+    "below-spatial-tolerance,outside-temporal-tolerance": 274,
+    "no-official-record-candidates": 793338,
+    "outside-temporal-tolerance": 26174
+   },
+   "matchedByRecordKind": {
+    "fire": 30277,
+    "harvest": 78872
+   }
+  },
+  {
+   "province": "BC",
+   "interval": "2005-2006",
+   "assessedChanges": 1201051,
+   "matchedChanges": 106874,
+   "assessedHectares": 495010.35,
+   "matchedHectares": 263658.24,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 1715,
+    "below-spatial-tolerance,outside-temporal-tolerance": 278,
+    "no-official-record-candidates": 1044509,
+    "outside-temporal-tolerance": 47675
+   },
+   "matchedByRecordKind": {
+    "fire": 17940,
+    "harvest": 88934
+   }
+  },
+  {
+   "province": "BC",
+   "interval": "2006-2007",
+   "assessedChanges": 997214,
+   "matchedChanges": 106276,
+   "assessedHectares": 391516.29,
+   "matchedHectares": 218962.08,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 1494,
+    "below-spatial-tolerance,outside-temporal-tolerance": 235,
+    "no-official-record-candidates": 843086,
+    "outside-temporal-tolerance": 46123
+   },
+   "matchedByRecordKind": {
+    "fire": 13517,
+    "harvest": 92759
+   }
+  },
+  {
+   "province": "BC",
+   "interval": "2007-2008",
+   "assessedChanges": 1041978,
+   "matchedChanges": 104310,
+   "assessedHectares": 351530.19,
+   "matchedHectares": 177287.31,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 1280,
+    "below-spatial-tolerance,outside-temporal-tolerance": 165,
+    "no-official-record-candidates": 898110,
+    "outside-temporal-tolerance": 38113
+   },
+   "matchedByRecordKind": {
+    "fire": 19693,
+    "harvest": 84617
+   }
+  },
+  {
+   "province": "BC",
+   "interval": "2008-2009",
+   "assessedChanges": 1039015,
+   "matchedChanges": 102412,
+   "assessedHectares": 327800.88,
+   "matchedHectares": 169862.58,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 1109,
+    "below-spatial-tolerance,outside-temporal-tolerance": 152,
+    "no-official-record-candidates": 896838,
+    "outside-temporal-tolerance": 38504
+   },
+   "matchedByRecordKind": {
+    "fire": 25926,
+    "harvest": 76486
+   }
+  },
+  {
+   "province": "BC",
+   "interval": "2009-2010",
+   "assessedChanges": 1076092,
+   "matchedChanges": 123396,
+   "assessedHectares": 445114.35,
+   "matchedHectares": 261795.51,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 1345,
+    "below-spatial-tolerance,outside-temporal-tolerance": 181,
+    "no-official-record-candidates": 911469,
+    "outside-temporal-tolerance": 39701
+   },
+   "matchedByRecordKind": {
+    "fire": 42298,
+    "harvest": 81098
+   }
+  },
+  {
+   "province": "BC",
+   "interval": "2010-2011",
+   "assessedChanges": 932006,
+   "matchedChanges": 127500,
+   "assessedHectares": 452896.11,
+   "matchedHectares": 295061.85,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 1122,
+    "below-spatial-tolerance,outside-temporal-tolerance": 157,
+    "no-official-record-candidates": 769511,
+    "outside-temporal-tolerance": 33716
+   },
+   "matchedByRecordKind": {
+    "fire": 42711,
+    "harvest": 84789
+   }
+  },
+  {
+   "province": "BC",
+   "interval": "2011-2012",
+   "assessedChanges": 1184243,
+   "matchedChanges": 133638,
+   "assessedHectares": 407891.7,
+   "matchedHectares": 211347.99,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 1094,
+    "below-spatial-tolerance,outside-temporal-tolerance": 142,
+    "no-official-record-candidates": 994124,
+    "outside-temporal-tolerance": 55245
+   },
+   "matchedByRecordKind": {
+    "fire": 37179,
+    "harvest": 96459
+   }
+  },
+  {
+   "province": "BC",
+   "interval": "2012-2013",
+   "assessedChanges": 1210073,
+   "matchedChanges": 119488,
+   "assessedHectares": 443720.88,
+   "matchedHectares": 248575.86,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 1165,
+    "below-spatial-tolerance,outside-temporal-tolerance": 202,
+    "no-official-record-candidates": 1002605,
+    "outside-temporal-tolerance": 86613
+   },
+   "matchedByRecordKind": {
+    "fire": 23424,
+    "harvest": 96064
+   }
+  },
+  {
+   "province": "BC",
+   "interval": "2013-2014",
+   "assessedChanges": 1061208,
+   "matchedChanges": 126870,
+   "assessedHectares": 506037.6,
+   "matchedHectares": 307016.37,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 1091,
+    "below-spatial-tolerance,outside-temporal-tolerance": 167,
+    "no-official-record-candidates": 869549,
+    "outside-temporal-tolerance": 63531
+   },
+   "matchedByRecordKind": {
+    "fire": 43730,
+    "harvest": 83140
+   }
+  },
+  {
+   "province": "BC",
+   "interval": "2014-2015",
+   "assessedChanges": 1082731,
+   "matchedChanges": 175488,
+   "assessedHectares": 592903.44,
+   "matchedHectares": 410261.67,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 1280,
+    "below-spatial-tolerance,outside-temporal-tolerance": 137,
+    "no-official-record-candidates": 864490,
+    "outside-temporal-tolerance": 41336
+   },
+   "matchedByRecordKind": {
+    "fire": 89489,
+    "harvest": 85999
+   }
+  },
+  {
+   "province": "BC",
+   "interval": "2015-2016",
+   "assessedChanges": 829615,
+   "matchedChanges": 155857,
+   "assessedHectares": 383069.52,
+   "matchedHectares": 252141.75,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 988,
+    "below-spatial-tolerance,outside-temporal-tolerance": 106,
+    "no-official-record-candidates": 650153,
+    "outside-temporal-tolerance": 22511
+   },
+   "matchedByRecordKind": {
+    "fire": 74846,
+    "harvest": 81011
+   }
+  },
+  {
+   "province": "BC",
+   "interval": "2016-2017",
+   "assessedChanges": 1211034,
+   "matchedChanges": 208564,
+   "assessedHectares": 595558.35,
+   "matchedHectares": 366945.57,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 1344,
+    "below-spatial-tolerance,outside-temporal-tolerance": 124,
+    "no-official-record-candidates": 955867,
+    "outside-temporal-tolerance": 45135
+   },
+   "matchedByRecordKind": {
+    "fire": 121985,
+    "harvest": 86579
+   }
+  },
+  {
+   "province": "BC",
+   "interval": "2017-2018",
+   "assessedChanges": 988021,
+   "matchedChanges": 241326,
+   "assessedHectares": 660795.3,
+   "matchedHectares": 503541.54,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 1252,
+    "below-spatial-tolerance,outside-temporal-tolerance": 154,
+    "no-official-record-candidates": 686486,
+    "outside-temporal-tolerance": 58803
+   },
+   "matchedByRecordKind": {
+    "fire": 161337,
+    "harvest": 79989
+   }
+  },
+  {
+   "province": "BC",
+   "interval": "2018-2019",
+   "assessedChanges": 821774,
+   "matchedChanges": 269585,
+   "assessedHectares": 777923.91,
+   "matchedHectares": 652330.17,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 1157,
+    "below-spatial-tolerance,outside-temporal-tolerance": 149,
+    "no-official-record-candidates": 500510,
+    "outside-temporal-tolerance": 50373
+   },
+   "matchedByRecordKind": {
+    "fire": 205243,
+    "harvest": 64342
+   }
+  },
+  {
+   "province": "BC",
+   "interval": "2019-2020",
+   "assessedChanges": 873633,
+   "matchedChanges": 124710,
+   "assessedHectares": 297500.67,
+   "matchedHectares": 121113.09,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 745,
+    "below-spatial-tolerance,outside-temporal-tolerance": 402,
+    "no-official-record-candidates": 638125,
+    "outside-temporal-tolerance": 109651
+   },
+   "matchedByRecordKind": {
+    "fire": 65227,
+    "harvest": 59483
+   }
+  },
+  {
+   "province": "BC",
+   "interval": "2020-2021",
+   "assessedChanges": 1008850,
+   "matchedChanges": 157650,
+   "assessedHectares": 496720.35,
+   "matchedHectares": 316991.43,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 814,
+    "below-spatial-tolerance,outside-temporal-tolerance": 170,
+    "no-official-record-candidates": 743345,
+    "outside-temporal-tolerance": 106871
+   },
+   "matchedByRecordKind": {
+    "fire": 98772,
+    "harvest": 58878
+   }
+  },
+  {
+   "province": "BC",
+   "interval": "2021-2022",
+   "assessedChanges": 874422,
+   "matchedChanges": 191021,
+   "assessedHectares": 332514.63,
+   "matchedHectares": 206029.98,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 1185,
+    "below-spatial-tolerance,outside-temporal-tolerance": 59,
+    "no-official-record-candidates": 629611,
+    "outside-temporal-tolerance": 52546
+   },
+   "matchedByRecordKind": {
+    "fire": 125490,
+    "harvest": 65531
+   }
+  },
+  {
+   "province": "QC",
+   "interval": "1984-1985",
+   "assessedChanges": 355924,
+   "matchedChanges": 36560,
+   "assessedHectares": 212534.73,
+   "matchedHectares": 115950.78,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 2235,
+    "below-spatial-tolerance,outside-temporal-tolerance": 141,
+    "no-official-record-candidates": 310665,
+    "outside-temporal-tolerance": 6323
+   },
+   "matchedByRecordKind": {
+    "fire": 18378,
+    "harvest": 18014,
+    "insect": 137,
+    "windthrow": 31
+   }
+  },
+  {
+   "province": "QC",
+   "interval": "1985-1986",
+   "assessedChanges": 758349,
+   "matchedChanges": 70718,
+   "assessedHectares": 384483.42,
+   "matchedHectares": 222239.79,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 3282,
+    "below-spatial-tolerance,outside-temporal-tolerance": 148,
+    "no-official-record-candidates": 676952,
+    "outside-temporal-tolerance": 7249
+   },
+   "matchedByRecordKind": {
+    "fire": 40958,
+    "harvest": 29204,
+    "insect": 462,
+    "windthrow": 94
+   }
+  },
+  {
+   "province": "QC",
+   "interval": "1986-1987",
+   "assessedChanges": 893703,
+   "matchedChanges": 122568,
+   "assessedHectares": 378458.28,
+   "matchedHectares": 192474.36,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 3927,
+    "below-spatial-tolerance,outside-temporal-tolerance": 176,
+    "no-official-record-candidates": 756717,
+    "outside-temporal-tolerance": 10315
+   },
+   "matchedByRecordKind": {
+    "fire": 77657,
+    "harvest": 44270,
+    "insect": 536,
+    "windthrow": 105
+   }
+  },
+  {
+   "province": "QC",
+   "interval": "1987-1988",
+   "assessedChanges": 1244334,
+   "matchedChanges": 221968,
+   "assessedHectares": 477860.04,
+   "matchedHectares": 259915.5,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 4871,
+    "below-spatial-tolerance,outside-temporal-tolerance": 222,
+    "no-official-record-candidates": 1007295,
+    "outside-temporal-tolerance": 9978
+   },
+   "matchedByRecordKind": {
+    "fire": 163305,
+    "harvest": 57660,
+    "insect": 744,
+    "windthrow": 259
+   }
+  },
+  {
+   "province": "QC",
+   "interval": "1988-1989",
+   "assessedChanges": 1276926,
+   "matchedChanges": 364247,
+   "assessedHectares": 1463430.69,
+   "matchedHectares": 1259982.45,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 5887,
+    "below-spatial-tolerance,outside-temporal-tolerance": 203,
+    "no-official-record-candidates": 897881,
+    "outside-temporal-tolerance": 8708
+   },
+   "matchedByRecordKind": {
+    "fire": 300624,
+    "harvest": 62370,
+    "insect": 727,
+    "windthrow": 526
+   }
+  },
+  {
+   "province": "QC",
+   "interval": "1989-1990",
+   "assessedChanges": 1406111,
+   "matchedChanges": 359854,
+   "assessedHectares": 830673.27,
+   "matchedHectares": 626802.12,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 5083,
+    "below-spatial-tolerance,outside-temporal-tolerance": 193,
+    "no-official-record-candidates": 1026229,
+    "outside-temporal-tolerance": 14752
+   },
+   "matchedByRecordKind": {
+    "fire": 299176,
+    "harvest": 59185,
+    "insect": 872,
+    "windthrow": 621
+   }
+  },
+  {
+   "province": "QC",
+   "interval": "1990-1991",
+   "assessedChanges": 1440832,
+   "matchedChanges": 216445,
+   "assessedHectares": 698804.73,
+   "matchedHectares": 444964.14,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 5234,
+    "below-spatial-tolerance,outside-temporal-tolerance": 228,
+    "no-official-record-candidates": 1197327,
+    "outside-temporal-tolerance": 21598
+   },
+   "matchedByRecordKind": {
+    "fire": 152473,
+    "harvest": 62291,
+    "insect": 1078,
+    "windthrow": 603
+   }
+  },
+  {
+   "province": "QC",
+   "interval": "1991-1992",
+   "assessedChanges": 1218827,
+   "matchedChanges": 195858,
+   "assessedHectares": 381780.45,
+   "matchedHectares": 186830.91,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 5243,
+    "below-spatial-tolerance,outside-temporal-tolerance": 136,
+    "no-official-record-candidates": 995386,
+    "outside-temporal-tolerance": 22204
+   },
+   "matchedByRecordKind": {
+    "fire": 122238,
+    "harvest": 71218,
+    "insect": 790,
+    "windthrow": 1612
+   }
+  },
+  {
+   "province": "QC",
+   "interval": "1992-1993",
+   "assessedChanges": 1334875,
+   "matchedChanges": 198639,
+   "assessedHectares": 473473.89,
+   "matchedHectares": 271581.21,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 5157,
+    "below-spatial-tolerance,outside-temporal-tolerance": 164,
+    "no-official-record-candidates": 1080105,
+    "outside-temporal-tolerance": 50810
+   },
+   "matchedByRecordKind": {
+    "fire": 120885,
+    "harvest": 76048,
+    "insect": 130,
+    "windthrow": 1576
+   }
+  },
+  {
+   "province": "QC",
+   "interval": "1993-1994",
+   "assessedChanges": 1590335,
+   "matchedChanges": 298651,
+   "assessedHectares": 525341.79,
+   "matchedHectares": 303876.45,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 7129,
+    "below-spatial-tolerance,outside-temporal-tolerance": 144,
+    "no-official-record-candidates": 1247423,
+    "outside-temporal-tolerance": 36988
+   },
+   "matchedByRecordKind": {
+    "fire": 202219,
+    "harvest": 94874,
+    "insect": 181,
+    "windthrow": 1377
+   }
+  },
+  {
+   "province": "QC",
+   "interval": "1994-1995",
+   "assessedChanges": 1708930,
+   "matchedChanges": 284532,
+   "assessedHectares": 747745.11,
+   "matchedHectares": 483255.63,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 5902,
+    "below-spatial-tolerance,outside-temporal-tolerance": 314,
+    "no-official-record-candidates": 1379384,
+    "outside-temporal-tolerance": 38798
+   },
+   "matchedByRecordKind": {
+    "fire": 201281,
+    "harvest": 81750,
+    "insect": 22,
+    "windthrow": 1479
+   }
+  },
+  {
+   "province": "QC",
+   "interval": "1995-1996",
+   "assessedChanges": 1851396,
+   "matchedChanges": 312455,
+   "assessedHectares": 1042677,
+   "matchedHectares": 764658.9,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 6750,
+    "below-spatial-tolerance,outside-temporal-tolerance": 284,
+    "no-official-record-candidates": 1500219,
+    "outside-temporal-tolerance": 31688
+   },
+   "matchedByRecordKind": {
+    "fire": 234158,
+    "harvest": 74420,
+    "insect": 37,
+    "windthrow": 3840
+   }
+  },
+  {
+   "province": "QC",
+   "interval": "1996-1997",
+   "assessedChanges": 2170469,
+   "matchedChanges": 305349,
+   "assessedHectares": 1012804.74,
+   "matchedHectares": 674228.25,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 7368,
+    "below-spatial-tolerance,outside-temporal-tolerance": 229,
+    "no-official-record-candidates": 1808660,
+    "outside-temporal-tolerance": 48863
+   },
+   "matchedByRecordKind": {
+    "fire": 198656,
+    "harvest": 99312,
+    "insect": 38,
+    "windthrow": 7343
+   }
+  },
+  {
+   "province": "QC",
+   "interval": "1997-1998",
+   "assessedChanges": 2194896,
+   "matchedChanges": 257950,
+   "assessedHectares": 781122.51,
+   "matchedHectares": 462474.45,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 7465,
+    "below-spatial-tolerance,outside-temporal-tolerance": 328,
+    "no-official-record-candidates": 1848441,
+    "outside-temporal-tolerance": 80712
+   },
+   "matchedByRecordKind": {
+    "fire": 141830,
+    "harvest": 109756,
+    "insect": 319,
+    "windthrow": 6045
+   }
+  },
+  {
+   "province": "QC",
+   "interval": "1998-1999",
+   "assessedChanges": 2240408,
+   "matchedChanges": 173088,
+   "assessedHectares": 728198.82,
+   "matchedHectares": 382855.05,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 5658,
+    "below-spatial-tolerance,outside-temporal-tolerance": 332,
+    "no-official-record-candidates": 1964624,
+    "outside-temporal-tolerance": 96706
+   },
+   "matchedByRecordKind": {
+    "fire": 79530,
+    "harvest": 88482,
+    "insect": 2994,
+    "windthrow": 2082
+   }
+  },
+  {
+   "province": "QC",
+   "interval": "1999-2000",
+   "assessedChanges": 2312691,
+   "matchedChanges": 170919,
+   "assessedHectares": 654788.7,
+   "matchedHectares": 283800.96,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 6278,
+    "below-spatial-tolerance,outside-temporal-tolerance": 431,
+    "no-official-record-candidates": 2068661,
+    "outside-temporal-tolerance": 66402
+   },
+   "matchedByRecordKind": {
+    "fire": 75654,
+    "harvest": 88506,
+    "insect": 4659,
+    "windthrow": 2100
+   }
+  },
+  {
+   "province": "QC",
+   "interval": "2000-2001",
+   "assessedChanges": 1829977,
+   "matchedChanges": 199794,
+   "assessedHectares": 569149.11,
+   "matchedHectares": 255228.03,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 6705,
+    "below-spatial-tolerance,outside-temporal-tolerance": 450,
+    "no-official-record-candidates": 1569104,
+    "outside-temporal-tolerance": 53924
+   },
+   "matchedByRecordKind": {
+    "fire": 103176,
+    "harvest": 88000,
+    "insect": 7726,
+    "windthrow": 892
+   }
+  },
+  {
+   "province": "QC",
+   "interval": "2001-2002",
+   "assessedChanges": 1689335,
+   "matchedChanges": 251301,
+   "assessedHectares": 1204667.91,
+   "matchedHectares": 925213.5,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 6809,
+    "below-spatial-tolerance,outside-temporal-tolerance": 347,
+    "no-official-record-candidates": 1382456,
+    "outside-temporal-tolerance": 48422
+   },
+   "matchedByRecordKind": {
+    "fire": 166416,
+    "harvest": 70019,
+    "insect": 11126,
+    "windthrow": 3740
+   }
+  },
+  {
+   "province": "QC",
+   "interval": "2002-2003",
+   "assessedChanges": 1832023,
+   "matchedChanges": 208620,
+   "assessedHectares": 680126.04,
+   "matchedHectares": 319317.39,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 5976,
+    "below-spatial-tolerance,outside-temporal-tolerance": 251,
+    "no-official-record-candidates": 1575357,
+    "outside-temporal-tolerance": 41819
+   },
+   "matchedByRecordKind": {
+    "fire": 136530,
+    "harvest": 67329,
+    "insect": 9,
+    "windthrow": 4752
+   }
+  },
+  {
+   "province": "QC",
+   "interval": "2003-2004",
+   "assessedChanges": 1733340,
+   "matchedChanges": 169030,
+   "assessedHectares": 564508.71,
+   "matchedHectares": 254741.76,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 6548,
+    "below-spatial-tolerance,outside-temporal-tolerance": 157,
+    "no-official-record-candidates": 1518706,
+    "outside-temporal-tolerance": 38899
+   },
+   "matchedByRecordKind": {
+    "fire": 90011,
+    "harvest": 75137,
+    "insect": 5,
+    "windthrow": 3877
+   }
+  },
+  {
+   "province": "QC",
+   "interval": "2004-2005",
+   "assessedChanges": 1839865,
+   "matchedChanges": 191447,
+   "assessedHectares": 1009570.41,
+   "matchedHectares": 702020.16,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 7425,
+    "below-spatial-tolerance,outside-temporal-tolerance": 245,
+    "no-official-record-candidates": 1594535,
+    "outside-temporal-tolerance": 46213
+   },
+   "matchedByRecordKind": {
+    "fire": 106375,
+    "harvest": 79646,
+    "insect": 11,
+    "windthrow": 5415
+   }
+  },
+  {
+   "province": "QC",
+   "interval": "2005-2006",
+   "assessedChanges": 1819738,
+   "matchedChanges": 146603,
+   "assessedHectares": 619095.78,
+   "matchedHectares": 320951.43,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 5626,
+    "below-spatial-tolerance,outside-temporal-tolerance": 176,
+    "no-official-record-candidates": 1637298,
+    "outside-temporal-tolerance": 30035
+   },
+   "matchedByRecordKind": {
+    "fire": 78692,
+    "harvest": 61332,
+    "insect": 88,
+    "windthrow": 6491
+   }
+  },
+  {
+   "province": "QC",
+   "interval": "2006-2007",
+   "assessedChanges": 1706033,
+   "matchedChanges": 127918,
+   "assessedHectares": 667804.23,
+   "matchedHectares": 390489.66,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 4339,
+    "below-spatial-tolerance,outside-temporal-tolerance": 188,
+    "no-official-record-candidates": 1541991,
+    "outside-temporal-tolerance": 31597
+   },
+   "matchedByRecordKind": {
+    "fire": 73044,
+    "harvest": 52957,
+    "insect": 38,
+    "windthrow": 1879
+   }
+  },
+  {
+   "province": "QC",
+   "interval": "2007-2008",
+   "assessedChanges": 2011697,
+   "matchedChanges": 90354,
+   "assessedHectares": 441130.14,
+   "matchedHectares": 119679.3,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 3530,
+    "below-spatial-tolerance,outside-temporal-tolerance": 163,
+    "no-official-record-candidates": 1863171,
+    "outside-temporal-tolerance": 54479
+   },
+   "matchedByRecordKind": {
+    "fire": 39309,
+    "harvest": 50605,
+    "insect": 21,
+    "windthrow": 419
+   }
+  },
+  {
+   "province": "QC",
+   "interval": "2008-2009",
+   "assessedChanges": 2173280,
+   "matchedChanges": 93272,
+   "assessedHectares": 541920.06,
+   "matchedHectares": 212177.34,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 3921,
+    "below-spatial-tolerance,outside-temporal-tolerance": 178,
+    "no-official-record-candidates": 2005891,
+    "outside-temporal-tolerance": 70018
+   },
+   "matchedByRecordKind": {
+    "fire": 42702,
+    "harvest": 50279,
+    "insect": 16,
+    "windthrow": 275
+   }
+  },
+  {
+   "province": "QC",
+   "interval": "2009-2010",
+   "assessedChanges": 2359465,
+   "matchedChanges": 106653,
+   "assessedHectares": 742584.42,
+   "matchedHectares": 340557.3,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 4894,
+    "below-spatial-tolerance,outside-temporal-tolerance": 209,
+    "no-official-record-candidates": 2161764,
+    "outside-temporal-tolerance": 85945
+   },
+   "matchedByRecordKind": {
+    "fire": 55927,
+    "harvest": 50186,
+    "insect": 137,
+    "windthrow": 403
+   }
+  },
+  {
+   "province": "QC",
+   "interval": "2010-2011",
+   "assessedChanges": 2769475,
+   "matchedChanges": 198789,
+   "assessedHectares": 556059.69,
+   "matchedHectares": 163689.48,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 5023,
+    "below-spatial-tolerance,outside-temporal-tolerance": 158,
+    "no-official-record-candidates": 2538014,
+    "outside-temporal-tolerance": 27491
+   },
+   "matchedByRecordKind": {
+    "fire": 146472,
+    "harvest": 50382,
+    "insect": 1442,
+    "windthrow": 493
+   }
+  },
+  {
+   "province": "QC",
+   "interval": "2011-2012",
+   "assessedChanges": 2780844,
+   "matchedChanges": 273982,
+   "assessedHectares": 646094.61,
+   "matchedHectares": 256485.87,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 7133,
+    "below-spatial-tolerance,outside-temporal-tolerance": 186,
+    "no-official-record-candidates": 2474551,
+    "outside-temporal-tolerance": 24992
+   },
+   "matchedByRecordKind": {
+    "fire": 200122,
+    "harvest": 71239,
+    "insect": 1600,
+    "windthrow": 1021
+   }
+  },
+  {
+   "province": "QC",
+   "interval": "2012-2013",
+   "assessedChanges": 2789091,
+   "matchedChanges": 351038,
+   "assessedHectares": 1224126.27,
+   "matchedHectares": 823420.53,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 6575,
+    "below-spatial-tolerance,outside-temporal-tolerance": 200,
+    "no-official-record-candidates": 2401809,
+    "outside-temporal-tolerance": 29469
+   },
+   "matchedByRecordKind": {
+    "fire": 283617,
+    "harvest": 64391,
+    "insect": 1914,
+    "windthrow": 1116
+   }
+  },
+  {
+   "province": "QC",
+   "interval": "2013-2014",
+   "assessedChanges": 2458890,
+   "matchedChanges": 187791,
+   "assessedHectares": 738748.26,
+   "matchedHectares": 341711.82,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 4947,
+    "below-spatial-tolerance,outside-temporal-tolerance": 128,
+    "no-official-record-candidates": 2242697,
+    "outside-temporal-tolerance": 23327
+   },
+   "matchedByRecordKind": {
+    "fire": 137402,
+    "harvest": 47167,
+    "insect": 2075,
+    "windthrow": 1147
+   }
+  },
+  {
+   "province": "QC",
+   "interval": "2014-2015",
+   "assessedChanges": 2088341,
+   "matchedChanges": 87765,
+   "assessedHectares": 497571.39,
+   "matchedHectares": 147592.26,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 4042,
+    "below-spatial-tolerance,outside-temporal-tolerance": 121,
+    "no-official-record-candidates": 1960367,
+    "outside-temporal-tolerance": 36046
+   },
+   "matchedByRecordKind": {
+    "fire": 37803,
+    "harvest": 47261,
+    "insect": 1612,
+    "windthrow": 1089
+   }
+  },
+  {
+   "province": "QC",
+   "interval": "2015-2016",
+   "assessedChanges": 2144337,
+   "matchedChanges": 65249,
+   "assessedHectares": 571317.93,
+   "matchedHectares": 166615.2,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 4364,
+    "below-spatial-tolerance,outside-temporal-tolerance": 163,
+    "no-official-record-candidates": 2004187,
+    "outside-temporal-tolerance": 70374
+   },
+   "matchedByRecordKind": {
+    "fire": 10995,
+    "harvest": 50890,
+    "insect": 1338,
+    "windthrow": 2026
+   }
+  },
+  {
+   "province": "QC",
+   "interval": "2016-2017",
+   "assessedChanges": 2057064,
+   "matchedChanges": 66051,
+   "assessedHectares": 657382.5,
+   "matchedHectares": 186551.55,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 4608,
+    "below-spatial-tolerance,outside-temporal-tolerance": 278,
+    "no-official-record-candidates": 1905331,
+    "outside-temporal-tolerance": 80796
+   },
+   "matchedByRecordKind": {
+    "fire": 11743,
+    "harvest": 50162,
+    "insect": 2366,
+    "windthrow": 1780
+   }
+  },
+  {
+   "province": "QC",
+   "interval": "2017-2018",
+   "assessedChanges": 1667252,
+   "matchedChanges": 87576,
+   "assessedHectares": 518905.89,
+   "matchedHectares": 200661.75,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 4931,
+    "below-spatial-tolerance,outside-temporal-tolerance": 357,
+    "no-official-record-candidates": 1491686,
+    "outside-temporal-tolerance": 82702
+   },
+   "matchedByRecordKind": {
+    "fire": 14728,
+    "harvest": 48487,
+    "insect": 23728,
+    "windthrow": 633
+   }
+  },
+  {
+   "province": "QC",
+   "interval": "2018-2019",
+   "assessedChanges": 1545589,
+   "matchedChanges": 87493,
+   "assessedHectares": 446219.1,
+   "matchedHectares": 159594.3,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 4691,
+    "below-spatial-tolerance,outside-temporal-tolerance": 364,
+    "no-official-record-candidates": 1387158,
+    "outside-temporal-tolerance": 65883
+   },
+   "matchedByRecordKind": {
+    "fire": 8190,
+    "harvest": 55238,
+    "insect": 23435,
+    "windthrow": 630
+   }
+  },
+  {
+   "province": "QC",
+   "interval": "2019-2020",
+   "assessedChanges": 1349856,
+   "matchedChanges": 80401,
+   "assessedHectares": 428170.5,
+   "matchedHectares": 177583.32,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 4034,
+    "below-spatial-tolerance,outside-temporal-tolerance": 150,
+    "no-official-record-candidates": 1198950,
+    "outside-temporal-tolerance": 66321
+   },
+   "matchedByRecordKind": {
+    "fire": 7116,
+    "harvest": 56258,
+    "insect": 16590,
+    "windthrow": 437
+   }
+  },
+  {
+   "province": "QC",
+   "interval": "2020-2021",
+   "assessedChanges": 1097256,
+   "matchedChanges": 105180,
+   "assessedHectares": 406575.99,
+   "matchedHectares": 171802.8,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 3837,
+    "below-spatial-tolerance,outside-temporal-tolerance": 51,
+    "no-official-record-candidates": 974934,
+    "outside-temporal-tolerance": 13254
+   },
+   "matchedByRecordKind": {
+    "fire": 39138,
+    "harvest": 57666,
+    "insect": 7945,
+    "windthrow": 431
+   }
+  },
+  {
+   "province": "QC",
+   "interval": "2021-2022",
+   "assessedChanges": 1045945,
+   "matchedChanges": 139825,
+   "assessedHectares": 340539.48,
+   "matchedHectares": 139752.72,
+   "nonMatchReasonDistribution": {
+    "below-spatial-tolerance": 3847,
+    "below-spatial-tolerance,outside-temporal-tolerance": 7,
+    "no-official-record-candidates": 894227,
+    "outside-temporal-tolerance": 8039
+   },
+   "matchedByRecordKind": {
+    "fire": 78126,
+    "harvest": 57192,
+    "insect": 4095,
+    "windthrow": 412
+   }
+  }
+ ],
+ "sources": {
+  "BC": {
+   "recordLayer": {
+    "path": "derived/phase4-provincial-matching-2026-09-26/records/records-BC.gpkg",
+    "sha256": "fe98001f5a50b69ea3132f999c63d4e5e7cd7eda9778bd33ac5688404731def2"
+   },
+   "records": 695647,
+   "sources": [
+    {
+     "id": "bc-consolidated-cutblocks",
+     "title": "Harvested Areas of BC (Consolidated Cutblocks)",
+     "selection": "Data_Source RESULTS or VRI; satellite change-detection records excluded as circular; event year HARVEST_START_YEAR_CALENDAR",
+     "rights": "written permission 2026-09-18",
+     "raw": {
+      "path": "raw/bc-consolidated-cutblocks/2026-09-26/Cut_Block_all_BC.zip",
+      "sha256": "63338e4973eb0355c4bcf0b40bb0b7ada5f27425f91d77373934cf3a20646d82"
+     },
+     "records": 499859,
+     "kinds": {
+      "harvest": 499859
+     },
+     "eventYears": [
+      1980,
+      2026
+     ],
+     "rasterization": {
+      "manifest": "derived/phase4-provincial-matching-2026-09-26/runs/BC/bc-consolidated-cutblocks/manifest.json",
+      "manifestSha256": "06550b5fe15b0fd6129650d8bfb20ff756b3d3301fa64e98949b587378a1df18",
+      "rule": "GDAL default rasterization (cell centre inside), one source at a time; same-year overlaps within a source keep the later record",
+      "seconds": 78.2
+     }
+    },
+    {
+     "id": "bc-fta-4-cutblocks",
+     "title": "Forest Tenure Cutblock Polygons (FTA 4.0)",
+     "selection": "records with a DISTURBANCE_START_DATE; event year is its year",
+     "rights": "OGL-BC",
+     "raw": {
+      "path": "raw/bc-fta-4-cutblocks/2026-09-26/acquisition.json",
+      "sha256": "cb9aa9e15fa1256fd40f6f090f44c5e82d02b81cf3f97fa6c3b163620be9e5e3"
+     },
+     "records": 185913,
+     "kinds": {
+      "harvest": 185913
+     },
+     "eventYears": [
+      1980,
+      2026
+     ],
+     "rasterization": {
+      "manifest": "derived/phase4-provincial-matching-2026-09-26/runs/BC/bc-fta-4-cutblocks/manifest.json",
+      "manifestSha256": "179fc1c749486fe806612dd66930db60bec435e6b3acfa249104a9a011fb1cd3",
+      "rule": "GDAL default rasterization (cell centre inside), one source at a time; same-year overlaps within a source keep the later record",
+      "seconds": 67.5
+     }
+    },
+    {
+     "id": "bc-historical-fire-perimeters",
+     "title": "BC Wildfire Fire Perimeters - Historical",
+     "selection": "event year FIRE_YEAR",
+     "rights": "OGL-BC",
+     "raw": {
+      "path": "raw/bc-historical-fire-perimeters/2026-09-26/bc-historical-fire-perimeters.gpkg",
+      "sha256": "d4f487772314a50f8d94ed42aa35fe35c9e74c55ce5d616d9dc059a383080f47"
+     },
+     "records": 9875,
+     "kinds": {
+      "fire": 9875
+     },
+     "eventYears": [
+      1980,
+      2025
+     ],
+     "rasterization": {
+      "manifest": "derived/phase4-provincial-matching-2026-09-26/runs/BC/bc-historical-fire-perimeters/manifest.json",
+      "manifestSha256": "fbbbf45d1595088e134847d4707e10241eea47f10de0cf767e2f21b470e7af94",
+      "rule": "GDAL default rasterization (cell centre inside), one source at a time; same-year overlaps within a source keep the later record",
+      "seconds": 59
+     }
+    }
+   ]
+  },
+  "QC": {
+   "recordLayer": {
+    "path": "derived/phase4-provincial-matching-2026-09-26/records/records-QC.gpkg",
+    "sha256": "c1c8571cd0606fc6980798d2a607c7083928ad299c1ec46e909dee1772369051"
+   },
+   "records": 2115508,
+   "sources": [
+    {
+     "id": "qc-current-ecoforest",
+     "title": "Carte écoforestière à jour",
+     "selection": "stand-origin code (origine) with its year (an_origine): BR fire; CHT windthrow; ES insect; cut codes beginning C, and RECUP, harvest; plantation, seeding and other treatments excluded",
+     "rights": "CC BY 4.0",
+     "raw": null,
+     "records": 2039411,
+     "kinds": {
+      "harvest": 1422437,
+      "windthrow": 30281,
+      "fire": 489568,
+      "insect": 97125
+     },
+     "eventYears": [
+      1980,
+      2025
+     ],
+     "rasterization": {
+      "manifest": "derived/phase4-provincial-matching-2026-09-26/runs/QC/qc-current-ecoforest/manifest.json",
+      "manifestSha256": "78918a6ffefc5cb58dbcae0ff3ef79af44c239a70ef2215d41d15b4da1de9c30",
+      "rule": "GDAL default rasterization (cell centre inside), one source at a time; same-year overlaps within a source keep the later record",
+      "seconds": 147.7
+     }
+    },
+    {
+     "id": "qc-historic-wildfire-detailed",
+     "title": "Feux de forêt (FEUX_PROV)",
+     "selection": "origine BR with its year",
+     "rights": "CC BY 4.0",
+     "raw": null,
+     "records": 76097,
+     "kinds": {
+      "fire": 76097
+     },
+     "eventYears": [
+      1980,
+      2025
+     ],
+     "rasterization": {
+      "manifest": "derived/phase4-provincial-matching-2026-09-26/runs/QC/qc-historic-wildfire-detailed/manifest.json",
+      "manifestSha256": "bf8cf751645d77cf8fbab84bdeb69423b550a9a50c07346eb609220243e85497",
+      "rule": "GDAL default rasterization (cell centre inside), one source at a time; same-year overlaps within a source keep the later record",
+      "seconds": 217.5
+     }
+    }
+   ]
+  }
+ },
+ "independentChecks": [
+  {
+   "province": "BC",
+   "interval": "1990-1991",
+   "independent": {
+    "assessedChanges": 725735,
+    "matchedChanges": 84540,
+    "nonMatchReasonDistribution": {
+     "below-spatial-tolerance": 1631,
+     "below-spatial-tolerance,outside-temporal-tolerance": 109,
+     "no-official-record-candidates": 627645,
+     "outside-temporal-tolerance": 11810
+    }
+   },
+   "agrees": true,
+   "peakRssMegabytes": 925,
+   "method": "scripts/phase4_independent_check.py: flat cell keys joined by sort, rules re-applied without lib/pipeline/matching.ts"
+  },
+  {
+   "province": "BC",
+   "interval": "2021-2022",
+   "independent": {
+    "assessedChanges": 874422,
+    "matchedChanges": 191021,
+    "nonMatchReasonDistribution": {
+     "below-spatial-tolerance": 1185,
+     "below-spatial-tolerance,outside-temporal-tolerance": 59,
+     "no-official-record-candidates": 629611,
+     "outside-temporal-tolerance": 52546
+    }
+   },
+   "agrees": true,
+   "peakRssMegabytes": 758,
+   "method": "scripts/phase4_independent_check.py: flat cell keys joined by sort, rules re-applied without lib/pipeline/matching.ts"
+  },
+  {
+   "province": "QC",
+   "interval": "1991-1992",
+   "independent": {
+    "assessedChanges": 1218827,
+    "matchedChanges": 195858,
+    "nonMatchReasonDistribution": {
+     "below-spatial-tolerance": 5243,
+     "below-spatial-tolerance,outside-temporal-tolerance": 136,
+     "no-official-record-candidates": 995386,
+     "outside-temporal-tolerance": 22204
+    }
+   },
+   "agrees": true,
+   "peakRssMegabytes": 1110,
+   "method": "scripts/phase4_independent_check.py: flat cell keys joined by sort, rules re-applied without lib/pipeline/matching.ts"
+  },
+  {
+   "province": "QC",
+   "interval": "2013-2014",
+   "independent": {
+    "assessedChanges": 2458890,
+    "matchedChanges": 187791,
+    "nonMatchReasonDistribution": {
+     "below-spatial-tolerance": 4947,
+     "below-spatial-tolerance,outside-temporal-tolerance": 128,
+     "no-official-record-candidates": 2242697,
+     "outside-temporal-tolerance": 23327
+    }
+   },
+   "agrees": true,
+   "peakRssMegabytes": 1080,
+   "method": "scripts/phase4_independent_check.py: flat cell keys joined by sort, rules re-applied without lib/pipeline/matching.ts"
+  }
+ ],
+ "limits": [
+  "Most unmatched changes are small: by count 11% of changes match, by area 56%. Small patches rarely have a record of their own.",
+  "A change with no candidate record is not evidence that no harvest or fire occurred; records can be missing, unpublished, outside a reporting boundary, or on private land.",
+  "The non-match reasons are tolerance failures, not causes. They do not say why a record is absent.",
+  "Within one source, overlapping records of the same year share cells: BC's 2010 fire perimeters cover 9% less area on the grid than their summed polygon areas.",
+  "Québec disturbance codes were grouped by their stratification-standard families; the few codes whose meaning was not confirmed are under 2% of records."
+ ]
+}

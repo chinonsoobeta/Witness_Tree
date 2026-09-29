@@ -29,8 +29,8 @@ export function SideBySideComparison({
           table: "View as table",
           cards: "View as cards",
           measure: "Measure",
-          share: "Detected change share",
-          change: "Detected change",
+          share: "Detected loss share",
+          change: "Detected loss",
           forest: "Forested area",
           coverage: "Coverage",
           evidence: "Evidence",
@@ -40,8 +40,8 @@ export function SideBySideComparison({
           table: "Afficher en tableau",
           cards: "Afficher en cartes",
           measure: "Mesure",
-          share: "Part du changement détecté",
-          change: "Changement détecté",
+          share: "Part de perte détectée",
+          change: "Perte détectée",
           forest: "Superficie forestière",
           coverage: "Couverture",
           evidence: "Élément de preuve",
@@ -131,8 +131,8 @@ function Place({ place, locale }: { place: ComparisonPlace; locale: Locale }) {
         <div className="comparison-heading-coverage">{locale === "en" ? "Coverage" : "Couverture"}: <MeasurementCoverage place={place} locale={locale} /></div>
       </header>
       <dl className="comparison-figures">
-        <dt>{locale === "en" ? "Detected change share" : "Part du changement détecté"}</dt><dd>{percent}</dd>
-        <dt>{locale === "en" ? "Detected change" : "Changement détecté"}</dt><dd>{hectares}</dd>
+        <dt>{locale === "en" ? "Detected loss share" : "Part de perte détectée"}</dt><dd>{percent}</dd>
+        <dt>{locale === "en" ? "Detected loss" : "Perte détectée"}</dt><dd>{hectares}</dd>
         <dt>{locale === "en" ? "Forested area" : "Superficie forestière"}</dt><dd>{formatHectares(place.forestedHectares, locale)}</dd>
       </dl>
       <EvidenceChip evidence={place.evidence} locale={locale} />
