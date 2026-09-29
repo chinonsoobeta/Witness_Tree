@@ -9,17 +9,20 @@ commit and any history reconciliation it allows.
 
 - Existing Sites project: `appgprj_6a7bea9e59988191a9304d4c5a3f379d`. Never create a new Site.
 - Canonical domain: `https://www.witnesstree.ca`
-- Last deployment this repository recorded: **Sites version 47**, completed on
-  2026-09-28. Its application tree is `main` at
-  `2ecefdf812e5f49ae827275e95c07eb867ca6753` (#202). Its Sites source commit
-  is the reconciliation merge `ec4bc74abb1802649ec34dd560e15b6559d08c65`.
-  Live checks passed for the English and French home pages, the 10 federal and
-  10 provincial riding rankings, the numbered top ten city rankings and
-  province names, the French comparer labels, Prince George search wording,
-  French wildfire punctuation, and the Explore map smoke check. The map gate
-  passed; the current browser observation remains
-  `data/deployed-map-render-evidence-2026-09-27-v45.json` because neither gated
-  map file changed.
+- Last deployment this repository recorded: **Sites version 48**, completed on
+  2026-09-29. Its application tree is `main` at
+  `d9432b8e36be3f48a922d194618ff9840a5640a9` (#204). Its Sites source commit
+  is the reconciliation merge `11e88ca14123fcffaa90ced142167f1a2ad6b726`.
+  Live checks passed for `/en` and `/fr`, the 10 federal and 10 provincial
+  riding rankings, the numbered top ten city rankings including Campbell River
+  with its full province name, and the French methods wording where
+  `consignée` is followed by U+202F before the semicolon. The map gate passed
+  and the Explore smoke check drew the map. Neither gated map file changed, so
+  the current browser observation remains
+  `data/deployed-map-render-evidence-2026-09-27-v45.json`.
+- Version 48 replaced **Sites version 47**, deployed from `main` at
+  `2ecefdf812e5f49ae827275e95c07eb867ca6753` (#202) through Sites-history
+  reconciliation merge `ec4bc74abb1802649ec34dd560e15b6559d08c65`.
 - Version 47 replaced **Sites version 46**, deployed from `main` at
   `8485d77679b216faf1ca2844b573d7800e744de4` (#200) through Sites-history
   reconciliation merge `31f26986e9715f73198db7a90c1f6f629a24b4b7`. Version 46
