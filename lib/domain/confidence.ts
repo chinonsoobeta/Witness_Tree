@@ -22,7 +22,7 @@ export type ConfidenceResult = Readonly<{
 const mediumReason = (limitationEn: string, limitationFr: string): LocalizedString =>
   localized(
     `Strong evidence with a material limitation: ${limitationEn}.`,
-    `Preuve solide comportant une limite importante : ${limitationFr}.`,
+    `Preuve solide comportant une limite importante\u202F: ${limitationFr}.`,
   );
 
 export function assignConfidence(input: ConfidenceInput): ConfidenceResult {
