@@ -26,11 +26,11 @@
       "id": "confidence-rules-generate-bilingual-explanations",
       "title": "The confidence rule set produces a generated explanation for every rule, in both languages, verified by a unit test",
       "status": "pass",
-      "reason": "assignConfidence returns a localized reason for all eight branches across the four declared rule identifiers; the unit test proves each identifier is reachable, that no undeclared identifier is produced, that English and French are both present and genuinely differ, and that unknown is never converted into a confident level.",
+      "reason": "assignConfidence returns a localized reason for all eight branches across the four declared rule identifiers; the unit test proves each identifier is reachable, that no undeclared identifier is produced, that English and French are both present and genuinely differ, and that unknown is never converted into a confident level. On 2026-09-28 a French typography fix gave the French medium-confidence explanation in lib/domain/confidence.ts a narrow no-break space (U+202F) before its colon (“limite importante :”) in place of an ordinary space, as the rest of the French site sets it. The rules, the confidence levels and the English text are unchanged; the explanations are still generated in both languages, the digest was refreshed, and this criterion still holds.",
       "evidence": [
         {
           "path": "lib/domain/confidence.ts",
-          "sha256": "d873c96d2cdbd1efe0cc4cb75a1927f1d100ea53dc89e6e0eda5001925385357"
+          "sha256": "47889d3e0f38f7a3c4a07afd61dcb6fcef79c47aef2d01a2b6ae1f89946efcf6"
         },
         {
           "path": "tests/confidence-rules.test.ts",

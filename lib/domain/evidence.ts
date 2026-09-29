@@ -20,22 +20,22 @@ export const EVIDENCE_DEFINITIONS: Record<EvidenceClass, EvidenceDefinition> = {
     label: localized("Official record", "Registre officiel"),
     maySay: localized(
       "Recorded harvest or intervention; within a reported fire perimeter; recorded tenure holder or client.",
-      "Récolte ou intervention consignée; à l’intérieur d’un périmètre d’incendie déclaré; titulaire ou client consigné.",
+      "Récolte ou intervention consignée\u202F; à l’intérieur d’un périmètre d’incendie déclaré\u202F; titulaire ou client consigné.",
     ),
     mayNotSay: localized(
       "The logger; deforested; any compliance conclusion.",
-      "L’exploitant forestier; déboisé; toute conclusion de conformité.",
+      "L’exploitant forestier\u202F; déboisé\u202F; toute conclusion de conformité.",
     ),
   },
   "satellite-observation": {
     label: localized("Satellite observation", "Observation satellitaire"),
     maySay: localized(
       "Tree cover reduction detected; later imagery indicates canopy recovery.",
-      "Réduction du couvert arboré détectée; des images ultérieures indiquent une reprise du couvert.",
+      "Réduction du couvert arboré détectée\u202F; des images ultérieures indiquent une reprise du couvert.",
     ),
     mayNotSay: localized(
       "Logged; fully regenerated; permanent loss.",
-      "Exploité; entièrement régénéré; perte permanente.",
+      "Exploité\u202F; entièrement régénéré\u202F; perte permanente.",
     ),
   },
   "derived-estimate": {
