@@ -46,7 +46,8 @@ the scheduled wildfire refresh below, which has archived snapshots since
 
 ### What runs without a human
 
-Exactly one thing: `.github/workflows/wildfire-refresh.yml`. It is a scheduled
+Four scheduled GitHub Actions workflows. Only one holds cloud credentials:
+`.github/workflows/wildfire-refresh.yml`. It is a scheduled
 GitHub Actions job with `contents: read` and `id-token: write`. It no longer
 writes to this repository. After a successful refresh it assumes an AWS role
 through GitHub OIDC and writes new wildfire snapshots to the raw archive with
@@ -55,6 +56,11 @@ approved that role's exact policy and it was created on 2026-09-13. The first
 scheduled refresh succeeded that evening. Section 6.3 covers it. Do not repeat the older claim
 that this project has no scheduler and no CI job with write credentials; that
 claim is wrong and this job is the counterexample.
+
+The other three are read-only signals, covered in section 3.1:
+`synthetic-uptime.yml` probes the six bilingual routes,
+`synthetic-uptime-alert.yml` opens or closes the uptime incident issue, and
+`deployed-map-render.yml` drives the live Explore map in a browser once a day.
 
 `.github/workflows/ci.yml` runs on every push and pull request. It deploys
 nothing and has no cloud credentials. It declares no `permissions:` block, so
@@ -115,29 +121,51 @@ incident touching them is treated as S1 (section 3.2).
 
 ### 3.1 Detection
 
-This is the part where a normal handbook lists monitors. **There are none.**
+There is an outside-in probe and an alert. There is no host-side monitoring, no
+retained request log, and no dashboard. Read the probe's limits before you
+rely on it.
 
-- No uptime monitor, no synthetic probe, no alerting integration.
-- No error tracking. There is no Sentry, OpenTelemetry, Datadog, or analytics
-  client anywhere in `app/`, `lib/`, or `components/`.
-- No health or status endpoint. The route inventory is pages only: `app/`
-  contains no `route.ts` at all. There is nothing to curl that returns a
-  machine-readable health answer.
-- No log retention that this project controls. The Worker runs on the host's
-  infrastructure; the repository holds no logging configuration and no log
-  sink. Whether the host retains request logs, and for how long, is not
-  established here.
+- **Synthetic uptime probe** (`synthetic-uptime.yml`, runner
+  `scripts/run-synthetic-uptime.mjs`). It fetches `/en`, `/fr`, `/en/explore`,
+  `/fr/explorer`, `/en/compare`, and `/fr/comparer`. Each route must return a
+  200 status and contain its content marker. Each run keeps a JSON receipt as
+  a workflow artifact for 90 days. The cron asks for a run every 15 minutes.
+  GitHub does not honour that. From 2026-09-01 to 2026-09-29 it ran 178
+  scheduled probes, about 6.4 a day: a median gap of 3.75 hours and a longest
+  gap of 7.9 hours. Every run since 2026-09-03 has passed. The real cadence is
+  recorded in
+  [`data/observability-deployment.json`](../data/observability-deployment.json).
+- **Uptime alert** (`synthetic-uptime-alert.yml`, `scripts/update-uptime-issue.mjs`).
+  After two consecutive failed probes it opens a repository issue, and it
+  closes that issue on the first passing probe. At the observed cadence, an
+  outage that starts just after a pass can go unreported for up to about 16
+  hours. The alert path has never fired in production. The only failures
+  (2026-09-02 and 2026-09-03) happened before it existed. Whoever watches the
+  repository's issues gets the notification; no pager or rota receives it
+  (gap G1).
+- **Deployed map render** (`deployed-map-render.yml`, daily at 14:23 UTC). It
+  drives the live Explore map in Chromium and fails when the map does not
+  draw. It measures only; it opens no issue.
+- **Still absent.** No error tracking: there is no Sentry, OpenTelemetry,
+  Datadog, or analytics client anywhere in `app/`, `lib/`, or `components/`.
+  No health or status endpoint: `app/` contains no `route.ts`. No request log
+  that this project controls. Recent production Worker logs can be queried
+  through the host's management connector, but no retention, request count,
+  or error rate is recorded. The CloudWatch alarms and dashboard in
+  `infra/phase8-observability.json` have not been deployed (gap G3).
 
-So detection is manual and it has exactly three real sources.
+The detection sources, then:
 
 | Source | What it tells you | How often it is checked |
 | --- | --- | --- |
-| Loading the public site in a browser | Whether the site serves at all, in both locales | Only when a person looks |
+| The uptime incident issue | Two probes in a row failed on at least one bilingual route | When GitHub runs the probe: about every 4 hours, sometimes 8 |
+| The `deployed-map-render.yml` run list | Whether the live map still draws | Daily, and only when a person looks at the run list |
 | The GitHub Actions run list for `ci.yml` and `wildfire-refresh.yml` | Whether the branch gate is green and whether the scheduled job failed | Only when a person looks |
+| Loading the public site in a browser | Whether the site serves at all, in both locales | Only when a person looks |
 | A report from a person | Everything else, including a wrong published figure | Whenever it happens |
 
 **The operator's first move on any suspected site incident is to fetch the two
-locale roots and compare.** These are the only probes that exist:
+locale roots and compare.** Do not wait for the next scheduled probe:
 
 ```sh
 curl -sS -o /dev/null -w '%{http_code} %{time_total}s\n' \
@@ -299,7 +327,7 @@ something is wrong.
 
 | Normal operational lever | Here |
 | --- | --- |
-| Check the load balancer | **No equivalent.** Routing and edge behaviour are the host's. Fetch the two locale roots (section 3.1); that is the entire external view |
+| Check the load balancer | **No equivalent.** Routing and edge behaviour are the host's. The external view is the synthetic probe and a manual fetch of the two locale roots (section 3.1) |
 | Read application logs | **No equivalent this project controls.** No log sink is configured. Whether the host retains request logs, and whether the operator can read them, is unverified (gap G3) |
 | Scale up, add a replica, restart a process | **No equivalent.** There is no instance to restart |
 | Fail over to another region | **No equivalent.** There is one host and one project |
@@ -809,11 +837,11 @@ contradicts this list.
 | --- | --- | --- |
 | **G1** | **The on-call rota is not staffed.** One accountable owner, no secondary, no handover, no approved coverage window | Outside the hours that person is awake and looking, nothing is detected and nothing is escalated. Phase 8 `on-call-rota` is `fail` and stays `fail` |
 | **G2** | **No contact route is recorded.** Deliberately, since contact details are personal data | The escalation timeouts in section 4.2 are policy without a mechanism until a private operator card exists outside Git |
-| **G3** | **No monitoring, alerting, dashboard, or log retention.** No uptime probe, no error tracking, no health endpoint, no log sink this project controls. Whether the host retains readable request logs is unverified | Detection is manual. Phase 8 `observability` is `fail` |
+| **G3** | **Outside-in probing only; no dashboard or log retention.** A synthetic probe and a two-failure issue alert exist (section 3.1), but GitHub runs the probe about every 4 hours, not every 15 minutes, and the alert has never fired in production. There is no error tracking, no health endpoint, no log sink this project controls, and no deployed alarm or dashboard. Whether the host retains readable request logs is unverified. No log-retention decision or operational review is recorded; see [OBSERVABILITY_OWNER_DECISIONS.md](OBSERVABILITY_OWNER_DECISIONS.md) | Detection can take up to about 16 hours. Phase 8 `observability` is `fail` |
 | **G4** | **No host support relationship is established.** No recorded support route, entitlement, contact, or expected response time for ChatGPT Sites; no record of who may open a case or what may be disclosed | Section 5.3 escalation to the host has no defined channel |
 | **G5** | **The deploy and rollback mechanics of the host are outside this repository.** No deploy script, workflow, or credential exists here; whether the control plane offers a one-click revert is unverified | Sections 6.1 and 6.2 describe the repository half of the procedure completely and the control-plane half by reference only |
 | **G6** | **There is no operational kill switch.** The flag exists in pure policy code with no persisted store, no setter, and no deployed sender. No timed rehearsal has been performed | The account service cannot be activated. Phase 6 `killSwitchRehearsalUnderFiveMinutes` and `namedIncidentOwnerAndRunbook` remain open |
-| **G9** | **The data root has one copy.** No second copy, no replication, no provider durability evidence | Drive loss loses every derived byte. Phase 8 `backups` is `fail` |
+| **G9** | **The data root has one copy.** No second copy, no replication, no provider durability evidence. The raw archive has a same-region recovery bucket for a few sources only, and no copy in a second region | Drive loss loses every derived byte. Phase 8 `backups` is `fail`. The costed options awaiting owner approval are in [BACKUP_PLAN.md](BACKUP_PLAN.md) |
 | **G10** | **No incident has ever been rehearsed.** No drill of a site outage, a rollback, a host degradation, or an escalation has been performed or timed | Every timing target in this document is a target, not an observed result |
 | **G11** | **No public communication channel exists.** No status page, no operator-driven banner, no monitored intake address; the corrections workflow is policy and fixtures only | Telling the public anything requires a code change and a deploy |
 

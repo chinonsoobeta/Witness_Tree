@@ -9,9 +9,11 @@ import { fileURLToPath } from "node:url";
  * AWS call, and writes nothing. It fails closed: if the evidence file is absent the check exits
  * non-zero rather than passing silently, because an absent record is exactly the state the gate says
  * is unacceptable. A `partial` record is deliberately a different shape: it binds repository
- * definitions and the read-only synthetic workflow, omits every owner-run AWS evidence field and
- * `syntheticUptime.lastRun`, and keeps every completion claim false. The complete shape below is
- * accepted only with `archive-and-delivery-observed` status.
+ * definitions and the read-only synthetic workflow, omits every owner-run AWS evidence field, and
+ * keeps every completion claim false. It may carry `syntheticUptime.lastRun` (and an optional
+ * `observedCadence`) only once a real scheduled run has been observed and
+ * `claims.syntheticRunObserved` is true; the probe needs no AWS run, so its receipt is not owner-run
+ * evidence. The complete shape below is accepted only with `archive-and-delivery-observed` status.
  *
  * Record shape:
  *
@@ -388,8 +390,8 @@ function assertSyntheticDefinition(record, repoRoot) {
   if (synthetic.substituteForHostSideMonitoring !== false) {
     throw new Error("A synthetic uptime check is an availability signal from outside; it must not be recorded as a substitute for host-side monitoring.");
   }
-  if (Object.hasOwn(synthetic, "lastRun")) {
-    throw new Error("A partial repository-preparation record must omit syntheticUptime.lastRun until a real workflow run has been observed.");
+  if (Object.hasOwn(synthetic, "lastRun") && record.claims?.syntheticRunObserved !== true) {
+    throw new Error("A partial repository-preparation record must omit syntheticUptime.lastRun until a real workflow run has been observed and claims.syntheticRunObserved is true.");
   }
   requiredArray(synthetic.routes, "syntheticUptime routes");
   const routes = new Map();
@@ -426,6 +428,27 @@ function assertSyntheticDefinition(record, repoRoot) {
   if (!workflow.includes(`node ${record.repositoryAssets.syntheticRunnerPath}`)) {
     throw new Error("The synthetic uptime workflow does not invoke the runner named by repositoryAssets.syntheticRunnerPath.");
   }
+  if (Object.hasOwn(synthetic, "lastRun")) assertLastRun(synthetic);
+  if (Object.hasOwn(synthetic, "observedCadence")) assertObservedCadence(synthetic);
+}
+
+/**
+ * The cron line is a request, not a guarantee: GitHub drops scheduled runs under load. The observed
+ * cadence records what actually ran, so the detection delay is read from runs rather than the cron.
+ */
+function assertObservedCadence(synthetic) {
+  const cadence = synthetic.observedCadence;
+  requiredObject(cadence, "syntheticUptime observedCadence");
+  if (!Object.hasOwn(synthetic, "lastRun")) throw new Error("syntheticUptime observedCadence requires an observed lastRun.");
+  requiredUtcInstant(cadence.from, "syntheticUptime observedCadence from");
+  requiredUtcInstant(cadence.to, "syntheticUptime observedCadence to");
+  if (cadence.from >= cadence.to) throw new Error("syntheticUptime observedCadence must span a positive interval.");
+  requiredPositiveInteger(cadence.scheduledRuns, "syntheticUptime observedCadence scheduledRuns");
+  for (const field of ["medianMinutesBetweenRuns", "maxMinutesBetweenRuns"]) {
+    if (!Number.isFinite(cadence[field]) || cadence[field] <= 0) throw new Error(`syntheticUptime observedCadence ${field} must be a positive number.`);
+  }
+  if (cadence.maxMinutesBetweenRuns < cadence.medianMinutesBetweenRuns) throw new Error("syntheticUptime observedCadence max interval cannot be below its median.");
+  requiredText(cadence.source, "syntheticUptime observedCadence source");
 }
 
 function assertOwnerBoundary(record) {
@@ -446,7 +469,12 @@ function assertOwnerBoundary(record) {
     if (pending.has(item)) throw new Error(`ownerBoundary pendingEvidence contains duplicate ${item}.`);
     pending.add(item);
   }
+  const runObserved = Object.hasOwn(record.syntheticUptime ?? {}, "lastRun");
   for (const item of REQUIRED_PENDING_EVIDENCE) {
+    if (item === "synthetic-last-run" && runObserved) {
+      if (pending.has(item)) throw new Error("ownerBoundary pendingEvidence still lists synthetic-last-run although a lastRun is recorded.");
+      continue;
+    }
     if (!pending.has(item)) throw new Error(`ownerBoundary pendingEvidence must include ${item}.`);
   }
 }
@@ -462,6 +490,11 @@ function assertPartialClaims(record) {
     "phase8CriterionPass",
   ]) {
     requiredBoolean(record.claims[claim], `claims ${claim}`);
+    if (claim === "syntheticRunObserved") {
+      const runObserved = Object.hasOwn(record.syntheticUptime ?? {}, "lastRun");
+      if (record.claims[claim] !== runObserved) throw new Error("claims.syntheticRunObserved must be true exactly when syntheticUptime.lastRun is recorded.");
+      continue;
+    }
     if (record.claims[claim] !== false) throw new Error(`claims.${claim} must remain false in a partial repository-preparation record.`);
   }
 }
@@ -486,6 +519,11 @@ function assertSyntheticUptime(record, repoRoot) {
     requiredText(route.contentMarker, `Synthetic route ${route.path} contentMarker`);
     routes.add(route.path);
   }
+  assertLastRun(synthetic);
+}
+
+function assertLastRun(synthetic) {
+  const routes = new Set(synthetic.routes.map((route) => route.path));
   const lastRun = synthetic.lastRun;
   requiredObject(lastRun, "syntheticUptime lastRun");
   requiredUtcInstant(lastRun.startedAt, "syntheticUptime lastRun startedAt");
@@ -631,7 +669,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     const file = process.argv[2] ? path.resolve(process.argv[2]) : RECORD_URL;
     const record = checkObservabilityDeployment(file);
     if (record.status === "partial") {
-      console.log(`PASS observability repository boundary: alarm and dashboard definitions plus a read-only synthetic workflow are present; ${record.ownerBoundary.pendingEvidence.length} owner-run evidence item(s) remain pending, no lastRun is claimed, and the Phase 8 criterion remains fail.`);
+      console.log(`PASS observability repository boundary: alarm and dashboard definitions plus a read-only synthetic workflow are present; ${record.ownerBoundary.pendingEvidence.length} owner-run evidence item(s) remain pending, ${record.syntheticUptime.lastRun ? `the last observed probe run (${record.syntheticUptime.lastRun.startedAt}) is a ${record.syntheticUptime.lastRun.result}` : "no lastRun is claimed"}, and the Phase 8 criterion remains fail.`);
     } else {
       console.log(`PASS observability deployment: ${record.logDestinations.length} Canadian log destinations, ${record.alarms.length} alarms with thresholds and recipients, a dashboard, a scheduled synthetic uptime check, ${record.operationalReviews.length} recorded operational review(s), and ${record.unobserved.length} explicitly unobserved component(s) including the ${record.siteTier.host} site tier.`);
     }

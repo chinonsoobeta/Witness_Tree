@@ -55,7 +55,7 @@
       "id": "quarterly-reproducibility-test-passes",
       "title": "The quarterly reproducibility test passes",
       "status": "fail",
-      "reason": "A seeded owner-run harness now draws from a checksum-bound population manifest and records every sampled unit's recomputation pass or fail. Its checked-in population is synthetic test data only. The admitted federal electoral output remains a single prior reproduction, and no published-production population manifest or owner-run quarterly result exists. The controlling quarterly criterion therefore remains unsatisfied. On 2026-09-23 the Phase 8 record changed because cdn-tile-validation returned to pass after Sites version 41 was deployed and observed; this criterion does not depend on that change, stays fail, and Phase 9 stays at zero of four.Later on 2026-09-23 the Phase 8 record changed again to bind the redeployed map client and its observation, with the Phase 8 count unchanged; this criterion does not depend on that change, stays fail, and Phase 9 stays at zero of four.  On 2026-09-27 the Phase 8 record was rebound after the version 45 deployed-Site observation; this quarterly criterion remains fail, and Phase 9 remains 0/4.",
+      "reason": "A seeded owner-run harness now draws from a checksum-bound population manifest and records every sampled unit's recomputation pass or fail. Its checked-in population is synthetic test data only. The admitted federal electoral output remains a single prior reproduction, and no published-production population manifest or owner-run quarterly result exists. The controlling quarterly criterion therefore remains unsatisfied. On 2026-09-23 the Phase 8 record changed because cdn-tile-validation returned to pass after Sites version 41 was deployed and observed; this criterion does not depend on that change, stays fail, and Phase 9 stays at zero of four.Later on 2026-09-23 the Phase 8 record changed again to bind the redeployed map client and its observation, with the Phase 8 count unchanged; this criterion does not depend on that change, stays fail, and Phase 9 stays at zero of four.  On 2026-09-27 the Phase 8 record was rebound after the version 45 deployed-Site observation; this quarterly criterion remains fail, and Phase 9 remains 0/4. On 2026-09-29 the Phase 8 record was rebound to the observed synthetic uptime evidence and the drafted observability and backup decisions, with observability and backups still fail and the Phase 8 count unchanged; this quarterly criterion remains fail, and Phase 9 remains 0/4.",
       "evidence": [
         {
           "path": "scripts/run-phase9-quarterly-reproducibility.mjs",
@@ -71,7 +71,7 @@
         },
         {
           "path": "data/phase8-launch-readiness-exit-status.json",
-          "sha256": "5164b7e40fdd3c3adbfd2aeb209873efd27d242b1f26c162e2e206e632e08538"
+          "sha256": "f5e8e9f80fa5b27fc4c6873a3a14a8f412992aa976e6ec8fe41100e0254731a3"
         },
         {
           "path": "data/raw-archive-reproduction-drill.json",

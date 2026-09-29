@@ -294,7 +294,8 @@ test("the canonical partial record binds repository assets without claiming owne
   const record = checkObservabilityDeployment();
   assert.equal(record.status, "partial");
   assert.equal(record.claims.phase8CriterionPass, false);
-  assert.equal(Object.hasOwn(record.syntheticUptime, "lastRun"), false);
+  assert.equal(record.claims.syntheticRunObserved, Object.hasOwn(record.syntheticUptime, "lastRun"));
+  assert.equal(record.claims.observabilityComplete, false);
   for (const field of ["logDestinations", "archive", "delivery", "alarms", "dashboard", "operationalReviews"]) {
     assert.equal(Object.hasOwn(record, field), false, `${field} must be absent from the partial record`);
   }
@@ -302,7 +303,7 @@ test("the canonical partial record binds repository assets without claiming owne
   assert.equal(record.syntheticUptime.routes.some((route) => route.path === "/fr/compare"), false);
 });
 
-test("a partial record cannot smuggle in deployment evidence or a synthetic lastRun", () => {
+test("a partial record cannot smuggle in deployment evidence or an unclaimed synthetic lastRun", () => {
   const lastRun = {
     startedAt: "2026-08-31T00:00:00Z",
     result: "pass",
@@ -318,6 +319,7 @@ test("a partial record cannot smuggle in deployment evidence or a synthetic last
       validateObservabilityDeployment({
         ...partialFixture(),
         syntheticUptime: { ...synthetic, lastRun },
+        claims: { ...partialFixture().claims, syntheticRunObserved: false },
       }),
     /must omit syntheticUptime\.lastRun/,
   );
@@ -353,6 +355,63 @@ test("the partial boundary keeps every required owner-run evidence item and comp
         claims: { ...record.claims, phase8CriterionPass: true },
       }),
     /phase8CriterionPass must remain false/,
+  );
+});
+
+test("an observed probe run in a partial record must be complete and claimed", () => {
+  const record = partialFixture();
+  const synthetic = structuredClone(record.syntheticUptime);
+  delete synthetic.lastRun;
+  delete synthetic.observedCadence;
+  record.ownerBoundary.pendingEvidence = [...new Set([...record.ownerBoundary.pendingEvidence, "synthetic-last-run"])];
+  const lastRun = {
+    startedAt: "2026-09-29T16:29:16Z",
+    result: "pass",
+    observedRoutes: synthetic.routes.map((route) => ({ path: route.path, status: 200, contentMarkerFound: true })),
+  };
+  const pendingWithout = record.ownerBoundary.pendingEvidence.filter((item) => item !== "synthetic-last-run");
+  const observed = {
+    ...record,
+    syntheticUptime: { ...synthetic, lastRun },
+    ownerBoundary: { ...record.ownerBoundary, pendingEvidence: pendingWithout },
+    claims: { ...record.claims, syntheticRunObserved: true },
+  };
+  assert.equal(validateObservabilityDeployment(observed).status, "partial");
+  assert.throws(
+    () =>
+      validateObservabilityDeployment({
+        ...observed,
+        ownerBoundary: { ...record.ownerBoundary, pendingEvidence: [...pendingWithout, "synthetic-last-run"] },
+      }),
+    /still lists synthetic-last-run/,
+  );
+  assert.throws(
+    () =>
+      validateObservabilityDeployment({
+        ...observed,
+        syntheticUptime: { ...synthetic, lastRun: { ...lastRun, observedRoutes: lastRun.observedRoutes.slice(1) } },
+      }),
+    /did not record a result for \/en/,
+  );
+  assert.throws(
+    () =>
+      validateObservabilityDeployment({
+        ...observed,
+        syntheticUptime: synthetic,
+        ownerBoundary: record.ownerBoundary,
+      }),
+    /syntheticRunObserved must be true exactly when/,
+  );
+  assert.throws(
+    () =>
+      validateObservabilityDeployment({
+        ...observed,
+        syntheticUptime: {
+          ...observed.syntheticUptime,
+          observedCadence: { from: "2026-09-01T00:00:00Z", to: "2026-09-29T00:00:00Z", scheduledRuns: 10, medianMinutesBetweenRuns: 0, maxMinutesBetweenRuns: 5, source: "x" },
+        },
+      }),
+    /medianMinutesBetweenRuns must be a positive number/,
   );
 });
 

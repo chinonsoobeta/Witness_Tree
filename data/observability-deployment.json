@@ -1,6 +1,6 @@
 {
   "schemaVersion": "witness-tree/observability-deployment/1",
-  "capturedAt": "2026-09-01T06:26:21Z",
+  "capturedAt": "2026-09-29T18:59:05Z",
   "status": "partial",
   "siteTier": {
     "host": "ChatGPT Sites",
@@ -48,7 +48,52 @@
         "expectedStatus": 200,
         "contentMarker": "Comparaison des circonscriptions"
       }
-    ]
+    ],
+    "lastRun": {
+      "startedAt": "2026-09-29T16:29:16Z",
+      "result": "pass",
+      "reference": "GitHub Actions run 36598052928, artifact synthetic-uptime-result",
+      "observedRoutes": [
+        {
+          "path": "/en",
+          "status": 200,
+          "contentMarkerFound": true
+        },
+        {
+          "path": "/fr",
+          "status": 200,
+          "contentMarkerFound": true
+        },
+        {
+          "path": "/en/explore",
+          "status": 200,
+          "contentMarkerFound": true
+        },
+        {
+          "path": "/fr/explorer",
+          "status": 200,
+          "contentMarkerFound": true
+        },
+        {
+          "path": "/en/compare",
+          "status": 200,
+          "contentMarkerFound": true
+        },
+        {
+          "path": "/fr/comparer",
+          "status": 200,
+          "contentMarkerFound": true
+        }
+      ]
+    },
+    "observedCadence": {
+      "from": "2026-09-01T15:59:40Z",
+      "to": "2026-09-29T16:29:10Z",
+      "scheduledRuns": 178,
+      "medianMinutesBetweenRuns": 225,
+      "maxMinutesBetweenRuns": 473,
+      "source": "gh run list for synthetic-uptime.yml on 2026-09-29: 178 scheduled runs and 1 manual run; 5 failures, all between 2026-09-02 and 2026-09-03, before the alert workflow existed; every run since has passed. The */15 cron asks for 96 runs a day; GitHub ran about 6.4."
+    }
   },
   "ownerBoundary": {
     "ownerRunRequired": true,
@@ -62,7 +107,6 @@
       "delivery-standard-logging",
       "delivery-metric-publication",
       "alarm-and-dashboard-deployment",
-      "synthetic-last-run",
       "operational-review"
     ]
   },
@@ -97,16 +141,16 @@
     },
     {
       "tier": "synthetic",
-      "component": "scheduled uptime run",
+      "component": "synthetic uptime as an operated monitor",
       "monitored": false,
-      "reason": "The workflow and runner exist, but no workflow run has been observed and no lastRun is recorded."
+      "reason": "Scheduled runs are observed (lastRun, observedCadence), but GitHub runs the 15-minute schedule about every 3.75 hours, with gaps up to 7.9 hours. The alert workflow opens an issue after two consecutive failures, so an outage could go unreported for up to about 16 hours. That alert path has never fired in production. The owner has not accepted this cadence or recorded a review."
     }
   ],
   "claims": {
     "hostTierMonitored": false,
     "archiveLoggingObserved": false,
     "deliveryLoggingObserved": false,
-    "syntheticRunObserved": false,
+    "syntheticRunObserved": true,
     "observabilityComplete": false,
     "phase8CriterionPass": false
   }
