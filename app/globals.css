@@ -120,22 +120,6 @@
   --patch-fire: #eb6834;
   --patch-neither: #7a6a58;
 
-  /* Public-domain province-flag artwork keeps its fixed identity colours in
-     both themes. These tokens keep raw colour values out of component code. */
-  --flag-white: #fff;
-  --flag-union-blue: #012169;
-  --flag-red: #c8102e;
-  --flag-bc-blue: #003c71;
-  --flag-gold: #ffcd00;
-  --flag-alberta-blue: #005daa;
-  --flag-wheat: #f6ba35;
-  --flag-cross-red: #d71920;
-  --flag-sky: #7ec8e3;
-  --flag-green: #277f3d;
-  --flag-ontario-gold: #f4c430;
-  --flag-ontario-green: #118a44;
-  --flag-quebec-blue: #0957a4;
-
   /* shape and depth
 
      One radius, not a scale. The design this template is drawn from sets 2px
@@ -1342,7 +1326,7 @@ h4 {
   font-weight: 400;
 }
 .province-bar--landing .province-flag {
-  width: 22px;
+  width: auto;
   height: 14px;
 }
 .province-bar-item,
@@ -1355,7 +1339,7 @@ h4 {
 }
 .province-flag {
   display: block;
-  width: 28px;
+  width: auto;
   height: 17px;
   flex: 0 0 auto;
   border: 1px solid var(--rule-strong);
@@ -3159,7 +3143,7 @@ dd > a:only-child {
   gap: 12px;
 }
 .hf-figure-head .province-flag {
-  width: 42px;
+  width: auto;
   height: 26px;
 }
 .hf-figure-head h2 {
