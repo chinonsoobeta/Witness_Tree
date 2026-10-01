@@ -288,7 +288,7 @@
         },
         {
           "path": "tests/explore.test.tsx",
-          "sha256": "cf96c001fdf57e26f2b948c1244845d89f2e5ad321a9fa4b06a1ecc712def4c4"
+          "sha256": "ce198e2799f9b316a070a6545763c234d05ec7181ae9b6d0b3a7e71957afa088"
         },
         {
           "path": "data/deployed-map-render-evidence-2026-09-05.json",
