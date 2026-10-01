@@ -111,11 +111,11 @@
       "id": "operations-handbook",
       "title": "An operations handbook is complete",
       "status": "pass",
-      "reason": "docs/OPERATIONS_HANDBOOK.md carries all four sections this criterion names, written against ChatGPT Sites as the actual host: ownership in section 2, incident response in section 3, escalation in section 4, and production procedures in section 6. The rollback procedure in section 6.2 is actionable end to end without any host knowledge, because the unit of rollback is a Git commit and the mechanism is another deploy. The handbook declares nine gaps of its own rather than papering over them, and each operational gap is separately gated: G1 is the on-call-rota criterion, G3 is observability, G9 is backups, all three of which remain fail. This criterion is about whether the handbook is complete, not whether the operation is staffed and instrumented; holding it on those absences would count the same gap three times. What is attested is the document. No incident has ever been rehearsed, so every timing target in it is a target and not an observed result, which the handbook itself says in gap G10. This flip is recorded as owner-authorized, not engineering-authorized. Section 2.2 of the handbook assigns the decision to flip a criterion to the Release approver rather than to engineering, and the prior record on this criterion said so and held it at fail for that reason. The accountable owner, acting as Release approver, directed on 2026-08-26 that the operations handbook be finished and that engineering flip the gates it could genuinely attest to. Engineering attests the document's contents; the owner supplied the authority. Neither half alone was sufficient.",
+      "reason": "docs/OPERATIONS_HANDBOOK.md carries all four sections this criterion names, written against ChatGPT Sites as the actual host: ownership in section 2, incident response in section 3, escalation in section 4, and production procedures in section 6. The rollback procedure in section 6.2 is actionable end to end without any host knowledge, because the unit of rollback is a Git commit and the mechanism is another deploy. The handbook declares nine gaps of its own rather than papering over them, and each operational gap is separately gated: G1 is the on-call-rota criterion, G3 is observability, G9 is backups, all three of which remain fail. This criterion is about whether the handbook is complete, not whether the operation is staffed and instrumented; holding it on those absences would count the same gap three times. What is attested is the document. No incident has ever been rehearsed, so every timing target in it is a target and not an observed result, which the handbook itself says in gap G10. This flip is recorded as owner-authorized, not engineering-authorized. Section 2.2 of the handbook assigns the decision to flip a criterion to the Release approver rather than to engineering, and the prior record on this criterion said so and held it at fail for that reason. The accountable owner, acting as Release approver, directed on 2026-08-26 that the operations handbook be finished and that engineering flip the gates it could genuinely attest to. Engineering attests the document's contents; the owner supplied the authority. Neither half alone was sufficient. On 2026-09-29 the handbook was rebound after sections 1 and 3.1, the section 5.1 table, and gaps G3 and G9 were updated to describe the synthetic uptime probe, its issue alert, the observed cadence, and the drafted observability and backup decisions. The four sections this criterion names are unchanged in scope, and it stays pass.",
       "evidence": [
         {
           "path": "docs/OPERATIONS_HANDBOOK.md",
-          "sha256": "45b9cc7063e0a7963bad584302b90b4d16781d095d38b14b57f35c4927b7b569"
+          "sha256": "7d2c45de72200c70ab956e7d882032fac95d3675a8a752658627dca3de75a13d"
         },
         {
           "path": "docs/PLAN_GAP_MATRIX.md",
@@ -208,7 +208,7 @@
       "id": "observability",
       "title": "Observability is complete",
       "status": "fail",
-      "reason": "The scheduled wildfire workflow provides limited job-failure notification, but no documented current service or delivery monitor, retained-log policy, dashboard, or completed operational review is recorded. Historical CloudTrail objects and workflow execution history do not by themselves establish operated site observability.",
+      "reason": "A read-only synthetic probe of six bilingual routes runs on GitHub Actions and opens an issue after two consecutive failures, but GitHub runs its 15-minute schedule only about every 4 hours, the alert has never fired, and no deployed alarm, dashboard, retained log destination, log-retention decision, or completed operational review is recorded. The externally hosted site tier remains unobserved. The owner decisions are drafted, unanswered, in docs/OBSERVABILITY_OWNER_DECISIONS.md.",
       "evidence": [
         {
           "path": "docs/IMMUTABLE_STORAGE_PROVISIONING.md",
@@ -220,7 +220,15 @@
         },
         {
           "path": "docs/OPERATIONS_HANDBOOK.md",
-          "sha256": "45b9cc7063e0a7963bad584302b90b4d16781d095d38b14b57f35c4927b7b569"
+          "sha256": "7d2c45de72200c70ab956e7d882032fac95d3675a8a752658627dca3de75a13d"
+        },
+        {
+          "path": "data/observability-deployment.json",
+          "sha256": "36921882bcb638f0acc2b60333e4db35539ca23b9843f99bf8592b517eac0c7e"
+        },
+        {
+          "path": "docs/OBSERVABILITY_OWNER_DECISIONS.md",
+          "sha256": "af277fca6e78a2e721c1755448dc212b1033e14c9e5ba8cde1895ac5eb209d9a"
         }
       ]
     },
@@ -228,7 +236,7 @@
       "id": "backups",
       "title": "Backups are complete",
       "status": "fail",
-      "reason": "Bounded same-region recovery-replica readbacks exist for some archive objects, but no approved complete Canadian recovery copy covers every relied-on object and no current complete provider durability and recovery record exists.",
+      "reason": "Bounded same-region recovery-replica readbacks exist for some archive objects, but no approved complete Canadian recovery copy covers every relied-on object and no current complete provider durability and recovery record exists. A costed backup plan awaits owner approval in docs/BACKUP_PLAN.md; nothing in it has been created, replicated, or restored.",
       "evidence": [
         {
           "path": "docs/IMMUTABLE_STORAGE_PROVISIONING.md",
@@ -241,6 +249,10 @@
         {
           "path": "docs/PHASE1_ARCHIVE_LIVE_READBACK_2026-08-20.md",
           "sha256": "6630983a082fce4b4d814ee2116f1524fba32d6c132ed132114b3e653c70a882"
+        },
+        {
+          "path": "docs/BACKUP_PLAN.md",
+          "sha256": "7e3cdda9045ee66b0b869b0a54a677a109ca1f4432c479f0ede4b6bce3138447"
         }
       ]
     },
