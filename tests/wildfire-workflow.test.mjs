@@ -15,6 +15,12 @@ const execFile = promisify(execFileCallback);
 const national = { id: 'national', response: { incidents: [{ id: 'CA-1' }], perimeters: [] } };
 
 const UTC_SLOTS = [0, 4, 5, 12, 13, 19, 20, 23];
+
+// British Columbia stops changing its clocks from 2026-11-01 (tz database 2026b), so
+// whether Pacific time falls back that day depends on the tz data the runtime ships.
+// The gate follows that data; these tests follow it too rather than assume either rule.
+const fallsBackOn20261101 = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Vancouver', timeZoneName: 'shortOffset' })
+  .format(new Date('2026-11-02T12:00:00Z')).includes('GMT-8');
 const cronFor = (hour) => `17 ${hour} * * *`;
 
 // Which slots open, judged from the slot itself, on a day in each half of the year.
@@ -38,6 +44,7 @@ test('the gate reads the slot from the cron expression, and refuses anything tha
 test('the eight UTC slots open exactly the four required Pacific hours in both halves of the year', () => {
   assert.deepEqual(openSlots(new Date('2026-01-15T13:30:00Z')), [5, 12, 16, 21]);
   assert.deepEqual(openSlots(new Date('2026-07-15T12:30:00Z')), [5, 12, 16, 21]);
+  assert.deepEqual(openSlots(new Date('2026-11-15T13:30:00Z')), [5, 12, 16, 21], 'four a day after 2026-11-01 under either rule');
 });
 
 test('a late run still belongs to its own slot, which is the whole point', () => {
@@ -58,13 +65,14 @@ test('a run queued before midnight UTC and started after it keeps the previous d
 });
 
 test('a slot that crosses into the other offset is judged by the offset it was named under', () => {
-  // Pacific daylight time ends at 02:00 local on 2026-11-01, which is 09:00 UTC.
-  // The 12:00 UTC slot the day before is 05:00 PDT and must open; the 13:00 UTC
-  // slot on the day itself is 05:00 PST and must open too.
+  // Where Pacific daylight time ends at 02:00 local on 2026-11-01 (09:00 UTC), the
+  // 12:00 UTC slot the day before is 05:00 PDT and must open; the 13:00 UTC slot on
+  // the day itself is 05:00 PST and must open too. Where BC stays on UTC-7, the
+  // 12:00 UTC slot keeps opening and the 13:00 UTC slot stays closed.
   assert.equal(shouldRefreshScheduled(cronFor(12), new Date('2026-10-31T12:20:00Z')), true);
   assert.equal(shouldRefreshScheduled(cronFor(13), new Date('2026-10-31T13:20:00Z')), false);
-  assert.equal(shouldRefreshScheduled(cronFor(13), new Date('2026-11-01T13:20:00Z')), true);
-  assert.equal(shouldRefreshScheduled(cronFor(12), new Date('2026-11-01T12:20:00Z')), false);
+  assert.equal(shouldRefreshScheduled(cronFor(13), new Date('2026-11-01T13:20:00Z')), fallsBackOn20261101);
+  assert.equal(shouldRefreshScheduled(cronFor(12), new Date('2026-11-01T12:20:00Z')), !fallsBackOn20261101);
 });
 
 test('a manual dispatch refreshes, and a scheduled run without a slot fails loudly instead of guessing', () => {
