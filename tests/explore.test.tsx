@@ -539,8 +539,8 @@ test("one bilingual inline-SVG province bar serves landing and every map state",
   ]);
   for (const consumer of [map, englishHome, frenchHome]) assert.match(consumer, /ProvinceBar/);
   assert.match(bar, /EXPLORE_MAP_VIEWS\.map/);
-  assert.match(bar, /<svg className="province-flag"/);
-  assert.doesNotMatch(bar, /<img\b|https?:\/\//);
+  assert.match(bar, /<img className="province-flag"/);
+  assert.doesNotMatch(bar, /https?:\/\//);
 
   const english = renderToStaticMarkup(
     <ExploreMapClient locale="en" mode="condition-recovery" year={2022} fromYear={2021} />,
@@ -548,8 +548,8 @@ test("one bilingual inline-SVG province bar serves landing and every map state",
   const french = renderToStaticMarkup(
     <ExploreMapClient locale="fr" mode="condition-recovery" year={2022} fromYear={2021} />,
   );
-  assert.equal((english.match(/<svg class="province-flag"/g) ?? []).length, 4);
-  assert.equal((french.match(/<svg class="province-flag"/g) ?? []).length, 4);
+  assert.equal((english.match(/<img class="province-flag"/g) ?? []).length, 4);
+  assert.equal((french.match(/<img class="province-flag"/g) ?? []).length, 4);
   for (const province of ["British Columbia", "Alberta", "Ontario", "Québec"]) assert.match(english, new RegExp(province));
   for (const province of ["Colombie-Britannique", "Alberta", "Ontario", "Québec"]) assert.match(french, new RegExp(province));
   assert.match(english, /Flag of British Columbia/);

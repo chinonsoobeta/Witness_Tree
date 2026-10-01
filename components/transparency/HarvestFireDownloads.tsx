@@ -4,7 +4,7 @@ import { useState } from "react";
 import type { Locale } from "@/lib/domain";
 import type { HarvestFireChartModel } from "@/lib/harvest-fire";
 import { chartGeometry } from "@/lib/harvest-fire/chart";
-import { drawHarvestFirePng, footerLines, PNG_CHART, PNG_COLOURS, PNG_WIDTH, pngHeight, type PngText } from "@/lib/harvest-fire/png";
+import { drawHarvestFirePng, footerLines, PNG_CHART, PNG_WIDTH, pngHeight, type PngText } from "@/lib/harvest-fire/png";
 
 /*
  * Downloads are made in the reader's browser from the numbers already on the
@@ -21,26 +21,17 @@ function save(blob: Blob, filename: string) {
   setTimeout(() => URL.revokeObjectURL(url), 0);
 }
 
-/** The page's own flag drawing, with its colour tokens resolved so it can stand alone as an image. */
+/** The page's own flag, loaded again so the PNG export can draw it. */
 async function flagImage(flagId: string): Promise<HTMLImageElement | null> {
   const element = document.getElementById(flagId);
-  if (!element) return null;
-  const clone = element.cloneNode(true) as SVGSVGElement;
-  clone.setAttribute("width", "360");
-  clone.setAttribute("height", "220");
-  const styles = getComputedStyle(element);
-  const markup = new XMLSerializer().serializeToString(clone)
-    .replace(/var\((--[a-z0-9-]+)\)/g, (_, name: string) => styles.getPropertyValue(name).trim() || PNG_COLOURS.ink);
-  const url = URL.createObjectURL(new Blob([markup], { type: "image/svg+xml" }));
+  if (!(element instanceof HTMLImageElement)) return null;
   try {
     const image = new Image();
-    image.src = url;
+    image.src = element.currentSrc || element.src;
     await image.decode();
     return image;
   } catch {
     return null;
-  } finally {
-    URL.revokeObjectURL(url);
   }
 }
 
