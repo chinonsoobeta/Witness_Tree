@@ -67,7 +67,13 @@ for (const barrel of ["lib/address/index.ts"]) {
 //    browser is calling the provider directly.
 const nextConfig = read("next.config.ts");
 const connectSrc = nextConfig.match(/"connect-src ([^"]+)"/)?.[1] ?? fail("next.config.ts no longer declares connect-src.");
-if (connectSrc.includes(PROVIDER_HOST)) fail("connect-src names the address provider.");
+for (const source of connectSrc.split(/\s+/)) {
+  if (!/^https?:\/\//.test(source)) continue;
+  const host = new URL(source.replace("://*.", "://")).hostname;
+  if (host === PROVIDER_HOST || host.endsWith(`.${PROVIDER_HOST}`)) {
+    fail("connect-src names the address provider.");
+  }
+}
 
 // The address service remains unconfigured; caller flags cannot enable it.
 const proxy = read("proxy.ts");
