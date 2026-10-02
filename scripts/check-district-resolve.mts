@@ -55,17 +55,15 @@ if (!route.includes('request.method !== "POST"')) {
 
 // 3. Unconfigured means absent, not broken. The flag must be stamped by the
 //    worker and the route must be handled before the app router sees it.
-const workerIndex = read("worker/index.ts");
-if (!workerIndex.includes("url.pathname === DISTRICT_RESOLVE_PATH")) {
-  fail("worker/index.ts must handle the district route itself.");
+const nextRoute = read("app/api/district/resolve/route.ts");
+if (!nextRoute.includes("export function POST(") ||
+    !nextRoute.includes("handleDistrictResolve(request, { DISTRICT_INDEX_BASE: process.env.DISTRICT_INDEX_BASE })")) {
+  fail("the Next district route must delegate POST with the server index setting.");
 }
-const routeAt = workerIndex.indexOf("url.pathname === DISTRICT_RESOLVE_PATH");
-const fallthroughAt = workerIndex.indexOf("handler.fetch(stamped");
-if (routeAt < 0 || fallthroughAt < 0 || routeAt > fallthroughAt) {
-  fail("worker/index.ts must answer the district route before falling through to the app router.");
-}
-if (!workerIndex.includes("withDistrictFlag(")) {
-  fail("worker/index.ts must stamp the district flag on every request.");
+const proxy = read("proxy.ts");
+if (!proxy.includes('headers.set("x-witness-tree-district", process.env.DISTRICT_INDEX_BASE ? "on" : "off")') ||
+    !proxy.includes("NextResponse.next({ request: { headers } })")) {
+  fail("proxy.ts must overwrite the district flag from server configuration.");
 }
 if (!route.includes(`DISTRICT_FLAG_HEADER = "${FLAG_HEADER}"`)) {
   fail(`worker/district.ts must declare the flag header as ${FLAG_HEADER}.`);

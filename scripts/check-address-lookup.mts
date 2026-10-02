@@ -65,17 +65,20 @@ for (const barrel of ["lib/address/index.ts"]) {
 // 2. The page talks to our own origin and nothing else, which is the whole
 //    reason the proxy exists. A provider host in connect-src would mean the
 //    browser is calling the provider directly.
-const workerEntry = read("worker/index.ts");
-const connectSrc = workerEntry.match(/"connect-src ([^"]+)"/)?.[1] ?? fail("worker/index.ts no longer declares connect-src.");
-if (connectSrc.includes(PROVIDER_HOST)) fail("connect-src names the address provider. The browser must only reach our own origin.");
+const nextConfig = read("next.config.ts");
+const connectSrc = nextConfig.match(/"connect-src ([^"]+)"/)?.[1] ?? fail("next.config.ts no longer declares connect-src.");
+if (connectSrc.includes(PROVIDER_HOST)) fail("connect-src names the address provider.");
 
-// 3. The flag is the worker's answer, not the caller's. It has to be stamped on
-//    the request that reaches the app router, with no branch that skips it.
-if (!workerEntry.includes("withAddressFlag(request,")) fail("worker/index.ts does not stamp the address flag on the inbound request.");
-if (!/handler\.fetch\(stamped,/.test(workerEntry)) fail("worker/index.ts passes an unstamped request to the app router.");
-const stampIndex = workerEntry.indexOf("withAddressFlag(request,");
-const routeIndex = workerEntry.indexOf("url.pathname === ADDRESS_SEARCH_PATH");
-if (routeIndex < 0 || routeIndex > stampIndex) fail("the address route must be handled before the app router fallthrough.");
+// The address service remains unconfigured; caller flags cannot enable it.
+const proxy = read("proxy.ts");
+if (!proxy.includes('headers.set("x-witness-tree-address", "off")') ||
+    !proxy.includes("NextResponse.next({ request: { headers } })")) {
+  fail("proxy.ts must overwrite the address flag on the request reaching the app router.");
+}
+const nextRoute = read("app/api/address/search/route.ts");
+if (!nextRoute.includes("export function POST(") || !nextRoute.includes("handleAddressSearch(request, {})")) {
+  fail("the Next address route must delegate POST to the unconfigured address handler.");
+}
 
 const workerRoute = read("worker/address.ts");
 if (!workerRoute.includes(`"${ROUTE}"`)) fail(`worker/address.ts no longer serves ${ROUTE}.`);

@@ -28,7 +28,8 @@ const coverage = read("lib/shapes/coverage.ts");
 const measure = read("lib/shapes/measure.ts");
 const tiles = read("lib/shapes/tiles.ts");
 const client = read("components/explore/ShapeMeasureClient.tsx");
-const worker = read("worker/index.ts");
+const proxy = read("proxy.ts");
+const nextRoute = read("app/api/shape/measure/route.ts");
 const draw = read("components/explore/ShapeDrawMap.tsx");
 
 // 1. The counts come from the packed grid, never from the tiles being drawn on.
@@ -74,11 +75,13 @@ if (!route.includes('"Cache-Control": "no-store"')) fail("worker/shape.ts must a
 if (!route.includes('request.method !== "POST"')) fail("worker/shape.ts must be POST only.");
 if (!route.includes(`"${ROUTE}"`)) fail(`worker/shape.ts must serve ${ROUTE}.`);
 if (!route.includes(`"${FLAG_HEADER}"`)) fail(`worker/shape.ts must define the ${FLAG_HEADER} flag.`);
-if (!worker.includes("SHAPE_MEASURE_PATH") || !worker.includes("withShapeFlag(")) {
-  fail("worker/index.ts must route the measurement and stamp the flag.");
+if (!nextRoute.includes("export function POST(") ||
+    !nextRoute.includes("handleShapeMeasure(request, { COARSE_GRID_BASE: process.env.COARSE_GRID_BASE })")) {
+  fail("the Next measurement route must delegate POST with the server grid setting.");
 }
-if (worker.indexOf("SHAPE_MEASURE_PATH") > worker.indexOf("handler.fetch(stamped")) {
-  fail("worker/index.ts must handle the measurement before the app router sees it.");
+if (!proxy.includes('headers.set("x-witness-tree-shape", process.env.COARSE_GRID_BASE ? "on" : "off")') ||
+    !proxy.includes("NextResponse.next({ request: { headers } })")) {
+  fail("proxy.ts must overwrite the shape flag from server configuration.");
 }
 
 // 5. The answer carries its own precision, and the estimate never travels alone.
