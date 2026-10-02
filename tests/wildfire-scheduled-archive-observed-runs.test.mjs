@@ -61,12 +61,19 @@ test("the record cannot claim a daylight saving crossing or any production step 
   }
 });
 
-test("a run window that spans 2026-11-01 must be recorded as crossing daylight saving time", async () => {
+// British Columbia stops changing its clocks from 2026-11-01 (tz database 2026b), so a
+// window spanning that day crosses a transition only where the runtime's tz data still
+// has one. The validator reads the same data; the test follows it rather than assume either.
+const fallsBackOn20261101 = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Vancouver", timeZoneName: "shortOffset" })
+  .format(new Date("2026-11-02T12:00:00Z")).includes("GMT-8");
+
+test("a run window that spans 2026-11-01 must be recorded as crossing daylight saving time only where Pacific time changes", async () => {
   const shifted = tampered((copy) => {
     copy.runs[copy.runs.length - 1].createdAt = "2026-11-02T10:37:55Z";
     copy.observedAt = "2026-11-02T12:00:00Z";
   });
+  shifted.claims.crossesDaylightSavingTransition = !fallsBackOn20261101;
   await assert.rejects(validateWildfireScheduledArchiveObservedRuns(shifted), /match the run window/);
-  shifted.claims.crossesDaylightSavingTransition = true;
+  shifted.claims.crossesDaylightSavingTransition = fallsBackOn20261101;
   assert.equal(await validateWildfireScheduledArchiveObservedRuns(shifted), shifted);
 });

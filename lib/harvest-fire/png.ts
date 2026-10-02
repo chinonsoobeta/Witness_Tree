@@ -88,8 +88,11 @@ export function drawHarvestFirePng(
   // Header: flag, title, subtitle, legend.
   let titleX = MARGIN;
   if (flag) {
-    ctx.drawImage(flag, MARGIN, 36, 60, 36.67);
-    titleX = MARGIN + 76;
+    // The flag keeps its own proportions at a fixed height.
+    const { naturalWidth = 0, naturalHeight = 0 } = flag as Partial<HTMLImageElement>;
+    const flagWidth = naturalWidth && naturalHeight ? (36.67 * naturalWidth) / naturalHeight : 60;
+    ctx.drawImage(flag, MARGIN, 36, flagWidth, 36.67);
+    titleX = MARGIN + flagWidth + 16;
   }
   ctx.fillStyle = c.ink;
   ctx.textBaseline = "alphabetic";
