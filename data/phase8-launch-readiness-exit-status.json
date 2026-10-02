@@ -47,11 +47,11 @@
       "id": "load-testing",
       "title": "Load testing is complete",
       "status": "fail",
-      "reason": "Artifact budgets do not measure a deployed service or establish the required 50× load-test result.",
+      "reason": "Artifact budgets do not measure a deployed service or establish the required 50× load-test result. On 2026-10-02 the Vercel migration changed the artifact reader to Next.js and the owner approved a 128 KiB shared gzip limit; the 400 KiB Explore limit and this criterion status are unchanged. Bound evidence digests were refreshed.",
       "evidence": [
         {
           "path": "docs/PERFORMANCE.md",
-          "sha256": "e60b5538236246b44d5e9a4e08ef076bb171991dbbb4a9ff8d95e64e496b3746"
+          "sha256": "f456dbca745bed7722ecd4e5aa6ee574499c65f43164188a025a04f5139a77a9"
         }
       ]
     },

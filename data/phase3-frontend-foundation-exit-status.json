@@ -6,11 +6,11 @@
       "id": "budgets-pass-in-ci",
       "title": "Every performance and accessibility budget in section 12.7 passes in CI",
       "status": "pass",
-      "reason": "The budget and accessibility contract checkers both run as required steps on the branch gate. On 2026-09-26 .github/workflows/ci.yml gained one step, npm run check:phase4-provincial-cause-crosstab; no existing step changed, the digest was refreshed, and this reason still holds. On 2026-09-27 .github/workflows/ci.yml gained one step, npm run check:census-subdivision-overlay; no existing step changed, the digest was refreshed, and this reason still holds.",
+      "reason": "The budget and accessibility contract checkers both run as required steps on the branch gate. On 2026-09-26 .github/workflows/ci.yml gained one step, npm run check:phase4-provincial-cause-crosstab; no existing step changed, the digest was refreshed, and this reason still holds. On 2026-09-27 .github/workflows/ci.yml gained one step, npm run check:census-subdivision-overlay; no existing step changed, the digest was refreshed, and this reason still holds. On 2026-10-02 the Vercel migration changed the artifact reader to Next.js and the owner approved a 128 KiB shared gzip limit; the 400 KiB Explore limit and this criterion status are unchanged. Bound evidence digests were refreshed.",
       "evidence": [
         {
           "path": "scripts/check-budgets.mjs",
-          "sha256": "b6f7c3b65c5638ca5f036df8cafdcf90b9c3b997069cd0cdc4f2978e3642bdda"
+          "sha256": "9169b8416b8620ee2646dea65bb7f05eb0eee00563049fc841c2fb1da72b7647"
         },
         {
           "path": "scripts/check-accessibility-contracts.mjs",
