@@ -152,7 +152,9 @@ test("the gate names where each photograph was taken", async () => {
 
 test("the decorative gate loops every five seconds without controls and respects reduced motion", async () => {
   const [gateway, css] = await Promise.all([read("../app/(gateway)/page.tsx"), read("../app/globals.css")]);
-  assert.match(gateway, /\["forest\.jpg", "forest-2\.jpg", "forest-3\.jpg", "forest-4\.jpg"\]/);
+  assert.deepEqual([...gateway.matchAll(/file: "([^"]+)"/g)].map((match) => match[1]),
+    ["forest.jpg", "forest-2.jpg", "forest-3.jpg", "forest-4.jpg"]);
+  assert.match(gateway, /const slideshow = photographs.length === 4/);
   assert.match(gateway, /alt="" role="presentation"/);
   assert.doesNotMatch(gateway, /<input|<button|gateway-motion/);
   assert.match(css, /animation: gateway-crossfade 20s linear infinite/);

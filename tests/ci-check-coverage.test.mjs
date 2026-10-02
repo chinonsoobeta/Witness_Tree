@@ -78,8 +78,8 @@ test("a CodeQL finding blocks the build unless someone has read it and said why"
   // As is a different rule in the accepted file.
   assert.throws(() => validateCodeqlResults(sarifFor(at(entry.ruleId, entry.path), at(entry.ruleId, entry.path), at("js/other-finding", entry.path)), [entry]), /nobody has read/);
 
-  // What the repository actually accepts today: one rule, one file, three reads.
-  assert.deepEqual(ACCEPTED_CODEQL_FINDINGS.map((accepted) => [accepted.ruleId, accepted.path, accepted.count]), [["js/incomplete-url-substring-sanitization", "scripts/check-address-lookup.mts", 3]]);
+  // What the repository actually accepts today: one rule, one file, two source-text reads.
+  assert.deepEqual(ACCEPTED_CODEQL_FINDINGS.map((accepted) => [accepted.ruleId, accepted.path, accepted.count]), [["js/incomplete-url-substring-sanitization", "scripts/check-address-lookup.mts", 2]]);
   // Each entry belongs to a matrix job that actually runs.
   const languages = /language: \[([^\]]+)\]/.exec(ci)?.[1].split(", ") ?? [];
   for (const accepted of ACCEPTED_CODEQL_FINDINGS) assert.ok(languages.includes(accepted.language), `${accepted.ruleId} is accepted for a language CodeQL does not analyse`);

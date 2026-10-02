@@ -78,10 +78,10 @@ export const ACCEPTED_CODEQL_FINDINGS = Object.freeze([
   {
     ruleId: "js/incomplete-url-substring-sanitization",
     path: "scripts/check-address-lookup.mts",
-    count: 3,
+    count: 2,
     language: "javascript-typescript",
     reason:
-      "The three checks read the text of a source file and a Content-Security-Policy directive to answer whether either mentions the address provider's host. Nothing here parses or validates a URL, so the query's remedy, comparing a parsed host, has nothing to apply to. A partial match is the intent: a mention of the host anywhere in shipped code is the thing being forbidden.",
+      "The two remaining checks read source-file text to detect any mention of the address provider host in shipped code and require its presence in the server request builder. They do not validate URLs; partial matching is intentional for source-text inspection. The Vercel migration now parses CSP source URLs and compares hostnames, so that third finding is no longer accepted.",
   },
 ]);
 
