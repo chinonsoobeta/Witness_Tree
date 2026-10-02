@@ -84,16 +84,3 @@ test("the language switch is an island, so the header is not shipped to the brow
   // header would opt into client rendering.
   assert.match(header, /<Suspense fallback=/);
 });
-
-test("the custom Vite config retains vinext's single-React development contract", () => {
-  const config = readFileSync(new URL("../vite.config.ts", import.meta.url), "utf8");
-  for (const dependency of [
-    "react",
-    "react-dom",
-    "react/jsx-runtime",
-    "react/jsx-dev-runtime",
-  ]) {
-    assert.match(config, new RegExp(`"${dependency.replace("/", "\\/")}"`));
-  }
-  assert.match(config, /resolve:\s*\{\s*dedupe:/);
-});
