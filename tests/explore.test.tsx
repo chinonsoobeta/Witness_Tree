@@ -3,8 +3,8 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 import type { Context, ReactElement } from "react";
 import { renderToStaticMarkup as renderElement } from "react-dom/server";
-import type { AppRouterInstance } from "vinext/shims/internal/app-router-context";
-import { AppRouterContext } from "vinext/shims/internal/app-router-context";
+import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import { AppRouterContext } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 /*
  * Explore now contains a client island that reads the app router. The framework
@@ -22,11 +22,6 @@ const stubRouter = Object.fromEntries(
   ]),
 ) as unknown as AppRouterInstance;
 
-// The shim types the context as possibly absent, because a build without the
-// client runtime does not ship one. This file renders client islands, so an
-// absent context is a broken assumption rather than a case to handle. Failing
-// here says why; failing inside a hook would not.
-if (!AppRouterContext) throw new Error("vinext no longer exports AppRouterContext");
 const RouterContext: Context<AppRouterInstance | null> = AppRouterContext;
 
 function renderToStaticMarkup(element: ReactElement): string {

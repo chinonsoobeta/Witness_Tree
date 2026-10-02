@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
-import test from "node:test";
+import test, { before, after } from "node:test";
+import { spawn } from "node:child_process";
+import { once } from "node:events";
+import { createServer } from "node:net";
 
 // The map fetches its tiles and boundary overlays from a remote origin named in these
 // modules. The policy has to name the same origin, so it is derived from them rather
@@ -21,15 +24,36 @@ function browserFetchedOrigins() {
   return [...origins].sort();
 }
 
+let origin;
+let server;
+before(async () => {
+  const listener = createServer();
+  listener.listen(0, "127.0.0.1");
+  await once(listener, "listening");
+  const port = listener.address().port;
+  await new Promise((resolve) => listener.close(resolve));
+  origin = `http://127.0.0.1:${port}`;
+  server = spawn(process.execPath, ["node_modules/next/dist/bin/next", "start", "--hostname", "127.0.0.1", "--port", String(port)], { stdio: ["ignore", "pipe", "pipe"], env: { ...process.env, COARSE_GRID_BASE: "", DISTRICT_INDEX_BASE: "" } });
+  let output = "";
+  server.stdout.on("data", (chunk) => { output += chunk; });
+  server.stderr.on("data", (chunk) => { output += chunk; });
+  const deadline = Date.now() + 60_000;
+  while (Date.now() < deadline) {
+    if (server.exitCode !== null) throw new Error(output);
+    try { if ((await fetch(origin)).ok) return; } catch { /* The server may still be starting. */ }
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+  throw new Error(`Next.js did not start: ${output}`);
+});
+after(async () => {
+  if (server && server.exitCode === null) {
+    server.kill();
+    await once(server, "exit");
+  }
+});
+
 async function render(pathname) {
-  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
-  workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}-${pathname}`);
-  const { default: worker } = await import(workerUrl.href);
-  return worker.fetch(
-    new Request(`http://localhost${pathname}`, { headers: { accept: "text/html" } }),
-    { ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) } },
-    { waitUntil() {}, passThroughOnException() {} },
-  );
+  return fetch(`${origin}${pathname}`, { headers: { accept: "text/html" } });
 }
 
 test("renders the bilingual language gateway", async () => {
@@ -294,4 +318,24 @@ test("every synthetic uptime route still renders the marker the probe looks for"
         "Update data/observability-deployment.json in the same commit as the copy change.",
     );
   }
+});
+
+
+test("Vercel routes preserve the existing API handlers and unavailable services", async () => {
+  for (const [path, options, status] of [
+    ["/api/search/suggest?locale=en&q=Campbell", {}, 200],
+    ["/api/explore/district-spans?from=2020&to=2022", {}, 200],
+    ["/api/address/search", { method: "POST", body: "{}" }, 503],
+    ["/api/district/resolve", { method: "POST", body: "{}" }, 503],
+  ]) {
+    const response = await fetch(`${origin}${path}`, options);
+    assert.equal(response.status, status, path);
+    assert.match(response.headers.get("content-type"), /application\/json/);
+    assert.equal(response.headers.get("x-content-type-options"), "nosniff");
+  }
+  const response = await fetch(`${origin}/en/explore/draw`, {
+    headers: { "x-witness-tree-shape": "on" },
+  });
+  const html = await response.text();
+  assert.match(html, /Area measurement is not available/);
 });

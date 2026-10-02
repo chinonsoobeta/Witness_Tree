@@ -5,6 +5,7 @@ import path from "node:path";
 import test from "node:test";
 import {
   checkBudgets,
+  nextBudgetManifest,
   EXPLORE_LIMIT,
   SHARED_LIMIT,
 } from "../scripts/check-budgets.mjs";
@@ -249,6 +250,31 @@ test("hex-literal gate treats every themed palette block as a declaration site",
       '@media (prefers-color-scheme: dark) {\n  :root:not([data-theme="light"]) {\n    --ink: #f0f0f0;\n  }\n}\n[data-theme="dark"] {\n  --ink: #f0f0f0;\n}\n',
     );
     assert.ok((await checkHexLiterals(stylesheet)).lines > 0);
+  } finally {
+    await rm(root, { recursive: true });
+  }
+});
+
+
+test("Next budgets count lazy Explore chunks and reject unattributed output", async () => {
+  const root = await fixture();
+  try {
+    await mkdir(path.join(root, "server/app/en/explore"), { recursive: true });
+    await mkdir(path.join(root, "static/chunks"), { recursive: true });
+    await writeFile(path.join(root, "build-manifest.json"), JSON.stringify({ rootMainFiles: ["static/chunks/framework.js"], polyfillFiles: [] }));
+    await writeFile(path.join(root, "server/app-paths-manifest.json"), JSON.stringify({ "/en/explore/page": "app/en/explore/page.js" }));
+    await writeFile(path.join(root, "server/app/en/explore/page_client-reference-manifest.js"),
+      'globalThis.__RSC_MANIFEST = {"/en/explore/page": {clientModules: {"[project]/components/explore/ExploreView.tsx": {chunks: ["/_next/static/chunks/explore.js"]}}}};');
+    await writeFile(path.join(root, "static/chunks/framework.js"), "framework");
+    await writeFile(path.join(root, "static/chunks/explore.js"), 'load("map.js")');
+    await writeFile(path.join(root, "static/chunks/map.js"), "map dependency");
+    const manifest = await nextBudgetManifest(root);
+    const result = await checkBudgets(root, { manifest });
+    assert.equal(result.rawShared, 0);
+    assert.equal(result.rawExplore, Buffer.byteLength('load("map.js")map dependency'));
+    assert.equal(manifest["static/chunks/framework.js"].isFramework, true);
+    await writeFile(path.join(root, "static/chunks/orphan.js"), "orphan");
+    await assert.rejects(nextBudgetManifest(root), /unattributable/);
   } finally {
     await rm(root, { recursive: true });
   }

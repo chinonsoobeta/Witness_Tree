@@ -2,8 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import type { Context, ReactElement } from "react";
 import { renderToStaticMarkup as renderElement } from "react-dom/server";
-import type { AppRouterInstance } from "vinext/shims/internal/app-router-context";
-import { AppRouterContext } from "vinext/shims/internal/app-router-context";
+import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import { AppRouterContext } from "next/dist/shared/lib/app-router-context.shared-runtime";
 // @ts-expect-error Node test runner needs extensions.
 import { ExploreView } from "../components/explore/ExploreView.tsx";
 // @ts-expect-error Node test runner needs extensions.
@@ -18,7 +18,6 @@ import { exploreFixtures } from "../lib/explore/fixtures.ts";
 const stubRouter = Object.fromEntries(
   ["push", "replace", "back", "forward", "refresh", "prefetch"].map((method) => [method, () => {}]),
 ) as unknown as AppRouterInstance;
-if (!AppRouterContext) throw new Error("vinext no longer exports AppRouterContext");
 const RouterContext: Context<AppRouterInstance | null> = AppRouterContext;
 
 function renderToStaticMarkup(element: ReactElement): string {

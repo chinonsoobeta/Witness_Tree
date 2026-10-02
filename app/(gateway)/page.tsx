@@ -1,10 +1,11 @@
-/// <reference types="vite/client" />
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import type { Metadata } from "next";
 import { PRODUCT_NAME, PRODUCT_PURPOSE } from "@/lib/domain";
 import { EXPLORE_COVERAGE_PERIOD } from "@/lib/explore";
 import { gatewayAlternates } from "@/lib/site-metadata";
 
-/* eslint-disable @next/next/no-html-link-for-pages -- Vinext client links throw before gateway navigation in Sites. */
+/* eslint-disable @next/next/no-html-link-for-pages -- The gateway navigates between separate locale root layouts. */
 
 // Each photograph is named by where it was taken, read from the file's own
 // capture metadata. No location is stated for a photograph that carries none.
@@ -17,9 +18,8 @@ const GATE_PHOTOGRAPHS = [
 
 // Resolve owner-supplied photographs at build time. An absent set renders only
 // the ground, and a partial set remains a static photograph without empty frames.
-const availablePhotographs = import.meta.glob("../../public/gate/forest*.jpg", { eager: true, query: "?url", import: "default" });
-const photographs = "../../public/gate/forest.jpg" in availablePhotographs
-  ? ["forest.jpg", "forest-2.jpg", "forest-3.jpg", "forest-4.jpg"].filter((name) => `../../public/gate/${name}` in availablePhotographs)
+const photographs = existsSync(join(process.cwd(), "public/gate/forest.jpg"))
+  ? GATE_PHOTOGRAPHS.map(({ file }) => file).filter((name) => existsSync(join(process.cwd(), "public/gate", name)))
   : [];
 const slideshow = photographs.length === 4;
 const shown = photographs.slice(0, slideshow ? 4 : 1);

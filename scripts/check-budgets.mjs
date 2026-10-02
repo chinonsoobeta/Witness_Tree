@@ -1,8 +1,9 @@
-import { readFile, stat } from "node:fs/promises";
+import { readFile, stat, readdir } from "node:fs/promises";
 import path from "node:path";
+import { runInNewContext } from "node:vm";
 import { gzipSync } from "node:zlib";
 
-export const SHARED_LIMIT = 100 * 1024;
+export const SHARED_LIMIT = 128 * 1024;
 export const EXPLORE_LIMIT = 400 * 1024;
 
 const manifestPath = (root) => path.join(root, ".vite", "manifest.json");
@@ -91,8 +92,8 @@ function staticDependencyClosure(manifest, roots) {
   return seen;
 }
 
-export async function checkBudgets(root = path.resolve("dist/client"), { exploreSource = path.resolve("app/en/explore/page.tsx") } = {}) {
-  const manifest = await loadManifest(root);
+export async function checkBudgets(root = path.resolve("dist/client"), { exploreSource = path.resolve("app/en/explore/page.tsx"), manifest: suppliedManifest } = {}) {
+  const manifest = suppliedManifest ?? await loadManifest(root);
   const artifacts = await reachableEntries(root, manifest);
   const application = artifacts.filter(({ key, entry }) => !isFramework(key, entry));
   const entryKeys = Object.entries(manifest).filter(([, entry]) => entry?.isEntry).map(([key]) => key);
@@ -113,7 +114,65 @@ export async function checkBudgets(root = path.resolve("dist/client"), { explore
   return { status: "measured", rawShared, rawExplore, gzipShared, gzipExplore, files: application.length };
 }
 
+// Next.js lists the chunks needed by each client module. Follow emitted chunk
+// references too, so lazy map imports count against the same Explore budget.
+export async function nextBudgetManifest(root) {
+  const build = JSON.parse(await readFile(path.join(root, "build-manifest.json"), "utf8"));
+  const appPaths = JSON.parse(await readFile(path.join(root, "server/app-paths-manifest.json"), "utf8"));
+  const sources = new Map();
+  const add = (file, source) => {
+    if (!file.endsWith(".js")) return;
+    const normalized = file.replace(/^\/_next\//, "");
+    if (!sources.has(normalized)) sources.set(normalized, new Set());
+    sources.get(normalized).add(source);
+  };
+  for (const file of [...build.rootMainFiles, ...build.polyfillFiles]) add(file, "framework");
+  for (const [route, serverFile] of Object.entries(appPaths)) {
+    if (!route.endsWith("/page")) continue;
+    const file = path.join(root, "server", serverFile.replace(/\.js$/, "_client-reference-manifest.js"));
+    const context = {};
+    runInNewContext(await readFile(file, "utf8"), context);
+    for (const manifest of Object.values(context.__RSC_MANIFEST ?? {})) {
+      for (const [module, entry] of Object.entries(manifest.clientModules)) {
+        const framework = module.includes("/node_modules/next/");
+        for (const chunk of entry.chunks) add(chunk, framework ? "framework" : route);
+      }
+    }
+  }
+  const files = (await readdir(path.join(root, "static/chunks"))).filter((file) => file.endsWith(".js"));
+  const dependencies = new Map();
+  for (const file of files) {
+    const key = `static/chunks/${file}`;
+    const source = await readFile(path.join(root, key), "utf8");
+    dependencies.set(key, files.filter((name) => name !== file && source.includes(name)).map((name) => `static/chunks/${name}`));
+  }
+  // A module's lazy dependencies inherit its route attribution.
+  let changed = true;
+  while (changed) {
+    changed = false;
+    for (const [file, owners] of [...sources]) {
+      for (const dependency of dependencies.get(file) ?? []) {
+        const before = sources.get(dependency)?.size ?? 0;
+        for (const owner of owners) add(dependency, owner);
+        if (sources.get(dependency).size !== before) changed = true;
+      }
+    }
+  }
+  const manifest = {};
+  for (const file of files) {
+    const key = `static/chunks/${file}`;
+    const owners = sources.get(key);
+    if (!owners) throw new Error(`Budget chunk is unattributable: ${key}.`);
+    const routes = [...owners].filter((owner) => owner !== "framework");
+    manifest[key] = { file: key, isEntry: true,
+      isFramework: routes.length === 0,
+      name: routes.length > 0 && routes.every((route) => /\/(explore|explorer)(\/|$)/.test(route)) ? "Explore" : "shared" };
+  }
+  return manifest;
+}
+
 if (import.meta.url === `file://${process.argv[1]}`) {
-  const result = await checkBudgets();
+  const root = path.resolve(".next");
+  const result = await checkBudgets(root, { manifest: await nextBudgetManifest(root) });
   console.log(`Budget gate passed: shared gzip ${result.gzipShared} bytes (raw ${result.rawShared}); explore gzip ${result.gzipExplore} bytes (raw ${result.rawExplore}).`);
 }

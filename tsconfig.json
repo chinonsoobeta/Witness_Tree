@@ -15,9 +15,9 @@
     "types": ["@cloudflare/workers-types", "node"],
     "incremental": true,
     "paths": {
-      "@/*": ["./*"],
-      "next/navigation": ["./node_modules/vinext/dist/shims/navigation"]
-    }
+      "@/*": ["./*"]
+    },
+    "plugins": [{ "name": "next" }]
   },
   "include": [
     "next-env.d.ts",
