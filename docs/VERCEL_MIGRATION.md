@@ -2,8 +2,9 @@
 
 This branch migrates the application tree recorded for Sites version 48,
 GitHub commit `d9432b8e36be3f48a922d194618ff9840a5640a9`, to Next.js on Vercel.
-It does not include later application changes on `main` or change data admission
-and release records.
+It incorporates subsequent `main` changes through commit
+`48a6efabbeb1531ab5c7c256db8f698b03e9b9d3`. The migration itself does not
+change data admission or release records.
 
 ## Runtime
 
