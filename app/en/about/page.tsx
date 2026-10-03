@@ -13,7 +13,7 @@ export default function EnglishAboutPage() {
   return <SiteShell locale="en"><main id="main" className="page-wrap">
     <header className="masthead"><h1>About {PRODUCT_NAME.en}</h1></header>
     <section className="content-section prose-measure">
-      <p>Welcome to my website. My name is Chinonso Obeta and I’m a Policy Analyst based in Vancouver, BC who is employed in the provincial environmental assessment office. This work and the my views is not endorsed by the Government of British Columbia.</p>
+      <p>Welcome to my website. My name is Chinonso Obeta and I’m a Policy Analyst based in Vancouver, BC who is employed in the provincial environmental assessment office. This work and my views are not endorsed by the Government of British Columbia.</p>
       <p>Like many other British Columbians, I’ve watched with alarm as our forest sector continues to descend into decline with many mills closing and people losing their jobs. Over the last century, the sector has anchored communities and towns all over the province and it is a source of employment and pride for many.</p>
       <p>After I heard of yet another mill closure this summer, I decided that I’d try to investigate the reasons for why this sector is declining. I started with two questions: How many trees are left, and where are they? This website is an attempt to answer that.</p>
       <ul className="about-links">
