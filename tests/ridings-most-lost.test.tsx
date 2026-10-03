@@ -6,13 +6,13 @@ import { formatNumber } from "../lib/domain/number.ts";
 // @ts-expect-error Node test runner needs extensions.
 import { CitiesMostLost, RidingsMostLost } from "../components/site/RidingsMostLost.tsx";
 // @ts-expect-error Node test runner needs extensions.
-import { CITY_RANK_FLOOR_HECTARES, citiesByWholeRecordLoss, ridingsByWholeRecordLoss, WHOLE_RECORD_RANK_FLOOR_HECTARES } from "../lib/search/site-search.ts";
+import { CITY_RANK_FLOOR_HECTARES, citiesByWholeRecordLoss, RIDING_RANK_UNKNOWN_TOLERANCE_PERCENT, ridingsByWholeRecordLoss, WHOLE_RECORD_RANK_FLOOR_HECTARES } from "../lib/search/site-search.ts";
 // @ts-expect-error Node test runner needs extensions.
 import { PLACE_NAME_INDEX } from "../lib/search/place-names.ts";
 // @ts-expect-error Node test runner needs extensions.
 import { placeFigure } from "../lib/search/place-figures.ts";
 
-test("ridings are ranked by share of mapped forest lost, fully mapped and above the forest floor only", () => {
+test("ridings are ranked by share of mapped forest lost, above the forest floor, and mapped in full or all but under 1%", () => {
   for (const level of ["federal", "provincial"] as const) {
     const rows = ridingsByWholeRecordLoss(level, 50);
     assert.ok(rows.length >= 5, level);
@@ -24,6 +24,8 @@ test("ridings are ranked by share of mapped forest lost, fully mapped and above 
       // The share's own denominator clears the floor.
       assert.ok(row.lossHectares / (row.lossPercent / 100) >= WHOLE_RECORD_RANK_FLOOR_HECTARES - 1, row.id);
       assert.match(row.province, /^(BC|AB|ON|QC)$/, `${row.id} is inside the four provinces`);
+      // The owner's 2026-10-03 tolerance: under 1% unmapped, and it travels with the share.
+      if (row.unmappedPercent !== undefined) assert.ok(row.unmappedPercent > 0 && row.unmappedPercent < RIDING_RANK_UNKNOWN_TOLERANCE_PERCENT, row.id);
     }
   }
 });
@@ -56,7 +58,13 @@ test("the home section lists the top five ridings of each kind per province, eac
   assert.ok(english.indexOf("Federal") < english.indexOf("Provincial"), "federal row first");
   assert.ok(english.indexOf(">British Columbia<") < english.indexOf(">Alberta<"));
   assert.ok(english.indexOf(">Ontario<") < english.indexOf(">Québec<"));
-  assert.match(english, /Only ridings mapped in full, with at least 50,000 ha of forest, are ranked/);
+  assert.equal(RIDING_RANK_UNKNOWN_TOLERANCE_PERCENT, 1);
+  assert.match(english, /Only ridings with at least 50,000 ha of forest, mapped in full or with less than 1% unmapped, are ranked/);
+  // An admitted riding names its unmapped share beside its figure.
+  assert.match(english, />Thunder Bay—Superior North<\/a><span class="ridings-most-lost-figure">.*?· 0\.72% unmapped</);
+  // A column cut short says where the province's unmapped land lies.
+  assert.match(english, /Only 3 ridings are mapped well enough, with enough forest, to rank\. Unmapped land here lies mostly in the prairies/);
+  assert.match(french, /Les terres non cartographiées se trouvent ici surtout dans les Prairies/);
   assert.match(english, /never counted as zero/);
   assert.match(english, /satellite imagery can’t tell why trees are gone/);
   assert.match(french, /jamais comptées comme zéro/);

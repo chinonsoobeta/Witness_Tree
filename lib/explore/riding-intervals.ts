@@ -125,9 +125,13 @@ function inRecordScope(district: Readonly<{ jurisdiction: string; boundaryId: st
     || COVERED_FEDERAL_DISTRICT_PREFIXES.some((prefix) => district.boundaryId.startsWith(`CA-${prefix}`));
 }
 
-/** Resolves every district for one span. The coverage rule is intervalSpanFigures'. */
+/**
+ * Resolves every district for one span. The coverage rule is intervalSpanFigures',
+ * strict unless a caller admits a small unmapped share.
+ */
 export function ridingIntervalMeasurements(
   interval: ExploreInterval,
+  unknownTolerancePercent = 0,
 ): readonly RidingIntervalMeasurement[] {
   // The release measures all 343 federal ridings from national data, but the
   // record covers four provinces only (plan: no coverage beyond them in
@@ -139,6 +143,6 @@ export function ridingIntervalMeasurements(
     boundaryId: district.boundaryId,
     fromYear: interval.fromYear,
     toYear: interval.toYear,
-    ...intervalSpanFigures(district, interval),
+    ...intervalSpanFigures(district, interval, unknownTolerancePercent),
   }));
 }

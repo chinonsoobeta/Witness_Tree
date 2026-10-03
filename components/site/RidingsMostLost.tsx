@@ -1,6 +1,7 @@
 import { formatHectares, formatNumber, formatPercent, type Locale } from "@/lib/domain";
+import { formatUnknownSharePercent } from "@/lib/explore/map-style";
 import { provinceSpanDisplayRows } from "@/lib/explore/province-spans";
-import { CITY_RANK_FLOOR_HECTARES, citiesByWholeRecordLoss, ridingsByWholeRecordLoss, WHOLE_RECORD_RANK_FLOOR_HECTARES, type WholeRecordRidingRank } from "@/lib/search/site-search";
+import { CITY_RANK_FLOOR_HECTARES, citiesByWholeRecordLoss, RIDING_RANK_UNKNOWN_TOLERANCE_PERCENT, ridingsByWholeRecordLoss, WHOLE_RECORD_RANK_FLOOR_HECTARES, type WholeRecordRidingRank } from "@/lib/search/site-search";
 
 /*
  * The ridings where the largest share of forest was detected as lost over the
@@ -16,31 +17,40 @@ const PROVINCES = ["BC", "AB", "ON", "QC"] as const;
 const COPY = {
   en: {
     heading: "Ridings with the largest share of forest lost, 1984–2022",
-    lead: (floor: string) => `The share of each riding’s mapped forest detected as lost at least once from 1984 to 2022, top five in each province. Only ridings mapped in full, with at least ${floor} of forest, are ranked; the rest are left out, never counted as zero.`,
+    lead: (floor: string, tolerance: string) => `The share of each riding’s mapped forest detected as lost at least once from 1984 to 2022, top five in each province. Only ridings with at least ${floor} of forest, mapped in full or with less than ${tolerance} unmapped, are ranked. Where a small part is unmapped, the share is of the mapped forest and the unmapped share is shown beside it. The rest are left out, never counted as zero.`,
     federal: "Federal ridings",
     provincial: "Provincial ridings",
     search: "/en/search",
     lost: "lost",
-    none: "No riding here is mapped in full with enough forest to rank.",
-    fewer: (count: number) => `Only ${count} ${count === 1 ? "riding is" : "ridings are"} mapped in full with enough forest to rank.`,
+    none: "No riding here is mapped well enough, with enough forest, to rank.",
+    fewer: (count: number) => `Only ${count} ${count === 1 ? "riding is" : "ridings are"} mapped well enough, with enough forest, to rank.`,
+    unmapped: "unmapped",
+    reason: (where: string) => `Unmapped land here lies ${where}.`,
     note: "A share can be high because of harvest, fire or both; satellite imagery can’t tell why trees are gone.",
   },
   fr: {
     heading: "Circonscriptions ayant perdu la plus grande part de leur forêt, 1984–2022",
-    lead: (floor: string) => `La part de la forêt cartographiée de chaque circonscription détectée comme perdue au moins une fois de 1984 à 2022, les cinq premières de chaque province. Seules les circonscriptions entièrement cartographiées, avec au moins ${floor} de forêt, sont classées\u202F; les autres sont exclues, jamais comptées comme zéro.`,
+    lead: (floor: string, tolerance: string) => `La part de la forêt cartographiée de chaque circonscription détectée comme perdue au moins une fois de 1984 à 2022, les cinq premières de chaque province. Seules les circonscriptions ayant au moins ${floor} de forêt, entièrement cartographiées ou avec moins de ${tolerance} non cartographié, sont classées. Lorsqu’une petite partie n’est pas cartographiée, la part porte sur la forêt cartographiée et la part non cartographiée est indiquée à côté. Les autres sont exclues, jamais comptées comme zéro.`,
     federal: "Circonscriptions fédérales",
     provincial: "Circonscriptions provinciales",
     search: "/fr/recherche",
     lost: "perdus",
-    none: "Aucune circonscription d’ici n’est entièrement cartographiée avec assez de forêt pour être classée.",
-    fewer: (count: number) => `Seulement ${count} ${count === 1 ? "circonscription est entièrement cartographiée" : "circonscriptions sont entièrement cartographiées"} avec assez de forêt pour être classées.`,
+    none: "Aucune circonscription d’ici n’est assez cartographiée, avec assez de forêt, pour être classée.",
+    fewer: (count: number) => `Seulement ${count} ${count === 1 ? "circonscription est assez cartographiée" : "circonscriptions sont assez cartographiées"}, avec assez de forêt, pour être classées.`,
+    unmapped: "non cartographié",
+    reason: (where: string) => `Les terres non cartographiées se trouvent ici ${where}.`,
     note: "Une part peut être élevée à cause de la récolte, du feu ou des deux\u202F; l’imagerie satellitaire ne peut pas dire pourquoi les arbres ont disparu.",
   },
 } as const;
 
 /** Full province names, as the rest of the home page spells them (Québec, not Quebec). */
+const PROVINCE_ROWS = provinceSpanDisplayRows({ fromYear: 1984, toYear: 2022 });
 const PROVINCE_NAMES: Readonly<Record<string, Readonly<{ en: string; fr: string }>>> = Object.fromEntries(
-  provinceSpanDisplayRows({ fromYear: 1984, toYear: 2022 }).map((row) => [row.code, row.name]),
+  PROVINCE_ROWS.map((row) => [row.code, row.name]),
+);
+/** Where each province's unmapped land lies, as the rest of the site says it. */
+const PROVINCE_UNMAPPED: Readonly<Record<string, Readonly<{ en: string; fr: string }>>> = Object.fromEntries(
+  PROVINCE_ROWS.map((row) => [row.code, row.unmappedCharacter]),
 );
 
 function RankList({ rows, locale, label, empty }: { rows: readonly WholeRecordRidingRank[]; locale: Locale; label: string; empty: string | null }) {
@@ -56,6 +66,7 @@ function RankList({ rows, locale, label, empty }: { rows: readonly WholeRecordRi
               <span className="ridings-most-lost-figure">
                 <span className="mark-glyph mark-glyph--satellite" aria-hidden="true" />
                 {formatPercent(row.lossPercent, locale)} · {formatHectares(row.lossHectares, locale, 0)} {copy.lost}
+                {row.unmappedPercent === undefined ? null : ` · ${formatUnknownSharePercent(row.unmappedPercent, locale)} ${copy.unmapped}`}
               </span>
             </li>
           ))}
@@ -67,17 +78,21 @@ function RankList({ rows, locale, label, empty }: { rows: readonly WholeRecordRi
 }
 
 /** One row of four province columns, BC, AB, ON and QC from left to right. */
-function ProvinceColumns({ ranks, locale, none, fewer }: {
+function ProvinceColumns({ ranks, locale, none, fewer, reason }: {
   ranks: (province: string) => readonly WholeRecordRidingRank[];
   locale: Locale;
   none: string;
   fewer: (count: number) => string;
+  /** Says where the unmapped land lies, for a column cut short by it. */
+  reason?: (where: string) => string;
 }) {
   return (
     <div className="ridings-most-lost-grid">
       {PROVINCES.map((province) => {
         const rows = ranks(province);
-        const empty = rows.length === 0 ? none : rows.length < LIMIT ? fewer(rows.length) : null;
+        const short = rows.length === 0 ? none : rows.length < LIMIT ? fewer(rows.length) : null;
+        const where = PROVINCE_UNMAPPED[province]?.[locale];
+        const empty = short && reason && where ? `${short} ${reason(where)}` : short;
         return <RankList key={province} rows={rows} locale={locale} label={PROVINCE_NAMES[province]?.[locale] ?? province} empty={empty} />;
       })}
     </div>
@@ -90,11 +105,11 @@ export function RidingsMostLost({ locale }: { locale: Locale }) {
   return (
     <section className="content-section" id="ridings-most-lost" aria-labelledby="ridings-most-lost-heading">
       <h2 id="ridings-most-lost-heading">{copy.heading}</h2>
-      <p className="lead">{copy.lead(floor)}</p>
+      <p className="lead">{copy.lead(floor, formatPercent(RIDING_RANK_UNKNOWN_TOLERANCE_PERCENT, locale))}</p>
       <h3>{copy.federal}</h3>
-      <ProvinceColumns ranks={(province) => ridingsByWholeRecordLoss("federal", LIMIT, province)} locale={locale} none={copy.none} fewer={copy.fewer} />
+      <ProvinceColumns ranks={(province) => ridingsByWholeRecordLoss("federal", LIMIT, province)} locale={locale} none={copy.none} fewer={copy.fewer} reason={copy.reason} />
       <h3>{copy.provincial}</h3>
-      <ProvinceColumns ranks={(province) => ridingsByWholeRecordLoss("provincial", LIMIT, province)} locale={locale} none={copy.none} fewer={copy.fewer} />
+      <ProvinceColumns ranks={(province) => ridingsByWholeRecordLoss("provincial", LIMIT, province)} locale={locale} none={copy.none} fewer={copy.fewer} reason={copy.reason} />
       <p><small>{copy.note}</small></p>
     </section>
   );
