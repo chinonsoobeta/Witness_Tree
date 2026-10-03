@@ -72,16 +72,10 @@ export const EXPLORE_PER_CELL_LAYER = Object.freeze({
  * and wildfire modes are the same tiles filtered, not different tiles. There
  * is nothing to acquire and nothing to admit for them.
  *
- * `condition-recovery` returns null, and that is a different kind of absence:
- * recovery needs a forest class from the annual land-cover class series. That
- * series is staged on the data root, but the forest-class treatment a
- * recovery rule depends on is not admitted. See
- * docs/VLCE2_FOREST_MASK_DECISION.md and
- * docs/FALL_DOWN_WP3_CONDITION_RECOVERY_DETERMINATION.md.
- *
- * The interface has to say which of the two kinds of absence it is looking
- * at, because "we have not wired this yet" and
- * "this data does not exist here" are not the same statement to a reader.
+ * `condition-recovery` returns null because it has no patches: it is
+ * published as province and economic-region figures only. The per-cell
+ * recovery tiles were built under the earlier three-year rule and are not
+ * published with the five-year figures. See docs/VLCE2_FOREST_MASK_DECISION.md.
  */
 export type PerCellCause = "all" | "harvest" | "fire";
 

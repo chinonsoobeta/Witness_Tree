@@ -281,11 +281,15 @@ test("renders localized search results and the Explore table without browser Jav
   assert.match(frenchExplore, /<th scope="col">Récolte \(ha\)<\/th><th scope="col">Feu \(ha\)<\/th>/);
   assert.match(frenchExplore, /href="\/fr\/donnees\/recolte-et-incendies\?from=2020&amp;to=2020"/);
   assert.match(frenchExplore, /Attribution de la source/);
-  // Condition and recovery is the one mode still on example data, and says so.
-  assert.match(englishFixtures, /The chart and table use made-up example data, not real records/);
+  // Condition and recovery shows the owner-admitted five-year figures since
+  // 2026-10-03, so it no longer calls itself example data, and it names its source.
+  assert.doesNotMatch(englishFixtures, /made-up example data/);
+  assert.match(englishFixtures, /treed for at least five years in a row/);
+  assert.match(englishFixtures, /Did the trees grow back\?/);
   assert.match(englishFixtures, /<table/);
   assert.match(englishFixtures, /Source attribution/);
-  assert.match(frenchFixtures, /Le graphique et le tableau utilisent des données d’exemple inventées, et non de vrais registres/);
+  assert.doesNotMatch(frenchFixtures, /données d’exemple inventées/);
+  assert.match(frenchFixtures, /boisé pendant au moins cinq années de suite/);
   assert.match(frenchFixtures, /<table/);
   assert.match(frenchFixtures, /Attribution de la source/);
 });

@@ -5,6 +5,7 @@ import releaseRecord from "../data/phase4-condition-recovery-explore.json";
 import {
   CONDITION_RECOVERY,
   conditionRecoveryMeasurements,
+  conditionRecoveryView,
   parseConditionRecoveryRelease,
 } from "../lib/explore/condition-recovery";
 
@@ -14,10 +15,18 @@ const admitted = (overrides: Record<string, unknown> = {}) => ({
   ...overrides,
 });
 
-test("the mode stays empty while the product is not admitted", () => {
-  assert.equal(releaseRecord.claims.admitted, false);
-  assert.equal(CONDITION_RECOVERY, null);
-  assert.deepEqual(conditionRecoveryMeasurements(), []);
+test("the owner-admitted five-year release is what the mode shows", () => {
+  assert.equal(releaseRecord.claims.admitted, true);
+  assert.equal(releaseRecord.claims.ownerReviewed, true);
+  assert.equal(releaseRecord.claims.productionEligible, false);
+  assert.ok(CONDITION_RECOVERY);
+  assert.equal(conditionRecoveryMeasurements().length, 49);
+  const view = conditionRecoveryView();
+  assert.ok(view);
+  assert.equal(view.rows.length, 49);
+  // Without admission and owner review the same figures yield nothing.
+  const unadmitted = { ...releaseRecord, claims: { ...releaseRecord.claims, admitted: false } };
+  assert.equal(conditionRecoveryView(parseConditionRecoveryRelease(unadmitted)), null);
 });
 
 test("admission alone is not enough: owner review is also required", () => {
@@ -40,7 +49,7 @@ test("an admitted release gives four provinces, 44 regions, and the four-provinc
   const four = rows[0];
   assert.equal(four.kind, "four-provinces");
   assert.equal(Math.round(four.lostHectares / 1e4) / 100, 55.13);
-  assert.equal(Math.round((four.latestRecoveredPercent ?? 0) * 10) / 10, 36.7);
+  assert.equal(Math.round((four.latestRecoveredPercent ?? 0) * 10) / 10, 33);
   assert.ok((four.anyRecoveredPercent ?? 0) > (four.latestRecoveredPercent ?? 0));
 });
 
@@ -92,5 +101,7 @@ test("cause of the latest loss partitions lost area, and the RESULTS agreement i
   assert.equal(release.resultsAgreement.targetMet, false);
   assert.ok(release.resultsAgreement.agreement < release.resultsAgreement.target);
   assert.match(release.resultsAgreement.note.en, /61%/);
-  assert.match(release.resultsAgreement.note.fr, /61 %/);
+  assert.match(release.resultsAgreement.note.fr, /61\u00a0%/);
+  // Measured under the three-year rule, and labelled so.
+  assert.match(release.resultsAgreement.note.en, /three-year rule/);
 });

@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { CoverageStatement } from "@/components/policy/CoverageStatement";
 import { EvidenceKey } from "@/components/policy/EvidenceKey";
+import { ConditionRecoveryFigures, ConditionRecoveryHeadline } from "./ConditionRecoveryFigures";
+import type { ConditionRecoveryView } from "@/lib/explore/condition-recovery";
 
 import {
   ConfidenceBadge,
@@ -36,6 +38,7 @@ import {
   type RidingBoundaryMeasurement,
 } from "@/lib/explore";
 import { harvestFireHref, harvestFireSpanTotals } from "@/lib/harvest-fire";
+import type { ForestRegionFigure } from "@/lib/explore/forest-regions";
 import type { ProvincialCauseBreakdown } from "@/lib/phase4/provincial-cause";
 import { ExploreMapClient } from "./ExploreMapClient";
 import { ExploreYearControl } from "./ExploreYearControl";
@@ -53,7 +56,11 @@ const copy = {
     byProvince: "By province",
     ridingsMostLost: "Ridings with the largest share of forest lost, 1984–2022",
     provinceUnknown: (share: string) => `${share} unknown`,
-    figuresFor: (period: string) => `Figures for ${period}`,
+    figuresFor: (period: string) => `Detected forest loss by province, ${period}`,
+    figuresLead: (fromYear: number, toYear: number) =>
+      `Each bar is the share of a province’s mapped forest that satellites detected as lost at least once between ${fromYear} and ${toYear}. A longer bar means a larger share of that province’s forest was lost. A place cleared more than once counts once.`,
+    unknownHeading: "Why some parts are labelled as unknown",
+    unknownLead: "The satellite land-cover record doesn’t cover every part of each province. Where there is no data we can’t tell how much forest stood there or whether it was lost, so that land is labelled Unknown rather than counted as no loss, and each province’s figure is a minimum.",
     moreWays: "More ways in",
     draw: "Draw and measure an area",
     findDistrict: "Find a federal riding",
@@ -62,6 +69,7 @@ const copy = {
     mapHeading: "Map and legend",
     layersHeading: "Layers and overlays",
     dataViewsHeading: "Data views",
+    recoveryHeading: "Condition and recovery, 1984–2022",
     production: `The province figures follow the years you choose, anywhere within ${provinceSpanReach("en")}. A place cleared more than once counts once. No loss patches are drawn for these years. Nothing here was checked on the ground, and parts of each province have no data, so every figure is a minimum.`,
     productionWithPerCell: `The province figures and the loss patches follow the years you choose, anywhere within ${provinceSpanReach("en")}. A place cleared more than once counts once. The per-cell figures below are for the last year of your span only. The patches are simplified for display, so don’t add them up. Nothing here was checked on the ground, and parts of each province have no data, so every figure is a minimum.`,
     annualHeading: "Per-cell detected loss",
@@ -73,12 +81,16 @@ const copy = {
       `In British Columbia and Québec, ${none} ha of this year’s loss has no national cause. Provincial records match ${harvest} ha of it to harvest, ${fire} ha to fire and ${other} ha to insects or windthrow; ${noRecord} ha has no provincial record either.`,
     annualBasis: `These figures are for the last year you picked, for all four provinces together. They aren’t a total for your span or for ${perCellArchiveSpan("en")}. They’re counted from the 30 m grid cells behind the map (each cell is 0.09 ha).`,
     annualNone: "No per-cell figures cover this year and mode.",
-    conditionRecoveryNone: "Condition and recovery isn’t on the map yet. We have the yearly land-cover data it needs and have decided what counts as trees growing back, but a map built on that decision hasn’t been reviewed yet.",
+    conditionRecoveryNone: "Condition and recovery isn’t available right now.",
+    conditionRecoveryReading: "Treed again after the latest loss, 1984–2022",
     spanNote: (fromYear: number, toYear: number) =>
       `The map shows ${fromYear} to ${toYear}. Point at or tap a district to see how much forest it lost in those years, counting each place once. If some ground was lost more than once, the yearly losses added together are shown too, in hectares only.`,
     spanPending: "Loading riding figures for these years. They stay hidden until they arrive, so you never see old figures under the wrong years.",
     fixtureList:
       "The chart and table use made-up example data, not real records.",
+    recoveryNote:
+      "The figures and tables come from annual satellite land cover, 1984 to 2022. Treed again means treed for at least five years in a row; that is tree cover coming back, not the same forest.",
+    recoverySource: "Natural Resources Canada, annual forest land cover (VLCE2), 1984–2022",
     harvestFireNote: "These province figures add up harvest, and separately fire, for each year after your first year up to your last. The national satellite record gives each 30 m square at most one harvest year and one fire year, so no square counts twice. Harvest and fire are never added together. The record ends in 2022, and every figure is a minimum because part of each province has no data.",
     harvestFireHectares: "Harvest (ha)",
     fireHectares: "Fire (ha)",
@@ -124,7 +136,7 @@ const copy = {
       wildfire:
         "Map: 1985–2022. Province figures for harvest and fire, 1985–2022.",
       "condition-recovery":
-        "No map yet. The chart and table use example data for 1988 only.",
+        "Map and figures: tree cover lost from 1984 to 2022, and whether it came back for five years in a row. They cover the whole record, not the years you pick.",
     },
   },
   fr: {
@@ -139,7 +151,11 @@ const copy = {
     byProvince: "Par province",
     ridingsMostLost: "Circonscriptions ayant perdu la plus grande part de leur forêt, 1984–2022",
     provinceUnknown: (share: string) => `${share} inconnu`,
-    figuresFor: (period: string) => `Chiffres pour ${period}`,
+    figuresFor: (period: string) => `Perte forestière détectée par province, ${period}`,
+    figuresLead: (fromYear: number, toYear: number) =>
+      `Chaque barre est la part de la forêt cartographiée d’une province que les satellites ont détectée comme perdue au moins une fois entre ${fromYear} et ${toYear}. Plus la barre est longue, plus la part de la forêt perdue dans cette province est grande. Un lieu coupé plus d’une fois compte une seule fois.`,
+    unknownHeading: "Pourquoi certaines parties sont indiquées comme inconnues",
+    unknownLead: "Le registre satellitaire de la couverture terrestre ne couvre pas toutes les parties de chaque province. Là où il n’y a pas de données, on ne peut pas savoir combien de forêt s’y trouvait ni si elle a été perdue\u202F: ce territoire est donc indiqué comme inconnu plutôt que compté comme sans perte, et le chiffre de chaque province est un minimum.",
     moreWays: "D’autres façons d’explorer",
     draw: "Dessiner et mesurer une zone",
     findDistrict: "Trouver une circonscription fédérale",
@@ -148,6 +164,7 @@ const copy = {
     mapHeading: "Carte et légende",
     layersHeading: "Couches et superpositions",
     dataViewsHeading: "Vues des données",
+    recoveryHeading: "État et rétablissement, 1984–2022",
     production: `Les chiffres provinciaux suivent les années que vous choisissez, n’importe où ${provinceSpanReach("fr", "from")}. Un lieu coupé plus d’une fois compte une seule fois. Aucune parcelle de perte n’est dessinée pour ces années. Rien ici n’a été vérifié sur le terrain, et certaines parties de chaque province n’ont pas de données\u202F: chaque chiffre est donc un minimum.`,
     productionWithPerCell: `Les chiffres provinciaux et les parcelles de perte suivent les années que vous choisissez, n’importe où ${provinceSpanReach("fr", "from")}. Un lieu coupé plus d’une fois compte une seule fois. Les chiffres par cellule ci-dessous ne portent que sur la dernière année de votre période. Les parcelles sont simplifiées pour l’affichage\u202F: ne les additionnez pas. Rien ici n’a été vérifié sur le terrain, et certaines parties de chaque province n’ont pas de données\u202F: chaque chiffre est donc un minimum.`,
     annualHeading: "Perte détectée par cellule",
@@ -159,12 +176,16 @@ const copy = {
       `En Colombie-Britannique et au Québec, ${none} ha des pertes de cette année n’ont pas de cause nationale. Les registres provinciaux en associent ${harvest} ha à la récolte, ${fire} ha au feu et ${other} ha aux insectes ou au chablis\u202F; ${noRecord} ha n’ont pas non plus de registre provincial.`,
     annualBasis: `Ces chiffres portent sur la dernière année choisie, pour les quatre provinces ensemble. Ce ne sont pas des totaux pour votre période ni pour ${perCellArchiveSpan("fr")}. Ils sont comptés à partir des cellules de 30 m derrière la carte (chaque cellule fait 0,09 ha).`,
     annualNone: "Aucun chiffre par cellule ne couvre cette année et ce mode.",
-    conditionRecoveryNone: "L’état et le rétablissement ne sont pas encore sur la carte. Nous avons les données annuelles de couverture terrestre nécessaires et avons décidé ce qui compte comme des arbres qui repoussent, mais la carte fondée sur cette décision n’a pas encore été examinée.",
+    conditionRecoveryNone: "L’état et le rétablissement ne sont pas offerts pour le moment.",
+    conditionRecoveryReading: "Redevenu boisé après la dernière perte, 1984–2022",
     spanNote: (fromYear: number, toYear: number) =>
       `La carte montre la période de ${fromYear} à ${toYear}. Pointez ou touchez une circonscription pour voir la forêt qu’elle a perdue pendant ces années, chaque lieu étant compté une seule fois. Si un même terrain a été perdu plus d’une fois, les pertes annuelles additionnées sont aussi affichées, en hectares seulement.`,
     spanPending: "Chargement des chiffres par circonscription pour ces années. Ils restent masqués jusqu’à leur arrivée, pour que d’anciens chiffres n’apparaissent jamais sous les mauvaises années.",
     fixtureList:
       "Le graphique et le tableau utilisent des données d’exemple inventées, et non de vrais registres.",
+    recoveryNote:
+      "Les chiffres et les tableaux proviennent de la couverture terrestre annuelle par satellite, de 1984 à 2022. Boisé de nouveau signifie boisé pendant au moins cinq années de suite\u202F; c’est le retour du couvert arboré, pas celui de la même forêt.",
+    recoverySource: "Ressources naturelles Canada, couverture forestière annuelle (VLCE2), 1984–2022",
     harvestFireNote: "Ces chiffres provinciaux additionnent la récolte, et séparément le feu, pour chaque année après la première année choisie, jusqu’à la dernière. Le registre satellitaire national donne à chaque carré de 30 m au plus une année de récolte et une année de feu\u202F: aucun carré n’est compté deux fois. La récolte et le feu ne sont jamais additionnés. La série se termine en 2022, et chaque chiffre est un minimum, car une partie de chaque province n’a pas de données.",
     harvestFireHectares: "Récolte (ha)",
     fireHectares: "Feu (ha)",
@@ -210,7 +231,7 @@ const copy = {
       wildfire:
         "Carte\u202F: 1985–2022. Chiffres provinciaux pour la récolte et le feu, 1985–2022.",
       "condition-recovery":
-        "Pas encore de carte. Le graphique et le tableau utilisent des données d’exemple pour 1988 seulement.",
+        "Carte et chiffres\u202F: couvert arboré perdu de 1984 à 2022, et s’il est revenu pendant cinq années consécutives. Ils couvrent tout le registre, et non les années choisies.",
     },
   },
 } as const;
@@ -267,7 +288,9 @@ export function ExploreView({
   fromYear,
   overlays = [],
   ridingMeasurements = [],
+  forestRegions = [],
   provincialCause = {},
+  conditionRecovery = null,
 }: {
   events: readonly ExploreEvent[];
   locale: Locale;
@@ -291,8 +314,12 @@ export function ExploreView({
    * the route picks the span and sends only its answer.
    */
   ridingMeasurements?: readonly RidingBoundaryMeasurement[];
+  /** The owner's map regions for the route's span, summed on the server. */
+  forestRegions?: readonly ForestRegionFigure[];
   /** BC and Québec loss with no national cause, split by provincial record kind, per interval. Computed on the server. */
   provincialCause?: Readonly<Record<string, ProvincialCauseBreakdown>>;
+  /** The admitted condition and recovery figures, passed in that mode only. */
+  conditionRecovery?: ConditionRecoveryView | null;
 }) {
   const text = copy[locale];
   // The map is the only presentation since the List view was retired; the
@@ -322,7 +349,11 @@ export function ExploreView({
    */
   const spanIsServed = activeYear === year && activeFrom === routeFrom;
   const spanKey = `${activeFrom}-${activeYear}`;
-  const [liveSpan, setLiveSpan] = useState<{ key: string; measurements: readonly RidingBoundaryMeasurement[] } | null>(null);
+  const [liveSpan, setLiveSpan] = useState<{
+    key: string;
+    measurements: readonly RidingBoundaryMeasurement[];
+    forestRegions: readonly ForestRegionFigure[];
+  } | null>(null);
   useEffect(() => {
     if (spanIsServed) return;
     const controller = new AbortController();
@@ -330,10 +361,14 @@ export function ExploreView({
     // span to settle before asking.
     const timer = setTimeout(() => {
       fetch(`/api/explore/district-spans?from=${activeFrom}&to=${activeYear}`, { signal: controller.signal })
-        .then((response) => (response.ok ? (response.json() as Promise<{ fromYear?: unknown; toYear?: unknown; measurements?: unknown }>) : null))
+        .then((response) => (response.ok ? (response.json() as Promise<{ fromYear?: unknown; toYear?: unknown; measurements?: unknown; forestRegions?: unknown }>) : null))
         .then((body) => {
           if (!body || body.fromYear !== activeFrom || body.toYear !== activeYear || !Array.isArray(body.measurements)) return;
-          setLiveSpan({ key: `${activeFrom}-${activeYear}`, measurements: body.measurements as RidingBoundaryMeasurement[] });
+          setLiveSpan({
+            key: `${activeFrom}-${activeYear}`,
+            measurements: body.measurements as RidingBoundaryMeasurement[],
+            forestRegions: Array.isArray(body.forestRegions) ? (body.forestRegions as ForestRegionFigure[]) : [],
+          });
         })
         .catch(() => {
           // A failed request leaves the figures withheld, which the page already says.
@@ -350,6 +385,13 @@ export function ExploreView({
     ? ridingMeasurements
     : liveIsCurrent
       ? liveSpan.measurements
+      : [];
+  // Withheld like the district figures until they name the span on display;
+  // the map shades by province meanwhile.
+  const servedForestRegions = spanIsServed
+    ? forestRegions
+    : liveIsCurrent
+      ? liveSpan.forestRegions
       : [];
 
   const modeEvents = events.filter((event) => event.mode === mode);
@@ -372,6 +414,8 @@ export function ExploreView({
     perCellCauseForMode(mode) !== null && fourProvinceAnnualForYear(activeYear) !== null;
   const note = harvestFireRows
     ? text.harvestFireNote
+    : mode === "condition-recovery" && conditionRecovery
+    ? text.recoveryNote
     : !productionAvailable
     ? text.fixtureList
     : perCellShown
@@ -392,7 +436,9 @@ export function ExploreView({
     modeEvents[0]?.year ?? activeYear,
   );
   const emptyMessage = text.empty(text.modes[mode], activeYear, nearestYear);
-  const hasData = productionAvailable || harvestFireRows !== null || selected.length > 0;
+  const recovery = mode === "condition-recovery" ? conditionRecovery : null;
+  const recoveryFour = recovery?.rows.find((row) => row.kind === "four-provinces") ?? null;
+  const hasData = productionAvailable || harvestFireRows !== null || recovery !== null || selected.length > 0;
 
   const shownOverlays = overlays.filter((id) => BOUNDARY_OVERLAYS[id].available);
   const maxShare = Math.max(...provinceRows.map((row) => row.unionLossPercent ?? 0), 0);
@@ -517,8 +563,10 @@ export function ExploreView({
           fromYear={activeFrom}
           overlays={overlays}
           ridingMeasurements={servedMeasurements}
+          forestRegions={recovery ? [] : servedForestRegions}
+          recoveryRegions={recovery ? recovery.rows.filter((row) => row.kind === "region") : []}
         />
-        {activeYear > activeFrom + 1 ? (
+        {activeYear > activeFrom + 1 && !recovery ? (
           <p className="explore-note">{text.spanNote(activeFrom, activeYear)}</p>
         ) : null}
         {!districtsCurrent ? (
@@ -532,7 +580,7 @@ export function ExploreView({
         explain the view the reader is looking at.
       */}
       <aside className="explore-annual explore-reading" aria-labelledby="explore-reading-heading">
-          <p className="eyebrow" id="explore-reading-heading">{`${text.readingHeading} · ${spanPeriod}`}</p>
+          <p className="eyebrow" id="explore-reading-heading">{`${text.readingHeading} · ${recovery ? formatYearRange(yearRange(1984, 2022), locale) : spanPeriod}`}</p>
           {fourProvinces && fourProvinces.unionLossHectares !== null ? (
             <div className="explore-reading-total">
               <p className="explore-reading-label">
@@ -549,6 +597,12 @@ export function ExploreView({
                   <span><strong>{text.minimum}</strong> {text.neverMapped(formatHectares(fourProvinces.unknownHectares, locale))}</span>
                 </p>
               ) : null}
+            </div>
+          ) : null}
+          {recoveryFour ? (
+            <div className="explore-reading-total">
+              <p className="explore-reading-label">{text.conditionRecoveryReading}</p>
+              <ConditionRecoveryHeadline four={recoveryFour} locale={locale} />
             </div>
           ) : null}
           {mode === "condition-recovery" ? null : <h3 id="explore-annual-heading">{`${text.annualHeading}, ${annual ? formatYearRangeKey(annual.interval, locale) : formatYearRange(yearRange(activeYear - 1, activeYear), locale)}`}</h3>}
@@ -610,7 +664,7 @@ export function ExploreView({
               ) : null}
             </>
           ) : (
-            <p className="explore-annual-basis">{mode === "condition-recovery" ? text.conditionRecoveryNone : text.annualNone}</p>
+            mode === "condition-recovery" ? (recovery ? null : <p className="explore-annual-basis">{text.conditionRecoveryNone}</p>) : <p className="explore-annual-basis">{text.annualNone}</p>
           )}
           {productionAvailable ? (
             <div className="explore-reading-provinces">
@@ -634,10 +688,10 @@ export function ExploreView({
           ) : null}
           <EvidenceKey locale={locale} classes={["satellite-observation", "unknown"]} />
       </aside>
-      </div>
 
       <section className="explore-section explore-data" aria-labelledby="explore-data-heading">
-        <h2 id="explore-data-heading">{productionAvailable ? text.figuresFor(spanPeriod) : text.dataViewsHeading}</h2>
+        <h2 id="explore-data-heading">{recovery ? text.recoveryHeading : productionAvailable ? text.figuresFor(spanPeriod) : text.dataViewsHeading}</h2>
+        {productionAvailable ? <p className="explore-data-lead">{text.figuresLead(activeFrom, activeYear)}</p> : null}
         <fieldset className="segment-set">
           <legend>{text.data}</legend>
           <a
@@ -658,6 +712,16 @@ export function ExploreView({
 
         {!hasData ? (
           <p className="explore-empty" role="status">{emptyMessage}</p>
+        ) : null}
+
+        {recovery ? (
+          <>
+            <ConditionRecoveryFigures view={recovery} locale={locale} data={data} />
+            <p className="explore-note">
+              {text.source}
+              {colon(locale)} <a href={locale === "en" ? "/en/data" : "/fr/donnees"}>{text.recoverySource}</a>
+            </p>
+          </>
         ) : null}
 
         {harvestFireRows ? (
@@ -713,7 +777,7 @@ export function ExploreView({
           </>
         ) : null}
 
-        {!harvestFireRows && hasData && data === "chart" ? (
+        {!harvestFireRows && !recovery && hasData && data === "chart" ? (
           (() => {
               const rows = productionAvailable ? provinceRows : selected;
               const values = rows.map((item) =>
@@ -740,18 +804,12 @@ export function ExploreView({
                     );
                   })}
                 </ul>
-                {/* A bar states what was detected inside the mapped area. The
-                    unmapped share is not a smaller bar, so it is written out
-                    beneath the chart rather than drawn into it. */}
-                {productionAvailable ? provinceRows.map((item) => item.unmappedCharacter ? (
-                  <p key={item.id}>{item.name[locale]}{colon(locale)} {item.unmappedCharacter[locale]}</p>
-                ) : null) : null}
                 </>
               );
           })()
         ) : null}
 
-        {!harvestFireRows && hasData && data === "table" ? (
+        {!harvestFireRows && !recovery && hasData && data === "table" ? (
           <div className="table-scroll" tabIndex={0} role="region" aria-labelledby="explore-data-table-caption">
             <table className="explore-table">
               <caption id="explore-data-table-caption">
@@ -831,7 +889,19 @@ export function ExploreView({
 
         {hasData && productionAvailable ? <p className="explore-note">{text.spanBasis}</p> : null}
 
-        {!productionAvailable && !harvestFireRows ? (
+        {/* A bar states what was detected inside the mapped area. The unmapped
+            share is not a smaller bar, so it is explained here in words. */}
+        {productionAvailable ? (
+          <div className="explore-unknown">
+            <h3>{text.unknownHeading}</h3>
+            <p>{text.unknownLead}</p>
+            {provinceRows.map((item) => item.unmappedCharacter ? (
+              <p key={item.id}><strong>{item.name[locale]}</strong>{colon(locale)} {item.unmappedCharacter[locale]}</p>
+            ) : null)}
+          </div>
+        ) : null}
+
+        {!productionAvailable && !harvestFireRows && !recovery ? (
           <ul className="explore-legend" aria-label={locale === "en" ? "Legend" : "Légende"}>
             {EXPLORE_MODES.map((item) => (
               <li key={item}>
@@ -845,6 +915,7 @@ export function ExploreView({
           </ul>
         ) : null}
       </section>
+      </div>
 
       <nav className="explore-more" aria-labelledby="explore-more-heading">
         <h2 id="explore-more-heading">{text.moreWays}</h2>

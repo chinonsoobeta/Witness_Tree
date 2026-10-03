@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
+import { conditionRecoveryView } from "../lib/explore/condition-recovery";
 import type { Context, ReactElement } from "react";
 import { renderToStaticMarkup as renderElement } from "react-dom/server";
 import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
@@ -147,11 +148,10 @@ test("renders four plan modes, independent same-url controls, fixture boundaries
   // The reserve and treaty-area overlays were removed rather than shown as
   // pending. Their sources are authority-blocked, so a "not available yet"
   // label would imply work in progress that is not happening.
-  // The towns layer names them only to say they are left out.
-  assert.doesNotMatch(en, /overlay-name">Reserves/);
+  // The owner removed every reference to reserves from the site.
+  assert.doesNotMatch(en, /Reserves|reserves/);
   assert.doesNotMatch(en, /Treaty areas/);
   assert.match(en, /overlays=census-subdivisions/);
-  assert.match(en, /Reserves, settlements and treaty or agreement lands are not shown on their own/);
   // The ridings overlays are real layers now, so the blanket unavailable
   // label is gone and each card offers a control instead.
   assert.doesNotMatch(en, /geometry unavailable/);
@@ -258,7 +258,7 @@ test("Explore puts explanation and controls before the map, then the reading pan
   );
   assert.match(
     renderToStaticMarkup(<ExploreView events={exploreFixtures} locale="en" mode="condition-recovery" />),
-    /<p class="explore-mode-status">No map yet\. The chart and table use example data for 1988 only/,
+    /<p class="explore-mode-status">Map and figures: tree cover lost from 1984 to 2022, and whether it came back for five years in a row/,
   );
   assert.doesNotMatch(en, /example data for 2012|example data for 2020/);
   assert.equal((en.match(/<h2/g) ?? []).length, (fr.match(/<h2/g) ?? []).length);
@@ -470,10 +470,10 @@ test("map failures retain diagnostics, retry, and a reachable patch zoom", async
   assert.match(map, /className="explore-map-layer-panel"[\s\S]*tabIndex=\{0\}[\s\S]*role="region"/);
   assert.match(map, /className="[^"]*explore-map-fullscreen-button"[\s\S]*className="explore-map-zoom"/);
   // The legend under the map is the only one: no second copy of the keys or
-  // the figures table is drawn below it. Three legend lists exist in the
-  // source: the forest-loss shading, the harvest or fire shading (never both
-  // at once), and the patches.
-  assert.equal((map.match(/className="explore-map-legend/g) ?? []).length, 3);
+  // the figures table is drawn below it. Four legend lists exist in the
+  // source: the forest-loss shading, the condition and recovery shading, the
+  // harvest or fire shading (never two shadings at once), and the patches.
+  assert.equal((map.match(/className="explore-map-legend/g) ?? []).length, 4);
   assert.doesNotMatch(map, /<table/);
   assert.match(panel, /position: static/);
   assert.match(panel, /display: flex/);
@@ -549,7 +549,7 @@ test("one bilingual inline-SVG province bar serves landing and every map state",
   for (const province of ["Colombie-Britannique", "Alberta", "Ontario", "Québec"]) assert.match(french, new RegExp(province));
   assert.match(english, /Flag of British Columbia/);
   assert.match(french, /Drapeau de la Colombie-Britannique/);
-  assert.ok(english.indexOf("province-bar--map") < english.indexOf("Condition and recovery isn’t available yet"));
+  assert.ok(english.indexOf("province-bar--map") < english.indexOf("Condition and recovery isn’t available right now"));
 });
 
 test("playback swaps only the patch layer, starts at 1985, and stops visibly", async () => {
@@ -622,7 +622,7 @@ test("the map identifies the boundary under the pointer, inside it or on its lin
   assert.match(mapSource, /aria-label=\{text\[locale\]\.mapPanel\}/);
   assert.match(mapSource, /<ProvinceBar/);
   assert.match(provinceBarSource, /aria-pressed=\{selected === province\}/);
-  assert.match(mapSource, /mapRef\.current\?\.fitBounds\(MAP_VIEW_BOUNDS\[mapView\]/);
+  assert.match(mapSource, /mapRef\.current\?\.fitBounds\(mapView \? MAP_VIEW_BOUNDS\[mapView\] : COMBINED_PROVINCE_BOUNDS/);
   for (const mapView of ["bc", "ab", "on", "qc"])
     assert.match(mapSource, new RegExp(`${mapView}:`));
   assert.match(mapSource, /map!?\.on\("mousemove"/);
@@ -715,28 +715,40 @@ test("the year control is a real, shareable control rather than a decorative sli
   assert.match(fr, /Mettre à jour/);
 });
 
-test("condition and recovery explains its missing admitted product", () => {
+test("condition and recovery shows the admitted five-year figures, and says so when they are missing", () => {
+  const view = conditionRecoveryView();
+  assert.ok(view);
   const en = renderToStaticMarkup(
-    <ExploreView events={exploreFixtures} locale="en" mode="condition-recovery" year={1988} />,
+    <ExploreView events={exploreFixtures} locale="en" mode="condition-recovery" data="table" conditionRecovery={view} />,
   );
   const fr = renderToStaticMarkup(
-    <ExploreView events={exploreFixtures} locale="fr" mode="condition-recovery" year={1988} />,
+    <ExploreView events={exploreFixtures} locale="fr" mode="condition-recovery" data="table" conditionRecovery={view} />,
   );
-  assert.match(en, /Condition and recovery isn’t on the map yet/);
-  assert.match(en, /We have the yearly land-cover data it needs/);
-  assert.match(en, /a map built on that decision hasn’t been reviewed yet/);
+  assert.match(en, /Did the trees grow back\?/);
+  assert.match(en, /was treed again for at least five years in a row after its most recent loss/);
+  assert.match(en, /is Unknown, because at least one year there is unclassified or missing/);
+  assert.match(en, /under the earlier three-year rule/);
+  assert.match(en, /Withheld \(under 500 ha\)/);
+  assert.equal((en.match(/<caption/g) ?? []).length, 4);
+  assert.match(fr, /Les arbres ont-ils repoussé\u202F\?/);
+  assert.match(fr, /cinq années consécutives/);
   // The per-cell heading names an interval this mode has no figures for, so it is not shown.
   assert.doesNotMatch(en, /id="explore-annual-heading"/);
   assert.doesNotMatch(fr, /id="explore-annual-heading"/);
-  assert.match(fr, /ne sont pas encore sur la carte/);
-  assert.match(fr, /données annuelles de couverture terrestre nécessaires/);
+  // A tiny Unknown share (British Columbia's) is not rounded away to zero.
+  assert.match(en, /<th scope="row">British Columbia<\/th><td>[^<]+<\/td><td>[^<]+<\/td><td>[^<]+<\/td><td>[^<]+<\/td><td>&lt;0\.01%<\/td>/);
 
+  // Without the release, the mode says it is unavailable rather than showing nothing.
+  const missing = renderToStaticMarkup(
+    <ExploreView events={exploreFixtures} locale="en" mode="condition-recovery" year={1988} />,
+  );
+  assert.match(missing, /Condition and recovery isn’t available right now/);
   const other = renderToStaticMarkup(
     <ExploreView events={exploreFixtures} locale="en" mode="wildfire" year={1984} />,
   );
   assert.match(other, /No per-cell figures cover this year and mode\./);
   assert.match(other, /id="explore-annual-heading"/);
-  assert.doesNotMatch(other, /Condition and recovery isn’t on the map yet/);
+  assert.doesNotMatch(other, /Did the trees grow back/);
 });
 
 test("the year query is parsed defensively and fixtures use one selected interval", async () => {

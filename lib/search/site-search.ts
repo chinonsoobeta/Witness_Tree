@@ -283,7 +283,7 @@ export const WHOLE_RECORD_RANK_FLOOR_HECTARES = 50_000;
  * above, are ranked: a partly mapped riding has no known denominator. Ties
  * break on hectares, then name, so the order never depends on input order.
  */
-export function ridingsByWholeRecordLoss(level: "federal" | "provincial", limit: number): readonly WholeRecordRidingRank[] {
+export function ridingsByWholeRecordLoss(level: "federal" | "provincial", limit: number, province?: string): readonly WholeRecordRidingRank[] {
   return ridingSearchRows
     .filter((row) => (level === "federal" ? row.jurisdiction === "CA" : row.jurisdiction !== "CA"))
     .filter((row) => row.coverage === "complete" && row.observedLossPercent !== null && row.observedLossHectares !== null)
@@ -295,6 +295,7 @@ export function ridingsByWholeRecordLoss(level: "federal" | "provincial", limit:
       lossPercent: row.observedLossPercent!,
       lossHectares: row.observedLossHectares!,
     }))
+    .filter((row) => province === undefined || row.province === province)
     .sort((a, b) => b.lossPercent - a.lossPercent || b.lossHectares - a.lossHectares || a.name.en.localeCompare(b.name.en))
     .slice(0, limit);
 }
@@ -319,9 +320,9 @@ export const CITY_RANK_FLOOR_HECTARES = 5_000;
  * 1984 to 2022 figure: only cities mapped in full, with at least the floor,
  * are ranked, and ties break on hectares, then name.
  */
-export function citiesByWholeRecordLoss(limit: number): readonly WholeRecordRidingRank[] {
+export function citiesByWholeRecordLoss(limit: number, province?: string): readonly WholeRecordRidingRank[] {
   return PLACE_NAME_INDEX.places
-    .filter((place) => CITY_TYPES.has(place.type))
+    .filter((place) => CITY_TYPES.has(place.type) && (province === undefined || place.province === province))
     .flatMap((place) => {
       const figure = placeFigure(place.id);
       if (!figure || figure.coverage !== "complete" || figure.observedLossPercent === null || figure.observedLossHectares === null) return [];

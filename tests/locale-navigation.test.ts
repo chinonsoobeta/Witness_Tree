@@ -40,8 +40,9 @@ test("shared navigation exposes localized search and dynamic pages publish recor
    * Search left the global nav and became a control on the homepage, under
    * the question it answers. What has to stay true is that both localized
    * search routes are reachable from a shared component, so that is asserted
-   * against the component that now owns them. The nav is held to four items
-   * so the fifth cannot quietly come back and give the reader two doors.
+   * against the component that now owns them. The nav is held to the six
+   * items the owner set on 2026-10-03 (Home, Explore, Compare, Methods, Data,
+   * About), so search cannot quietly come back and give the reader two doors.
    */
   assert.match(homeSearch, /action: "\/en\/search"/);
   assert.match(homeSearch, /action: "\/fr\/recherche"/);
@@ -49,7 +50,7 @@ test("shared navigation exposes localized search and dynamic pages publish recor
   assert.doesNotMatch(header, /\["Search", "\/en\/search"\]/);
   assert.doesNotMatch(header, /\["Recherche", "\/fr\/recherche"\]/);
   const nav = header.slice(header.indexOf("const NAV = {"), header.indexOf("} as const;"));
-  assert.equal((nav.match(/\[".+?", ".+?"\]/g) ?? []).length, 8, "four items per locale, no more");
+  assert.equal((nav.match(/\[".+?", ".+?"\]/g) ?? []).length, 12, "six items per locale, no more");
   assert.match(placeRoute, /\/en\/places\/\$\{placeId\}/);
   assert.match(placeRoute, /\/fr\/lieux\/\$\{placeId\}/);
   assert.match(locationRoute, /\/en\/location\/\$\{locationId\}/);

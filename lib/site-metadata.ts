@@ -13,6 +13,7 @@ export const PUBLIC_LOCALE_ROUTE_PAIRS = [
   { en: "/en/data", fr: "/fr/donnees" },
   { en: "/en/data/official-harvest-comparison", fr: "/fr/donnees/comparaison-recolte-officielle" },
   { en: "/en/data/bc-harvest-volume", fr: "/fr/donnees/volume-recolte-bc" },
+  { en: "/en/data/provincial-harvest-volume", fr: "/fr/donnees/volume-recolte-provinces" },
   { en: "/en/data/harvest-and-fire", fr: "/fr/donnees/recolte-et-incendies" },
   { en: "/en/wildfire", fr: "/fr/incendies" },
   { en: "/en/about", fr: "/fr/a-propos" },
@@ -20,11 +21,7 @@ export const PUBLIC_LOCALE_ROUTE_PAIRS = [
   { en: "/en/components", fr: "/fr/composants" },
   { en: "/en/glossary", fr: "/fr/glossaire" },
   { en: "/en/corrections", fr: "/fr/corrections" },
-  { en: "/en/decisions", fr: "/fr/decisions" },
-  { en: "/en/engagement", fr: "/fr/dialogue" },
-  { en: "/en/privacy", fr: "/fr/confidentialite" },
   { en: "/en/terms", fr: "/fr/conditions" },
-  { en: "/en/releases", fr: "/fr/versions" },
 ] as const;
 
 /**

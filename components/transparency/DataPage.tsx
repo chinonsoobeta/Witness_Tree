@@ -32,8 +32,8 @@ const COPY = {
     harvestLead: "A satellite can see that trees are gone, but not why. These pages bring in official harvest statistics, British Columbia’s timber volumes, and Natural Resources Canada’s yearly maps of harvest and fire.",
     comparison: "Compare the values with official harvest statistics",
     harvestVolume: "BC harvest volume and allowable annual cut",
+    provincialVolume: "Alberta, Ontario and Québec harvest volume and allowable cut",
     harvestFire: "Harvest and fire by province, 1985 to 2022: build a chart and download it",
-    releases: "Read the release notes and citation format",
     limitsTitle: "Limits to understand first",
     limits:
       "Every province has some land with no data, so every loss figure is a minimum. These files don’t show what caused a loss, who is responsible, whether it was legal, how much sellable timber there is, or conditions on the ground.",
@@ -41,7 +41,7 @@ const COPY = {
       "This is an early preview, not the final release. Always read a figure with its evidence label, coverage and confidence, and don’t apply it beyond the boundaries and years it covers.",
     recordsTitle: "Source records and documentation",
     description:
-      "The source ledger lists the 31 sources the plan names, with the evidence we hold for each and anything still blocking its use. Not all of them are used: four reserve and treaty sources were withdrawn, because we don’t publish that geography.",
+      "The source ledger lists the 31 sources the plan names, with the evidence we hold for each and anything still blocking its use.",
     ledger: "Open the source ledger",
     docs: "Read the source-ledger documentation",
     technicalTitle: "Technical release details",
@@ -83,8 +83,8 @@ const COPY = {
     harvestLead: "Un satellite peut voir que des arbres ont disparu, mais pas pourquoi. Ces pages font appel aux statistiques officielles sur la récolte, aux volumes de bois de la Colombie-Britannique et aux cartes annuelles de la récolte et des feux de Ressources naturelles Canada.",
     comparison: "Comparer les valeurs aux statistiques officielles sur la récolte",
     harvestVolume: "Volume récolté et possibilité annuelle de coupe en C.-B.",
+    provincialVolume: "Volume récolté et possibilité de coupe en Alberta, en Ontario et au Québec",
     harvestFire: "Récolte et feu par province, de 1985 à 2022\u202F: créer un graphique et le télécharger",
-    releases: "Lire les notes de version et le format de citation",
     limitsTitle: "Limites à comprendre d’abord",
     limits:
       "Chaque province compte un territoire sans données\u202F; chaque chiffre de perte est donc un minimum. Ces fichiers n’indiquent ni la cause d’une perte, ni qui en est responsable, ni sa légalité, ni la quantité de bois vendable, ni les conditions sur le terrain.",
@@ -92,7 +92,7 @@ const COPY = {
       "Il s’agit d’un aperçu préliminaire, et non de la version définitive. Lisez toujours un chiffre avec sa catégorie de preuve, sa couverture et sa confiance, et ne l’appliquez pas au-delà des limites et des années qu’il couvre.",
     recordsTitle: "Registres des sources et documentation",
     description:
-      "Le registre des sources énumère les 31 sources prévues par le plan, avec les preuves que nous avons pour chacune et ce qui bloque encore son usage. Elles ne sont pas toutes utilisées\u202F: quatre sources sur les réserves et les traités ont été retirées, car nous ne publions pas cette géographie.",
+      "Le registre des sources énumère les 31 sources prévues par le plan, avec les preuves que nous avons pour chacune et ce qui bloque encore son usage.",
     ledger: "Ouvrir le registre des sources",
     docs: "Lire la documentation du registre des sources",
     technicalTitle: "Détails techniques de la version",
@@ -142,6 +142,9 @@ export function DataPage({ locale }: Readonly<{ locale: Locale }>) {
           <li className="card card--lift">
             <a href={locale === "en" ? "/en/data/bc-harvest-volume" : "/fr/donnees/volume-recolte-bc"}>{copy.harvestVolume}</a>
           </li>
+          <li className="card card--lift">
+            <a href={locale === "en" ? "/en/data/provincial-harvest-volume" : "/fr/donnees/volume-recolte-provinces"}>{copy.provincialVolume}</a>
+          </li>
         </ul>
       </section>
 
@@ -161,9 +164,6 @@ export function DataPage({ locale }: Readonly<{ locale: Locale }>) {
             <span className="file-tile-body">
               <a href={geopackage.url}>{copy.geopackage}</a>
             </span>
-          </li>
-          <li className="card card--lift">
-            <a href={locale === "en" ? "/en/releases" : "/fr/versions"}>{copy.releases}</a>
           </li>
         </ul>
       </section>

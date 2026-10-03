@@ -466,6 +466,41 @@ year raises agreement to about 68 percent, still below the target.
 | --- | --- | --- | --- |
 | Editorial decision authority: Chinonso Obeta, project owner | Three classes, recovery scope only, agreement published as below target | Owner's reply "I agree with all three." to the three recommendations in the implementing session | 2026-09-23 |
 
+## Owner decision: five treed years, and admission, 2026-10-03
+
+**Status:** Decided by the project owner on 2026-10-03. It amends the scoped
+decision above for the condition and recovery mode only, and does not resolve
+any row of the class-treatment register.
+
+### What is decided
+
+- The treed-again requirement rises from 3 consecutive years to 5. A cell is
+  recovered when, after its loss, it is treed for at least 5 consecutive years.
+  A return that has not yet lasted 5 years by 2022 is unconfirmed. The class
+  treatment (210, 220 and 230 only) is unchanged.
+- The figures under this rule are admitted and published: the Explore
+  "Condition and recovery" mode, with province and regional figures and a
+  regional map, and a home-page answer to whether lost tree cover grew back.
+- The worker is `scripts/phase4_condition_recovery_v3.py`; the run record is
+  `data/phase4-condition-recovery-v3.json`, checked by
+  `scripts/check-phase4-condition-recovery-v3.mjs`. The v2 record stays as the
+  record of the three-year run.
+
+### What stays as it was
+
+- The BC RESULTS agreement was measured under the three-year rule (61%,
+  below the 80% target). It is published with that label. A five-year rule is
+  stricter, so the understatement it found is, if anything, larger.
+- The French text is the implementer's translation; the owner reviews it.
+- Losses from 2018 onward cannot yet show five treed years by 2022, so the
+  2015 to 2022 decade remains too recent to judge.
+
+### Approval
+
+| Role | Decision | Reference | Date |
+| --- | --- | --- | --- |
+| Editorial decision authority: Chinonso Obeta, project owner | Five treed years; admit and publish | Owner's answer "Raise the requirement to 5 years from 3 years, and publish them." in the implementing session | 2026-10-03 |
+
 ## Owners and sign-off
 
 Roles are named deliberately; no individual is implied or invented by this

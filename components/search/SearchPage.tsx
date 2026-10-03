@@ -1,5 +1,5 @@
 import { CoverageStatement } from "@/components/policy/CoverageStatement";
-import { colon, formatHectares, formatPercent, PRODUCT_NAME, semicolon, type Locale } from "@/lib/domain";
+import { colon, formatHectares, formatPercent, semicolon, type Locale } from "@/lib/domain";
 import { federalRidingComparison } from "@/lib/comparison";
 import { FederalDistrictFinder } from "./FederalDistrictFinder";
 import { AddressFinderClient } from "./AddressFinderClient";
@@ -21,7 +21,6 @@ const copy = {
     districts: "Federal ridings",
     notice: "Search provinces, ridings and communities. Figures cover 1984 to 2022.",
     shareNote: "Each riding’s share is how much of the place lies inside it. The riding figures are for the whole riding.",
-    excluded: `${PRODUCT_NAME.en} does not list reserves, settlements or treaty and agreement lands on their own. Their land still counts in the province and riding totals.`,
     lost: "of the mapped forest detected as lost, 1984–2022",
   },
   fr: {
@@ -31,7 +30,6 @@ const copy = {
     districts: "Circonscriptions fédérales",
     notice: "Recherchez une province, une circonscription ou une collectivité. Les chiffres couvrent la période de 1984 à 2022.",
     shareNote: "La part de chaque circonscription indique quelle partie du lieu s’y trouve. Les chiffres des circonscriptions portent sur toute la circonscription.",
-    excluded: `${PRODUCT_NAME.fr} ne répertorie pas séparément les réserves, les établissements ni les terres visées par un traité ou une entente. Leurs terres comptent quand même dans les totaux des provinces et des circonscriptions.`,
     lost: "de la forêt cartographiée détectée comme perdue, 1984–2022",
   },
 } as const;
@@ -95,7 +93,6 @@ export function SearchPage({
             defaultValue={query}
           />
           {!query ? <p className="search-note">{locale === "en" ? "Enter a province, riding, or community." : "Entrez une province, une circonscription ou une collectivité."}</p> : <SearchResults locale={locale} query={query} />}
-          <p className="search-note">{text.excluded}</p>
         </section>
       ) : (
         <>

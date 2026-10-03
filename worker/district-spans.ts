@@ -13,7 +13,7 @@
  */
 
 import { parseExploreInterval } from "../lib/explore/interval";
-import { regionIntervalMeasurements } from "../lib/explore/region-intervals";
+import { forestRegionFigures, regionIntervalMeasurements } from "../lib/explore/region-intervals";
 import { ridingIntervalMeasurements } from "../lib/explore/riding-intervals";
 
 export const DISTRICT_SPANS_PATH = "/api/explore/district-spans";
@@ -46,6 +46,7 @@ export function handleDistrictSpans(request: Request): Response {
       fromYear: interval.fromYear,
       toYear: interval.toYear,
       measurements: [...ridingIntervalMeasurements(interval), ...regionIntervalMeasurements(interval)],
+      forestRegions: forestRegionFigures(interval),
     },
     200,
     "public, max-age=300",

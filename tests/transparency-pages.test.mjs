@@ -60,7 +60,8 @@ test("data page labels examples and links the ledger and documentation", async (
   const page = await read("../components/transparency/DataPage.tsx");
   // The page links the production ledger, and says it is not all in use.
   assert.match(page, /lists the 31 sources the plan names/);
-  assert.match(page, /four reserve and treaty sources were withdrawn/);
+  // The owner removed every reference to reserves from the site.
+  assert.doesNotMatch(page, /reserve|réserve/i);
   /*
    * The span is no longer typed into this sentence, so asserting the literal
    * would only prove someone typed it again. Assert the two halves that

@@ -26,8 +26,6 @@ const typeNames: Record<PlaceType, LocalizedString> = {
   municipality: local("municipality", "municipalité"),
   "provincial-riding": local("provincial riding", "circonscription provinciale"),
   "federal-riding": local("federal riding", "circonscription fédérale"),
-  reserve: local("reserve", "réserve"),
-  "treaty-area": local("treaty area", "région visée par un traité"),
 };
 
 const specs: ReadonlyArray<readonly [string, PlaceType, PlaceProvince, LocalizedString]> = PLACE_PROVINCES.flatMap((province) => PLACE_TYPES.map((type) => [
@@ -51,7 +49,6 @@ export const PLACES: readonly Place[] = specs.map(([id, type, province, name], i
       { kind: "figure", value: 13 + index, unit: "ha", evidence: "official-record", confidence: high, provenance },
       { kind: "unknown", evidence: "unknown", reason: local("No official public record answers this question yet.", "Aucun registre public officiel ne répond encore à cette question."), coverageGrade: "national-baseline-plus-local-context" },
     ], sources: ["example-official-record", "example-satellite-observation"], citation: { timeRange: `${EXPLORE_COVERAGE_PERIOD.compact} (illustrative)`, dataVersion: "example-1.0", method: "example-method-1" },
-    ...(type === "reserve" || type === "treaty-area" ? { safeguard: local("Example area only. It names no community contact and does not speak for rights holders; communities will be able to reply before anything is published.", "Zone d’exemple seulement. Elle ne désigne aucun contact communautaire et ne parle pas au nom des titulaires de droits\u202F; les communautés pourront répondre avant toute publication.") } : {}),
   };
 });
 

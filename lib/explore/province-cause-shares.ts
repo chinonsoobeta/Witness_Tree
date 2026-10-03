@@ -44,7 +44,7 @@ export function provinceCauseShares(cause: ProvinceCause, fromYear: number, toYe
   return shares;
 }
 
-const mix = (from: string, to: string, weight: number) => {
+export const mix = (from: string, to: string, weight: number) => {
   const channel = (hex: string, index: number) => parseInt(hex.slice(1 + index * 2, 3 + index * 2), 16);
   return `#${[0, 1, 2].map((index) => Math.round(channel(from, index) + (channel(to, index) - channel(from, index)) * weight).toString(16).padStart(2, "0")).join("")}`;
 };

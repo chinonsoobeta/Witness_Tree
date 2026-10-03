@@ -1,39 +1,38 @@
 import assert from "node:assert/strict";
+import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 const read = (path) => readFile(new URL(path, import.meta.url), "utf8");
 
 test("governance content is bilingual and truthful about unfinished external gates", async () => {
-  // The French copy writes its narrow no-break spaces as \u202F escapes, so read them as the character.
-  const content = (await read("../components/governance/GovernancePage.tsx")).replaceAll("\\u202F", "\u202F");
-  for (const phrase of ["No production correction", "Aucune correction de production", "No engagement contact route", "Aucune voie de dialogue", "stores no account", "ne conserve actuellement aucune donnée", "not to pursue Mistik", "ne pas poursuivre Mistik"]) assert.match(content, new RegExp(phrase));
-  for (const phrase of ["Mistik request: not opened", "Terms: none", "Honorarium: none", "Final outcome: not pursued", "Demande concernant Mistik\u202F: non ouverte", "Conditions\u202F: aucune", "Honoraire\u202F: aucun", "Résultat final\u202F: non poursuivie"]) assert.match(content, new RegExp(phrase));
+  const content = await read("../components/governance/GovernancePage.tsx");
+  for (const phrase of ["No production correction", "Aucune correction de production"]) assert.match(content, new RegExp(phrase));
   assert.doesNotMatch(content, /permission (?:was|has been) granted|contacted on \d|legally approved/i);
+  // The owner removed the Decisions, Engagement, Privacy and Releases pages and
+  // every reference to reserves; nothing here may stand in for them.
+  assert.doesNotMatch(content, /reserve|réserve|Indigenous engagement|Dialogue avec les peuples autochtones/i);
 });
 
-test("all seven governance surfaces have independently citable locale routes", async () => {
+test("the three remaining governance surfaces have independently citable locale routes", async () => {
   const pairs = [
     ["../app/en/glossary/page.tsx", "../app/fr/glossaire/page.tsx"],
     ["../app/en/corrections/page.tsx", "../app/fr/corrections/page.tsx"],
-    ["../app/en/decisions/page.tsx", "../app/fr/decisions/page.tsx"],
-    ["../app/en/engagement/page.tsx", "../app/fr/dialogue/page.tsx"],
-    ["../app/en/privacy/page.tsx", "../app/fr/confidentialite/page.tsx"],
     ["../app/en/terms/page.tsx", "../app/fr/conditions/page.tsx"],
-    ["../app/en/releases/page.tsx", "../app/fr/versions/page.tsx"],
   ];
   for (const [en, fr] of pairs) {
     assert.match(await read(en), /locale="en"/);
     assert.match(await read(fr), /locale="fr"/);
   }
+  for (const removed of ["decisions", "engagement", "privacy", "releases"])
+    assert.equal(existsSync(new URL(`../app/en/${removed}/page.tsx`, import.meta.url)), false, `${removed} was removed by the owner`);
+  for (const removed of ["decisions", "dialogue", "confidentialite", "versions"])
+    assert.equal(existsSync(new URL(`../app/fr/${removed}/page.tsx`, import.meta.url)), false, `${removed} was removed by the owner`);
 });
 
-test("required correction service levels and Indigenous safeguards are present", async () => {
+test("required correction service levels are present", async () => {
   const content = await read("../components/governance/GovernancePage.tsx");
-  assert.match(content, /Response times, in business days to acknowledge and then to resolve: critical, 1 and 5/);
-  assert.match(content, /Indigenous geography content, 1 and 10/);
-  assert.match(content, /do not describe the full extent of Indigenous lands, rights, title or relationships/);
-  assert.match(content, /No ranking, rights finding, consent finding or compliance claim/);
+  assert.match(content, /Response times, in business days to acknowledge and then to resolve: critical, 1 and 5; material, 3 and 15; minor, 5 and 30/);
 });
 
 test("glossary separates event grades from measurement states and defines reader terms", async () => {
@@ -70,43 +69,26 @@ test("corrections provides interim actions without inventing an intake address",
   assert.match(content, /use that publisher’s correction process/);
   assert.match(content, /Your notes don’t open a case or start the response clock/);
   assert.match(content, /utilisez le processus de correction de cet éditeur/);
-  assert.match(content, /aucune adresse de correction ni aucun formulaire n’est approuvé/);
   assert.doesNotMatch(content, /mailto:|corrections@|correction@/i);
 });
 
-test("method and decision copy use the current interval control", async () => {
-  const [method, governance] = await Promise.all([
-    read("../components/transparency/MethodologyPage.tsx"),
-    read("../components/governance/GovernancePage.tsx"),
-  ]);
-  for (const content of [method, governance]) {
-    assert.match(content, /EXPLORE_DEFAULT_YEAR/);
-    assert.match(content, /EXPLORE_YEAR_MIN/);
-    assert.doesNotMatch(content, /default view (?:starts|begins) in 2000|vue par défaut commence en 2000/);
-  }
+test("method copy uses the current interval control", async () => {
+  const method = await read("../components/transparency/MethodologyPage.tsx");
+  assert.match(method, /EXPLORE_DEFAULT_YEAR/);
+  assert.match(method, /EXPLORE_YEAR_MIN/);
+  assert.doesNotMatch(method, /default view (?:starts|begins) in 2000|vue par défaut commence en 2000/);
   // The control is a first and a last year, so the copy describes a span.
   assert.match(method, /On Explore you choose a first and a last year/);
   assert.match(method, /vous choisissez une première et une dernière année/);
 });
 
-test("Releases indexes the bounded release and Data and Explore point back to it", async () => {
-  const [governance, data, englishExplore, frenchExplore] = await Promise.all([
-    read("../components/governance/GovernancePage.tsx"),
+test("nothing links to the removed Releases page", async () => {
+  const [data, englishExplore, frenchExplore] = await Promise.all([
     read("../components/transparency/DataPage.tsx"),
     read("../app/en/explore/page.tsx"),
     read("../app/fr/explorer/page.tsx"),
   ]);
-  assert.match(governance, /provinceBulkRelease\.id/);
-  assert.match(governance, /provinceCsv\.url/);
-  assert.match(governance, /provinceGeoPackage\.url/);
-  assert.match(governance, /There is no final release yet\. This preview stays in place until the remaining launch checks/);
-  // The owner removed the independent-comparison requirement; nothing may claim one took place.
-  assert.doesNotMatch(governance, /independent comparison (?:was|has been) (?:done|completed|published)/i);
-  assert.doesNotMatch(governance, /No production data release exists\. The current repository/);
-  assert.match(data, /\/en\/releases/);
-  assert.match(data, /\/fr\/versions/);
-  assert.match(englishExplore, /href="\/en\/releases"/);
-  assert.match(frenchExplore, /href="\/fr\/versions"/);
+  for (const content of [data, englishExplore, frenchExplore]) assert.doesNotMatch(content, /\/en\/releases|\/fr\/versions/);
 });
 
 

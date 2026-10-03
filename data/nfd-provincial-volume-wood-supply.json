@@ -1,0 +1,1508 @@
+{
+ "schema": "witness-tree/nfd-provincial-volume-wood-supply/1",
+ "builtFrom": "scripts/build-nfd-provincial-volume.mjs",
+ "source": {
+  "publisher": "Canadian Council of Forest Ministers, National Forestry Database",
+  "downloadPage": "http://nfdp.ccfm.org/en/download.php",
+  "termsUrl": "https://nfdp.ccfm.org/en/terms.php",
+  "licence": "Open Government Licence – Canada version 2.0",
+  "retrieved": "2026-10-03",
+  "files": [
+   {
+    "fileName": "nfd-volume-harvested-en-fr.csv",
+    "byteLength": 2931438,
+    "sha256": "7e07e40970f82d21f28f553ba416ea82cc211b689a479f8d60c95d3f5429b887"
+   },
+   {
+    "fileName": "nfd-wood-supply-en-fr.csv",
+    "byteLength": 432445,
+    "sha256": "d6125ad99737dce22aa58e273c3fb7ac868f00799671e8b4b211ee8e93a556a0"
+   }
+  ]
+ },
+ "method": {
+  "tenure": "Provincial land only.",
+  "harvest": "Net merchantable volume of industrial roundwood harvested: logs and bolts, pulpwood, other industrial roundwood and unspecified products. Fuelwood and firewood are excluded.",
+  "woodSupply": "Wood supply estimate for industrial roundwood on provincial land, all species groups.",
+  "estimated": "estimated is true where any summed cell carries the publisher's estimate qualifier (E or e).",
+  "missingness": "A cell qualified n is not applicable and is left out. Any other blank cell is unknown, never zero; the year keeps the known sum and is marked incomplete. A year with no known cell is null.",
+  "years": "The publisher's year label is carried verbatim; 1990 onward, the years both tables cover."
+ },
+ "claims": {
+  "measurement": "reported-harvest-volume",
+  "woodSupply": "administrative-determination",
+  "perHectareDerivation": false
+ },
+ "rows": [
+  {
+   "province": "AB",
+   "year": 1990,
+   "harvest": {
+    "cubicMetres": 11609450,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 24829963,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "AB",
+   "year": 1991,
+   "harvest": {
+    "cubicMetres": 11861660,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 24897335,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "AB",
+   "year": 1992,
+   "harvest": {
+    "cubicMetres": 13383045,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 24685476,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "AB",
+   "year": 1993,
+   "harvest": {
+    "cubicMetres": 13091527,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 22488658,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "AB",
+   "year": 1994,
+   "harvest": {
+    "cubicMetres": 15085794,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 22075434,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "AB",
+   "year": 1995,
+   "harvest": {
+    "cubicMetres": 16974826,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 22075434,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "AB",
+   "year": 1996,
+   "harvest": {
+    "cubicMetres": 17763696,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 23039948,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "AB",
+   "year": 1997,
+   "harvest": {
+    "cubicMetres": 19031439,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 23356734,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "AB",
+   "year": 1998,
+   "harvest": {
+    "cubicMetres": 15179303,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 23815886,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "AB",
+   "year": 1999,
+   "harvest": {
+    "cubicMetres": 21660301,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 23800697,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "AB",
+   "year": 2000,
+   "harvest": {
+    "cubicMetres": 21503064,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 24074540,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "AB",
+   "year": 2001,
+   "harvest": {
+    "cubicMetres": 21459355,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 23833262,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "AB",
+   "year": 2002,
+   "harvest": {
+    "cubicMetres": 22400946,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 23880798,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "AB",
+   "year": 2003,
+   "harvest": {
+    "cubicMetres": 21848446,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 24819138,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "AB",
+   "year": 2004,
+   "harvest": {
+    "cubicMetres": 20876142,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 24403752,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "AB",
+   "year": 2005,
+   "harvest": {
+    "cubicMetres": 23819481,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 26223787,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "AB",
+   "year": 2006,
+   "harvest": {
+    "cubicMetres": 23126815,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 27189896,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "AB",
+   "year": 2007,
+   "harvest": {
+    "cubicMetres": 19286934,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 28402644,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "AB",
+   "year": 2008,
+   "harvest": {
+    "cubicMetres": 19012532,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 29675947,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "AB",
+   "year": 2009,
+   "harvest": {
+    "cubicMetres": 19164731,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 30380694,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "AB",
+   "year": 2010,
+   "harvest": {
+    "cubicMetres": 20138206,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 30721460,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "AB",
+   "year": 2011,
+   "harvest": {
+    "cubicMetres": 23732277,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 31055404,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "AB",
+   "year": 2012,
+   "harvest": {
+    "cubicMetres": 20870909,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 30306834,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "AB",
+   "year": 2013,
+   "harvest": {
+    "cubicMetres": 20593194,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 31156251,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "AB",
+   "year": 2014,
+   "harvest": {
+    "cubicMetres": 21231351,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 32381722,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "AB",
+   "year": 2015,
+   "harvest": {
+    "cubicMetres": 25518241,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 32371666,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "AB",
+   "year": 2016,
+   "harvest": {
+    "cubicMetres": 23275644,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 32101198,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "AB",
+   "year": 2017,
+   "harvest": {
+    "cubicMetres": 25317310,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 31598441,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "AB",
+   "year": 2018,
+   "harvest": {
+    "cubicMetres": 24888899,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 31525587,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "AB",
+   "year": 2019,
+   "harvest": {
+    "cubicMetres": 22261558,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 29640824,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "AB",
+   "year": 2020,
+   "harvest": {
+    "cubicMetres": 26288087,
+    "complete": true,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 29482550,
+    "complete": true,
+    "estimated": false
+   }
+  },
+  {
+   "province": "AB",
+   "year": 2021,
+   "harvest": {
+    "cubicMetres": 22223437,
+    "complete": true,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 29617666,
+    "complete": true,
+    "estimated": false
+   }
+  },
+  {
+   "province": "AB",
+   "year": 2022,
+   "harvest": {
+    "cubicMetres": 20781321,
+    "complete": true,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 30022066,
+    "complete": true,
+    "estimated": false
+   }
+  },
+  {
+   "province": "AB",
+   "year": 2023,
+   "harvest": {
+    "cubicMetres": 12573673,
+    "complete": true,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 29755929,
+    "complete": true,
+    "estimated": false
+   }
+  },
+  {
+   "province": "AB",
+   "year": 2024,
+   "harvest": {
+    "cubicMetres": 20308983,
+    "complete": true,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 29198973,
+    "complete": true,
+    "estimated": false
+   }
+  },
+  {
+   "province": "ON",
+   "year": 1990,
+   "harvest": {
+    "cubicMetres": 18780000,
+    "complete": false,
+    "estimated": true
+   },
+   "woodSupply": {
+    "cubicMetres": 43467986,
+    "complete": true,
+    "estimated": true
+   }
+  },
+  {
+   "province": "ON",
+   "year": 1991,
+   "harvest": {
+    "cubicMetres": 17747000,
+    "complete": false,
+    "estimated": true
+   },
+   "woodSupply": {
+    "cubicMetres": 43510000,
+    "complete": true,
+    "estimated": true
+   }
+  },
+  {
+   "province": "ON",
+   "year": 1992,
+   "harvest": {
+    "cubicMetres": 18718000,
+    "complete": false,
+    "estimated": true
+   },
+   "woodSupply": {
+    "cubicMetres": 41282000,
+    "complete": true,
+    "estimated": true
+   }
+  },
+  {
+   "province": "ON",
+   "year": 1993,
+   "harvest": {
+    "cubicMetres": 19765000,
+    "complete": false,
+    "estimated": true
+   },
+   "woodSupply": {
+    "cubicMetres": 41434000,
+    "complete": true,
+    "estimated": true
+   }
+  },
+  {
+   "province": "ON",
+   "year": 1994,
+   "harvest": {
+    "cubicMetres": 20396240,
+    "complete": false,
+    "estimated": true
+   },
+   "woodSupply": {
+    "cubicMetres": 39753000,
+    "complete": true,
+    "estimated": true
+   }
+  },
+  {
+   "province": "ON",
+   "year": 1995,
+   "harvest": {
+    "cubicMetres": 21329197,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 32741000,
+    "complete": true,
+    "estimated": true
+   }
+  },
+  {
+   "province": "ON",
+   "year": 1996,
+   "harvest": {
+    "cubicMetres": 21019988,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 31704000,
+    "complete": true,
+    "estimated": true
+   }
+  },
+  {
+   "province": "ON",
+   "year": 1997,
+   "harvest": {
+    "cubicMetres": 21676504,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 32335000,
+    "complete": true,
+    "estimated": true
+   }
+  },
+  {
+   "province": "ON",
+   "year": 1998,
+   "harvest": {
+    "cubicMetres": 21140400,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 32166000,
+    "complete": true,
+    "estimated": true
+   }
+  },
+  {
+   "province": "ON",
+   "year": 1999,
+   "harvest": {
+    "cubicMetres": 22506286,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 32629000,
+    "complete": true,
+    "estimated": true
+   }
+  },
+  {
+   "province": "ON",
+   "year": 2000,
+   "harvest": {
+    "cubicMetres": 25444542,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 31903109,
+    "complete": true,
+    "estimated": true
+   }
+  },
+  {
+   "province": "ON",
+   "year": 2001,
+   "harvest": {
+    "cubicMetres": 21806277,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 31156625,
+    "complete": true,
+    "estimated": true
+   }
+  },
+  {
+   "province": "ON",
+   "year": 2002,
+   "harvest": {
+    "cubicMetres": 23809697,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 31741149,
+    "complete": true,
+    "estimated": true
+   }
+  },
+  {
+   "province": "ON",
+   "year": 2003,
+   "harvest": {
+    "cubicMetres": 21974620,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 31894583,
+    "complete": true,
+    "estimated": true
+   }
+  },
+  {
+   "province": "ON",
+   "year": 2004,
+   "harvest": {
+    "cubicMetres": 22691602,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 31486982,
+    "complete": true,
+    "estimated": true
+   }
+  },
+  {
+   "province": "ON",
+   "year": 2005,
+   "harvest": {
+    "cubicMetres": 21048005,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 31737599,
+    "complete": true,
+    "estimated": true
+   }
+  },
+  {
+   "province": "ON",
+   "year": 2006,
+   "harvest": {
+    "cubicMetres": 18674604,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 31435275,
+    "complete": true,
+    "estimated": true
+   }
+  },
+  {
+   "province": "ON",
+   "year": 2007,
+   "harvest": {
+    "cubicMetres": 14445311,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 31590208,
+    "complete": true,
+    "estimated": true
+   }
+  },
+  {
+   "province": "ON",
+   "year": 2008,
+   "harvest": {
+    "cubicMetres": 11823087,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 31068909,
+    "complete": true,
+    "estimated": true
+   }
+  },
+  {
+   "province": "ON",
+   "year": 2009,
+   "harvest": {
+    "cubicMetres": 9626000,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 30170767,
+    "complete": true,
+    "estimated": true
+   }
+  },
+  {
+   "province": "ON",
+   "year": 2010,
+   "harvest": {
+    "cubicMetres": 12782725,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 30070812,
+    "complete": true,
+    "estimated": true
+   }
+  },
+  {
+   "province": "ON",
+   "year": 2011,
+   "harvest": {
+    "cubicMetres": 11807000,
+    "complete": true,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 29235610,
+    "complete": true,
+    "estimated": true
+   }
+  },
+  {
+   "province": "ON",
+   "year": 2012,
+   "harvest": {
+    "cubicMetres": 12059916,
+    "complete": true,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 29887963,
+    "complete": true,
+    "estimated": true
+   }
+  },
+  {
+   "province": "ON",
+   "year": 2013,
+   "harvest": {
+    "cubicMetres": 13575097,
+    "complete": true,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 30308974,
+    "complete": true,
+    "estimated": true
+   }
+  },
+  {
+   "province": "ON",
+   "year": 2014,
+   "harvest": {
+    "cubicMetres": 13012859,
+    "complete": true,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 30308974,
+    "complete": true,
+    "estimated": true
+   }
+  },
+  {
+   "province": "ON",
+   "year": 2015,
+   "harvest": {
+    "cubicMetres": 14073779,
+    "complete": true,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 29997652,
+    "complete": true,
+    "estimated": true
+   }
+  },
+  {
+   "province": "ON",
+   "year": 2016,
+   "harvest": {
+    "cubicMetres": 14219458,
+    "complete": true,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 28795707,
+    "complete": true,
+    "estimated": true
+   }
+  },
+  {
+   "province": "ON",
+   "year": 2017,
+   "harvest": {
+    "cubicMetres": 14546134,
+    "complete": true,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 28929433,
+    "complete": true,
+    "estimated": true
+   }
+  },
+  {
+   "province": "ON",
+   "year": 2018,
+   "harvest": {
+    "cubicMetres": 13171182,
+    "complete": true,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 28932841,
+    "complete": true,
+    "estimated": true
+   }
+  },
+  {
+   "province": "ON",
+   "year": 2019,
+   "harvest": {
+    "cubicMetres": 14036570,
+    "complete": true,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 28719796,
+    "complete": true,
+    "estimated": true
+   }
+  },
+  {
+   "province": "ON",
+   "year": 2020,
+   "harvest": {
+    "cubicMetres": 13266786,
+    "complete": true,
+    "estimated": true
+   },
+   "woodSupply": {
+    "cubicMetres": 28915700,
+    "complete": true,
+    "estimated": true
+   }
+  },
+  {
+   "province": "ON",
+   "year": 2021,
+   "harvest": {
+    "cubicMetres": 13404933,
+    "complete": true,
+    "estimated": true
+   },
+   "woodSupply": {
+    "cubicMetres": 27319705,
+    "complete": true,
+    "estimated": true
+   }
+  },
+  {
+   "province": "ON",
+   "year": 2022,
+   "harvest": {
+    "cubicMetres": 13404933,
+    "complete": true,
+    "estimated": true
+   },
+   "woodSupply": {
+    "cubicMetres": 27319705,
+    "complete": true,
+    "estimated": true
+   }
+  },
+  {
+   "province": "ON",
+   "year": 2023,
+   "harvest": {
+    "cubicMetres": 12555538,
+    "complete": true,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 27319705,
+    "complete": true,
+    "estimated": true
+   }
+  },
+  {
+   "province": "ON",
+   "year": 2024,
+   "harvest": {
+    "cubicMetres": 12555538,
+    "complete": true,
+    "estimated": true
+   },
+   "woodSupply": {
+    "cubicMetres": 27319705,
+    "complete": true,
+    "estimated": true
+   }
+  },
+  {
+   "province": "QC",
+   "year": 1990,
+   "harvest": {
+    "cubicMetres": 21481418,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 42387600,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "QC",
+   "year": 1991,
+   "harvest": {
+    "cubicMetres": 19671330,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 42387600,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "QC",
+   "year": 1992,
+   "harvest": {
+    "cubicMetres": 21988569,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 42491700,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "QC",
+   "year": 1993,
+   "harvest": {
+    "cubicMetres": 25104913,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 42491700,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "QC",
+   "year": 1994,
+   "harvest": {
+    "cubicMetres": 29174760,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 43265814,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "QC",
+   "year": 1995,
+   "harvest": {
+    "cubicMetres": 31251880,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 44448600,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "QC",
+   "year": 1996,
+   "harvest": {
+    "cubicMetres": 28481075,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 44630400,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "QC",
+   "year": 1997,
+   "harvest": {
+    "cubicMetres": 32650821,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 45019100,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "QC",
+   "year": 1998,
+   "harvest": {
+    "cubicMetres": 32946645,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 44668600,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "QC",
+   "year": 1999,
+   "harvest": {
+    "cubicMetres": 34206542,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 44668600,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "QC",
+   "year": 2000,
+   "harvest": {
+    "cubicMetres": 32442038,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 42789861,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "QC",
+   "year": 2001,
+   "harvest": {
+    "cubicMetres": 30139635,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 42817534,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "QC",
+   "year": 2002,
+   "harvest": {
+    "cubicMetres": 31244135,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 41885824,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "QC",
+   "year": 2003,
+   "harvest": {
+    "cubicMetres": 30650986,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 41885824,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "QC",
+   "year": 2004,
+   "harvest": {
+    "cubicMetres": 34057488,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 41885824,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "QC",
+   "year": 2005,
+   "harvest": {
+    "cubicMetres": 29260711,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 35199342,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "QC",
+   "year": 2006,
+   "harvest": {
+    "cubicMetres": 24594712,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 35199342,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "QC",
+   "year": 2007,
+   "harvest": {
+    "cubicMetres": 23032312,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 35199342,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "QC",
+   "year": 2008,
+   "harvest": {
+    "cubicMetres": 19069165,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 35199342,
+    "complete": false,
+    "estimated": true
+   }
+  },
+  {
+   "province": "QC",
+   "year": 2009,
+   "harvest": {
+    "cubicMetres": 15869830,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 33199400,
+    "complete": false,
+    "estimated": true
+   }
+  },
+  {
+   "province": "QC",
+   "year": 2010,
+   "harvest": {
+    "cubicMetres": 20183018,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 33198000,
+    "complete": false,
+    "estimated": true
+   }
+  },
+  {
+   "province": "QC",
+   "year": 2011,
+   "harvest": {
+    "cubicMetres": 17587248,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 33185078,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "QC",
+   "year": 2012,
+   "harvest": {
+    "cubicMetres": 22259663,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 33198000,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "QC",
+   "year": 2013,
+   "harvest": {
+    "cubicMetres": 19990342,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 28740900,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "QC",
+   "year": 2014,
+   "harvest": {
+    "cubicMetres": 21615234,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 28740900,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "QC",
+   "year": 2015,
+   "harvest": {
+    "cubicMetres": 21835378,
+    "complete": false,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 30170300,
+    "complete": false,
+    "estimated": false
+   }
+  },
+  {
+   "province": "QC",
+   "year": 2016,
+   "harvest": {
+    "cubicMetres": 24124564,
+    "complete": true,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 30171300,
+    "complete": true,
+    "estimated": false
+   }
+  },
+  {
+   "province": "QC",
+   "year": 2017,
+   "harvest": {
+    "cubicMetres": 20908195,
+    "complete": true,
+    "estimated": true
+   },
+   "woodSupply": {
+    "cubicMetres": 31299200,
+    "complete": true,
+    "estimated": false
+   }
+  },
+  {
+   "province": "QC",
+   "year": 2018,
+   "harvest": {
+    "cubicMetres": 21032377,
+    "complete": true,
+    "estimated": true
+   },
+   "woodSupply": {
+    "cubicMetres": 32734950,
+    "complete": true,
+    "estimated": false
+   }
+  },
+  {
+   "province": "QC",
+   "year": 2019,
+   "harvest": {
+    "cubicMetres": 20841437,
+    "complete": true,
+    "estimated": true
+   },
+   "woodSupply": {
+    "cubicMetres": 32734950,
+    "complete": true,
+    "estimated": false
+   }
+  },
+  {
+   "province": "QC",
+   "year": 2020,
+   "harvest": {
+    "cubicMetres": 19766199,
+    "complete": true,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 32686200,
+    "complete": true,
+    "estimated": false
+   }
+  },
+  {
+   "province": "QC",
+   "year": 2021,
+   "harvest": {
+    "cubicMetres": 21748005,
+    "complete": true,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 32686200,
+    "complete": true,
+    "estimated": false
+   }
+  },
+  {
+   "province": "QC",
+   "year": 2022,
+   "harvest": {
+    "cubicMetres": 20999840,
+    "complete": true,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 32685000,
+    "complete": true,
+    "estimated": false
+   }
+  },
+  {
+   "province": "QC",
+   "year": 2023,
+   "harvest": {
+    "cubicMetres": 19043514,
+    "complete": true,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 32070000,
+    "complete": true,
+    "estimated": false
+   }
+  },
+  {
+   "province": "QC",
+   "year": 2024,
+   "harvest": {
+    "cubicMetres": 19522556,
+    "complete": true,
+    "estimated": false
+   },
+   "woodSupply": {
+    "cubicMetres": 31516000,
+    "complete": true,
+    "estimated": false
+   }
+  }
+ ]
+}

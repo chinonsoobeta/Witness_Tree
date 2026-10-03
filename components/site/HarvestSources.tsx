@@ -12,7 +12,7 @@ import { HARVEST_FIRE_ROUTES } from "@/lib/harvest-fire";
 const COPY = {
   en: {
     heading: "What was logged, and what burned",
-    lead: "A satellite can see that trees are gone, but not why. These pages bring in other sources: official harvest statistics, British Columbia’s timber volumes, and Natural Resources Canada’s yearly maps of harvest and fire.",
+    lead: "A satellite can see that trees are gone, but not why. These pages bring in other sources: official harvest statistics, timber volumes for each province, and Natural Resources Canada’s yearly maps of harvest and fire.",
     cards: [
       {
         eyebrow: "Official statistics",
@@ -35,11 +35,18 @@ const COPY = {
         link: "See BC harvest volume",
         href: "/en/data/bc-harvest-volume",
       },
+      {
+        eyebrow: "Timber volume",
+        title: "Alberta, Ontario and Québec harvest volume and allowable cut",
+        body: "How much timber each province harvested from its own land each year, next to the wood supply it allowed to be cut.",
+        link: "See AB, ON and QC harvest volume",
+        href: "/en/data/provincial-harvest-volume",
+      },
     ],
   },
   fr: {
     heading: "Ce qui a été récolté, et ce qui a brûlé",
-    lead: "Un satellite peut voir que des arbres ont disparu, mais pas pourquoi. Ces pages font appel à d’autres sources\u202F: les statistiques officielles sur la récolte, les volumes de bois de la Colombie-Britannique et les cartes annuelles de la récolte et des feux de Ressources naturelles Canada.",
+    lead: "Un satellite peut voir que des arbres ont disparu, mais pas pourquoi. Ces pages font appel à d’autres sources\u202F: les statistiques officielles sur la récolte, les volumes de bois de chaque province et les cartes annuelles de la récolte et des feux de Ressources naturelles Canada.",
     cards: [
       {
         eyebrow: "Statistiques officielles",
@@ -61,6 +68,13 @@ const COPY = {
         body: "Le volume de bois facturé chaque année en Colombie-Britannique, à côté du volume que la province permettait de couper.",
         link: "Voir le volume récolté en C.-B.",
         href: "/fr/donnees/volume-recolte-bc",
+      },
+      {
+        eyebrow: "Volume de bois",
+        title: "Volume récolté et possibilité de coupe en Alberta, en Ontario et au Québec",
+        body: "Le volume de bois que chaque province a récolté sur ses propres terres chaque année, à côté de l’approvisionnement qu’elle permettait de couper.",
+        link: "Voir le volume récolté en Alb., Ont. et Qc",
+        href: "/fr/donnees/volume-recolte-provinces",
       },
     ],
   },

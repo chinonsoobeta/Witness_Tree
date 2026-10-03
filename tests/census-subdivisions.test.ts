@@ -67,7 +67,8 @@ test("the layer is pinned to the planned release and draws only the published pl
   assert.equal(overlay.url, release.tiles.url);
   assert.equal(overlay.sourceLayer, "census_subdivisions");
   assert.equal(release.tiles.featureCount, placeIndex.counts.places);
-  assert.match(overlay.note.en, /Reserves, settlements and treaty or agreement lands are not shown/);
+  // The owner removed every reference to reserves from the site.
+  assert.doesNotMatch(`${overlay.note.en} ${overlay.note.fr}`, /reserve|réserve|treaty|traité/i);
 });
 
 test("the release check refuses a planned release until it has been read back", () => {
