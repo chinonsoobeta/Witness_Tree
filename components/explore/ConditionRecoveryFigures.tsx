@@ -1,4 +1,4 @@
-import { colon, formatHectares, formatPercent, type Locale } from "@/lib/domain";
+import { colon, formatHectares, formatNumber, formatPercent, type Locale } from "@/lib/domain";
 import { formatUnknownSharePercent } from "@/lib/explore/map-style";
 // Types only: the release itself stays on the server and arrives as props.
 import type { ConditionRecoveryCause, ConditionRecoveryMeasurement, ConditionRecoveryView } from "@/lib/explore/condition-recovery";
@@ -7,12 +7,9 @@ const COPY = {
   en: {
     heading: "Did the trees grow back?",
     lead: (lost: string, share: string) =>
-      `Of the ${lost} that lost tree cover in the four provinces from 1984 to 2022, ${share} was treed again for at least five years in a row after its most recent loss.`,
-    any: (share: string) => `Counting a return after any loss, not only the latest: ${share}.`,
-    unconfirmed: (share: string) =>
-      `Another ${share} was treed again by 2022 but hadn’t yet had five years to show it, so it is counted as not grown back.`,
+      `Of the ~${lost} million hectares that lost tree cover over the 38-year interval in the four provinces, ${share} regained its cover at least 5 years in a row after its most recent loss.`,
     unknown: (area: string) =>
-      `${area} is Unknown, because at least one year there is unclassified or missing. It is left out, not counted as zero.`,
+      `${area} is Unknown because at least one year there is unclassified or missing. It’s left out, not counted as zero.`,
     meaning:
       "“Treed” means the yearly land-cover map shows coniferous, broadleaf or mixed trees. This measures trees coming back, not the return of the forest that was there: a young plantation and an old stand both count as treed.",
     floor: "Where less than 500 ha lost tree cover, the share is withheld.",
@@ -46,12 +43,9 @@ const COPY = {
   fr: {
     heading: "Les arbres ont-ils repoussé\u202F?",
     lead: (lost: string, share: string) =>
-      `Des ${lost} qui ont perdu leur couvert arboré dans les quatre provinces de 1984 à 2022, ${share} sont redevenus boisés pendant au moins cinq années consécutives après leur dernière perte.`,
-    any: (share: string) => `En comptant un retour après une perte quelconque, et pas seulement la dernière\u202F: ${share}.`,
-    unconfirmed: (share: string) =>
-      `${share} de plus étaient redevenus boisés en 2022, mais sans avoir encore eu cinq ans pour le montrer\u202F; ils sont donc comptés comme non rétablis.`,
+      `Sur les quelque ${lost}\u00a0millions d’hectares qui ont perdu leur couvert arboré au cours de la période de 38\u00a0ans dans les quatre provinces, ${share} ont retrouvé ce couvert au moins 5\u00a0années de suite après leur dernière perte.`,
     unknown: (area: string) =>
-      `${area} sont inconnus, car au moins une année y est non classée ou manquante. Ils sont exclus, et non comptés comme zéro.`,
+      `${area} sont inconnus parce qu’au moins une année y est non classée ou manquante. Ils sont exclus, et non comptés comme zéro.`,
     meaning:
       "«\u00a0Boisé\u00a0» signifie que la carte annuelle de couverture terrestre montre des conifères, des feuillus ou un peuplement mixte. On mesure le retour des arbres, et non celui de la forêt qui s’y trouvait\u202F: une jeune plantation et un vieux peuplement comptent tous deux comme boisés.",
     floor: "Lorsque moins de 500 ha ont perdu leur couvert arboré, la part n’est pas présentée.",
@@ -104,14 +98,12 @@ export function ConditionRecoveryHeadline({ four, locale }: Readonly<{ four: Con
   const pct = (value: number | null) => (value === null ? text.withheld : formatPercent(Math.round(value * 10) / 10, locale));
   return (
     <div className="recovery-headline">
-      <p className="recovery-lead">{text.lead(formatHectares(Math.round(four.lostHectares), locale, 0), pct(four.latestRecoveredPercent))}</p>
+      <p className="recovery-lead">{text.lead(formatNumber(Math.round(four.lostHectares / 1e5) / 10, locale, 1), pct(four.latestRecoveredPercent))}</p>
       {four.latestRecoveredPercent !== null ? (
         <span className="recovery-bar" aria-hidden="true">
           <span className="recovery-bar-part recovery-bar-part--recovered" style={{ width: `${four.latestRecoveredPercent}%` }} />
-          <span className="recovery-bar-part recovery-bar-part--unconfirmed" style={{ width: `${four.unconfirmedPercent ?? 0}%` }} />
         </span>
       ) : null}
-      <p>{text.any(pct(four.anyRecoveredPercent))} {text.unconfirmed(pct(four.unconfirmedPercent))}</p>
       <p>{text.unknown(formatHectares(Math.round(four.unknownHectares), locale, 0))}</p>
     </div>
   );

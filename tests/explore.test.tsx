@@ -725,13 +725,15 @@ test("condition and recovery shows the admitted five-year figures, and says so w
     <ExploreView events={exploreFixtures} locale="fr" mode="condition-recovery" data="table" conditionRecovery={view} />,
   );
   assert.match(en, /Did the trees grow back\?/);
-  assert.match(en, /was treed again for at least five years in a row after its most recent loss/);
-  assert.match(en, /is Unknown, because at least one year there is unclassified or missing/);
+  // The owner's wording of 2026-10-03: rounded millions, the 38-year interval, and no any-loss sentence.
+  assert.match(en, /Of the ~55\.1 million hectares that lost tree cover over the 38-year interval in the four provinces, 33% regained its cover at least 5 years in a row after its most recent loss\./);
+  assert.doesNotMatch(en, /Counting a return after any loss/);
+  assert.match(en, /is Unknown because at least one year there is unclassified or missing\. It’s left out, not counted as zero\./);
   assert.match(en, /under the earlier three-year rule/);
   assert.match(en, /Withheld \(under 500 ha\)/);
   assert.equal((en.match(/<caption/g) ?? []).length, 4);
   assert.match(fr, /Les arbres ont-ils repoussé\u202F\?/);
-  assert.match(fr, /cinq années consécutives/);
+  assert.match(fr, /Sur les quelque 55,1\u00a0millions d’hectares/);
   // The per-cell heading names an interval this mode has no figures for, so it is not shown.
   assert.doesNotMatch(en, /id="explore-annual-heading"/);
   assert.doesNotMatch(fr, /id="explore-annual-heading"/);

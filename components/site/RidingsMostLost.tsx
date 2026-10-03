@@ -108,15 +108,15 @@ export function RidingsMostLost({ locale }: { locale: Locale }) {
 const CITY_COPY = {
   en: {
     heading: "Cities with the largest share of forest lost, 1984–2022",
-    lead: (floor: string) => `The share of each city’s mapped forest detected as lost at least once from 1984 to 2022, top five in each province. A city here is a place Statistics Canada lists as a city (City, Ville or Cité). Only cities mapped in full, with at least ${floor} of forest, are ranked; the rest are left out, never counted as zero.`,
-    none: "No city here is mapped in full with enough forest to rank.",
+    lead: (floor: string) => `The share of each city’s mapped forest detected as lost at least once from 1984 to 2022, top five in each province. A city here is a place Statistics Canada lists as a city (City, Ville or Cité). Only cities with at least ${floor} of forest are ranked.`,
+    none: "No city here had enough forest to rank.",
     fewer: (count: number) => `Only ${count} ${count === 1 ? "city is" : "cities are"} mapped in full with enough forest to rank.`,
     note: "A share can be high because of harvest, fire or both. Satellite imagery can’t tell why trees are gone.",
   },
   fr: {
     heading: "Villes ayant perdu la plus grande part de leur forêt, 1984–2022",
-    lead: (floor: string) => `La part de la forêt cartographiée de chaque ville détectée comme perdue au moins une fois de 1984 à 2022, les cinq premières de chaque province. Une ville est ici un lieu que Statistique Canada classe comme ville (City, Ville ou Cité). Seules les villes entièrement cartographiées, avec au moins ${floor} de forêt, sont classées\u202F; les autres sont exclues, jamais comptées comme zéro.`,
-    none: "Aucune ville d’ici n’est entièrement cartographiée avec assez de forêt pour être classée.",
+    lead: (floor: string) => `La part de la forêt cartographiée de chaque ville détectée comme perdue au moins une fois de 1984 à 2022, les cinq premières de chaque province. Une ville est ici un lieu que Statistique Canada classe comme ville (City, Ville ou Cité). Seules les villes ayant au moins ${floor} de forêt sont classées.`,
+    none: "Aucune ville d’ici n’avait assez de forêt pour être classée.",
     fewer: (count: number) => `Seulement ${count} ${count === 1 ? "ville est entièrement cartographiée" : "villes sont entièrement cartographiées"} avec assez de forêt pour être classées.`,
     note: "Une part peut être élevée à cause de la récolte, du feu ou des deux. L’imagerie satellitaire ne peut pas dire pourquoi les arbres ont disparu.",
   },

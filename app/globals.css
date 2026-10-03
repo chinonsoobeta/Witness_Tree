@@ -1465,6 +1465,7 @@ h4 {
   gap: 12px;
   margin: 0;
   padding-left: 1.4em;
+  list-style: decimal;
 }
 .ridings-most-lost-list a { font-weight: 700; }
 .ridings-most-lost-figure {
@@ -4276,9 +4277,6 @@ dd > a:only-child {
 }
 .recovery-bar-part--recovered {
   background: #4a3aa7;
-}
-.recovery-bar-part--unconfirmed {
-  background: repeating-linear-gradient(135deg, #4a3aa7 0 2px, transparent 2px 5px);
 }
 .recovery-lead {
   font-size: 1.125rem;

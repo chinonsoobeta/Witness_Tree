@@ -100,9 +100,11 @@ test("the home section lists the top five cities per province, in both languages
   assert.match(french, /<h4>Colombie-Britannique<\/h4>/);
   // The search link still looks the city up by its own name.
   assert.match(english, /href="\/en\/search\?q=Campbell%20River"/);
-  assert.match(english, /Only cities mapped in full, with at least 5,000 ha of forest, are ranked/);
-  assert.match(english, /never counted as zero/);
-  assert.match(french, /jamais comptées comme zéro/);
+  // The owner's shorter wording of 2026-10-03.
+  assert.match(english, /Only cities with at least 5,000 ha of forest are ranked\./);
+  assert.match(english, /No city here had enough forest to rank\./);
+  // Each province column numbers its own entries from 1.
+  assert.doesNotMatch(english, /<ol[^>]*start=/);
   assert.ok(french.includes(`${formatNumber(CITY_RANK_FLOOR_HECTARES, "fr", 0)} ha`));
 });
 

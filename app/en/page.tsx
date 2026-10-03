@@ -39,7 +39,7 @@ export default function EnglishHome() {
   return <SiteShell locale="en"><main id="main" className="page-wrap">
     <header className="masthead masthead--record">
       <h1>What happened to the forest here?</h1>
-      <p className="dek">{PRODUCT_NAME.en} shows forest loss in British Columbia, Alberta, Ontario, and Québec from 1984 to 2022 from satellite imagery and public record.</p>
+      <p className="dek">{PRODUCT_NAME.en} shows forest loss in British Columbia, Alberta, Ontario, and Québec from 1984 to 2022 from satellite imagery and public records.</p>
       <p className="masthead-note"><Link href="/en/explore">Explore the map</Link></p>
       <HomeSearch locale="en" />
       <ProvinceBar locale="en" />
