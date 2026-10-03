@@ -9,6 +9,7 @@ import {
   type ExploreInterval,
 } from "./interval";
 import { decodeIntervalArea, intervalSpanFigures, type DecodedIntervalArea } from "./interval-spans";
+import { REGION_UNKNOWN_TOLERANCE_PERCENT } from "./region-intervals";
 
 /**
  * Reads the checked-in interval measurements.
@@ -127,11 +128,13 @@ function inRecordScope(district: Readonly<{ jurisdiction: string; boundaryId: st
 
 /**
  * Resolves every district for one span. The coverage rule is intervalSpanFigures',
- * strict unless a caller admits a small unmapped share.
+ * with the regions' 1% tolerance: a riding with less than 1% of its forest
+ * unmapped is measured over its mapped forest, and the unmapped share travels
+ * with it (owner decision, 2026-10-03).
  */
 export function ridingIntervalMeasurements(
   interval: ExploreInterval,
-  unknownTolerancePercent = 0,
+  unknownTolerancePercent = REGION_UNKNOWN_TOLERANCE_PERCENT,
 ): readonly RidingIntervalMeasurement[] {
   // The release measures all 343 federal ridings from national data, but the
   // record covers four provinces only (plan: no coverage beyond them in

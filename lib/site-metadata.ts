@@ -36,9 +36,12 @@ export const siteMetadata: Metadata = {
     template: `%s · ${PRODUCT_NAME.en}`,
   },
   description: PRODUCT_PURPOSE.en,
+  // A cream conifer on moss, in the site's own colours. iOS home screens, and
+  // browsers that do not take an SVG icon, read the PNG.
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",
+    apple: "/apple-touch-icon.png",
   },
   openGraph: {
     type: "website",

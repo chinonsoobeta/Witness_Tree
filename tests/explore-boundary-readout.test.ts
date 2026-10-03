@@ -146,7 +146,7 @@ test("a span that does not end after it starts is refused", () => {
   );
 });
 
-test("an admitted region names its unmapped share, and nothing else may admit one", () => {
+test("an admitted region or riding names its unmapped share, and only a complete one below 1% may admit one", () => {
   const region: RidingBoundaryMeasurement = { ...complete, overlay: "economic-regions", admittedUnknownPercent: 0.42 };
   const regionSelection = selection("economic-regions");
   assert.equal(
@@ -157,12 +157,13 @@ test("an admitted region names its unmapped share, and nothing else may admit on
   const fr = boundaryReadout(regionSelection, [region], "fr", SPAN) as { coverage: string; normalizedShare: string };
   assert.match(fr.coverage, /^Presque entièrement cartographiée\u202F; 0,42\s?% de la forêt n’a aucune donnée satellitaire$/);
   assert.match(fr.normalizedShare, /^1,25\s?%$/);
-  assert.throws(() => boundaryReadout(selection("federal-ridings"), [{ ...complete, admittedUnknownPercent: 0.42 }], "en", SPAN), /economic region/);
+  const riding = boundaryReadout(selection("federal-ridings"), [{ ...complete, admittedUnknownPercent: 0.42 }], "en", SPAN) as { coverage: string };
+  assert.equal(riding.coverage, "Almost fully mapped; 0.42% of the forest has no satellite data");
   assert.throws(() => boundaryReadout(regionSelection, [{ ...region, admittedUnknownPercent: 1 }], "en", SPAN), /below 1%/);
   assert.throws(() => boundaryReadout(regionSelection, [{
     ...region,
     coverage: "partial-with-unknown",
     observedLossPercent: null,
     observedLossHectares: null,
-  }], "en", SPAN), /economic region/);
+  }], "en", SPAN), /complete area/);
 });

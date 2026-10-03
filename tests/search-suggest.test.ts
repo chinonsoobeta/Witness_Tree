@@ -2,8 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { SEARCH_SUGGEST_PATH, handleSearchSuggest } from "../worker/search-suggest";
-import { SUGGESTION_LIMITS, suggestSearch, type SuggestionPage } from "../lib/search/suggest";
-import { searchSite } from "../lib/search/site-search";
+import { SUGGESTION_LIMITS, ridingFigure, suggestSearch, type SuggestionPage } from "../lib/search/suggest";
+import { ridingSearchRow, ridingsByWholeRecordLoss, searchSite } from "../lib/search/site-search";
 
 const ask = (query: string, method = "GET") =>
   handleSearchSuggest(new Request(`https://example.invalid${SEARCH_SUGGEST_PATH}${query}`, { method }));
@@ -58,4 +58,18 @@ test("the route answers a short query with nothing and refuses what it cannot an
   assert.equal(ask("?q=Prince").status, 400);
   assert.equal(ask(`?locale=en&q=${"x".repeat(101)}`).status, 400);
   assert.equal(ask("?locale=en&q=Prince", "POST").status, 405);
+});
+
+test("a riding under 1% unmapped reads the same in search as in the rankings, with its unmapped share", () => {
+  const ranked = ridingsByWholeRecordLoss("federal", 5, "ON").find((row) => row.unmappedPercent !== undefined);
+  assert.ok(ranked, "an Ontario federal riding is ranked under the 1% rule");
+  const row = ridingSearchRow(ranked.id);
+  assert.equal(row?.coverage, "complete");
+  assert.equal(row?.admittedUnknownPercent, ranked.unmappedPercent);
+  const suggestion = suggestSearch(ranked.name.en, "en").suggestions.find((entry) => entry.kind === "riding" && entry.id === ranked.id);
+  assert.match(suggestion?.detail ?? "", / ha · (<0\.01|0\.\d+)% unmapped$/);
+  assert.match(ridingFigure(row, "en") ?? "", /of the mapped forest detected as lost · (<0\.01|0\.\d+)% unmapped$/);
+  const fr = suggestSearch(ranked.name.fr, "fr").suggestions.find((entry) => entry.kind === "riding" && entry.id === ranked.id);
+  assert.match(fr?.detail ?? "", / ha · (<\s?0,01|0,\d+)\s?% non cartographié$/);
+  assert.match(ridingFigure(row, "fr") ?? "", /de la forêt cartographiée détectée comme perdue · (<\s?0,01|0,\d+)\s?% non cartographié$/);
 });

@@ -73,13 +73,13 @@ forest unmapped at a span's start is treated as fully measured
 (`REGION_UNKNOWN_TOLERANCE_PERCENT` in `lib/explore/region-intervals.ts`). Eight
 regions meet it over 1984-2022. Their share is taken over the mapped forest, and
 the readout names the unmapped share beside it. On 2026-10-03 the owner applied
-the same 1% rule to the home-page riding rankings only
-(`RIDING_RANK_UNKNOWN_TOLERANCE_PERCENT` in `lib/search/site-search.ts`), where an
+the same 1% rule to ridings: `ridingIntervalMeasurements` in
+`lib/explore/riding-intervals.ts` admits it by default, so the home-page
+rankings, search and suggestions, and the riding map readout agree, and an
 admitted riding shows its unmapped share beside its figure. That fills Ontario's
-federal column and adds one Alberta riding; a column still short says where the
-province's unmapped land lies. The riding map readout, search, census
-subdivisions and provinces keep the strict rule: any unknown area withholds the
-share.
+federal ranking column and adds one Alberta riding; a column still short says
+where the province's unmapped land lies. Census subdivisions and provinces keep
+the strict rule: any unknown area withholds the share.
 
 The source-admitted watershed geometry is NRCan's national Water Survey of Canada
 sub-drainage-area rollup archive, version 6.0 at 1:1,000,000 scale. It is a

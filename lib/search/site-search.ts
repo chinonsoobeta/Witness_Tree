@@ -286,7 +286,6 @@ export const WHOLE_RECORD_RANK_FLOOR_HECTARES = 50_000;
  * mapped forest and the unmapped share travels with it.
  */
 export const RIDING_RANK_UNKNOWN_TOLERANCE_PERCENT = REGION_UNKNOWN_TOLERANCE_PERCENT;
-const rankMeasurements = ridingIntervalMeasurements(INTERVAL, RIDING_RANK_UNKNOWN_TOLERANCE_PERCENT);
 
 /**
  * Ridings ranked by the share of their mapped forest detected as lost at least
@@ -296,7 +295,7 @@ const rankMeasurements = ridingIntervalMeasurements(INTERVAL, RIDING_RANK_UNKNOW
  * name, so the order never depends on input order.
  */
 export function ridingsByWholeRecordLoss(level: "federal" | "provincial", limit: number, province?: string): readonly WholeRecordRidingRank[] {
-  return rankMeasurements
+  return ridingMeasurements
     .filter((row) => (level === "federal" ? row.jurisdiction === "CA" : row.jurisdiction !== "CA"))
     .filter((row) => row.coverage === "complete" && row.observedLossPercent !== null && row.observedLossHectares !== null)
     .flatMap((row) => {

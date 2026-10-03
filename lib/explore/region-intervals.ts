@@ -34,8 +34,8 @@ const REGION_COUNT = 44;
  * The owner decided on 2026-09-27 that a region with less than 1% of its
  * forest unmapped is treated as fully measured. The share is taken over the
  * mapped forest and the readout names the unmapped share beside it. On
- * 2026-10-03 the owner applied the same 1% rule to the home-page riding
- * rankings; the riding map readout, search and census subdivisions keep the
+ * 2026-10-03 the owner applied the same 1% rule to ridings: the home-page
+ * rankings, search and the riding map readout. Census subdivisions keep the
  * strict rule.
  */
 export const REGION_UNKNOWN_TOLERANCE_PERCENT = 1;
