@@ -9,7 +9,8 @@ test("English and French account status pages state the same unavailable service
   const en = renderToStaticMarkup(<AccountStatusPage locale="en" />); const fr = renderToStaticMarkup(<AccountStatusPage locale="fr" />);
   for (const text of ["Accounts are not active", "Sign-up", "sign-in", "unavailable", "25", "5,000 km²", "verified email", "data version", "within 30 days", "database hosted in Canada", "keeps each account’s data separate", "Encryption", "email service", "how often it sends", "privacy review", "not emergency direction"]) assert.match(en, new RegExp(text, "i"));
   for (const text of ["Les comptes ne sont pas encore actifs", "L’inscription", "connexion", "pas disponibles", "25", "5 000 km²", "courriel vérifiée", "version exacte", "30 jours", "base de données hébergée au Canada", "sépare les données de chaque compte", "Chiffrement", "service de courriel", "limite la fréquence", "examen de la confidentialité", "ne constituent pas des directives d’urgence"]) assert.match(fr, new RegExp(text, "i"));
-  assert.match(en, /href="\/en\/privacy"/); assert.match(en, /href="\/en\/terms"/); assert.match(fr, /href="\/fr\/confidentialite"/); assert.match(fr, /href="\/fr\/conditions"/); assert.equal(/<form|type="submit"/i.test(`${en}${fr}`), false);
+  // The privacy pages were removed on 2026-10-03, so no link may point at them.
+  assert.doesNotMatch(`${en}${fr}`, /href="\/(en\/privacy|fr\/confidentialite)"/); assert.match(en, /href="\/en\/terms"/); assert.match(fr, /href="\/fr\/conditions"/); assert.equal(/<form|type="submit"/i.test(`${en}${fr}`), false);
 });
 
 

@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import type { Locale } from "@/lib/domain";
-import { localeHref } from "@/lib/locale-navigation";
+import { isCurrentNavTarget, localeHref } from "@/lib/locale-navigation";
 
 /**
  * The language switch has to know the current route, and only a client component can read it.
@@ -20,7 +20,7 @@ export function LocaleLink({ locale }: { locale: Locale }) {
     const links = document.querySelectorAll<HTMLAnchorElement>(".site-header .nav-panel a");
     for (const link of links) {
       const target = link.getAttribute("href");
-      if (target && (pathname === target || pathname?.startsWith(`${target}/`))) {
+      if (target && pathname && isCurrentNavTarget(pathname, target)) {
         link.setAttribute("aria-current", "page");
       } else {
         link.removeAttribute("aria-current");

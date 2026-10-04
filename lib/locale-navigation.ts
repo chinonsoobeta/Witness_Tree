@@ -21,9 +21,13 @@ const COUNTERPARTS: Record<string, string> = {
   "/en/search": "/fr/recherche", "/fr/recherche": "/en/search",
 };
 
+// Every parameter a page reads, so switching language keeps the reader's selection.
+// Explore's span start is `from`; Search reads `scope`; Harvest and fire reads
+// `provinces`, `from`, `to`, `step` and `scale`.
 const SAFE_QUERY_PARAMETERS = new Set([
-  "q", "district", "view", "sort", "left", "right", "mode",
-  "presentation", "data", "year", "province", "overlays",
+  "q", "district", "scope", "view", "sort", "left", "right", "mode",
+  "presentation", "data", "year", "from", "to", "step", "scale",
+  "province", "provinces", "overlays",
 ]);
 
 export function localeCounterpart(pathname: string, locale: Locale): string {
@@ -41,4 +45,13 @@ export function localeHref(pathname: string, search: URLSearchParams, locale: Lo
   for (const [key, value] of search) if (SAFE_QUERY_PARAMETERS.has(key)) query.append(key, value);
   const suffix = query.toString();
   return `${localeCounterpart(pathname, locale)}${suffix ? `?${suffix}` : ""}`;
+}
+
+/**
+ * Whether a primary-navigation link names the page being shown, or a section it sits in.
+ * The locale home is a prefix of every page in its language, so it is current only on itself.
+ */
+export function isCurrentNavTarget(pathname: string, target: string): boolean {
+  if (pathname === target) return true;
+  return target !== "/en" && target !== "/fr" && pathname.startsWith(`${target}/`);
 }

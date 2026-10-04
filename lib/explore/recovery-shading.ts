@@ -30,6 +30,8 @@ export const NO_FOREST_COLOUR = "#c3c5bd";
 export type RecoveryRegionShade = Readonly<{
   id: string;
   name: Readonly<{ en: string; fr: string }>;
+  /** False when no cell was mapped: the lost area is Unknown, not zero. */
+  mapped: boolean;
   lostHectares: number;
   latestRecoveredPercent: number | null;
   anyRecoveredPercent: number | null;

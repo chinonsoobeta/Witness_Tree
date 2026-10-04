@@ -730,10 +730,20 @@ test("condition and recovery shows the admitted five-year figures, and says so w
   assert.doesNotMatch(en, /Counting a return after any loss/);
   assert.match(en, /is Unknown because at least one year there is unclassified or missing\. It’s left out, not counted as zero\./);
   assert.match(en, /under the earlier three-year rule/);
-  assert.match(en, /Withheld \(under 500 ha\)/);
+  // Toronto's region has nothing mapped: its loss is Unknown, never 0 ha or "under 500 ha".
+  assert.match(en, /<th scope="row">Toronto<\/th><td>Ontario<\/td><td>Unknown<\/td><td>Not mapped<\/td>/);
+  assert.match(fr, /<th scope="row">Toronto<\/th><td>Ontario<\/td><td>Inconnu<\/td><td>Non cartographiée<\/td>/);
+  assert.doesNotMatch(en, /Withheld \(under 500 ha\)/);
   assert.equal((en.match(/<caption/g) ?? []).length, 4);
   assert.match(fr, /Les arbres ont-ils repoussé\u202F\?/);
   assert.match(fr, /Sur les quelque 55,1\u00a0millions d’hectares/);
+  // The figures cover the whole record, so the year control says 1984 to 2022 and is fixed
+  // there, whatever years the URL carries for the other views (here the default, 2021 to 2022).
+  assert.match(en, /<output class="year-readout"[^>]*>Change between 1984 and 2022<\/output>/);
+  assert.match(fr, /<output class="year-readout"[^>]*>Changement entre 1984 et 2022<\/output>/);
+  assert.match(en, /<select[^>]*name="from"[^>]*disabled=""[^>]*>[\s\S]*?<option value="1984" selected="">/);
+  assert.match(en, /<select[^>]*name="year"[^>]*disabled=""[^>]*>[\s\S]*?<option value="2022" selected="">/);
+  assert.doesNotMatch(en, /class="year-help"/);
   // The per-cell heading names an interval this mode has no figures for, so it is not shown.
   assert.doesNotMatch(en, /id="explore-annual-heading"/);
   assert.doesNotMatch(fr, /id="explore-annual-heading"/);

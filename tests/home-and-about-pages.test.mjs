@@ -128,15 +128,17 @@ test("the gate names where each photograph was taken", async () => {
   // One caption per photograph, in the same order as the rotation, so the name
   // on screen belongs to the frame on screen.
   assert.match(gateway, /const GATE_PHOTOGRAPHS = \[/);
-  for (const [file, location] of [
-    ["forest.jpg", "Shannon Falls Provincial Park, British Columbia"],
-    ["forest-2.jpg", "Lillooet, British Columbia"],
-    ["forest-3.jpg", "McKinley Landing, Kelowna, British Columbia"],
-    ["forest-4.jpg", "Stanley Park, Vancouver, British Columbia"],
+  // The gateway is bilingual, so each place is named in English and in French.
+  for (const [file, en, fr] of [
+    ["forest.jpg", "Shannon Falls Provincial Park, British Columbia", "Parc provincial Shannon Falls, Colombie-Britannique"],
+    ["forest-2.jpg", "Lillooet, British Columbia", "Lillooet, Colombie-Britannique"],
+    ["forest-3.jpg", "McKinley Landing, Kelowna, British Columbia", "McKinley Landing, Kelowna, Colombie-Britannique"],
+    ["forest-4.jpg", "Stanley Park, Vancouver, British Columbia", "Parc Stanley, Vancouver, Colombie-Britannique"],
   ]) {
-    assert.ok(gateway.includes(`{ file: "${file}", location: "${location}" }`), file);
+    assert.ok(gateway.includes(`{ file: "${file}", location: { en: "${en}", fr: "${fr}" } }`), file);
   }
   assert.match(gateway, /className="gateway-location-name"/);
+  assert.match(gateway, /<span lang="fr">\{location\.fr\}<\/span>/);
   // The caption ramps between the two artboards. Its floor is the owner's own
   // mobile value, so a phone gets 12px without a separate override.
   assert.match(css, /\.gateway-location-name \{[\s\S]*?font-size: clamp\(12px, [^,]+, 15px\);/);

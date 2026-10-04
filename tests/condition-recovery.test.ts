@@ -72,7 +72,9 @@ test("a region below the 500 ha floor withholds recovery and still reports what 
   assert.equal(toronto.latestRecoveredPercent, null);
   assert.equal(toronto.anyRecoveredPercent, null);
   assert.equal(toronto.unknownSharePercent, 100);
+  assert.equal(toronto.mapped, false);
   for (const row of rows) {
+    assert.equal(row.mapped, row.unknownSharePercent < 100, row.id);
     assert.equal(row.belowFloor, row.lostHectares < 500, row.id);
     assert.equal(row.latestRecoveredPercent === null, row.belowFloor, row.id);
   }

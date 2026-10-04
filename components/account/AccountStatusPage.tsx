@@ -1,4 +1,4 @@
-import { PRODUCT_NAME, type Locale } from "@/lib/domain";
+import type { Locale } from "@/lib/domain";
 
 const COPY = {
   en: {
@@ -23,9 +23,7 @@ const COPY = {
     alerts: "What alerts will say",
     alertCopy:
       "Each alert will start with its kind of evidence, then give the data version, source agency, time observed and a page link, in your language. Wildfire alerts will show the agency’s safety link first. Alerts are not emergency direction.",
-    links:
-      "Read the privacy notice and the terms and limitations.",
-    privacy: "Privacy notice",
+    links: "Read the terms and limitations.",
     terms: "Terms and limitations",
   },
   fr: {
@@ -50,9 +48,7 @@ const COPY = {
     alerts: "Contenu d’alerte conforme aux preuves",
     alertCopy:
       "Chaque alerte commencera par son type de preuve, puis donnera la version des données, l’organisme source, l’heure d’observation et un lien vers la page, dans votre langue. Les alertes d’incendie afficheront d’abord le lien de sécurité de l’organisme. Les alertes ne constituent pas des directives d’urgence.",
-    links:
-      "Consultez l’avis de confidentialité et les conditions et limites.",
-    privacy: "Avis de confidentialité",
+    links: "Consultez les conditions et limites.",
     terms: "Conditions et limites",
   },
 } as const;
@@ -60,10 +56,6 @@ const COPY = {
 export function AccountStatusPage({ locale }: Readonly<{ locale: Locale }>) {
   const copy = COPY[locale];
   const prefix = `/${locale}`;
-  const alertCopy = copy.alertCopy.replace(
-    locale === "en" ? "product" : "produit",
-    PRODUCT_NAME[locale],
-  );
   return (
     <main id="main" className="page-wrap account-page">
       <header className="masthead">
@@ -90,15 +82,9 @@ export function AccountStatusPage({ locale }: Readonly<{ locale: Locale }>) {
         </ul>
         <div className="prose-measure">
           <h2>{copy.alerts}</h2>
-          <p>{alertCopy}</p>
+          <p>{copy.alertCopy}</p>
           <p>
             {copy.links}{" "}
-            <a
-              className="btn btn--ghost"
-              href={`${prefix}/${locale === "en" ? "privacy" : "confidentialite"}`}
-            >
-              {copy.privacy}
-            </a>{" "}
             <a
               className="btn btn--ghost"
               href={`${prefix}/${locale === "en" ? "terms" : "conditions"}`}

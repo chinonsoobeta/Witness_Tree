@@ -62,7 +62,9 @@ export function AnnualChangeChart({
       {/* The bars used to be unfilled outlines, which read as empty on the
           page. Fill and label come from the stylesheet so the palette stays in
           one place; rx gives the rounded cap. */}
-      <div className="place-annual-scroll">
+      {/* Wider than a phone, so it scrolls; a keyboard reaches it the way it
+          reaches every other scrolling chart and table. */}
+      <div className="place-annual-scroll" tabIndex={0} role="region" aria-label={title}>
       <svg
         className="annual-chart"
         role="img"

@@ -122,6 +122,8 @@ export type ConditionRecoveryMeasurement = Readonly<{
   provinceId: string | null;
   name: Localized;
   coverageGrade: CoverageGrade;
+  /** False when no cell was mapped: the lost area is then Unknown, not zero. */
+  mapped: boolean;
   lostHectares: number;
   unknownHectares: number;
   /** Unknown as a share of the whole row. Never folded into a recovery share. */
@@ -157,6 +159,7 @@ export function conditionRecoveryMeasurement(row: ReleaseRow): ConditionRecovery
     provinceId: row.kind === "province" ? row.id : row.provinceId ?? null,
     name: row.name,
     coverageGrade: row.coverageGrade,
+    mapped: row.knownCells > 0,
     lostHectares: row.lostCells * CELL_HECTARES,
     unknownHectares: row.unknownCells * CELL_HECTARES,
     unknownSharePercent: (row.unknownCells / row.maskCells) * 100,

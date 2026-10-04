@@ -78,6 +78,8 @@ test("annual table has a caption and scoped column headers", () => {
   // still be the table's own caption and carry the title.
   assert.match(chart, /<caption(?: className="sr-only")?>\{title\}<\/caption>/);
   assert.equal((chart.match(/<th scope="col">/g) ?? []).length, 3);
+  // The chart is wider than a phone, so its scroll region must take keyboard focus and carry a name.
+  assert.match(chart, /<div className="place-annual-scroll" tabIndex=\{0\} role="region" aria-label=\{title\}>/);
 });
 
 test("place records put coverage before unchanged figures and provenance before the annual series", () => {
