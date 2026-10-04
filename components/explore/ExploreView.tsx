@@ -547,6 +547,7 @@ export function ExploreView({
                 setActiveFrom(span.fromYear);
                 setActiveYear(span.toYear);
               }}
+              wholeRecord={mode === "condition-recovery"}
             />
           </form>
         </section>

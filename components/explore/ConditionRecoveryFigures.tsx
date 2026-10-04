@@ -12,7 +12,7 @@ const COPY = {
       `${area} is Unknown because at least one year there is unclassified or missing. It’s left out, not counted as zero.`,
     meaning:
       "“Treed” means the yearly land-cover map shows coniferous, broadleaf or mixed trees. This measures trees coming back, not the return of the forest that was there: a young plantation and an old stand both count as treed.",
-    floor: "Where less than 500 ha lost tree cover, the share is withheld.",
+    floor: "Where less than 500 ha lost tree cover, the share is withheld. Where nothing was mapped, loss and recovery are Unknown.",
     provinces: "By province",
     decades: "By decade of the latest loss, four provinces",
     decadesLead:
@@ -35,6 +35,8 @@ const COPY = {
     cause: "Recorded cause",
     shareOfLost: "Share of the loss",
     withheld: "Withheld (under 500 ha)",
+    unknownValue: "Unknown",
+    notMapped: "Not mapped",
     underTenth: "Under 0.1%",
     chartLabel: "Share treed again after the latest loss",
     causeNames: { notRecorded: "No cause recorded", fire: "Fire", harvest: "Harvest", fireAndHarvest: "Fire and harvest" },
@@ -48,7 +50,7 @@ const COPY = {
       `${area} sont inconnus parce qu’au moins une année y est non classée ou manquante. Ils sont exclus, et non comptés comme zéro.`,
     meaning:
       "«\u00a0Boisé\u00a0» signifie que la carte annuelle de couverture terrestre montre des conifères, des feuillus ou un peuplement mixte. On mesure le retour des arbres, et non celui de la forêt qui s’y trouvait\u202F: une jeune plantation et un vieux peuplement comptent tous deux comme boisés.",
-    floor: "Lorsque moins de 500 ha ont perdu leur couvert arboré, la part n’est pas présentée.",
+    floor: "Lorsque moins de 500 ha ont perdu leur couvert arboré, la part n’est pas présentée. Là où rien n’a été cartographié, la perte et le rétablissement sont inconnus.",
     provinces: "Par province",
     decades: "Par décennie de la dernière perte, quatre provinces",
     decadesLead:
@@ -71,6 +73,8 @@ const COPY = {
     cause: "Cause consignée",
     shareOfLost: "Part de la perte",
     withheld: "Non présenté (moins de 500 ha)",
+    unknownValue: "Inconnu",
+    notMapped: "Non cartographiée",
     underTenth: "Moins de 0,1\u00a0%",
     chartLabel: "Part redevenue boisée après la dernière perte",
     causeNames: { notRecorded: "Aucune cause consignée", fire: "Incendie", harvest: "Récolte", fireAndHarvest: "Incendie et récolte" },
@@ -156,8 +160,8 @@ export function ConditionRecoveryFigures({
             <tr key={row.id}>
               <th scope="row">{regionName(row.name[locale])}</th>
               {withProvince ? <td>{PROVINCE_FOR_PREFIX[row.id.slice(0, 2)]?.[locale] ?? ""}</td> : null}
-              <td>{ha(row.lostHectares)}</td>
-              <td>{pct(row.latestRecoveredPercent)}</td>
+              <td>{row.mapped ? ha(row.lostHectares) : text.unknownValue}</td>
+              <td>{row.mapped ? pct(row.latestRecoveredPercent) : text.notMapped}</td>
               <td>{row.belowFloor ? "–" : pct(row.anyRecoveredPercent)}</td>
               <td>{row.belowFloor ? "–" : pct(row.unconfirmedPercent)}</td>
               <td>{formatUnknownSharePercent(row.unknownSharePercent, locale)}</td>

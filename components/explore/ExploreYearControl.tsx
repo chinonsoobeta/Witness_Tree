@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { usePathname } from "next/navigation";
 import {
   EXPLORE_INTERVAL_FIRST_YEAR,
+  EXPLORE_INTERVAL_LAST_YEAR,
   EXPLORE_YEAR_MAX,
   EXPLORE_YEAR_MIN,
   exploreHref,
@@ -20,7 +21,7 @@ const TEXT = {
     firstYear: "First year",
     lastYear: "Last year",
     help: "Choose a first and last year to set a span. The record runs from 1984 to 2022.",
-    annual: (year: number) => `Change between ${year - 1} and ${year}`,
+    between: (fromYear: number, toYear: number) => `Change between ${fromYear} and ${toYear}`,
     moved: (which: "first" | "last", year: number) => `${which === "first" ? "First" : "Last"} year moved to ${year} so the span stays at least one year long.`,
     play: "Play through the years",
     pause: "Stop playing",
@@ -35,7 +36,7 @@ const TEXT = {
     firstYear: "Première année",
     lastYear: "Dernière année",
     help: "Choisissez une première et une dernière année pour établir une période. Le relevé va de 1984 à 2022.",
-    annual: (year: number) => `Changement entre ${year - 1} et ${year}`,
+    between: (fromYear: number, toYear: number) => `Changement entre ${fromYear} et ${toYear}`,
     moved: (which: "first" | "last", year: number) => `${which === "first" ? "La première" : "La dernière"} année a été déplacée à ${year} pour garder une période d’au moins un an.`,
     play: "Faire défiler les années",
     pause: "Arrêter le défilement",
@@ -143,11 +144,18 @@ export function ExploreYearControl({
   state,
   onYearChange,
   onIntervalChange,
+  wholeRecord = false,
 }: {
   locale: Locale;
   state: ExploreQueryState;
   onYearChange: (year: number) => void;
   onIntervalChange?: (interval: Span) => void;
+  /**
+   * The view's figures always cover the whole record, as Condition and recovery
+   * does. The control then shows 1984 to 2022 and cannot be changed; the reader's
+   * own years stay in the URL for the other views.
+   */
+  wholeRecord?: boolean;
 }) {
   const text = TEXT[locale];
   const pathname = usePathname();
@@ -171,10 +179,12 @@ export function ExploreYearControl({
   const [orderStatus, setOrderStatus] = useState<{ which: "first" | "last"; year: number } | null>(null);
   const changeGroup = useRef<{ name: "from" | "to"; started: number; span: Span } | null>(null);
   if (draft && draft.from !== committedKey) setDraft(null);
-  const shown = draft && draft.from === committedKey ? draft.span : committed;
+  const shown = wholeRecord
+    ? { fromYear: EXPLORE_INTERVAL_FIRST_YEAR, toYear: EXPLORE_INTERVAL_LAST_YEAR }
+    : draft && draft.from === committedKey ? draft.span : committed;
 
-  const readout = isAnnualInterval(shown)
-    ? text.annual(shown.toYear)
+  const readout = wholeRecord || isAnnualInterval(shown)
+    ? text.between(shown.fromYear, shown.toYear)
     : intervalHeading(shown.fromYear, shown.toYear)[locale];
 
   const commit = (span: Span, history: "push" | "replace") => {
@@ -238,7 +248,7 @@ export function ExploreYearControl({
   // Playback changes only the active source and URL state. It neither asks the
   // App Router for a new page nor silently wraps at the end of the record.
   useEffect(() => {
-    if (!isPlaying || committed.toYear >= EXPLORE_YEAR_MAX) return;
+    if (wholeRecord || !isPlaying || committed.toYear >= EXPLORE_YEAR_MAX) return;
     const timer = setTimeout(() => {
       setDraft({ from: committedKey, span: nextSpan });
       onYearChange(nextSpan.toYear);
@@ -251,7 +261,7 @@ export function ExploreYearControl({
     }, STEP_MS);
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isPlaying, nextHref, committedKey, onYearChange, onIntervalChange]);
+  }, [wholeRecord, isPlaying, nextHref, committedKey, onYearChange, onIntervalChange]);
 
   const togglePlayback = () => {
     if (isPlaying) {
@@ -283,7 +293,8 @@ export function ExploreYearControl({
         id={FROM_SELECT_ID}
         name="from"
         value={String(shown.fromYear)}
-        aria-describedby={HELP_ID}
+        disabled={wholeRecord}
+        aria-describedby={wholeRecord ? undefined : HELP_ID}
         onChange={(event) => selectYear("from", Number(event.target.value), event.timeStamp)}
       >
         {Array.from({ length: EXPLORE_YEAR_MAX - EXPLORE_INTERVAL_FIRST_YEAR }, (_, index) => EXPLORE_INTERVAL_FIRST_YEAR + index).map((year) => (
@@ -296,7 +307,8 @@ export function ExploreYearControl({
         id={SELECT_ID}
         name="year"
         value={String(shown.toYear)}
-        aria-describedby={HELP_ID}
+        disabled={wholeRecord}
+        aria-describedby={wholeRecord ? undefined : HELP_ID}
         onChange={(event) => selectYear("to", Number(event.target.value), event.timeStamp)}
       >
         {Array.from({ length: EXPLORE_YEAR_MAX - EXPLORE_YEAR_MIN + 1 }, (_, index) => EXPLORE_YEAR_MIN + index).map((year) => (
@@ -308,16 +320,16 @@ export function ExploreYearControl({
           type="button"
           className="year-play"
           onClick={togglePlayback}
-          disabled={!ready}
+          disabled={!ready || wholeRecord}
           aria-pressed={isPlaying}
           aria-label={isPlaying ? text.pause : text.play}
         >
           {isPlaying ? text.pauseShort : text.playShort}
         </button>
-        <button className="btn btn--primary year-submit" type="submit" hidden={ready}>
+        <button className="btn btn--primary year-submit" type="submit" hidden={ready || wholeRecord}>
           {text.update}
         </button>
-        <p className="year-help" id={HELP_ID}>{text.help}</p>
+        {wholeRecord ? null : <p className="year-help" id={HELP_ID}>{text.help}</p>}
       </div>
       {orderStatus !== null ? <p className="year-order-status" role="status">{text.moved(orderStatus.which, orderStatus.year)}</p> : null}
       {playStatus !== "idle" ? (

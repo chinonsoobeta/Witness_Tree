@@ -166,9 +166,11 @@ The run output lives on the data root under
 `npm run check:phase4-condition-recovery-v3`, which rebuilds it byte for byte
 when the data root is mounted. The Explore figures file is now built from the
 v3 output, and Explore shows the mode: a map shading each economic region by
-its recovery share (seven regions under 500 ha lost are grey and withheld),
-province, decade, cause and region figures with tables, and a home-page
-summary. The RESULTS comparison above was measured under the three-year rule
+its recovery share (seven southern regions have nothing mapped, so they are
+grey and their loss and recovery read Unknown, never 0 ha), province, decade,
+cause and region figures with tables, and a home-page summary. The year control
+is fixed to 1984 to 2022 in this mode, because its figures cover the whole
+record. The RESULTS comparison above was measured under the three-year rule
 and is labelled that way. The three-year per-cell tiles are not published.
 The French strings are Claude's translations awaiting the owner's review.
 

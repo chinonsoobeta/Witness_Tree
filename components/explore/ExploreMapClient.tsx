@@ -102,11 +102,12 @@ const text = {
     regionNone: "No forest was mapped here, so there is no share to show.",
     recoveryLegendHeading: "Treed again for five years, 1984–2022",
     recoveryLegendCaption: "Share of the land that lost tree cover, after its latest loss",
-    recoveryLegendWithheld: "Too little loss to judge (under 500 ha)",
+    recoveryLegendWithheld: "Not mapped, or too little loss to judge (under 500 ha)",
     recoveryLost: "Land that lost tree cover",
     recoveryLatest: "Treed again after its latest loss",
     recoveryAny: "Treed again after any loss",
     recoveryWithheld: "Less than 500 ha lost tree cover here, too little to give a share.",
+    recoveryNotMapped: "Nothing here was mapped, so its loss and recovery are Unknown.",
     causeLegendHeading: { harvest: "Recorded harvest", fire: "Recorded fire" },
     causeLegendCaption: "Average share of the forest per year",
     coverage: "Coverage",
@@ -188,11 +189,12 @@ const text = {
     regionNone: "Aucune forêt n’a été cartographiée ici\u202F; il n’y a donc pas de part à afficher.",
     recoveryLegendHeading: "Redevenues boisées pendant cinq ans, 1984–2022",
     recoveryLegendCaption: "Part des terres ayant perdu leur couvert arboré, après leur dernière perte",
-    recoveryLegendWithheld: "Trop peu de perte pour conclure (moins de 500 ha)",
+    recoveryLegendWithheld: "Non cartographiée, ou trop peu de perte pour conclure (moins de 500 ha)",
     recoveryLost: "Terres ayant perdu leur couvert arboré",
     recoveryLatest: "Redevenues boisées après leur dernière perte",
     recoveryAny: "Redevenues boisées après une perte quelconque",
     recoveryWithheld: "Moins de 500 ha ont perdu leur couvert arboré ici, trop peu pour donner une part.",
+    recoveryNotMapped: "Rien n’a été cartographié ici\u202F; la perte et le rétablissement sont donc inconnus.",
     causeLegendHeading: { harvest: "Récoltes consignées", fire: "Incendies consignés" },
     causeLegendCaption: "Part moyenne de la forêt par année",
     coverage: "Couverture",
@@ -443,8 +445,8 @@ const regionLayers = (figures: readonly ForestRegionFigure[]): StyleSpecificatio
 
 /*
  * Condition and recovery shades the 44 economic regions themselves, from the
- * admitted release. A region under the 500 ha floor is grey: its share is
- * withheld, which is not the lightest band.
+ * admitted release. A region under the 500 ha floor, or with nothing mapped,
+ * is grey: its share is withheld, which is not the lightest band.
  */
 const recoveryFillColour = (rows: readonly RecoveryRegionShade[]) => {
   const pairs = rows.flatMap((row) => {
@@ -1598,13 +1600,19 @@ export function ExploreMapClient({
                 <strong>{text[locale].region}</strong>
                 <p>{recoveryRegion.name[locale].replace(/--/g, "–")}</p>
                 <p>{text[locale].province}{colon(locale)} {boundaryJurisdiction(locale, PROVINCE_CODE_FOR_PRUID[recoveryRegion.id.slice(0, 2)] ?? "CA")}</p>
-                <p>{text[locale].recoveryLost}{colon(locale)} {formatHectares(Math.round(recoveryRegion.lostHectares), locale, 0)}</p>
-                {recoveryRegion.latestRecoveredPercent === null ? (
-                  <p>{text[locale].recoveryWithheld}</p>
+                {!recoveryRegion.mapped ? (
+                  <p>{text[locale].recoveryNotMapped}</p>
                 ) : (
                   <>
-                    <p>{text[locale].recoveryLatest}{colon(locale)} {formatPercent(Math.round(recoveryRegion.latestRecoveredPercent * 10) / 10, locale)}</p>
-                    {recoveryRegion.anyRecoveredPercent === null ? null : <p>{text[locale].recoveryAny}{colon(locale)} {formatPercent(Math.round(recoveryRegion.anyRecoveredPercent * 10) / 10, locale)}</p>}
+                    <p>{text[locale].recoveryLost}{colon(locale)} {formatHectares(Math.round(recoveryRegion.lostHectares), locale, 0)}</p>
+                    {recoveryRegion.latestRecoveredPercent === null ? (
+                      <p>{text[locale].recoveryWithheld}</p>
+                    ) : (
+                      <>
+                        <p>{text[locale].recoveryLatest}{colon(locale)} {formatPercent(Math.round(recoveryRegion.latestRecoveredPercent * 10) / 10, locale)}</p>
+                        {recoveryRegion.anyRecoveredPercent === null ? null : <p>{text[locale].recoveryAny}{colon(locale)} {formatPercent(Math.round(recoveryRegion.anyRecoveredPercent * 10) / 10, locale)}</p>}
+                      </>
+                    )}
                   </>
                 )}
               </aside>

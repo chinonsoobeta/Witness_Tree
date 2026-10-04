@@ -810,6 +810,10 @@ h4 {
   line-height: 1.4;
   color: var(--gate-caption);
 }
+/* English above French, one line each, as the leads above are stacked. */
+.gateway-location-name > span {
+  display: block;
+}
 .gateway-slideshow .gateway-location-name:nth-of-type(2) { animation-delay: -15s; }
 .gateway-slideshow .gateway-location-name:nth-of-type(3) { animation-delay: -10s; }
 .gateway-slideshow .gateway-location-name:nth-of-type(4) { animation-delay: -5s; }
@@ -4097,6 +4101,12 @@ dd > a:only-child {
 .explore-year-select:focus-visible {
   outline: 3px solid var(--accent-fill);
   outline-offset: 2px;
+}
+
+/* Fixed to the whole record, as the Play button is when it cannot act. */
+.explore-year-select:disabled {
+  color: var(--muted);
+  cursor: default;
 }
 
 .year-scale {
