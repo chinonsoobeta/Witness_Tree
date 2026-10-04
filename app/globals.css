@@ -515,6 +515,12 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* A fine-print paragraph, <p><small>…</small></p>. Inline, the small text
+   would keep the paragraph's taller lines; as a block it spaces its own. */
+p > small:only-child {
+  display: block;
+}
+
 /* Paper grain. A single fixed pseudo-element over the whole viewport.
    pointer-events: none keeps it out of hit testing entirely, and nothing
    in the document establishes a stacking context, so real content is
@@ -1478,10 +1484,14 @@ h4 {
 .ridings-most-lost-list a { font-weight: 700; }
 .ridings-most-lost-figure {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 6px;
   color: var(--ink-2);
   font-size: var(--text-small);
+}
+/* On the first line, not between lines, when the figure wraps. */
+.ridings-most-lost-figure .mark-glyph {
+  margin-top: 5px;
 }
 .record-card a:focus-visible {
   outline: none;
@@ -1829,6 +1839,19 @@ h4 {
 }
 .explore-map-legend--scale .map-legend-key {
   display: block;
+}
+/* Entries after the five bands (partly mapped, not mapped) are categories, not
+   steps of the scale. Each takes a full row with its swatch beside the label,
+   so a long label is not squeezed into one band's width on a phone. */
+.explore-map-layer-panel .explore-map-legend--scale li:nth-child(n + 6) {
+  grid-column: 1 / -1;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+.explore-map-legend--scale li:nth-child(n + 6) .map-legend-key {
+  flex: 0 0 40px;
 }
 .explore-map-legend--scale .loss-swatch {
   display: block;
@@ -2984,6 +3007,15 @@ h4 {
   margin-top: 0;
 }
 .governance-section p {
+  color: var(--ink-2);
+  overflow-wrap: anywhere;
+}
+/* Terms lists one licence per item; the gap shows where each one ends. */
+.licence-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 12px 0 0;
   color: var(--ink-2);
   overflow-wrap: anywhere;
 }

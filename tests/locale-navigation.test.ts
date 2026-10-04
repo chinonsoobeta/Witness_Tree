@@ -16,7 +16,7 @@ function readdirRoutes(dir: URL, prefix = ""): string[] {
   return out;
 }
 // @ts-expect-error Node test runner needs extensions.
-import { localeCounterpart, localeHref } from "../lib/locale-navigation.ts";
+import { isCurrentNavTarget, localeCounterpart, localeHref } from "../lib/locale-navigation.ts";
 
 test("maps static and dynamic routes to their locale counterpart", () => {
   assert.equal(localeCounterpart("/en/search", "en"), "/fr/recherche");
@@ -29,6 +29,22 @@ test("maps static and dynamic routes to their locale counterpart", () => {
 test("preserves only safe query parameters on locale changes", () => {
   const query = new URLSearchParams("q=cedar&view=table&left=35001&right=35002&sort=share&overlays=watersheds&district=Ajax&redirect=https%3A%2F%2Fevil.example");
   assert.equal(localeHref("/en/search", query, "en"), "/fr/recherche?q=cedar&view=table&left=35001&right=35002&sort=share&overlays=watersheds&district=Ajax");
+  // A span on Explore, a scope on Search and a chart selection on Harvest and fire survive the switch.
+  assert.equal(localeHref("/en/explore", new URLSearchParams("mode=forest-change&year=2010&from=1990"), "en"), "/fr/explorer?mode=forest-change&year=2010&from=1990");
+  assert.equal(localeHref("/fr/recherche", new URLSearchParams("district=Ajax&scope=districts"), "fr"), "/en/search?district=Ajax&scope=districts");
+  assert.equal(
+    localeHref("/en/data/harvest-and-fire", new URLSearchParams("provinces=59,48&from=1990&to=2000&step=5&scale=own&view=table"), "en"),
+    "/fr/donnees/recolte-et-incendies?provinces=59%2C48&from=1990&to=2000&step=5&scale=own&view=table",
+  );
+});
+
+test("the primary navigation marks one current item, never Home on every page", () => {
+  assert.equal(isCurrentNavTarget("/en", "/en"), true);
+  assert.equal(isCurrentNavTarget("/en/explore", "/en"), false);
+  assert.equal(isCurrentNavTarget("/fr/donnees/recolte-et-incendies", "/fr"), false);
+  assert.equal(isCurrentNavTarget("/en/explore/draw", "/en/explore"), true);
+  assert.equal(isCurrentNavTarget("/fr/donnees/recolte-et-incendies", "/fr/donnees"), true);
+  assert.equal(isCurrentNavTarget("/en/data-extra", "/en/data"), false);
 });
 
 test("shared navigation exposes localized search and dynamic pages publish record-specific alternates", () => {
