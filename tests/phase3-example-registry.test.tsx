@@ -7,7 +7,8 @@ import { LOCATIONS, PLACES, validatePhase3ExampleRegistry } from "../lib/places/
 import { PlacePage } from "../components/places/PlacePage.tsx";
 
 test("Phase 3 synthetic registry covers every Big Four province and place type with paired static pages", () => {
-  assert.deepEqual(validatePhase3ExampleRegistry(), { places: 36, locations: 36, locales: 2, localizedStaticPages: 144, placeTypes: 9, provinces: 4 });
+  // Seven place types since the owner removed reserves and treaty areas on 2026-10-03.
+  assert.deepEqual(validatePhase3ExampleRegistry(), { places: 28, locations: 28, locales: 2, localizedStaticPages: 112, placeTypes: 7, provinces: 4 });
   assert.ok(PLACES.every((place) => place.status === "example"));
   assert.ok(LOCATIONS.every((location) => location.status === "example"));
 });

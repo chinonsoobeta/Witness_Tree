@@ -12,15 +12,12 @@ const COUNTERPARTS: Record<string, string> = {
   "/en/data": "/fr/donnees", "/fr/donnees": "/en/data",
   "/en/data/official-harvest-comparison": "/fr/donnees/comparaison-recolte-officielle", "/fr/donnees/comparaison-recolte-officielle": "/en/data/official-harvest-comparison",
   "/en/data/bc-harvest-volume": "/fr/donnees/volume-recolte-bc", "/fr/donnees/volume-recolte-bc": "/en/data/bc-harvest-volume",
+  "/en/data/provincial-harvest-volume": "/fr/donnees/volume-recolte-provinces", "/fr/donnees/volume-recolte-provinces": "/en/data/provincial-harvest-volume",
   "/en/data/harvest-and-fire": "/fr/donnees/recolte-et-incendies", "/fr/donnees/recolte-et-incendies": "/en/data/harvest-and-fire",
   "/en/terms": "/fr/conditions", "/fr/conditions": "/en/terms",
-  "/en/privacy": "/fr/confidentialite", "/fr/confidentialite": "/en/privacy",
   "/en/corrections": "/fr/corrections", "/fr/corrections": "/en/corrections",
   "/en/components": "/fr/composants", "/fr/composants": "/en/components",
   "/en/glossary": "/fr/glossaire", "/fr/glossaire": "/en/glossary",
-  "/en/engagement": "/fr/dialogue", "/fr/dialogue": "/en/engagement",
-  "/en/releases": "/fr/versions", "/fr/versions": "/en/releases",
-  "/en/decisions": "/fr/decisions", "/fr/decisions": "/en/decisions",
   "/en/search": "/fr/recherche", "/fr/recherche": "/en/search",
 };
 

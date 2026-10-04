@@ -5,6 +5,7 @@ import { ProvinceRecordList } from "@/components/site/ProvinceRecordList";
 import { CumulativeHeadline } from "@/components/site/CumulativeHeadline";
 import { CitiesMostLost, RidingsMostLost } from "@/components/site/RidingsMostLost";
 import { HarvestSources } from "@/components/site/HarvestSources";
+import { RecoveryAnswer } from "@/components/site/RecoveryAnswer";
 import { EvidenceMarks } from "@/components/policy/EvidenceMarks";
 import { PRODUCT_NAME } from "@/lib/domain";
 import { EXPLORE_PRODUCTION_LAYER, formatUnknownSharePercent, provinceSpanDisplayRows } from "@/lib/explore";
@@ -28,7 +29,8 @@ export default function FrenchHome() {
   return <SiteShell locale="fr"><main id="main" className="page-wrap">
     <header className="masthead masthead--record">
       <h1>{"Qu’est-il arrivé à la forêt ici\u202F?"}</h1>
-      <p className="dek">{PRODUCT_NAME.fr} montre les pertes forestières dans quatre provinces canadiennes, à partir d’images satellites et de registres publics.</p>
+      <p className="dek">{PRODUCT_NAME.fr} montre les pertes forestières en Colombie-Britannique, en Alberta, en Ontario et au Québec de 1984 à 2022, à partir d’images satellitaires et de registres publics.</p>
+      <p className="masthead-note"><Link href="/fr/explorer">Explorer la carte</Link></p>
       <HomeSearch locale="fr" />
       <ProvinceBar locale="fr" />
     </header>
@@ -57,11 +59,13 @@ export default function FrenchHome() {
       <p><small>Le registre ne couvre que ces quatre provinces.</small></p>
     </section>
 
+    <RecoveryAnswer locale="fr" />
+
     <HarvestSources locale="fr" />
 
-    <RidingsMostLost locale="fr" />
-
     <CitiesMostLost locale="fr" />
+
+    <RidingsMostLost locale="fr" />
 
     <section className="content-section">
       <h2>Consulter le registre</h2>
@@ -73,7 +77,7 @@ export default function FrenchHome() {
     </section>
 
     <section className="content-section limits-block" aria-labelledby="limites">
-      <h2 id="limites">Ce que ce registre n’affirme pas</h2>
+      <h2 id="limites">Ce que ce site n’affirme pas</h2>
       <div className="limits-body">
         <ul className="limits-list">
           <li>Qu’une perte soit due à l’exploitation forestière ou à la déforestation.</li>
@@ -84,8 +88,10 @@ export default function FrenchHome() {
           <li>Un total complet. La perte détectée est un minimum.</li>
         </ul>
         <p>{PRODUCT_NAME.fr} rapporte seulement ce que ses sources consignent et ce que les images satellites détectent.</p>
-        <p>Un satellite peut voir que des arbres ont disparu, mais pas pourquoi. <Link href="/fr/methodes">Comment fonctionnent les méthodes</Link>.</p>
-        <p>Ces chiffres pour {provinceSpanReach("fr", "span")} sont un premier aperçu, et non la version définitive. Les parcelles de perte de la carte Explorer servent à regarder, pas à additionner, et aucun spécialiste ne les a examinées. <Link href="/fr/donnees">Données, sources et licences</Link>.</p>
+        <p>Un satellite peut voir que des arbres ont disparu, mais pas pourquoi.</p>
+        <p>Ce sont des chiffres pour {provinceSpanReach("fr", "span")}.</p>
+        <p><Link href="/fr/methodes">Comment fonctionnent les méthodes</Link></p>
+        <p><Link href="/fr/donnees">Données, sources et licences</Link></p>
         <p><small>{"Source du contexte\u202F: "}{EXPLORE_PRODUCTION_LAYER.attribution.fr} <a href={EXPLORE_PRODUCTION_LAYER.attribution.href}>Catalogue source</a>.</small></p>
       </div>
     </section>

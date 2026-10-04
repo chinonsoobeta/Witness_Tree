@@ -5,13 +5,12 @@ import { CELL_HECTARES } from "../domain/loss-vocabulary";
 
 /*
  * Condition and recovery: of the tree cover lost since 1984, how much was treed
- * again for three years in a row, by province and by economic region.
+ * again for five years in a row, by province and by economic region.
  *
- * The figures are built and checked, but the product is not admitted. The WP3
- * determination (docs/FALL_DOWN_WP3_CONDITION_RECOVERY_DETERMINATION.md) keeps
- * the mode empty until admission and owner review happen as real events, so
- * this module fails closed: until the release says both, every export here is
- * empty and the view keeps its empty-state strings.
+ * The owner raised the requirement from three years to five and admitted the
+ * result on 2026-10-03 (docs/VLCE2_FOREST_MASK_DECISION.md). The module still
+ * fails closed: a release that does not say it is admitted and owner reviewed
+ * yields no rows, and the view keeps its empty-state strings.
  */
 
 export const CONDITION_RECOVERY_DECADES = ["1985-1994", "1995-2004", "2005-2014", "2015-2022"] as const;
@@ -128,11 +127,11 @@ export type ConditionRecoveryMeasurement = Readonly<{
   /** Unknown as a share of the whole row. Never folded into a recovery share. */
   unknownSharePercent: number;
   belowFloor: boolean;
-  /** The headline: treed again for three years after the latest loss. */
+  /** The headline: treed again for five years after the latest loss. */
   latestRecoveredPercent: number | null;
   /** Beside it: treed again after any loss. */
   anyRecoveredPercent: number | null;
-  /** Not recovered, and the three treed years could not be confirmed before 2022. */
+  /** Not recovered, and the five treed years could not be confirmed before 2022. */
   unconfirmedPercent: number | null;
   /** Treed wetland left out of the headline, as a share of treed land with it. Provinces only. */
   treedWetlandSharePercent: number | null;
@@ -189,4 +188,16 @@ export function conditionRecoveryMeasurements(
 ): readonly ConditionRecoveryMeasurement[] {
   if (!release) return [];
   return [release.fourProvinces, ...release.provinces, ...release.regions].map(conditionRecoveryMeasurement);
+}
+
+/** What the Explore mode and the home page show: every row, and the survey check beside them. */
+export type ConditionRecoveryView = Readonly<{
+  rows: readonly ConditionRecoveryMeasurement[];
+  resultsAgreement: ConditionRecoveryRelease["resultsAgreement"];
+}>;
+
+export function conditionRecoveryView(
+  release: ConditionRecoveryRelease | null = CONDITION_RECOVERY,
+): ConditionRecoveryView | null {
+  return release ? { rows: conditionRecoveryMeasurements(release), resultsAgreement: release.resultsAgreement } : null;
 }

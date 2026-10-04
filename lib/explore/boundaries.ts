@@ -105,8 +105,8 @@ export const BOUNDARY_OVERLAYS: Readonly<Record<BoundaryOverlayId, BoundaryOverl
       colour: EXPLORE_MAP_COLOURS.observation,
       dash: [1, 1.5],
       note: {
-        en: "2,291 cities, towns, municipalities and unorganized areas in the four provinces (Statistics Canada census subdivisions, 2021). Reserves, settlements and treaty or agreement lands are not shown on their own; their land still counts in the economic-region totals.",
-        fr: "2\u202F291 villes, municipalités et territoires non organisés des quatre provinces (subdivisions de recensement de Statistique Canada, 2021). Les réserves, les établissements et les terres visées par un traité ou une entente ne sont pas affichés séparément\u202F; leurs terres comptent tout de même dans les totaux des régions économiques.",
+        en: "2,291 cities, towns, municipalities and unorganized areas in the four provinces (Statistics Canada census subdivisions, 2021).",
+        fr: "2\u202F291 villes, municipalités et territoires non organisés des quatre provinces (subdivisions de recensement de Statistique Canada, 2021).",
       },
       attribution: {
         en: "Statistics Canada, 2021 Census Subdivision Boundary File.",

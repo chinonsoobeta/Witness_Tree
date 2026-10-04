@@ -45,7 +45,7 @@ export type RidingBoundaryMeasurement = Readonly<{
   summedLossHectares?: number | null;
   /**
    * An unknown share small enough that the owner admitted the area as
-   * complete. Only economic regions carry it, and only below 1%.
+   * complete. Only economic regions and ridings carry it, and only below 1%.
    */
   admittedUnknownPercent?: number;
 }>;
@@ -108,9 +108,8 @@ function assertMeasurement(measurement: RidingBoundaryMeasurement) {
     throw new Error("Incomplete riding coverage must not report a complete loss or share.");
   }
   const admitted = measurement.admittedUnknownPercent;
-  if (admitted !== undefined && (!complete || measurement.overlay !== "economic-regions" ||
-    !Number.isFinite(admitted) || admitted <= 0 || admitted >= 1)) {
-    throw new Error("Only an economic region may admit an unknown share, and only one below 1%.");
+  if (admitted !== undefined && (!complete || !Number.isFinite(admitted) || admitted <= 0 || admitted >= 1)) {
+    throw new Error("Only a complete area may admit an unknown share, and only one below 1%.");
   }
   if (measurement.knownObservedSubtotalHectares !== undefined && measurement.knownObservedSubtotalHectares !== null && !finiteNonNegative(measurement.knownObservedSubtotalHectares)) {
     throw new Error("Known observed subtotal must be a non-negative finite number.");

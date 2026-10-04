@@ -61,7 +61,7 @@ function provinceCode(result: SiteSearchResult) {
 type RidingRow = Pick<
   NonNullable<ReturnType<typeof ridingSearchRow>>,
   "coverage" | "observedLossHectares" | "observedLossPercent" | "knownObservedSubtotalHectares" | "unknownSharePercent"
->;
+> & Readonly<{ admittedUnknownPercent?: number }>;
 
 /**
  * A riding's figure as one line of text. The search results page and the
@@ -70,10 +70,11 @@ type RidingRow = Pick<
 export function ridingFigure(row: RidingRow | undefined, locale: Locale): string | null {
   if (!row) return null;
   const text = locale === "en"
-    ? { unknown: "Unknown", lossUnknown: "Loss unknown", atLeast: "At least", share: "of the mapped forest detected as lost", lost: "detected as lost", unknownShare: "of the forest is unknown" }
-    : { unknown: "Inconnu", lossUnknown: "Perte inconnue", atLeast: "Au moins", share: "de la forêt cartographiée détectée comme perdue", lost: "détectés comme perdus", unknownShare: "de la forêt est inconnue" };
+    ? { unknown: "Unknown", lossUnknown: "Loss unknown", atLeast: "At least", share: "of the mapped forest detected as lost", lost: "detected as lost", unknownShare: "of the forest is unknown", unmapped: "unmapped" }
+    : { unknown: "Inconnu", lossUnknown: "Perte inconnue", atLeast: "Au moins", share: "de la forêt cartographiée détectée comme perdue", lost: "détectés comme perdus", unknownShare: "de la forêt est inconnue", unmapped: "non cartographié" };
   if (row.coverage === "complete" && row.observedLossHectares !== null && row.observedLossPercent !== null) {
-    return `${formatHectares(row.observedLossHectares, locale)} · ${formatPercent(row.observedLossPercent, locale)} ${text.share}`;
+    const unmapped = row.admittedUnknownPercent === undefined ? "" : ` · ${formatUnknownSharePercent(row.admittedUnknownPercent, locale)} ${text.unmapped}`;
+    return `${formatHectares(row.observedLossHectares, locale)} · ${formatPercent(row.observedLossPercent, locale)} ${text.share}${unmapped}`;
   }
   const unknown = row.unknownSharePercent === null ? null : `${formatUnknownSharePercent(row.unknownSharePercent, locale)} ${text.unknownShare}`;
   if (row.coverage === "partial-with-unknown" && row.knownObservedSubtotalHectares !== null && row.knownObservedSubtotalHectares !== undefined && row.knownObservedSubtotalHectares > 0) {
@@ -131,7 +132,11 @@ export function placeDetail(figure: PlaceFigure | undefined, locale: Locale): st
 
 function ridingDetail(row: RidingRow | undefined, locale: Locale) {
   if (row && row.coverage === "complete" && row.observedLossHectares !== null) {
-    return `${formatHectares(row.observedLossHectares, locale)} · ${locale === "en" ? "Fully mapped" : "Entièrement cartographiée"}`;
+    // A riding admitted under the 1% rule is not fully mapped, and says by how much.
+    const mapped = row.admittedUnknownPercent === undefined
+      ? (locale === "en" ? "Fully mapped" : "Entièrement cartographiée")
+      : `${formatUnknownSharePercent(row.admittedUnknownPercent, locale)} ${locale === "en" ? "unmapped" : "non cartographié"}`;
+    return `${formatHectares(row.observedLossHectares, locale)} · ${mapped}`;
   }
   return ridingFigure(row, locale) ?? (locale === "en" ? "No figure is released for this riding." : "Aucun chiffre n’est publié pour cette circonscription.");
 }

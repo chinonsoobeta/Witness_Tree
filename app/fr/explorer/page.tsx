@@ -13,8 +13,9 @@ import {
 // Imported by path rather than through the barrel: this module carries every
 // span for every district and must never be pulled into a browser bundle.
 // The same holds for the economic-region table.
-import { regionIntervalMeasurements } from "@/lib/explore/region-intervals";
+import { forestRegionFigures, regionIntervalMeasurements } from "@/lib/explore/region-intervals";
 import { ridingIntervalMeasurements } from "@/lib/explore/riding-intervals";
+import { conditionRecoveryView } from "@/lib/explore/condition-recovery";
 import { localizedAlternates } from "@/lib/site-metadata";
 
 export const metadata: Metadata = {
@@ -51,7 +52,7 @@ export default async function Page({
       <main id="main" className="page-wrap">
         <header className="masthead">
           <h1>Explorer les pertes forestières</h1>
-          <p className="masthead-note">Les téléchargements, les notes de version et les limites se trouvent dans <Link href="/fr/versions">Versions des données</Link>.</p>
+          <p className="masthead-note">Les téléchargements, les sources et les limites se trouvent sur la page <Link href="/fr/donnees">Données</Link>.</p>
         </header>
         <ExploreView
           events={exploreFixtures}
@@ -62,7 +63,9 @@ export default async function Page({
           fromYear={interval.fromYear}
           overlays={overlays}
           ridingMeasurements={[...ridingIntervalMeasurements(interval), ...regionIntervalMeasurements(interval)]}
+          forestRegions={forestRegionFigures(interval)}
           provincialCause={provincialCauseByInterval()}
+          conditionRecovery={mode === "condition-recovery" ? conditionRecoveryView() : null}
         />
       </main>
     </SiteShell>

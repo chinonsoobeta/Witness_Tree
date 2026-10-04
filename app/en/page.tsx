@@ -5,6 +5,7 @@ import { ProvinceRecordList } from "@/components/site/ProvinceRecordList";
 import { CumulativeHeadline } from "@/components/site/CumulativeHeadline";
 import { CitiesMostLost, RidingsMostLost } from "@/components/site/RidingsMostLost";
 import { HarvestSources } from "@/components/site/HarvestSources";
+import { RecoveryAnswer } from "@/components/site/RecoveryAnswer";
 import { EvidenceMarks } from "@/components/policy/EvidenceMarks";
 import { PRODUCT_NAME } from "@/lib/domain";
 import { provinceSpanReach } from "@/lib/explore/period";
@@ -38,7 +39,8 @@ export default function EnglishHome() {
   return <SiteShell locale="en"><main id="main" className="page-wrap">
     <header className="masthead masthead--record">
       <h1>What happened to the forest here?</h1>
-      <p className="dek">{PRODUCT_NAME.en} shows forest loss in four Canadian provinces, from satellite images and public records.</p>
+      <p className="dek">{PRODUCT_NAME.en} shows forest loss in British Columbia, Alberta, Ontario, and Québec from 1984 to 2022 from satellite imagery and public records.</p>
+      <p className="masthead-note"><Link href="/en/explore">Explore the map</Link></p>
       <HomeSearch locale="en" />
       <ProvinceBar locale="en" />
     </header>
@@ -71,11 +73,13 @@ export default function EnglishHome() {
       <p><small>The record covers these four provinces only.</small></p>
     </section>
 
+    <RecoveryAnswer locale="en" />
+
     <HarvestSources locale="en" />
 
-    <RidingsMostLost locale="en" />
-
     <CitiesMostLost locale="en" />
+
+    <RidingsMostLost locale="en" />
 
     <section className="content-section">
       <h2>Read the record</h2>
@@ -92,7 +96,7 @@ export default function EnglishHome() {
       the same words, several screens apart.
     */}
     <section className="content-section limits-block" aria-labelledby="limits">
-      <h2 id="limits">What this record does not claim</h2>
+      <h2 id="limits">What this site doesn’t claim</h2>
       <div className="limits-body">
         <ul className="limits-list">
           <li>That a loss was caused by logging or deforestation.</li>
@@ -103,8 +107,10 @@ export default function EnglishHome() {
           <li>A complete total. Detected loss is a minimum.</li>
         </ul>
         <p>{PRODUCT_NAME.en} reports only what its sources record and what satellite images detect.</p>
-        <p>A satellite can see that trees are gone, but not why. <Link href="/en/methods">How the methods work</Link>.</p>
-        <p>These figures for {provinceSpanReach("en", "span")} are an early preview, not the final release. The loss patches on the Explore map are for looking at, not adding up, and no expert has reviewed them. <Link href="/en/data">Data, sources and licences</Link>.</p>
+        <p>A satellite can see that trees are gone, but not why.</p>
+        <p>These are figures for {provinceSpanReach("en", "span")}.</p>
+        <p><Link href="/en/methods">How the methods work</Link></p>
+        <p><Link href="/en/data">Data, sources and licences</Link></p>
         <p><small>Context source: {EXPLORE_PRODUCTION_LAYER.attribution.en} <a href={EXPLORE_PRODUCTION_LAYER.attribution.href}>Source catalogue</a>.</small></p>
       </div>
     </section>

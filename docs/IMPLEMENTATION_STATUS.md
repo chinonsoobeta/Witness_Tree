@@ -72,8 +72,14 @@ On 2026-09-27 the owner decided that an economic region with less than 1% of its
 forest unmapped at a span's start is treated as fully measured
 (`REGION_UNKNOWN_TOLERANCE_PERCENT` in `lib/explore/region-intervals.ts`). Eight
 regions meet it over 1984-2022. Their share is taken over the mapped forest, and
-the readout names the unmapped share beside it. Ridings, census subdivisions and
-provinces keep the strict rule: any unknown area withholds the share.
+the readout names the unmapped share beside it. On 2026-10-03 the owner applied
+the same 1% rule to ridings: `ridingIntervalMeasurements` in
+`lib/explore/riding-intervals.ts` admits it by default, so the home-page
+rankings, search and suggestions, and the riding map readout agree, and an
+admitted riding shows its unmapped share beside its figure. That fills Ontario's
+federal ranking column and adds one Alberta riding; a column still short says
+where the province's unmapped land lies. Census subdivisions and provinces keep
+the strict rule: any unknown area withholds the share.
 
 The source-admitted watershed geometry is NRCan's national Water Survey of Canada
 sub-drainage-area rollup archive, version 6.0 at 1:1,000,000 scale. It is a
@@ -148,6 +154,24 @@ admitted and owner reviewed, so the mode stays empty. Checked by
 `npm run check:phase4-condition-recovery-explore`. The French strings are drafts
 awaiting bilingual review. The view itself is a separate change.
 
+On 2026-10-03 the owner raised the treed-again requirement from three
+consecutive years to five and admitted the result for publication.
+`scripts/phase4_condition_recovery_v3.py` reran the v2 method with five treed
+years (671 s, bounded workers, no swap). Lost and Unknown area are unchanged
+(55.13 Mha and 46.42 Mha); 33.0% was treed again for five years after its
+latest loss and 35.9% after any loss (BC 32.4%, AB 24.3%, ON 49.5%, QC 30.2%).
+The run output lives on the data root under
+`derived/phase4-condition-recovery-v3/`. See
+[the v3 record](../data/phase4-condition-recovery-v3.json), checked by
+`npm run check:phase4-condition-recovery-v3`, which rebuilds it byte for byte
+when the data root is mounted. The Explore figures file is now built from the
+v3 output, and Explore shows the mode: a map shading each economic region by
+its recovery share (seven regions under 500 ha lost are grey and withheld),
+province, decade, cause and region figures with tables, and a home-page
+summary. The RESULTS comparison above was measured under the three-year rule
+and is labelled that way. The three-year per-cell tiles are not published.
+The French strings are Claude's translations awaiting the owner's review.
+
 ### Phase 4 provincial matching run
 
 On 2026-09-26 the first Phase 4 matching run was computed for British Columbia and Québec: 11.1% of 100,731,284 detected changes match an official harvest, fire, insect or windthrow record (56% by area). An independent recount agrees exactly on four intervals. The owner admitted the run the same day ([admission](../data/phase4-provincial-matching-admission-2026-09-26.json)); it is published on the methods page in both languages ([publication](../data/phase4-provincial-matching-publication-2026-09-26.json)) and released as `phase4-provincial-matching-v1` ([release](../data/phase4-provincial-matching-release-2026-09-26.json)). The owner retired the outside provincial review checkpoint ([scope decision](PHASE_SCOPE_DECISION_2026-09-26.md)); no outside review took place. Phase 4 is 4/4. See [the run record](PHASE4_PROVINCIAL_MATCHING_RUN.md). A cross-tabulation of the same run shows what the provincial records add where the national rasters record no cause: in BC and Québec, 19% of that loss lies in changes matching a provincial harvest, fire, insect or windthrow record ([cross-tabulation](../data/phase4-provincial-cause-crosstab.json)).
@@ -189,7 +213,7 @@ Phase 0 is complete under its recorded scope: seven of its eight literal gates p
 | Phase 4 | **4/4, complete** | Provincial safeguards pass, and the 2026-09-26 BC and Québec matching run is admitted, published in both languages and released. The owner retired the outside provincial review checkpoint; no outside review took place. |
 | Phase 5 | **3/4 (75%) local; production blocked** | The safety and simulation controls pass. The dated 100-run receipt records zero real refresh successes; the observed runs of 2026-09-13 and 2026-09-14 record the first three, each archived and read back. The scheduled cadence still needs observation over a longer window that crosses a daylight saving transition. |
 | Phase 6 | **4/5 (80%)** | Managed Canadian database isolation is proven. Sender infrastructure and the independent timed kill-switch rehearsal remain absent. |
-| Phase 7 | **14/14, complete** | On 2026-09-26 the owner removed the reserve-and-treaty layer gate and the right-of-reply gate, which the Plan scopes to reserve and treaty pages, because Witness Tree will not publish that geography. No reserve or treaty geometry, name or reply route exists. The modes-and-overlays gate covers the released federal-riding, provincial-riding, economic-region and watershed reference boundaries. |
+| Phase 7 | **12/14, incomplete** | On 2026-10-03 the owner removed the Decisions and Engagement pages, so the engagement-register gate and the Mistik-outcome gate no longer pass; the Mistik outcome remains recorded in `data/phase0-owner-scope-decisions-2026-08-27.json`. They pass again only if the pages return or the owner removes the gates by a recorded scope decision. On 2026-09-26 the owner removed the reserve-and-treaty layer gate and the right-of-reply gate, which the Plan scopes to reserve and treaty pages, because Witness Tree will not publish that geography. No reserve or treaty geometry, name or reply route exists. The modes-and-overlays gate covers the released federal-riding, provincial-riding, economic-region and watershed reference boundaries. |
 | Phase 8 | **8/16 (50%)** | Raw-archive reproducibility, the operations handbook, bounded independently retrieved bulk downloads, and CDN/tile validation pass. Sites version 48 deployed main commit `d9432b8e36be3f48a922d194618ff9840a5640a9` (#204) through Sites-history reconciliation merge `11e88ca14123fcffaa90ced142167f1a2ad6b726`. `/en` and `/fr` returned 200; live checks confirmed 10 federal and 10 provincial riding rankings, city ranks 1–10 including “Campbell River, British Columbia,” and `consignée` followed by U+202F before the semicolon on `/fr/methodes`. The map gate passed and the Explore smoke check drew the map. Neither gated map file changed, so the existing observation remains `data/deployed-map-render-evidence-2026-09-27-v45.json`. Version 48 replaced version 47, deployed from main commit `2ecefdf812e5f49ae827275e95c07eb867ca6753` (#202) through reconciliation merge `ec4bc74abb1802649ec34dd560e15b6559d08c65`. Version 47 replaced version 46, deployed from main commit `8485d77679b216faf1ca2844b573d7800e744de4` (#200) through reconciliation merge `31f26986e9715f73198db7a90c1f6f629a24b4b7`. Version 46 replaced version 45, deployed from main commit `3e68029df6e8e045f477d8909606fde13c912138` (#199) through reconciliation merge `4b97fba6017770767f474420b6911ca179130f4b`. `npm run verify:deploy-source <commit>` proves a deploy carries the tree of a commit on `main`. Other operated release evidence remains incomplete. |
 | Phase 9 | **0/4 (0%)** | No operated beta, real correction metrics, source-agency confirmation, or quarterly published-figure reproduction. |
 

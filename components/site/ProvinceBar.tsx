@@ -67,13 +67,20 @@ export function ProvinceBar({
 }: Readonly<{
   locale: Locale;
   selected?: ExploreMapView | null;
-  onSelect?: (province: ExploreMapView) => void;
+  onSelect?: (province: ExploreMapView | null) => void;
   placement?: "landing" | "map";
 }>) {
   const label = locale === "en" ? "Province views" : "Vues provinciales";
-  const items = EXPLORE_MAP_VIEWS.map((province) => (
+  // On the map, "All" shows the four provinces together; a province shows that
+  // province alone. The landing page lists the provinces and selects nothing.
+  const all = onSelect ? (
+    <button key="all" type="button" className="province-bar-all" aria-pressed={selected === null} onClick={() => onSelect(null)}>
+      {locale === "en" ? "All" : "Toutes"}
+    </button>
+  ) : null;
+  const items = [all, ...EXPLORE_MAP_VIEWS.map((province) => (
     <ProvinceItem key={province} province={province} locale={locale} selected={selected} onSelect={onSelect} />
-  ));
+  ))];
   return onSelect ? (
     <nav className={`province-bar province-bar--${placement}`} aria-label={label}>{items}</nav>
   ) : (

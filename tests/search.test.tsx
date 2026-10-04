@@ -152,10 +152,9 @@ test("search coverage precedes controls and a missing record is a result with a 
       assert.match(markup, locale === "en" ? /Unknown\. Nothing published answers this yet/ : /Inconnu\. Rien de publi\u00e9 ne r\u00e9pond/);
       assert.match(markup, /class="no-record-remedy-list"/);
       if (scope === "places") {
-        // The owner decided not to publish reserve or treaty geography, so the
-        // page says so plainly and never promises those places are coming.
-        assert.match(markup, locale === "en" ? /Witness Tree does not list reserves/ : /Arbre témoin ne répertorie pas séparément les réserves/);
-        assert.doesNotMatch(markup, /aren’t listed yet|pas encore répertoriés|reserves, settlements and treaty or agreement lands are approved|limites officielles des réserves/i);
+        // The owner removed every reference to reserves from the site, and the
+        // page never promises other places are coming.
+        assert.doesNotMatch(markup, /reserve|réserve|aren’t listed yet|pas encore répertoriés/i);
       }
       assert.match(markup, new RegExp(`href="${locale === "en" ? "/en/corrections" : "/fr/corrections"}"`));
     }

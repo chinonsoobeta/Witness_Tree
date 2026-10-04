@@ -144,13 +144,16 @@ for (const locale of ["en", "fr"] as const) {
     expect(layout.nav.bottom).toBeLessThanOrEqual(layout.frame.top);
     expect(layout.panel.top).toBeGreaterThanOrEqual(layout.frame.bottom);
     if (page.viewportSize()!.width < 760) {
-      expect(new Set(layout.buttons.map((button) => Math.round(button.top))).size).toBe(2);
+      // All four provinces on its own row, then the provinces two by two.
+      expect(new Set(layout.buttons.map((button) => Math.round(button.top))).size).toBe(3);
+      expect(layout.buttons[0]!.width).toBeGreaterThan(layout.buttons[1]!.width * 1.5);
     }
+    // All four provinces, then each province on its own.
     const buttons = page.locator(".province-bar--map button");
-    await expect(buttons).toHaveCount(4);
+    await expect(buttons).toHaveCount(5);
     await buttons.first().focus();
     await page.keyboard.press("Shift+Tab");
-    for (let index = 0; index < 4; index += 1) {
+    for (let index = 0; index < 5; index += 1) {
       await page.keyboard.press("Tab");
       await expect(buttons.nth(index)).toBeFocused();
       const rectangle = layout.buttons[index]!;

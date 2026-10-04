@@ -16,24 +16,16 @@ test("landing pages use the released province span and retain the bounded scope"
   for (const page of [english, french]) {
     assert.match(page, /SPAN_ROWS/);
     /*
-     * This used to require the page to say the release "is not per-cell
-     * geometry". That stopped being true on 2026-09-19, when the clipped
-     * four-province per-cell products were admitted and released, so the
-     * sentence became a false denial of something the Explore map draws.
-     *
-     * The binding limit is countable:false, not absence, so the page is held
-     * to that instead, at the same strictness: the patches exist, they may be
-     * drawn, no total may be taken from them, and the formal gate stays open.
-     * The 2026-09-23 plain-language pass says the same four things in plainer
-     * words, so the assertions follow the words and keep the four claims.
+     * The preview sentence ("for looking at, not adding up", "no expert has
+     * reviewed", "not the final release") was replaced on 2026-10-03 at the
+     * owner's request by a plain statement of the years. What stays binding is
+     * the span, the methods and data links, and the source attribution.
      */
-    assert.match(page, /for looking at, not adding up|servent à regarder, pas à additionner/);
-    assert.match(page, /no expert has reviewed|aucun spécialiste ne les a examinées/);
-    assert.match(page, /not the final release|et non la version définitive/);
+    assert.match(page, /provinceSpanReach\("(?:en|fr)", "span"\)/);
     assert.match(page, /attribution\.href/);
   }
-  assert.match(english, /are an early preview, not the final release/);
-  assert.match(french, /sont un premier aperçu, et non la version définitive/);
+  assert.match(english, /These are figures for \{provinceSpanReach\("en", "span"\)\}/);
+  assert.match(english, /What this site doesn’t claim/);
   // The owner asked on 2026-09-27 for the "provisional" sentence to go; the
   // preview status above still says the figures are not final.
   assert.doesNotMatch(english, /These figures are provisional/);
@@ -67,8 +59,9 @@ test("the landing composition puts coverage and the legend before any figure", a
     assert.doesNotMatch(hero, /<p className="eyebrow">/);
     assert.match(hero, /<h1>/);
     assert.match(hero, /<ProvinceBar/);
-    // Nothing leaves the hero: the reader meets the coverage statement first.
-    assert.equal((hero.match(/<Link\b/g) ?? []).length, 0);
+    // The owner asked on 2026-10-03 for one way out of the hero: the map.
+    assert.equal((hero.match(/<Link\b/g) ?? []).length, 1);
+    assert.match(hero, new RegExp(`<Link href="${route}">`));
     // Order is the claim. The headline carries its own minimum inside the
     // panel, so there is no separate coverage banner; the legend still stands
     // ahead of the section that reports a province's figures.
@@ -193,18 +186,22 @@ test("localized not-found pages use the site shell and offer three exits", async
   assert.match(frenchCatchAll, /notFound\(\)/);
 });
 
-test("about routes are bilingual and reserve owner statements for owner copy", async () => {
+test("about routes are bilingual and carry the owner's own text", async () => {
   const [english, french, header, footer] = await Promise.all([read("../app/en/about/page.tsx"), read("../app/fr/a-propos/page.tsx"), read("../components/site/SiteHeader.tsx"), read("../components/site/SiteFooter.tsx")]);
-  assert.match(english, /Coming soon/);
-  assert.match(english, /The owner hasn’t written this page yet/);
+  // The owner wrote this page on 2026-10-03; it is set as written.
+  assert.match(english, /My name is Chinonso Obeta/);
+  assert.match(english, /not endorsed by the Government of British Columbia/);
   assert.match(english, /fr: "\/fr\/a-propos"/);
-  assert.match(french, /À venir/);
-  assert.match(french, /Le propriétaire n’a pas encore rédigé cette page/);
   assert.match(french, /en: "\/en\/about"/);
-  assert.doesNotMatch(header, /\["About", "\/en\/about"\]/);
-  assert.doesNotMatch(header, /\["À propos", "\/fr\/a-propos"\]/);
-  assert.match(footer, /\["About", "\/en\/about"\]/);
-  assert.match(footer, /\["À propos", "\/fr\/a-propos"\]/);
+  for (const page of [english, french]) {
+    assert.match(page, /https:\/\/www\.linkedin\.com\/in\/chinonso-obeta/);
+    assert.match(page, /https:\/\/www\.chinonsoobeta\.dev/);
+    assert.doesNotMatch(page, /Coming soon|À venir/);
+  }
+  // About moved from the footer to the main menu, right after Data.
+  assert.match(header, /\["Data", "\/en\/data"\],\s*\["About", "\/en\/about"\]/);
+  assert.match(header, /\["Données", "\/fr\/donnees"\],\s*\["À propos", "\/fr\/a-propos"\]/);
+  assert.doesNotMatch(footer, /\["About", "\/en\/about"\]|\["À propos", "\/fr\/a-propos"\]/);
   assert.doesNotMatch(header, /\["Account", "\/en\/account"\]|\["Wildfire", "\/en\/wildfire"\]/);
   assert.doesNotMatch(header, /\["Compte", "\/fr\/compte"\]|\["Incendies", "\/fr\/incendies"\]/);
   assert.match(footer, /\["Account", "\/en\/account"\]/);

@@ -1,46 +1,32 @@
-import { formatYearRangeKey, PRODUCT_NAME, type Locale } from "@/lib/domain";
-import {
-  EXPLORE_COVERAGE_PERIOD,
-  EXPLORE_DEFAULT_YEAR,
-  EXPLORE_YEAR_MIN,
-} from "@/lib/explore";
-import {
-  PROVINCE_BULK_TIME_RANGE,
-  provinceBulkManifestUrl,
-  provinceBulkRelease,
-} from "@/lib/downloads/releases";
+import { PRODUCT_NAME, type Locale } from "@/lib/domain";
+import { TERMS_LICENCES } from "./terms-licences";
 
-export type GovernancePageKind =
-  | "glossary"
-  | "corrections"
-  | "decisions"
-  | "engagement"
-  | "privacy"
-  | "terms"
-  | "releases";
+export type GovernancePageKind = "glossary" | "corrections" | "terms";
 
 type Section = Readonly<{
   heading: string;
   paragraphs: readonly string[];
+  /** A plain list under the paragraphs, used for the sources and licences on Terms. */
+  items?: readonly string[];
   /** A link with a format is a file download and is drawn as a file tile, as on the Data page. */
   links?: readonly Readonly<{ label: string; href: string; format?: string }>[];
 }>;
 type PageCopy = Readonly<{
   title: string;
-  status: string;
+  /** Omitted where the page needs no status line under its title. */
+  status?: string;
   sections: readonly Section[];
 }>;
 
 const enBrand = PRODUCT_NAME.en;
 const frBrand = PRODUCT_NAME.fr;
-const [provinceCsv, provinceGeoPackage] = provinceBulkRelease.artifacts;
 
 const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
   glossary: {
     en: {
       title: "Glossary",
       status:
-        "Plain definitions of the terms used in Explore and Compare. A professional forestry review of these terms is still to come.",
+        "Plain definitions of the terms used in Explore and Compare.",
       sections: [
         {
           heading: "Forest",
@@ -114,7 +100,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
     fr: {
       title: "Glossaire",
       status:
-        "Définitions simples des termes employés dans Explorer et Comparer. Une révision professionnelle de ces termes forestiers reste à faire.",
+        "Définitions simples des termes employés dans Explorer et Comparer.",
       sections: [
         {
           heading: "Forêt",
@@ -195,7 +181,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Service levels",
           paragraphs: [
-            "Response times, in business days to acknowledge and then to resolve: critical, 1 and 5; Indigenous geography content, 1 and 10; material, 3 and 15; minor, 5 and 30.",
+            "Response times, in business days to acknowledge and then to resolve: critical, 1 and 5; material, 3 and 15; minor, 5 and 30.",
           ],
         },
         {
@@ -210,12 +196,6 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
             `If the mistake is in a source’s own record, follow the source link and use that publisher’s correction process. If it’s on ${enBrand}, write down the page link, the exact words or number, the date and time, the language, why it looks wrong and any official source. There’s no way to send it to us yet, so check back here; don’t send personal information to any address this page doesn’t list. Your notes don’t open a case or start the response clock.`,
           ],
         },
-        {
-          heading: "Contact status",
-          paragraphs: [
-            "We haven’t yet named a person responsible for corrections or set up a tested way to send them. Until then there is no approved correction address or form, and this page won’t claim to accept cases.",
-          ],
-        },
       ],
     },
     fr: {
@@ -226,7 +206,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Délais de service",
           paragraphs: [
-            "Délais de réponse, en jours ouvrables pour accuser réception puis pour régler\u202F: critique, 1 et 5\u202F; contenu de géographie autochtone, 1 et 10\u202F; important, 3 et 15\u202F; mineur, 5 et 30.",
+            "Délais de réponse, en jours ouvrables pour accuser réception puis pour régler\u202F: critique, 1 et 5\u202F; important, 3 et 15\u202F; mineur, 5 et 30.",
           ],
         },
         {
@@ -241,202 +221,12 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
             `Si l’erreur se trouve dans le registre d’une source, suivez le lien source et utilisez le processus de correction de cet éditeur. Si elle se trouve sur ${frBrand}, notez le lien de la page, les mots ou le chiffre exacts, la date et l’heure, la langue, pourquoi l’information semble erronée et toute source officielle. Il n’y a pas encore de moyen de nous l’envoyer\u202F: revenez ici\u202F; n’envoyez aucun renseignement personnel à une adresse que cette page n’indique pas. Vos notes n’ouvrent pas de demande et ne déclenchent aucun délai de réponse.`,
           ],
         },
-        {
-          heading: "État du contact",
-          paragraphs: [
-            "Nous n’avons pas encore désigné de responsable des corrections ni mis en place un moyen testé de les envoyer. D’ici là, aucune adresse de correction ni aucun formulaire n’est approuvé, et cette page ne prétendra pas accepter de demandes.",
-          ],
-        },
-      ],
-    },
-  },
-  decisions: {
-    en: {
-      title: "Decision log",
-      status:
-        "Decisions copied from version 2 of the implementation plan, dated 11 August 2026.",
-      sections: [
-        {
-          heading: "Product",
-          paragraphs: [
-            `Working name: ${enBrand}. The record covers ${EXPLORE_COVERAGE_PERIOD.en} in British Columbia, Alberta, Ontario and Québec; the year control starts at ${EXPLORE_YEAR_MIN}, the first year-to-year change, and opens on ${EXPLORE_DEFAULT_YEAR}.`,
-            "The satellite data comes from NTEMS, Canada’s national land-monitoring system. Version 1 includes live wildfire, riding comparison, accounts and alerts, and reserve and treaty pages; advanced layer controls and asserted traditional territories are left out.",
-          ],
-        },
-        {
-          heading: "Product name",
-          paragraphs: [
-            `The owner kept the name ${enBrand} / ${frBrand} and decided not to pursue Mistik or an Indigenous engagement process. No Mistik request, permission, payment or terms exist, and the site must not suggest otherwise.`,
-          ],
-        },
-        {
-          heading: "Legal sign-off",
-          paragraphs: [
-            "On 27 August 2026 the owner recorded full legal sign-off, in both languages, for the site’s defamation safeguards, disclaimers, terms, privacy notice, licensing and credit rules, account and alert controls, and correction and dispute routes. This is the owner’s own record, not an independent lawyer’s opinion, and it doesn’t grant missing data rights or approve major later changes.",
-          ],
-        },
-        {
-          heading: "Change control",
-          paragraphs: [
-            "Changes to methods, sources or published figures will need approval from an editorial board. No board has been appointed yet.",
-          ],
-        },
-      ],
-    },
-    fr: {
-      title: "Registre des décisions",
-      status:
-        "Décisions reprises de la version 2 du plan de mise en œuvre, datée du 11 août 2026.",
-      sections: [
-        {
-          heading: "Produit",
-          paragraphs: [
-            `Nom de travail\u202F: ${frBrand}. Le registre couvre la période de ${EXPLORE_COVERAGE_PERIOD.fr} en Colombie-Britannique, en Alberta, en Ontario et au Québec\u202F; la commande d’année commence à ${EXPLORE_YEAR_MIN}, le premier changement d’une année à l’autre, et s’ouvre sur ${EXPLORE_DEFAULT_YEAR}.`,
-            "Les données satellitaires proviennent de NTEMS, le système national de surveillance du territoire du Canada. La version 1 comprend les incendies actuels, la comparaison des circonscriptions, les comptes et alertes, et les pages de réserves et de traités\u202F; les commandes avancées de couches et les territoires traditionnels revendiqués sont exclus.",
-          ],
-        },
-        {
-          heading: "Nom du produit",
-          paragraphs: [
-            `Le propriétaire a gardé le nom ${enBrand} / ${frBrand} et a décidé de ne pas poursuivre Mistik ni un processus de dialogue avec les peuples autochtones. Il n’existe aucune demande, permission, rémunération ni condition concernant Mistik, et le site ne doit pas laisser entendre le contraire.`,
-          ],
-        },
-        {
-          heading: "Approbation juridique",
-          paragraphs: [
-            "Le 27 août 2026, le propriétaire a consigné une approbation juridique complète, dans les deux langues, des mesures contre la diffamation, des avertissements, des conditions, de l’avis de confidentialité, des règles de licence et de mention des sources, des contrôles des comptes et des alertes, et des voies de correction et de contestation du site. Il s’agit du registre du propriétaire, et non de l’avis d’un avocat indépendant\u202F; il n’accorde aucun droit manquant sur les données et n’approuve pas de changements importants ultérieurs.",
-          ],
-        },
-        {
-          heading: "Contrôle des changements",
-          paragraphs: [
-            "Les changements de méthode, de sources ou de chiffres publiés devront être approuvés par un comité éditorial. Aucun comité n’a encore été nommé.",
-          ],
-        },
-      ],
-    },
-  },
-  engagement: {
-    en: {
-      title: "Indigenous engagement",
-      status:
-        "On 27 August 2026 the owner decided not to run an Indigenous engagement program for this product.",
-      sections: [
-        {
-          heading: "Scope decision",
-          paragraphs: [
-            "No engagement contact route, contact list, Mistik request or engagement outcome will be presented as existing. Reserve and treaty pages stay unavailable unless the owner later secures the right data authority and a working process for communities to reply.",
-          ],
-        },
-        {
-          heading: "Name-request record",
-          paragraphs: [
-            `Mistik request: not opened. Terms: none. Honorarium: none. Permission: none. Final outcome: not pursued; ${enBrand} / ${frBrand} retained.`,
-          ],
-        },
-        {
-          heading: "Safeguards",
-          paragraphs: [
-            "Reserve and treaty boundaries are government and legal records; they do not describe the full extent of Indigenous lands, rights, title or relationships. No ranking, rights finding, consent finding or compliance claim applies to these areas.",
-            "A treaty boundary marks an agreement as recorded by the Crown, not the boundary of a nation. Areas too small to measure reliably will show the original record, without a calculated rate.",
-          ],
-        },
-        {
-          heading: "Public register",
-          paragraphs: [
-            "Contacts made: none. Responses received: none. Anyone who asks to stay confidential will not be named.",
-          ],
-        },
-      ],
-    },
-    fr: {
-      title: "Dialogue avec les peuples autochtones",
-      status:
-        "Le 27 août 2026, le propriétaire a décidé de ne pas mener de programme de dialogue avec les peuples autochtones pour ce produit.",
-      sections: [
-        {
-          heading: "Décision sur la portée",
-          paragraphs: [
-            "Aucune voie de dialogue, aucune liste de contacts, aucune demande concernant Mistik ni aucun résultat de dialogue ne seront présentés comme existants. Les pages sur les réserves et les traités restent indisponibles à moins que le propriétaire n’obtienne plus tard l’autorité nécessaire sur les données et un processus fonctionnel permettant aux communautés de répondre.",
-          ],
-        },
-        {
-          heading: "Registre de la demande de nom",
-          paragraphs: [
-            `Demande concernant Mistik\u202F: non ouverte. Conditions\u202F: aucune. Honoraire\u202F: aucun. Permission\u202F: aucune. Résultat final\u202F: non poursuivie\u202F; ${enBrand} / ${frBrand} sont retenus.`,
-          ],
-        },
-        {
-          heading: "Mesures de protection",
-          paragraphs: [
-            "Les limites de réserves et de traités sont des registres gouvernementaux et juridiques\u202F; elles ne décrivent pas toute l’étendue des terres, droits, titres ou relations autochtones. Aucun classement ni aucune conclusion sur les droits, le consentement ou la conformité ne s’applique à ces zones.",
-            "Une limite de traité marque un accord consigné par la Couronne, et non la limite d’une nation. Les zones trop petites pour être mesurées de façon fiable présenteront le registre original, sans taux calculé.",
-          ],
-        },
-        {
-          heading: "Registre public",
-          paragraphs: [
-            "Contacts établis\u202F: aucun. Réponses reçues\u202F: aucune. Toute personne qui demande la confidentialité ne sera pas nommée.",
-          ],
-        },
-      ],
-    },
-  },
-  privacy: {
-    en: {
-      title: "Privacy notice – pre-activation",
-      status: `This notice has legal sign-off recorded by the owner. Accounts are not active yet, and ${enBrand} stores no account, email or saved-area data.`,
-      sections: [
-        {
-          heading: "Planned minimum data",
-          paragraphs: [
-            "Only with your clear consent: your email, a scrambled (hashed) password, language, saved areas, alert settings and a history of alerts sent. Saved areas will be treated as sensitive, and never linked to analytics or written to logs.",
-          ],
-        },
-        {
-          heading: "Planned controls",
-          paragraphs: [
-            "Each account’s data kept apart by the database, stored data encrypted, verified email, one-click unsubscribe, deletion within 30 days, alert history erased after 24 months, no tracking pixels, and a single email provider that gets only what it needs.",
-          ],
-        },
-        {
-          heading: "Hosting",
-          paragraphs: [
-            "Account data must be hosted in Canada, but a host hasn’t been chosen or checked yet. Accounts can’t launch until the location, the privacy and security checks, and the operating controls are published.",
-          ],
-        },
-      ],
-    },
-    fr: {
-      title: "Avis de confidentialité – avant activation",
-      status: `Cet avis a reçu l’approbation juridique consignée par le propriétaire. Les comptes ne sont pas encore actifs, et ${frBrand} ne conserve actuellement aucune donnée de compte, d’adresse courriel ou de zone enregistrée.`,
-      sections: [
-        {
-          heading: "Données minimales prévues",
-          paragraphs: [
-            "Seulement avec votre consentement clair\u202F: votre adresse courriel, un mot de passe brouillé (haché), la langue, les zones enregistrées, les réglages d’alerte et l’historique des alertes envoyées. Les zones enregistrées seront traitées comme sensibles, et ne seront jamais reliées à des outils d’analyse ni inscrites dans les journaux.",
-          ],
-        },
-        {
-          heading: "Contrôles prévus",
-          paragraphs: [
-            "Données de chaque compte séparées par la base de données, données stockées chiffrées, courriel vérifié, désabonnement en un clic, suppression dans les 30 jours, historique des alertes effacé après 24 mois, aucun pixel de suivi, et un seul fournisseur de courriel qui reçoit seulement le nécessaire.",
-          ],
-        },
-        {
-          heading: "Hébergement",
-          paragraphs: [
-            "Les données de compte doivent être hébergées au Canada, mais aucun hébergeur n’a encore été choisi ni vérifié. Les comptes ne pourront pas être lancés avant la publication du lieu, des vérifications de confidentialité et de sécurité, et des contrôles d’exploitation.",
-          ],
-        },
       ],
     },
   },
   terms: {
     en: {
-      title: "Terms and limitations – reviewed",
-      status:
-        "The owner recorded legal sign-off for these terms on 27 August 2026. That alone doesn’t approve a full public release.",
+      title: "Terms",
       sections: [
         {
           heading: "Informational record",
@@ -451,17 +241,16 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
           ],
         },
         {
-          heading: "Licences",
+          heading: "Licences and attribution",
           paragraphs: [
-            "The code has no open-source licence yet. Data keeps its source’s own terms. The example data gives no right to redistribute.",
+            "Each data source keeps its own licence, and none of the publishers below endorses this site. The site uses these sources under these licences and credits:",
           ],
+          items: TERMS_LICENCES.en,
         },
       ],
     },
     fr: {
-      title: "Conditions et limites – examinées",
-      status:
-        "Le propriétaire a consigné l’approbation juridique de ces conditions le 27 août 2026. Cela seul n’approuve pas une diffusion publique complète.",
+      title: "Conditions",
       sections: [
         {
           heading: "Registre d’information",
@@ -476,74 +265,11 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
           ],
         },
         {
-          heading: "Licences",
+          heading: "Licences et attribution",
           paragraphs: [
-            "Le code n’a pas encore de licence libre. Les données gardent les conditions de leur source. Les données d’exemple ne donnent aucun droit de redistribution.",
+            "Chaque source de données garde sa propre licence, et aucun des éditeurs ci-dessous n’approuve ce site. Le site utilise ces sources selon ces licences et mentions\u202F:",
           ],
-        },
-      ],
-    },
-  },
-  releases: {
-    en: {
-      title: "Data releases",
-      status:
-        "One early preview release is published here. It is not the final release.",
-      sections: [
-        {
-          heading: "Published preview release",
-          paragraphs: [
-            `Release ${provinceBulkRelease.id} holds the ${formatYearRangeKey(PROVINCE_BULK_TIME_RANGE, "en", "span")} province figures for British Columbia, Alberta, Ontario and Québec, as a CSV and a GeoPackage. Each file comes with its checksum (SHA-256), licence credit, boundary version and method version.`,
-            "It is a province-level preview, not detailed map shapes. Every province has some land with no data, so its loss figures are minimums.",
-          ],
-          links: [
-            { label: "Download the province CSV", href: provinceCsv.url, format: "CSV" },
-            { label: "Download the province GeoPackage", href: provinceGeoPackage.url, format: "GPKG" },
-            { label: "Open the machine-readable release manifest", href: provinceBulkManifestUrl },
-          ],
-        },
-        {
-          heading: "Final release",
-          paragraphs: [
-            "There is no final release yet. This preview stays in place until the remaining launch checks, such as the accessibility, security and translation reviews, are done.",
-          ],
-        },
-        {
-          heading: "Citation format",
-          paragraphs: [
-            `${enBrand}, province aggregate, ${formatYearRangeKey(PROVINCE_BULK_TIME_RANGE, "en")}, ${provinceCsv.boundaryEdition}, release ${provinceBulkRelease.id}, method ${provinceCsv.methodVersion}, retrieval date and stable artifact URL. Cite it as a technical preview; a citation for the final release will be possible once that release exists.`,
-          ],
-        },
-      ],
-    },
-    fr: {
-      title: "Versions des données",
-      status:
-        "Une version d’aperçu préliminaire est publiée ici. Ce n’est pas la version définitive.",
-      sections: [
-        {
-          heading: "Version d’aperçu publiée",
-          paragraphs: [
-            `La version ${provinceBulkRelease.id} contient les chiffres provinciaux ${formatYearRangeKey(PROVINCE_BULK_TIME_RANGE, "fr", "from")} pour la Colombie-Britannique, l’Alberta, l’Ontario et le Québec, en formats CSV et GeoPackage. Chaque fichier est accompagné de sa somme de contrôle (SHA-256), de la mention de licence, de la version des limites et de la version de la méthode.`,
-            "Il s’agit d’un aperçu au niveau provincial, et non de formes cartographiques détaillées. Chaque province compte un territoire sans données\u202F; ses chiffres de perte sont donc des minimums.",
-          ],
-          links: [
-            { label: "Télécharger le CSV provincial", href: provinceCsv.url, format: "CSV" },
-            { label: "Télécharger le GeoPackage provincial", href: provinceGeoPackage.url, format: "GPKG" },
-            { label: "Ouvrir le manifeste de version lisible par machine", href: provinceBulkManifestUrl },
-          ],
-        },
-        {
-          heading: "Version définitive",
-          paragraphs: [
-            "Il n’existe pas encore de version définitive. Cet aperçu reste en place jusqu’à ce que les dernières vérifications avant le lancement, comme les examens d’accessibilité, de sécurité et de traduction, soient faites.",
-          ],
-        },
-        {
-          heading: "Format de citation",
-          paragraphs: [
-            `${frBrand}, agrégat provincial, ${formatYearRangeKey(PROVINCE_BULK_TIME_RANGE, "fr")}, ${provinceCsv.boundaryEdition}, version ${provinceBulkRelease.id}, méthode ${provinceCsv.methodVersion}, date de consultation et URL stable de l’artefact. Citez-la comme aperçu technique\u202F; une citation de la version définitive sera possible une fois cette version publiée.`,
-          ],
+          items: TERMS_LICENCES.fr,
         },
       ],
     },
@@ -575,7 +301,7 @@ export function GovernancePage({
         {/* This screen reports no figure, so it carries no figures caveat and
             no evidence key. Its status and the way to report an error sit
             under the title as plain text rather than in a plate. */}
-        <p className="dek">{page.status}</p>
+        {page.status ? <p className="dek">{page.status}</p> : null}
         <p className="masthead-note">
           <a href={kind === "corrections" ? "#correction-instructions" : `/${locale}/corrections`}>
             {locale === "en" ? "Read the correction instructions" : "Consulter les instructions de correction"}
@@ -592,6 +318,11 @@ export function GovernancePage({
             {section.paragraphs.map((paragraph) => (
               <p key={paragraph}>{paragraph}</p>
             ))}
+            {section.items ? (
+              <ul className="licence-list">
+                {section.items.map((item) => <li key={item}>{item}</li>)}
+              </ul>
+            ) : null}
             {section.links ? (
               <ul className="link-list">
                 {section.links.map((link) => (

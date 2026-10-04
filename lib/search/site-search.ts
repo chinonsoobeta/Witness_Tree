@@ -1,5 +1,6 @@
 import { districtIndexLayer } from "@/lib/districts/index-lookup";
 import { provinceSpanMeasurements } from "@/lib/explore/province-spans";
+import { REGION_UNKNOWN_TOLERANCE_PERCENT } from "@/lib/explore/region-intervals";
 import { ridingIntervalMeasurements, type RidingIntervalMeasurement } from "@/lib/explore/riding-intervals";
 import { formatPercent, type Locale } from "@/lib/domain";
 import release from "@/data/phase3-riding-interval-measurements.json";
@@ -268,6 +269,8 @@ export type WholeRecordRidingRank = Readonly<{
   province: string;
   lossPercent: number;
   lossHectares: number;
+  /** Set when a ranked riding is partly unmapped, below the admitted tolerance. */
+  unmappedPercent?: number;
 }>;
 
 /**
@@ -278,23 +281,36 @@ export type WholeRecordRidingRank = Readonly<{
 export const WHOLE_RECORD_RANK_FLOOR_HECTARES = 50_000;
 
 /**
- * Ridings ranked by the share of their mapped forest detected as lost at least
- * once from 1984 to 2022. Only ridings mapped in full, with at least the floor
- * above, are ranked: a partly mapped riding has no known denominator. Ties
- * break on hectares, then name, so the order never depends on input order.
+ * The unmapped share a ranked riding may have, the 1% the region map already
+ * admits (owner decision, 2026-10-03). The share is then taken over the
+ * mapped forest and the unmapped share travels with it.
  */
-export function ridingsByWholeRecordLoss(level: "federal" | "provincial", limit: number): readonly WholeRecordRidingRank[] {
-  return ridingSearchRows
+export const RIDING_RANK_UNKNOWN_TOLERANCE_PERCENT = REGION_UNKNOWN_TOLERANCE_PERCENT;
+
+/**
+ * Ridings ranked by the share of their mapped forest detected as lost at least
+ * once from 1984 to 2022. Only ridings with at least the floor above, mapped in
+ * full or with less than the tolerance unmapped, are ranked: past that, a
+ * partly mapped riding has no known denominator. Ties break on hectares, then
+ * name, so the order never depends on input order.
+ */
+export function ridingsByWholeRecordLoss(level: "federal" | "provincial", limit: number, province?: string): readonly WholeRecordRidingRank[] {
+  return ridingMeasurements
     .filter((row) => (level === "federal" ? row.jurisdiction === "CA" : row.jurisdiction !== "CA"))
     .filter((row) => row.coverage === "complete" && row.observedLossPercent !== null && row.observedLossHectares !== null)
-    .filter((row) => row.knownForestedHectares !== null && row.knownForestedHectares >= WHOLE_RECORD_RANK_FLOOR_HECTARES)
+    .flatMap((row) => {
+      const known = ridingById.get(row.boundaryId)?.knownForestedHectares ?? null;
+      return known !== null && known >= WHOLE_RECORD_RANK_FLOOR_HECTARES ? [row] : [];
+    })
     .map((row) => ({
       id: row.boundaryId,
-      name: row.name,
+      name: ridingName(row.boundaryId),
       province: row.jurisdiction === "CA" ? FEDERAL_PROVINCE_BY_NUMBER[row.boundaryId.slice(3, 5)] ?? "CA" : row.jurisdiction,
       lossPercent: row.observedLossPercent!,
       lossHectares: row.observedLossHectares!,
+      ...(row.admittedUnknownPercent === undefined ? {} : { unmappedPercent: row.admittedUnknownPercent }),
     }))
+    .filter((row) => province === undefined || row.province === province)
     .sort((a, b) => b.lossPercent - a.lossPercent || b.lossHectares - a.lossHectares || a.name.en.localeCompare(b.name.en))
     .slice(0, limit);
 }
@@ -319,9 +335,9 @@ export const CITY_RANK_FLOOR_HECTARES = 5_000;
  * 1984 to 2022 figure: only cities mapped in full, with at least the floor,
  * are ranked, and ties break on hectares, then name.
  */
-export function citiesByWholeRecordLoss(limit: number): readonly WholeRecordRidingRank[] {
+export function citiesByWholeRecordLoss(limit: number, province?: string): readonly WholeRecordRidingRank[] {
   return PLACE_NAME_INDEX.places
-    .filter((place) => CITY_TYPES.has(place.type))
+    .filter((place) => CITY_TYPES.has(place.type) && (province === undefined || place.province === province))
     .flatMap((place) => {
       const figure = placeFigure(place.id);
       if (!figure || figure.coverage !== "complete" || figure.observedLossPercent === null || figure.observedLossHectares === null) return [];

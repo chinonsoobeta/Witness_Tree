@@ -4,8 +4,10 @@ import {
   EXPLORE_INTERVAL_COUNT,
   EXPLORE_INTERVAL_FIRST_YEAR,
   EXPLORE_INTERVAL_LAST_YEAR,
+  intervalWindowIndex,
   type ExploreInterval,
 } from "./interval";
+import { FOREST_REGIONS, type ForestRegionFigure } from "./forest-regions";
 import { decodeIntervalArea, intervalSpanFigures, type DecodedIntervalArea } from "./interval-spans";
 import type { RidingIntervalMeasurement } from "./riding-intervals";
 
@@ -31,8 +33,10 @@ const REGION_COUNT = 44;
 /**
  * The owner decided on 2026-09-27 that a region with less than 1% of its
  * forest unmapped is treated as fully measured. The share is taken over the
- * mapped forest and the readout names the unmapped share beside it. Ridings
- * and census subdivisions keep the strict rule.
+ * mapped forest and the readout names the unmapped share beside it. On
+ * 2026-10-03 the owner applied the same 1% rule to ridings: the home-page
+ * rankings, search and the riding map readout. Census subdivisions keep the
+ * strict rule.
  */
 export const REGION_UNKNOWN_TOLERANCE_PERCENT = 1;
 
@@ -90,4 +94,38 @@ export function regionIntervalMeasurements(interval: ExploreInterval): readonly 
     toYear: interval.toYear,
     ...intervalSpanFigures(region, interval, REGION_UNKNOWN_TOLERANCE_PERCENT),
   }));
+}
+
+const regionsByCode = new Map(regions.map((region) => [region.boundaryId.slice(-4), region]));
+
+/**
+ * The owner's map regions for one span, each summed from its economic regions.
+ * Loss, known forest and unmapped cells all add exactly across regions that do
+ * not overlap, so the sum is the region's own measurement.
+ */
+export function forestRegionFigures(interval: ExploreInterval): readonly ForestRegionFigure[] {
+  const start = interval.fromYear - EXPLORE_INTERVAL_FIRST_YEAR;
+  const window = intervalWindowIndex(interval);
+  return FOREST_REGIONS.map((definition) => {
+    let union = 0;
+    let known = 0;
+    let unknown = 0;
+    for (const code of definition.economicRegions) {
+      const region = regionsByCode.get(code);
+      if (!region) throw new Error(`Forest region ${definition.id} names a missing economic region ${code}.`);
+      union += region.unionLossCells[window];
+      known += region.knownForestCellsByStartYear[start];
+      unknown += Math.max(region.unknownCellsByStartYear[start], region.unmappedCells);
+    }
+    const unmappedPercent = known + unknown > 0 ? (unknown / (known + unknown)) * 100 : 100;
+    return {
+      id: definition.id,
+      fromYear: interval.fromYear,
+      toYear: interval.toYear,
+      mappedSharePercent: known > 0 ? (union / known) * 100 : null,
+      partlyMapped: known > 0 && unmappedPercent >= REGION_UNKNOWN_TOLERANCE_PERCENT,
+      unmappedPercent,
+      lossHectares: Math.round(union * 0.09),
+    };
+  });
 }

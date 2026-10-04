@@ -1,20 +1,20 @@
 {
  "schema": "witness-tree/phase4-condition-recovery-explore/1",
- "status": "local-nonproduction",
+ "status": "owner-admitted",
  "claims": {
-  "admitted": false,
-  "released": false,
-  "ownerReviewed": false,
+  "admitted": true,
+  "released": true,
+  "ownerReviewed": true,
   "frenchReviewed": false,
   "productionEligible": false
  },
  "builtBy": "scripts/build-phase4-condition-recovery-explore.mjs",
  "checkedBy": "scripts/check-phase4-condition-recovery-explore.mjs",
  "basedOn": {
-  "record": "data/phase4-condition-recovery-v2.json",
+  "record": "data/phase4-condition-recovery-v3.json",
   "causeAndCheck": "data/phase4-condition-recovery-cause-and-check.json",
-  "output": "derived/phase4-condition-recovery-v2/condition-recovery-v2.json",
-  "outputSha256": "42749e0454d381c4682700be5b60a9613dea7a91f85c1dfc6b0b1eb33ece1611",
+  "output": "derived/phase4-condition-recovery-v3/condition-recovery-v3.json",
+  "outputSha256": "b663810ed13ad1cbc71df82a030109855b3144e5fe2b07467362d9122e363615",
   "regionNames": "raw/statcan-economic-regions-2021/2026-08-29/ler_000a21s_e.geojson"
  },
  "set": "A",
@@ -25,7 +25,7 @@
  ],
  "cellHectares": 0.09,
  "minimumLostHectares": 500,
- "rule": "Recovered means treed for at least three consecutive years after the loss. The headline is recovery after the latest loss; recovery after any loss is shown beside it. A row, decade or cause whose lost area is below the floor shows its lost area and withholds recovery. Unknown cells are counted in every row and never folded into a share.",
+ "rule": "Recovered means treed for at least five consecutive years after the loss. The headline is recovery after the latest loss; recovery after any loss is shown beside it. A row, decade or cause whose lost area is below the floor shows its lost area and withholds recovery. Unknown cells are counted in every row and never folded into a share.",
  "decades": [
   "1985-1994",
   "1995-2004",
@@ -48,8 +48,9 @@
   "target": 0.8,
   "targetMet": false,
   "note": {
-   "en": "In British Columbia, these recovery calls agreed with provincial silviculture surveys on 61% of stands, below the 80% target. They agreed on 96% of stands the surveys call not restocked and 46% of stands they call regenerated, so recovery is likely understated.",
-   "fr": "En Colombie-Britannique, ces constats de rétablissement concordent avec les relevés sylvicoles provinciaux pour 61 % des peuplements, sous la cible de 80 %. Ils concordent pour 96 % des peuplements que les relevés jugent non régénérés et 46 % de ceux qu'ils jugent régénérés : le rétablissement est donc probablement sous-estimé."
+   "en": "In British Columbia, under the earlier three-year rule, these recovery calls agreed with provincial silviculture surveys on 61% of stands, below the 80% target. They agreed on 96% of stands the surveys call not restocked and 46% of stands they call regenerated, so recovery is likely understated. The five-year rule is stricter, so if anything it understates more.",
+   "fr": "En Colombie-Britannique, selon l’ancienne règle de trois ans, ces constats de rétablissement concordent avec les relevés sylvicoles provinciaux pour 61 % des peuplements, sous la cible de 80 %. Ils concordent pour 96 % des peuplements que les relevés jugent non régénérés et 46 % de ceux qu’ils jugent régénérés : le rétablissement est donc probablement sous-estimé. La règle de cinq ans est plus stricte et le sous-estime sans doute davantage.",
+   "rule": "three-consecutive-years"
   }
  },
  "fourProvinces": {
@@ -66,9 +67,9 @@
   "everTreedCells": 2627665990,
   "lostCells": 612578580,
   "belowFloor": false,
-  "latestRecoveredCells": 224725661,
-  "anyRecoveredCells": 248590255,
-  "unconfirmedCells": 28742713,
+  "latestRecoveredCells": 202449133,
+  "anyRecoveredCells": 220014000,
+  "unconfirmedCells": 51019241,
   "decades": [
    {
     "decade": "1985-1994",
@@ -76,8 +77,8 @@
     "note": null,
     "lostCells": 119114560,
     "belowFloor": false,
-    "recoveredCells": 78106528,
-    "unconfirmedCells": 1900583
+    "recoveredCells": 76558532,
+    "unconfirmedCells": 3448579
    },
    {
     "decade": "1995-2004",
@@ -85,8 +86,8 @@
     "note": null,
     "lostCells": 170979156,
     "belowFloor": false,
-    "recoveredCells": 90606774,
-    "unconfirmedCells": 5429028
+    "recoveredCells": 85350978,
+    "unconfirmedCells": 10684824
    },
    {
     "decade": "2005-2014",
@@ -97,8 +98,8 @@
     },
     "lostCells": 171566738,
     "belowFloor": false,
-    "recoveredCells": 45945343,
-    "unconfirmedCells": 9998244
+    "recoveredCells": 36635428,
+    "unconfirmedCells": 19308159
    },
    {
     "decade": "2015-2022",
@@ -109,8 +110,8 @@
     },
     "lostCells": 150918126,
     "belowFloor": false,
-    "recoveredCells": 10067016,
-    "unconfirmedCells": 11414858
+    "recoveredCells": 3904195,
+    "unconfirmedCells": 17577679
    }
   ],
   "causes": [
@@ -118,25 +119,25 @@
     "cause": "notRecorded",
     "lostCells": 246165391,
     "belowFloor": false,
-    "recoveredCells": 65172729
+    "recoveredCells": 55861276
    },
    {
     "cause": "fire",
     "lostCells": 166926794,
     "belowFloor": false,
-    "recoveredCells": 45431507
+    "recoveredCells": 40431840
    },
    {
     "cause": "harvest",
     "lostCells": 199479436,
     "belowFloor": false,
-    "recoveredCells": 114118123
+    "recoveredCells": 106152910
    },
    {
     "cause": "fireAndHarvest",
     "lostCells": 6959,
     "belowFloor": false,
-    "recoveredCells": 3302
+    "recoveredCells": 3107
    }
   ]
  },
@@ -156,9 +157,9 @@
    "everTreedCells": 721160032,
    "lostCells": 138611417,
    "belowFloor": false,
-   "latestRecoveredCells": 51177542,
-   "anyRecoveredCells": 54981023,
-   "unconfirmedCells": 5194446,
+   "latestRecoveredCells": 44958694,
+   "anyRecoveredCells": 47978230,
+   "unconfirmedCells": 11413294,
    "decades": [
     {
      "decade": "1985-1994",
@@ -166,8 +167,8 @@
      "note": null,
      "lostCells": 25410112,
      "belowFloor": false,
-     "recoveredCells": 20758498,
-     "unconfirmedCells": 335106
+     "recoveredCells": 20306132,
+     "unconfirmedCells": 787472
     },
     {
      "decade": "1995-2004",
@@ -175,8 +176,8 @@
      "note": null,
      "lostCells": 29333058,
      "belowFloor": false,
-     "recoveredCells": 17650502,
-     "unconfirmedCells": 1027255
+     "recoveredCells": 15960024,
+     "unconfirmedCells": 2717733
     },
     {
      "decade": "2005-2014",
@@ -187,8 +188,8 @@
      },
      "lostCells": 40147107,
      "belowFloor": false,
-     "recoveredCells": 10292942,
-     "unconfirmedCells": 2176677
+     "recoveredCells": 7569138,
+     "unconfirmedCells": 4900481
     },
     {
      "decade": "2015-2022",
@@ -199,8 +200,8 @@
      },
      "lostCells": 43721140,
      "belowFloor": false,
-     "recoveredCells": 2475600,
-     "unconfirmedCells": 1655408
+     "recoveredCells": 1123400,
+     "unconfirmedCells": 3007608
     }
    ],
    "causes": [
@@ -208,19 +209,19 @@
      "cause": "notRecorded",
      "lostCells": 48254194,
      "belowFloor": false,
-     "recoveredCells": 15925168
+     "recoveredCells": 13587890
     },
     {
      "cause": "fire",
      "lostCells": 26661871,
      "belowFloor": false,
-     "recoveredCells": 3483546
+     "recoveredCells": 2843563
     },
     {
      "cause": "harvest",
      "lostCells": 63694876,
      "belowFloor": false,
-     "recoveredCells": 31768685
+     "recoveredCells": 28527101
     },
     {
      "cause": "fireAndHarvest",
@@ -247,9 +248,9 @@
    "everTreedCells": 377245999,
    "lostCells": 123824408,
    "belowFloor": false,
-   "latestRecoveredCells": 35318630,
-   "anyRecoveredCells": 45684406,
-   "unconfirmedCells": 7385245,
+   "latestRecoveredCells": 30055597,
+   "anyRecoveredCells": 37149423,
+   "unconfirmedCells": 12648278,
    "decades": [
     {
      "decade": "1985-1994",
@@ -257,8 +258,8 @@
      "note": null,
      "lostCells": 12000039,
      "belowFloor": false,
-     "recoveredCells": 6494143,
-     "unconfirmedCells": 182734
+     "recoveredCells": 6389269,
+     "unconfirmedCells": 287608
     },
     {
      "decade": "1995-2004",
@@ -266,8 +267,8 @@
      "note": null,
      "lostCells": 29191534,
      "belowFloor": false,
-     "recoveredCells": 14057388,
-     "unconfirmedCells": 731803
+     "recoveredCells": 13435103,
+     "unconfirmedCells": 1354088
     },
     {
      "decade": "2005-2014",
@@ -278,8 +279,8 @@
      },
      "lostCells": 38767812,
      "belowFloor": false,
-     "recoveredCells": 10690237,
-     "unconfirmedCells": 1995834
+     "recoveredCells": 8661840,
+     "unconfirmedCells": 4024231
     },
     {
      "decade": "2015-2022",
@@ -290,8 +291,8 @@
      },
      "lostCells": 43865023,
      "belowFloor": false,
-     "recoveredCells": 4076862,
-     "unconfirmedCells": 4474874
+     "recoveredCells": 1569385,
+     "unconfirmedCells": 6982351
     }
    ],
    "causes": [
@@ -299,19 +300,19 @@
      "cause": "notRecorded",
      "lostCells": 68523016,
      "belowFloor": false,
-     "recoveredCells": 10763086
+     "recoveredCells": 8346476
     },
     {
      "cause": "fire",
      "lostCells": 31468734,
      "belowFloor": false,
-     "recoveredCells": 13533399
+     "recoveredCells": 11601979
     },
     {
      "cause": "harvest",
      "lostCells": 23832185,
      "belowFloor": false,
-     "recoveredCells": 11021953
+     "recoveredCells": 10106959
     },
     {
      "cause": "fireAndHarvest",
@@ -338,9 +339,9 @@
    "everTreedCells": 595971067,
    "lostCells": 112150990,
    "belowFloor": false,
-   "latestRecoveredCells": 59106085,
-   "anyRecoveredCells": 62102167,
-   "unconfirmedCells": 4392017,
+   "latestRecoveredCells": 55489803,
+   "anyRecoveredCells": 58053232,
+   "unconfirmedCells": 8008299,
    "decades": [
     {
      "decade": "1985-1994",
@@ -348,8 +349,8 @@
      "note": null,
      "lostCells": 27468031,
      "belowFloor": false,
-     "recoveredCells": 22248966,
-     "unconfirmedCells": 350566
+     "recoveredCells": 21938635,
+     "unconfirmedCells": 660897
     },
     {
      "decade": "1995-2004",
@@ -357,8 +358,8 @@
      "note": null,
      "lostCells": 37712086,
      "belowFloor": false,
-     "recoveredCells": 26588495,
-     "unconfirmedCells": 1051727
+     "recoveredCells": 25528064,
+     "unconfirmedCells": 2112158
     },
     {
      "decade": "2005-2014",
@@ -369,8 +370,8 @@
      },
      "lostCells": 23072555,
      "belowFloor": false,
-     "recoveredCells": 9214572,
-     "unconfirmedCells": 1637639
+     "recoveredCells": 7642850,
+     "unconfirmedCells": 3209361
     },
     {
      "decade": "2015-2022",
@@ -381,8 +382,8 @@
      },
      "lostCells": 23898318,
      "belowFloor": false,
-     "recoveredCells": 1054052,
-     "unconfirmedCells": 1352085
+     "recoveredCells": 380254,
+     "unconfirmedCells": 2025883
     }
    ],
    "causes": [
@@ -390,19 +391,19 @@
      "cause": "notRecorded",
      "lostCells": 33052403,
      "belowFloor": false,
-     "recoveredCells": 13485143
+     "recoveredCells": 12310493
     },
     {
      "cause": "fire",
      "lostCells": 34941476,
      "belowFloor": false,
-     "recoveredCells": 14679831
+     "recoveredCells": 13642518
     },
     {
      "cause": "harvest",
      "lostCells": 44155280,
      "belowFloor": false,
-     "recoveredCells": 30939427
+     "recoveredCells": 29535124
     },
     {
      "cause": "fireAndHarvest",
@@ -419,7 +420,7 @@
    "kind": "province",
    "code": "QC",
    "name": {
-    "en": "Quebec",
+    "en": "Québec",
     "fr": "Québec"
    },
    "coverageGrade": "national-baseline",
@@ -429,9 +430,9 @@
    "everTreedCells": 933288892,
    "lostCells": 237991765,
    "belowFloor": false,
-   "latestRecoveredCells": 79123404,
-   "anyRecoveredCells": 85822659,
-   "unconfirmedCells": 11771005,
+   "latestRecoveredCells": 71945039,
+   "anyRecoveredCells": 76833115,
+   "unconfirmedCells": 18949370,
    "decades": [
     {
      "decade": "1985-1994",
@@ -439,8 +440,8 @@
      "note": null,
      "lostCells": 54236378,
      "belowFloor": false,
-     "recoveredCells": 28604921,
-     "unconfirmedCells": 1032177
+     "recoveredCells": 27924496,
+     "unconfirmedCells": 1712602
     },
     {
      "decade": "1995-2004",
@@ -448,8 +449,8 @@
      "note": null,
      "lostCells": 74742478,
      "belowFloor": false,
-     "recoveredCells": 32310389,
-     "unconfirmedCells": 2618243
+     "recoveredCells": 30427787,
+     "unconfirmedCells": 4500845
     },
     {
      "decade": "2005-2014",
@@ -460,8 +461,8 @@
      },
      "lostCells": 69579264,
      "belowFloor": false,
-     "recoveredCells": 15747592,
-     "unconfirmedCells": 4188094
+     "recoveredCells": 12761600,
+     "unconfirmedCells": 7174086
     },
     {
      "decade": "2015-2022",
@@ -472,8 +473,8 @@
      },
      "lostCells": 39433645,
      "belowFloor": false,
-     "recoveredCells": 2460502,
-     "unconfirmedCells": 3932491
+     "recoveredCells": 831156,
+     "unconfirmedCells": 5561837
     }
    ],
    "causes": [
@@ -481,19 +482,19 @@
      "cause": "notRecorded",
      "lostCells": 96335778,
      "belowFloor": false,
-     "recoveredCells": 24999332
+     "recoveredCells": 21616417
     },
     {
      "cause": "fire",
      "lostCells": 73854713,
      "belowFloor": false,
-     "recoveredCells": 13734731
+     "recoveredCells": 12343780
     },
     {
      "cause": "harvest",
      "lostCells": 67797095,
      "belowFloor": false,
-     "recoveredCells": 40388058
+     "recoveredCells": 37983726
     },
     {
      "cause": "fireAndHarvest",
@@ -522,9 +523,9 @@
    "everTreedCells": 22137981,
    "lostCells": 4944601,
    "belowFloor": false,
-   "latestRecoveredCells": 3062241,
-   "anyRecoveredCells": 3295661,
-   "unconfirmedCells": 290715,
+   "latestRecoveredCells": 2907751,
+   "anyRecoveredCells": 3080173,
+   "unconfirmedCells": 445205,
    "decades": [
     {
      "decade": "1985-1994",
@@ -532,8 +533,8 @@
      "note": null,
      "lostCells": 868895,
      "belowFloor": false,
-     "recoveredCells": 839935,
-     "unconfirmedCells": 3965
+     "recoveredCells": 837951,
+     "unconfirmedCells": 5949
     },
     {
      "decade": "1995-2004",
@@ -541,8 +542,8 @@
      "note": null,
      "lostCells": 1722737,
      "belowFloor": false,
-     "recoveredCells": 1569971,
-     "unconfirmedCells": 36305
+     "recoveredCells": 1544307,
+     "unconfirmedCells": 61969
     },
     {
      "decade": "2005-2014",
@@ -553,8 +554,8 @@
      },
      "lostCells": 996593,
      "belowFloor": false,
-     "recoveredCells": 556119,
-     "unconfirmedCells": 91454
+     "recoveredCells": 492227,
+     "unconfirmedCells": 155346
     },
     {
      "decade": "2015-2022",
@@ -565,8 +566,8 @@
      },
      "lostCells": 1356376,
      "belowFloor": false,
-     "recoveredCells": 96216,
-     "unconfirmedCells": 158991
+     "recoveredCells": 33266,
+     "unconfirmedCells": 221941
     }
    ],
    "causes": [
@@ -574,19 +575,19 @@
      "cause": "notRecorded",
      "lostCells": 1443831,
      "belowFloor": false,
-     "recoveredCells": 604384
+     "recoveredCells": 549900
     },
     {
      "cause": "fire",
      "lostCells": 178901,
      "belowFloor": false,
-     "recoveredCells": 164142
+     "recoveredCells": 161216
     },
     {
      "cause": "harvest",
      "lostCells": 3321808,
      "belowFloor": false,
-     "recoveredCells": 2293689
+     "recoveredCells": 2196610
     },
     {
      "cause": "fireAndHarvest",
@@ -611,9 +612,9 @@
    "everTreedCells": 24048446,
    "lostCells": 7850644,
    "belowFloor": false,
-   "latestRecoveredCells": 3738806,
-   "anyRecoveredCells": 4881654,
-   "unconfirmedCells": 642965,
+   "latestRecoveredCells": 3482033,
+   "anyRecoveredCells": 4130617,
+   "unconfirmedCells": 899738,
    "decades": [
     {
      "decade": "1985-1994",
@@ -621,8 +622,8 @@
      "note": null,
      "lostCells": 1633514,
      "belowFloor": false,
-     "recoveredCells": 1553011,
-     "unconfirmedCells": 6513
+     "recoveredCells": 1549705,
+     "unconfirmedCells": 9819
     },
     {
      "decade": "1995-2004",
@@ -630,8 +631,8 @@
      "note": null,
      "lostCells": 1623531,
      "belowFloor": false,
-     "recoveredCells": 1347753,
-     "unconfirmedCells": 36995
+     "recoveredCells": 1327759,
+     "unconfirmedCells": 56989
     },
     {
      "decade": "2005-2014",
@@ -642,8 +643,8 @@
      },
      "lostCells": 1600544,
      "belowFloor": false,
-     "recoveredCells": 622799,
-     "unconfirmedCells": 162057
+     "recoveredCells": 533656,
+     "unconfirmedCells": 251200
     },
     {
      "decade": "2015-2022",
@@ -654,8 +655,8 @@
      },
      "lostCells": 2993055,
      "belowFloor": false,
-     "recoveredCells": 215243,
-     "unconfirmedCells": 437400
+     "recoveredCells": 70913,
+     "unconfirmedCells": 581730
     }
    ],
    "causes": [
@@ -663,19 +664,19 @@
      "cause": "notRecorded",
      "lostCells": 4514539,
      "belowFloor": false,
-     "recoveredCells": 1409395
+     "recoveredCells": 1242810
     },
     {
      "cause": "fire",
      "lostCells": 16737,
      "belowFloor": false,
-     "recoveredCells": 11073
+     "recoveredCells": 10948
     },
     {
      "cause": "harvest",
      "lostCells": 3319368,
      "belowFloor": false,
-     "recoveredCells": 2318338
+     "recoveredCells": 2228275
     },
     {
      "cause": "fireAndHarvest",
@@ -700,9 +701,9 @@
    "everTreedCells": 19381501,
    "lostCells": 4009431,
    "belowFloor": false,
-   "latestRecoveredCells": 2328127,
-   "anyRecoveredCells": 2506571,
-   "unconfirmedCells": 419440,
+   "latestRecoveredCells": 2143386,
+   "anyRecoveredCells": 2272361,
+   "unconfirmedCells": 604181,
    "decades": [
     {
      "decade": "1985-1994",
@@ -710,8 +711,8 @@
      "note": null,
      "lostCells": 894479,
      "belowFloor": false,
-     "recoveredCells": 825905,
-     "unconfirmedCells": 15585
+     "recoveredCells": 817659,
+     "unconfirmedCells": 23831
     },
     {
      "decade": "1995-2004",
@@ -719,8 +720,8 @@
      "note": null,
      "lostCells": 1077241,
      "belowFloor": false,
-     "recoveredCells": 881673,
-     "unconfirmedCells": 47300
+     "recoveredCells": 853616,
+     "unconfirmedCells": 75357
     },
     {
      "decade": "2005-2014",
@@ -731,8 +732,8 @@
      },
      "lostCells": 1017585,
      "belowFloor": false,
-     "recoveredCells": 513462,
-     "unconfirmedCells": 176996
+     "recoveredCells": 432603,
+     "unconfirmedCells": 257855
     },
     {
      "decade": "2015-2022",
@@ -743,8 +744,8 @@
      },
      "lostCells": 1020126,
      "belowFloor": false,
-     "recoveredCells": 107087,
-     "unconfirmedCells": 179559
+     "recoveredCells": 39508,
+     "unconfirmedCells": 247138
     }
    ],
    "causes": [
@@ -752,19 +753,19 @@
      "cause": "notRecorded",
      "lostCells": 1397138,
      "belowFloor": false,
-     "recoveredCells": 627245
+     "recoveredCells": 556574
     },
     {
      "cause": "fire",
      "lostCells": 217613,
      "belowFloor": false,
-     "recoveredCells": 146186
+     "recoveredCells": 141337
     },
     {
      "cause": "harvest",
      "lostCells": 2394680,
      "belowFloor": false,
-     "recoveredCells": 1554696
+     "recoveredCells": 1445475
     },
     {
      "cause": "fireAndHarvest",
@@ -789,9 +790,9 @@
    "everTreedCells": 12346239,
    "lostCells": 3674732,
    "belowFloor": false,
-   "latestRecoveredCells": 1820414,
-   "anyRecoveredCells": 2241161,
-   "unconfirmedCells": 383445,
+   "latestRecoveredCells": 1680549,
+   "anyRecoveredCells": 1938517,
+   "unconfirmedCells": 523310,
    "decades": [
     {
      "decade": "1985-1994",
@@ -799,8 +800,8 @@
      "note": null,
      "lostCells": 676450,
      "belowFloor": false,
-     "recoveredCells": 621491,
-     "unconfirmedCells": 3929
+     "recoveredCells": 620082,
+     "unconfirmedCells": 5338
     },
     {
      "decade": "1995-2004",
@@ -808,8 +809,8 @@
      "note": null,
      "lostCells": 667098,
      "belowFloor": false,
-     "recoveredCells": 509241,
-     "unconfirmedCells": 19401
+     "recoveredCells": 500017,
+     "unconfirmedCells": 28625
     },
     {
      "decade": "2005-2014",
@@ -820,8 +821,8 @@
      },
      "lostCells": 778926,
      "belowFloor": false,
-     "recoveredCells": 490398,
-     "unconfirmedCells": 60780
+     "recoveredCells": 453925,
+     "unconfirmedCells": 97253
     },
     {
      "decade": "2015-2022",
@@ -832,8 +833,8 @@
      },
      "lostCells": 1552258,
      "belowFloor": false,
-     "recoveredCells": 199284,
-     "unconfirmedCells": 299335
+     "recoveredCells": 106525,
+     "unconfirmedCells": 392094
     }
    ],
    "causes": [
@@ -841,7 +842,7 @@
      "cause": "notRecorded",
      "lostCells": 2727943,
      "belowFloor": false,
-     "recoveredCells": 1202837
+     "recoveredCells": 1098614
     },
     {
      "cause": "fire",
@@ -853,7 +854,7 @@
      "cause": "harvest",
      "lostCells": 943989,
      "belowFloor": false,
-     "recoveredCells": 616557
+     "recoveredCells": 580949
     },
     {
      "cause": "fireAndHarvest",
@@ -878,9 +879,9 @@
    "everTreedCells": 10912333,
    "lostCells": 3863254,
    "belowFloor": false,
-   "latestRecoveredCells": 1862092,
-   "anyRecoveredCells": 2455755,
-   "unconfirmedCells": 458002,
+   "latestRecoveredCells": 1598323,
+   "anyRecoveredCells": 2014883,
+   "unconfirmedCells": 721771,
    "decades": [
     {
      "decade": "1985-1994",
@@ -888,8 +889,8 @@
      "note": null,
      "lostCells": 593389,
      "belowFloor": false,
-     "recoveredCells": 528135,
-     "unconfirmedCells": 5035
+     "recoveredCells": 525358,
+     "unconfirmedCells": 7812
     },
     {
      "decade": "1995-2004",
@@ -897,8 +898,8 @@
      "note": null,
      "lostCells": 612023,
      "belowFloor": false,
-     "recoveredCells": 429379,
-     "unconfirmedCells": 20612
+     "recoveredCells": 418175,
+     "unconfirmedCells": 31816
     },
     {
      "decade": "2005-2014",
@@ -909,8 +910,8 @@
      },
      "lostCells": 882077,
      "belowFloor": false,
-     "recoveredCells": 623283,
-     "unconfirmedCells": 46337
+     "recoveredCells": 582076,
+     "unconfirmedCells": 87544
     },
     {
      "decade": "2015-2022",
@@ -921,8 +922,8 @@
      },
      "lostCells": 1775765,
      "belowFloor": false,
-     "recoveredCells": 281295,
-     "unconfirmedCells": 386018
+     "recoveredCells": 72714,
+     "unconfirmedCells": 594599
     }
    ],
    "causes": [
@@ -930,19 +931,19 @@
      "cause": "notRecorded",
      "lostCells": 3400109,
      "belowFloor": false,
-     "recoveredCells": 1510277
+     "recoveredCells": 1266700
     },
     {
      "cause": "fire",
      "lostCells": 13096,
      "belowFloor": false,
-     "recoveredCells": 9940
+     "recoveredCells": 9557
     },
     {
      "cause": "harvest",
      "lostCells": 450049,
      "belowFloor": false,
-     "recoveredCells": 341875
+     "recoveredCells": 322066
     },
     {
      "cause": "fireAndHarvest",
@@ -967,9 +968,9 @@
    "everTreedCells": 1455001,
    "lostCells": 668590,
    "belowFloor": false,
-   "latestRecoveredCells": 260996,
-   "anyRecoveredCells": 382784,
-   "unconfirmedCells": 103112,
+   "latestRecoveredCells": 234466,
+   "anyRecoveredCells": 302850,
+   "unconfirmedCells": 129642,
    "decades": [
     {
      "decade": "1985-1994",
@@ -977,8 +978,8 @@
      "note": null,
      "lostCells": 69203,
      "belowFloor": false,
-     "recoveredCells": 58608,
-     "unconfirmedCells": 820
+     "recoveredCells": 58386,
+     "unconfirmedCells": 1042
     },
     {
      "decade": "1995-2004",
@@ -986,8 +987,8 @@
      "note": null,
      "lostCells": 92662,
      "belowFloor": false,
-     "recoveredCells": 61500,
-     "unconfirmedCells": 3537
+     "recoveredCells": 60405,
+     "unconfirmedCells": 4632
     },
     {
      "decade": "2005-2014",
@@ -998,8 +999,8 @@
      },
      "lostCells": 137254,
      "belowFloor": false,
-     "recoveredCells": 102277,
-     "unconfirmedCells": 5930
+     "recoveredCells": 99565,
+     "unconfirmedCells": 8642
     },
     {
      "decade": "2015-2022",
@@ -1010,8 +1011,8 @@
      },
      "lostCells": 369471,
      "belowFloor": false,
-     "recoveredCells": 38611,
-     "unconfirmedCells": 92825
+     "recoveredCells": 16110,
+     "unconfirmedCells": 115326
     }
    ],
    "causes": [
@@ -1019,7 +1020,7 @@
      "cause": "notRecorded",
      "lostCells": 625747,
      "belowFloor": false,
-     "recoveredCells": 230388
+     "recoveredCells": 204779
     },
     {
      "cause": "fire",
@@ -1031,7 +1032,7 @@
      "cause": "harvest",
      "lostCells": 42187,
      "belowFloor": false,
-     "recoveredCells": 30002
+     "recoveredCells": 29083
     },
     {
      "cause": "fireAndHarvest",
@@ -1056,9 +1057,9 @@
    "everTreedCells": 927018,
    "lostCells": 235829,
    "belowFloor": false,
-   "latestRecoveredCells": 86218,
-   "anyRecoveredCells": 141157,
-   "unconfirmedCells": 38043,
+   "latestRecoveredCells": 71864,
+   "anyRecoveredCells": 115104,
+   "unconfirmedCells": 52397,
    "decades": [
     {
      "decade": "1985-1994",
@@ -1066,8 +1067,8 @@
      "note": null,
      "lostCells": 20601,
      "belowFloor": false,
-     "recoveredCells": 14031,
-     "unconfirmedCells": 336
+     "recoveredCells": 13850,
+     "unconfirmedCells": 517
     },
     {
      "decade": "1995-2004",
@@ -1075,8 +1076,8 @@
      "note": null,
      "lostCells": 34451,
      "belowFloor": false,
-     "recoveredCells": 21945,
-     "unconfirmedCells": 765
+     "recoveredCells": 21581,
+     "unconfirmedCells": 1129
     },
     {
      "decade": "2005-2014",
@@ -1087,8 +1088,8 @@
      },
      "lostCells": 43680,
      "belowFloor": false,
-     "recoveredCells": 33756,
-     "unconfirmedCells": 1144
+     "recoveredCells": 33372,
+     "unconfirmedCells": 1528
     },
     {
      "decade": "2015-2022",
@@ -1099,8 +1100,8 @@
      },
      "lostCells": 137097,
      "belowFloor": false,
-     "recoveredCells": 16486,
-     "unconfirmedCells": 35798
+     "recoveredCells": 3061,
+     "unconfirmedCells": 49223
     }
    ],
    "causes": [
@@ -1108,7 +1109,7 @@
      "cause": "notRecorded",
      "lostCells": 231616,
      "belowFloor": false,
-     "recoveredCells": 83498
+     "recoveredCells": 69202
     },
     {
      "cause": "fire",
@@ -1323,9 +1324,9 @@
    "everTreedCells": 11526980,
    "lostCells": 2062044,
    "belowFloor": false,
-   "latestRecoveredCells": 1384030,
-   "anyRecoveredCells": 1441100,
-   "unconfirmedCells": 113390,
+   "latestRecoveredCells": 1294849,
+   "anyRecoveredCells": 1339978,
+   "unconfirmedCells": 202571,
    "decades": [
     {
      "decade": "1985-1994",
@@ -1333,8 +1334,8 @@
      "note": null,
      "lostCells": 483475,
      "belowFloor": false,
-     "recoveredCells": 461077,
-     "unconfirmedCells": 2357
+     "recoveredCells": 459252,
+     "unconfirmedCells": 4182
     },
     {
      "decade": "1995-2004",
@@ -1342,8 +1343,8 @@
      "note": null,
      "lostCells": 640004,
      "belowFloor": false,
-     "recoveredCells": 566555,
-     "unconfirmedCells": 12302
+     "recoveredCells": 555119,
+     "unconfirmedCells": 23738
     },
     {
      "decade": "2005-2014",
@@ -1354,8 +1355,8 @@
      },
      "lostCells": 472351,
      "belowFloor": false,
-     "recoveredCells": 310467,
-     "unconfirmedCells": 40648
+     "recoveredCells": 267923,
+     "unconfirmedCells": 83192
     },
     {
      "decade": "2015-2022",
@@ -1366,8 +1367,8 @@
      },
      "lostCells": 466214,
      "belowFloor": false,
-     "recoveredCells": 45931,
-     "unconfirmedCells": 58083
+     "recoveredCells": 12555,
+     "unconfirmedCells": 91459
     }
    ],
    "causes": [
@@ -1375,19 +1376,19 @@
      "cause": "notRecorded",
      "lostCells": 685317,
      "belowFloor": false,
-     "recoveredCells": 371301
+     "recoveredCells": 337709
     },
     {
      "cause": "fire",
      "lostCells": 11492,
      "belowFloor": false,
-     "recoveredCells": 10438
+     "recoveredCells": 10319
     },
     {
      "cause": "harvest",
      "lostCells": 1365235,
      "belowFloor": false,
-     "recoveredCells": 1002291
+     "recoveredCells": 946821
     },
     {
      "cause": "fireAndHarvest",
@@ -1412,9 +1413,9 @@
    "everTreedCells": 21593824,
    "lostCells": 2695510,
    "belowFloor": false,
-   "latestRecoveredCells": 1577863,
-   "anyRecoveredCells": 1688819,
-   "unconfirmedCells": 183402,
+   "latestRecoveredCells": 1491389,
+   "anyRecoveredCells": 1573917,
+   "unconfirmedCells": 269876,
    "decades": [
     {
      "decade": "1985-1994",
@@ -1422,8 +1423,8 @@
      "note": null,
      "lostCells": 539301,
      "belowFloor": false,
-     "recoveredCells": 475728,
-     "unconfirmedCells": 5462
+     "recoveredCells": 473318,
+     "unconfirmedCells": 7872
     },
     {
      "decade": "1995-2004",
@@ -1431,8 +1432,8 @@
      "note": null,
      "lostCells": 771803,
      "belowFloor": false,
-     "recoveredCells": 662090,
-     "unconfirmedCells": 15299
+     "recoveredCells": 653869,
+     "unconfirmedCells": 23520
     },
     {
      "decade": "2005-2014",
@@ -1443,8 +1444,8 @@
      },
      "lostCells": 615322,
      "belowFloor": false,
-     "recoveredCells": 368110,
-     "unconfirmedCells": 53686
+     "recoveredCells": 337216,
+     "unconfirmedCells": 84580
     },
     {
      "decade": "2015-2022",
@@ -1455,8 +1456,8 @@
      },
      "lostCells": 769084,
      "belowFloor": false,
-     "recoveredCells": 71935,
-     "unconfirmedCells": 108955
+     "recoveredCells": 26986,
+     "unconfirmedCells": 153904
     }
    ],
    "causes": [
@@ -1464,19 +1465,19 @@
      "cause": "notRecorded",
      "lostCells": 1204904,
      "belowFloor": false,
-     "recoveredCells": 568983
+     "recoveredCells": 522291
     },
     {
      "cause": "fire",
      "lostCells": 22946,
      "belowFloor": false,
-     "recoveredCells": 18229
+     "recoveredCells": 17888
     },
     {
      "cause": "harvest",
      "lostCells": 1467660,
      "belowFloor": false,
-     "recoveredCells": 990651
+     "recoveredCells": 951210
     },
     {
      "cause": "fireAndHarvest",
@@ -1501,9 +1502,9 @@
    "everTreedCells": 33633448,
    "lostCells": 3935000,
    "belowFloor": false,
-   "latestRecoveredCells": 2304880,
-   "anyRecoveredCells": 2542555,
-   "unconfirmedCells": 226964,
+   "latestRecoveredCells": 2127801,
+   "anyRecoveredCells": 2308914,
+   "unconfirmedCells": 404043,
    "decades": [
     {
      "decade": "1985-1994",
@@ -1511,8 +1512,8 @@
      "note": null,
      "lostCells": 725320,
      "belowFloor": false,
-     "recoveredCells": 655557,
-     "unconfirmedCells": 4120
+     "recoveredCells": 653048,
+     "unconfirmedCells": 6629
     },
     {
      "decade": "1995-2004",
@@ -1520,8 +1521,8 @@
      "note": null,
      "lostCells": 992385,
      "belowFloor": false,
-     "recoveredCells": 814745,
-     "unconfirmedCells": 13596
+     "recoveredCells": 804059,
+     "unconfirmedCells": 24282
     },
     {
      "decade": "2005-2014",
@@ -1532,8 +1533,8 @@
      },
      "lostCells": 1006666,
      "belowFloor": false,
-     "recoveredCells": 686897,
-     "unconfirmedCells": 48459
+     "recoveredCells": 623097,
+     "unconfirmedCells": 112259
     },
     {
      "decade": "2015-2022",
@@ -1544,8 +1545,8 @@
      },
      "lostCells": 1210629,
      "belowFloor": false,
-     "recoveredCells": 147681,
-     "unconfirmedCells": 160789
+     "recoveredCells": 47597,
+     "unconfirmedCells": 260873
     }
    ],
    "causes": [
@@ -1553,19 +1554,19 @@
      "cause": "notRecorded",
      "lostCells": 2093741,
      "belowFloor": false,
-     "recoveredCells": 945260
+     "recoveredCells": 861696
     },
     {
      "cause": "fire",
      "lostCells": 26433,
      "belowFloor": false,
-     "recoveredCells": 16746
+     "recoveredCells": 15525
     },
     {
      "cause": "harvest",
      "lostCells": 1814826,
      "belowFloor": false,
-     "recoveredCells": 1342874
+     "recoveredCells": 1250580
     },
     {
      "cause": "fireAndHarvest",
@@ -1590,9 +1591,9 @@
    "everTreedCells": 60721536,
    "lostCells": 14601550,
    "belowFloor": false,
-   "latestRecoveredCells": 7491328,
-   "anyRecoveredCells": 8256034,
-   "unconfirmedCells": 941367,
+   "latestRecoveredCells": 6869381,
+   "anyRecoveredCells": 7447715,
+   "unconfirmedCells": 1563314,
    "decades": [
     {
      "decade": "1985-1994",
@@ -1600,8 +1601,8 @@
      "note": null,
      "lostCells": 2446637,
      "belowFloor": false,
-     "recoveredCells": 2070840,
-     "unconfirmedCells": 23423
+     "recoveredCells": 2047663,
+     "unconfirmedCells": 46600
     },
     {
      "decade": "1995-2004",
@@ -1609,8 +1610,8 @@
      "note": null,
      "lostCells": 4445831,
      "belowFloor": false,
-     "recoveredCells": 3307316,
-     "unconfirmedCells": 99076
+     "recoveredCells": 3215548,
+     "unconfirmedCells": 190844
     },
     {
      "decade": "2005-2014",
@@ -1621,8 +1622,8 @@
      },
      "lostCells": 3740957,
      "belowFloor": false,
-     "recoveredCells": 1737244,
-     "unconfirmedCells": 254402
+     "recoveredCells": 1493354,
+     "unconfirmedCells": 498292
     },
     {
      "decade": "2015-2022",
@@ -1633,8 +1634,8 @@
      },
      "lostCells": 3968125,
      "belowFloor": false,
-     "recoveredCells": 375928,
-     "unconfirmedCells": 564466
+     "recoveredCells": 112816,
+     "unconfirmedCells": 827578
     }
    ],
    "causes": [
@@ -1642,19 +1643,19 @@
      "cause": "notRecorded",
      "lostCells": 5647026,
      "belowFloor": false,
-     "recoveredCells": 2040727
+     "recoveredCells": 1773675
     },
     {
      "cause": "fire",
      "lostCells": 898727,
      "belowFloor": false,
-     "recoveredCells": 553518
+     "recoveredCells": 493779
     },
     {
      "cause": "harvest",
      "lostCells": 8055797,
      "belowFloor": false,
-     "recoveredCells": 4897083
+     "recoveredCells": 4601927
     },
     {
      "cause": "fireAndHarvest",
@@ -1679,9 +1680,9 @@
    "everTreedCells": 36831798,
    "lostCells": 10047612,
    "belowFloor": false,
-   "latestRecoveredCells": 5826089,
-   "anyRecoveredCells": 5979200,
-   "unconfirmedCells": 570005,
+   "latestRecoveredCells": 5444016,
+   "anyRecoveredCells": 5578620,
+   "unconfirmedCells": 952078,
    "decades": [
     {
      "decade": "1985-1994",
@@ -1689,8 +1690,8 @@
      "note": null,
      "lostCells": 1684475,
      "belowFloor": false,
-     "recoveredCells": 1573138,
-     "unconfirmedCells": 12832
+     "recoveredCells": 1564888,
+     "unconfirmedCells": 21082
     },
     {
      "decade": "1995-2004",
@@ -1698,8 +1699,8 @@
      "note": null,
      "lostCells": 3369484,
      "belowFloor": false,
-     "recoveredCells": 2843224,
-     "unconfirmedCells": 94889
+     "recoveredCells": 2785249,
+     "unconfirmedCells": 152864
     },
     {
      "decade": "2005-2014",
@@ -1710,8 +1711,8 @@
      },
      "lostCells": 2723741,
      "belowFloor": false,
-     "recoveredCells": 1283776,
-     "unconfirmedCells": 283913
+     "recoveredCells": 1053733,
+     "unconfirmedCells": 513956
     },
     {
      "decade": "2015-2022",
@@ -1722,8 +1723,8 @@
      },
      "lostCells": 2269912,
      "belowFloor": false,
-     "recoveredCells": 125951,
-     "unconfirmedCells": 178371
+     "recoveredCells": 40146,
+     "unconfirmedCells": 264176
     }
    ],
    "causes": [
@@ -1731,19 +1732,19 @@
      "cause": "notRecorded",
      "lostCells": 2119969,
      "belowFloor": false,
-     "recoveredCells": 945416
+     "recoveredCells": 865003
     },
     {
      "cause": "fire",
      "lostCells": 1067420,
      "belowFloor": false,
-     "recoveredCells": 643944
+     "recoveredCells": 595142
     },
     {
      "cause": "harvest",
      "lostCells": 6860223,
      "belowFloor": false,
-     "recoveredCells": 4236729
+     "recoveredCells": 3983871
     },
     {
      "cause": "fireAndHarvest",
@@ -1768,9 +1769,9 @@
    "everTreedCells": 98406938,
    "lostCells": 35707502,
    "belowFloor": false,
-   "latestRecoveredCells": 14457979,
-   "anyRecoveredCells": 15201717,
-   "unconfirmedCells": 1800835,
+   "latestRecoveredCells": 13274271,
+   "anyRecoveredCells": 13819968,
+   "unconfirmedCells": 2984543,
    "decades": [
     {
      "decade": "1985-1994",
@@ -1778,8 +1779,8 @@
      "note": null,
      "lostCells": 6733985,
      "belowFloor": false,
-     "recoveredCells": 5243468,
-     "unconfirmedCells": 140399
+     "recoveredCells": 5129968,
+     "unconfirmedCells": 253899
     },
     {
      "decade": "1995-2004",
@@ -1787,8 +1788,8 @@
      "note": null,
      "lostCells": 11067807,
      "belowFloor": false,
-     "recoveredCells": 6054724,
-     "unconfirmedCells": 452065
+     "recoveredCells": 5708206,
+     "unconfirmedCells": 798583
     },
     {
      "decade": "2005-2014",
@@ -1799,8 +1800,8 @@
      },
      "lostCells": 11388614,
      "belowFloor": false,
-     "recoveredCells": 2962962,
-     "unconfirmedCells": 771654
+     "recoveredCells": 2374614,
+     "unconfirmedCells": 1360002
     },
     {
      "decade": "2015-2022",
@@ -1811,8 +1812,8 @@
      },
      "lostCells": 6517096,
      "belowFloor": false,
-     "recoveredCells": 196825,
-     "unconfirmedCells": 436717
+     "recoveredCells": 61483,
+     "unconfirmedCells": 572059
     }
    ],
    "causes": [
@@ -1820,19 +1821,19 @@
      "cause": "notRecorded",
      "lostCells": 10914896,
      "belowFloor": false,
-     "recoveredCells": 2821233
+     "recoveredCells": 2442889
     },
     {
      "cause": "fire",
      "lostCells": 6980682,
      "belowFloor": false,
-     "recoveredCells": 1722102
+     "recoveredCells": 1494100
     },
     {
      "cause": "harvest",
      "lostCells": 17811371,
      "belowFloor": false,
-     "recoveredCells": 9914474
+     "recoveredCells": 9337156
     },
     {
      "cause": "fireAndHarvest",
@@ -1857,9 +1858,9 @@
    "everTreedCells": 211696339,
    "lostCells": 38456582,
    "belowFloor": false,
-   "latestRecoveredCells": 10019313,
-   "anyRecoveredCells": 10486176,
-   "unconfirmedCells": 1609966,
+   "latestRecoveredCells": 8981725,
+   "anyRecoveredCells": 9377716,
+   "unconfirmedCells": 2647554,
    "decades": [
     {
      "decade": "1985-1994",
@@ -1867,8 +1868,8 @@
      "note": null,
      "lostCells": 5329905,
      "belowFloor": false,
-     "recoveredCells": 3378349,
-     "unconfirmedCells": 98277
+     "recoveredCells": 3288671,
+     "unconfirmedCells": 187955
     },
     {
      "decade": "1995-2004",
@@ -1876,8 +1877,8 @@
      "note": null,
      "lostCells": 11070769,
      "belowFloor": false,
-     "recoveredCells": 4293019,
-     "unconfirmedCells": 377455
+     "recoveredCells": 3998707,
+     "unconfirmedCells": 671767
     },
     {
      "decade": "2005-2014",
@@ -1888,8 +1889,8 @@
      },
      "lostCells": 15741732,
      "belowFloor": false,
-     "recoveredCells": 2164745,
-     "unconfirmedCells": 787446
+     "recoveredCells": 1641554,
+     "unconfirmedCells": 1310637
     },
     {
      "decade": "2015-2022",
@@ -1900,8 +1901,8 @@
      },
      "lostCells": 6314176,
      "belowFloor": false,
-     "recoveredCells": 183200,
-     "unconfirmedCells": 346788
+     "recoveredCells": 52793,
+     "unconfirmedCells": 477195
     }
    ],
    "causes": [
@@ -1909,19 +1910,19 @@
      "cause": "notRecorded",
      "lostCells": 17914996,
      "belowFloor": false,
-     "recoveredCells": 3394476
+     "recoveredCells": 2861982
     },
     {
      "cause": "fire",
      "lostCells": 13005826,
      "belowFloor": false,
-     "recoveredCells": 2694912
+     "recoveredCells": 2441974
     },
     {
      "cause": "harvest",
      "lostCells": 7532303,
      "belowFloor": false,
-     "recoveredCells": 3928840
+     "recoveredCells": 3676806
     },
     {
      "cause": "fireAndHarvest",
@@ -1946,9 +1947,9 @@
    "everTreedCells": 367668389,
    "lostCells": 105238704,
    "belowFloor": false,
-   "latestRecoveredCells": 22902945,
-   "anyRecoveredCells": 24322215,
-   "unconfirmedCells": 3989337,
+   "latestRecoveredCells": 20343161,
+   "anyRecoveredCells": 21531694,
+   "unconfirmedCells": 6549121,
    "decades": [
     {
      "decade": "1985-1994",
@@ -1956,8 +1957,8 @@
      "note": null,
      "lostCells": 31536730,
      "belowFloor": false,
-     "recoveredCells": 10305632,
-     "unconfirmedCells": 709124
+     "recoveredCells": 9884681,
+     "unconfirmedCells": 1130075
     },
     {
      "decade": "1995-2004",
@@ -1965,8 +1966,8 @@
      "note": null,
      "lostCells": 36554606,
      "belowFloor": false,
-     "recoveredCells": 8947230,
-     "unconfirmedCells": 1388641
+     "recoveredCells": 7981146,
+     "unconfirmedCells": 2354725
     },
     {
      "decade": "2005-2014",
@@ -1977,8 +1978,8 @@
      },
      "lostCells": 28433160,
      "belowFloor": false,
-     "recoveredCells": 3291267,
-     "unconfirmedCells": 1403185
+     "recoveredCells": 2342656,
+     "unconfirmedCells": 2351796
     },
     {
      "decade": "2015-2022",
@@ -1989,8 +1990,8 @@
      },
      "lostCells": 8714208,
      "belowFloor": false,
-     "recoveredCells": 358816,
-     "unconfirmedCells": 488387
+     "recoveredCells": 134678,
+     "unconfirmedCells": 712525
     }
    ],
    "causes": [
@@ -1998,19 +1999,19 @@
      "cause": "notRecorded",
      "lostCells": 41413887,
      "belowFloor": false,
-     "recoveredCells": 8243861
+     "recoveredCells": 6962550
     },
     {
      "cause": "fire",
      "lostCells": 51410913,
      "belowFloor": false,
-     "recoveredCells": 7741745
+     "recoveredCells": 6950280
     },
     {
      "cause": "harvest",
      "lostCells": 12413796,
      "belowFloor": false,
-     "recoveredCells": 6917337
+     "recoveredCells": 6430329
     },
     {
      "cause": "fireAndHarvest",
@@ -2035,9 +2036,9 @@
    "everTreedCells": 1911026,
    "lostCells": 225491,
    "belowFloor": false,
-   "latestRecoveredCells": 46240,
-   "anyRecoveredCells": 78741,
-   "unconfirmedCells": 24362,
+   "latestRecoveredCells": 38835,
+   "anyRecoveredCells": 63561,
+   "unconfirmedCells": 31767,
    "decades": [
     {
      "decade": "1985-1994",
@@ -2045,8 +2046,8 @@
      "note": null,
      "lostCells": 22540,
      "belowFloor": false,
-     "recoveredCells": 10654,
-     "unconfirmedCells": 639
+     "recoveredCells": 10469,
+     "unconfirmedCells": 824
     },
     {
      "decade": "1995-2004",
@@ -2054,8 +2055,8 @@
      "note": null,
      "lostCells": 46354,
      "belowFloor": false,
-     "recoveredCells": 14491,
-     "unconfirmedCells": 2000
+     "recoveredCells": 13758,
+     "unconfirmedCells": 2733
     },
     {
      "decade": "2005-2014",
@@ -2066,8 +2067,8 @@
      },
      "lostCells": 57551,
      "belowFloor": false,
-     "recoveredCells": 13320,
-     "unconfirmedCells": 3503
+     "recoveredCells": 12485,
+     "unconfirmedCells": 4338
     },
     {
      "decade": "2015-2022",
@@ -2078,8 +2079,8 @@
      },
      "lostCells": 99046,
      "belowFloor": false,
-     "recoveredCells": 7775,
-     "unconfirmedCells": 18220
+     "recoveredCells": 2123,
+     "unconfirmedCells": 23872
     }
    ],
    "causes": [
@@ -2087,7 +2088,7 @@
      "cause": "notRecorded",
      "lostCells": 219486,
      "belowFloor": false,
-     "recoveredCells": 43647
+     "recoveredCells": 36346
     },
     {
      "cause": "fire",
@@ -2099,7 +2100,7 @@
      "cause": "harvest",
      "lostCells": 5959,
      "belowFloor": false,
-     "recoveredCells": 2573
+     "recoveredCells": 2470
     },
     {
      "cause": "fireAndHarvest",
@@ -2124,9 +2125,9 @@
    "everTreedCells": 15424211,
    "lostCells": 1303785,
    "belowFloor": false,
-   "latestRecoveredCells": 488714,
-   "anyRecoveredCells": 666790,
-   "unconfirmedCells": 107058,
+   "latestRecoveredCells": 427647,
+   "anyRecoveredCells": 569101,
+   "unconfirmedCells": 168125,
    "decades": [
     {
      "decade": "1985-1994",
@@ -2134,8 +2135,8 @@
      "note": null,
      "lostCells": 208085,
      "belowFloor": false,
-     "recoveredCells": 152759,
-     "unconfirmedCells": 2251
+     "recoveredCells": 150863,
+     "unconfirmedCells": 4147
     },
     {
      "decade": "1995-2004",
@@ -2143,8 +2144,8 @@
      "note": null,
      "lostCells": 252495,
      "belowFloor": false,
-     "recoveredCells": 139963,
-     "unconfirmedCells": 5518
+     "recoveredCells": 135746,
+     "unconfirmedCells": 9735
     },
     {
      "decade": "2005-2014",
@@ -2155,8 +2156,8 @@
      },
      "lostCells": 300640,
      "belowFloor": false,
-     "recoveredCells": 130104,
-     "unconfirmedCells": 11886
+     "recoveredCells": 121013,
+     "unconfirmedCells": 20977
     },
     {
      "decade": "2015-2022",
@@ -2167,8 +2168,8 @@
      },
      "lostCells": 542565,
      "belowFloor": false,
-     "recoveredCells": 65888,
-     "unconfirmedCells": 87403
+     "recoveredCells": 20025,
+     "unconfirmedCells": 133266
     }
    ],
    "causes": [
@@ -2176,19 +2177,19 @@
      "cause": "notRecorded",
      "lostCells": 1129739,
      "belowFloor": false,
-     "recoveredCells": 378405
+     "recoveredCells": 322881
     },
     {
      "cause": "fire",
      "lostCells": 12114,
      "belowFloor": false,
-     "recoveredCells": 6502
+     "recoveredCells": 6295
     },
     {
      "cause": "harvest",
      "lostCells": 161932,
      "belowFloor": false,
-     "recoveredCells": 103807
+     "recoveredCells": 98471
     },
     {
      "cause": "fireAndHarvest",
@@ -2213,9 +2214,9 @@
    "everTreedCells": 11500771,
    "lostCells": 492140,
    "belowFloor": false,
-   "latestRecoveredCells": 165636,
-   "anyRecoveredCells": 239368,
-   "unconfirmedCells": 48124,
+   "latestRecoveredCells": 147140,
+   "anyRecoveredCells": 202921,
+   "unconfirmedCells": 66620,
    "decades": [
     {
      "decade": "1985-1994",
@@ -2223,8 +2224,8 @@
      "note": null,
      "lostCells": 86105,
      "belowFloor": false,
-     "recoveredCells": 56312,
-     "unconfirmedCells": 1740
+     "recoveredCells": 55498,
+     "unconfirmedCells": 2554
     },
     {
      "decade": "1995-2004",
@@ -2232,8 +2233,8 @@
      "note": null,
      "lostCells": 98711,
      "belowFloor": false,
-     "recoveredCells": 39484,
-     "unconfirmedCells": 3959
+     "recoveredCells": 37861,
+     "unconfirmedCells": 5582
     },
     {
      "decade": "2005-2014",
@@ -2244,8 +2245,8 @@
      },
      "lostCells": 127484,
      "belowFloor": false,
-     "recoveredCells": 46311,
-     "unconfirmedCells": 6679
+     "recoveredCells": 43568,
+     "unconfirmedCells": 9422
     },
     {
      "decade": "2015-2022",
@@ -2256,8 +2257,8 @@
      },
      "lostCells": 179840,
      "belowFloor": false,
-     "recoveredCells": 23529,
-     "unconfirmedCells": 35746
+     "recoveredCells": 10213,
+     "unconfirmedCells": 49062
     }
    ],
    "causes": [
@@ -2265,7 +2266,7 @@
      "cause": "notRecorded",
      "lostCells": 441842,
      "belowFloor": false,
-     "recoveredCells": 143689
+     "recoveredCells": 126442
     },
     {
      "cause": "fire",
@@ -2277,7 +2278,7 @@
      "cause": "harvest",
      "lostCells": 45644,
      "belowFloor": false,
-     "recoveredCells": 20218
+     "recoveredCells": 19009
     },
     {
      "cause": "fireAndHarvest",
@@ -2391,9 +2392,9 @@
    "everTreedCells": 311989,
    "lostCells": 52244,
    "belowFloor": false,
-   "latestRecoveredCells": 14273,
-   "anyRecoveredCells": 26107,
-   "unconfirmedCells": 6394,
+   "latestRecoveredCells": 12232,
+   "anyRecoveredCells": 21720,
+   "unconfirmedCells": 8435,
    "decades": [
     {
      "decade": "1985-1994",
@@ -2401,8 +2402,8 @@
      "note": null,
      "lostCells": 6248,
      "belowFloor": false,
-     "recoveredCells": 3554,
-     "unconfirmedCells": 145
+     "recoveredCells": 3485,
+     "unconfirmedCells": 214
     },
     {
      "decade": "1995-2004",
@@ -2410,8 +2411,8 @@
      "note": null,
      "lostCells": 8840,
      "belowFloor": false,
-     "recoveredCells": 3634,
-     "unconfirmedCells": 200
+     "recoveredCells": 3537,
+     "unconfirmedCells": 297
     },
     {
      "decade": "2005-2014",
@@ -2422,8 +2423,8 @@
      },
      "lostCells": 10937,
      "belowFloor": false,
-     "recoveredCells": 4042,
-     "unconfirmedCells": 478
+     "recoveredCells": 3943,
+     "unconfirmedCells": 577
     },
     {
      "decade": "2015-2022",
@@ -2434,8 +2435,8 @@
      },
      "lostCells": 26219,
      "belowFloor": false,
-     "recoveredCells": 3043,
-     "unconfirmedCells": 5571
+     "recoveredCells": 1267,
+     "unconfirmedCells": 7347
     }
    ],
    "causes": [
@@ -2443,7 +2444,7 @@
      "cause": "notRecorded",
      "lostCells": 50949,
      "belowFloor": false,
-     "recoveredCells": 13983
+     "recoveredCells": 11960
     },
     {
      "cause": "fire",
@@ -2836,9 +2837,9 @@
    "everTreedCells": 228624056,
    "lostCells": 37536888,
    "belowFloor": false,
-   "latestRecoveredCells": 21050103,
-   "anyRecoveredCells": 21914600,
-   "unconfirmedCells": 1299950,
+   "latestRecoveredCells": 19855818,
+   "anyRecoveredCells": 20505054,
+   "unconfirmedCells": 2494235,
    "decades": [
     {
      "decade": "1985-1994",
@@ -2846,8 +2847,8 @@
      "note": null,
      "lostCells": 8876828,
      "belowFloor": false,
-     "recoveredCells": 7752610,
-     "unconfirmedCells": 39571
+     "recoveredCells": 7706392,
+     "unconfirmedCells": 85789
     },
     {
      "decade": "1995-2004",
@@ -2855,8 +2856,8 @@
      "note": null,
      "lostCells": 12713628,
      "belowFloor": false,
-     "recoveredCells": 9245343,
-     "unconfirmedCells": 216945
+     "recoveredCells": 8940209,
+     "unconfirmedCells": 522079
     },
     {
      "decade": "2005-2014",
@@ -2867,8 +2868,8 @@
      },
      "lostCells": 8322158,
      "belowFloor": false,
-     "recoveredCells": 3592039,
-     "unconfirmedCells": 507714
+     "recoveredCells": 3045556,
+     "unconfirmedCells": 1054197
     },
     {
      "decade": "2015-2022",
@@ -2879,8 +2880,8 @@
      },
      "lostCells": 7624274,
      "belowFloor": false,
-     "recoveredCells": 460111,
-     "unconfirmedCells": 535720
+     "recoveredCells": 163661,
+     "unconfirmedCells": 832170
     }
    ],
    "causes": [
@@ -2888,19 +2889,19 @@
      "cause": "notRecorded",
      "lostCells": 12384130,
      "belowFloor": false,
-     "recoveredCells": 4722477
+     "recoveredCells": 4338750
     },
     {
      "cause": "fire",
      "lostCells": 2626125,
      "belowFloor": false,
-     "recoveredCells": 1243692
+     "recoveredCells": 1182888
     },
     {
      "cause": "harvest",
      "lostCells": 22526379,
      "belowFloor": false,
-     "recoveredCells": 15083740
+     "recoveredCells": 14333999
     },
     {
      "cause": "fireAndHarvest",
@@ -2925,9 +2926,9 @@
    "everTreedCells": 338198979,
    "lostCells": 72540435,
    "belowFloor": false,
-   "latestRecoveredCells": 37341117,
-   "anyRecoveredCells": 39176559,
-   "unconfirmedCells": 2906129,
+   "latestRecoveredCells": 35008130,
+   "anyRecoveredCells": 36690874,
+   "unconfirmedCells": 5239116,
    "decades": [
     {
      "decade": "1985-1994",
@@ -2935,8 +2936,8 @@
      "note": null,
      "lostCells": 18268225,
      "belowFloor": false,
-     "recoveredCells": 14273077,
-     "unconfirmedCells": 306220
+     "recoveredCells": 14011928,
+     "unconfirmedCells": 567369
     },
     {
      "decade": "1995-2004",
@@ -2944,8 +2945,8 @@
      "note": null,
      "lostCells": 24592054,
      "belowFloor": false,
-     "recoveredCells": 17145579,
-     "unconfirmedCells": 823105
+     "recoveredCells": 16396953,
+     "unconfirmedCells": 1571731
     },
     {
      "decade": "2005-2014",
@@ -2956,8 +2957,8 @@
      },
      "lostCells": 14253782,
      "belowFloor": false,
-     "recoveredCells": 5428755,
-     "unconfirmedCells": 1107379
+     "recoveredCells": 4416284,
+     "unconfirmedCells": 2119850
     },
     {
      "decade": "2015-2022",
@@ -2968,8 +2969,8 @@
      },
      "lostCells": 15426374,
      "belowFloor": false,
-     "recoveredCells": 493706,
-     "unconfirmedCells": 669425
+     "recoveredCells": 182965,
+     "unconfirmedCells": 980166
     }
    ],
    "causes": [
@@ -2977,19 +2978,19 @@
      "cause": "notRecorded",
      "lostCells": 18826255,
      "belowFloor": false,
-     "recoveredCells": 8182942
+     "recoveredCells": 7474114
     },
     {
      "cause": "fire",
      "lostCells": 32298325,
      "belowFloor": false,
-     "recoveredCells": 13427832
+     "recoveredCells": 12451573
     },
     {
      "cause": "harvest",
      "lostCells": 21414306,
      "belowFloor": false,
-     "recoveredCells": 15728861
+     "recoveredCells": 15080962
     },
     {
      "cause": "fireAndHarvest",
@@ -3014,9 +3015,9 @@
    "everTreedCells": 1935876,
    "lostCells": 626787,
    "belowFloor": false,
-   "latestRecoveredCells": 116903,
-   "anyRecoveredCells": 180554,
-   "unconfirmedCells": 35192,
+   "latestRecoveredCells": 96829,
+   "anyRecoveredCells": 140701,
+   "unconfirmedCells": 55266,
    "decades": [
     {
      "decade": "1985-1994",
@@ -3024,8 +3025,8 @@
      "note": null,
      "lostCells": 50024,
      "belowFloor": false,
-     "recoveredCells": 18002,
-     "unconfirmedCells": 1345
+     "recoveredCells": 16953,
+     "unconfirmedCells": 2394
     },
     {
      "decade": "1995-2004",
@@ -3033,8 +3034,8 @@
      "note": null,
      "lostCells": 231164,
      "belowFloor": false,
-     "recoveredCells": 64807,
-     "unconfirmedCells": 8565
+     "recoveredCells": 56965,
+     "unconfirmedCells": 16407
     },
     {
      "decade": "2005-2014",
@@ -3045,8 +3046,8 @@
      },
      "lostCells": 94342,
      "belowFloor": false,
-     "recoveredCells": 21832,
-     "unconfirmedCells": 3580
+     "recoveredCells": 20125,
+     "unconfirmedCells": 5287
     },
     {
      "decade": "2015-2022",
@@ -3057,8 +3058,8 @@
      },
      "lostCells": 251257,
      "belowFloor": false,
-     "recoveredCells": 12262,
-     "unconfirmedCells": 21702
+     "recoveredCells": 2786,
+     "unconfirmedCells": 31178
     }
    ],
    "causes": [
@@ -3066,19 +3067,19 @@
      "cause": "notRecorded",
      "lostCells": 358837,
      "belowFloor": false,
-     "recoveredCells": 71917
+     "recoveredCells": 60719
     },
     {
      "cause": "fire",
      "lostCells": 215762,
      "belowFloor": false,
-     "recoveredCells": 23411
+     "recoveredCells": 16886
     },
     {
      "cause": "harvest",
      "lostCells": 52188,
      "belowFloor": false,
-     "recoveredCells": 21575
+     "recoveredCells": 19224
     },
     {
      "cause": "fireAndHarvest",
@@ -3103,9 +3104,9 @@
    "everTreedCells": 1885346,
    "lostCells": 1488722,
    "belowFloor": false,
-   "latestRecoveredCells": 159392,
-   "anyRecoveredCells": 450004,
-   "unconfirmedCells": 124220,
+   "latestRecoveredCells": 101874,
+   "anyRecoveredCells": 285687,
+   "unconfirmedCells": 181738,
    "decades": [
     {
      "decade": "1985-1994",
@@ -3113,8 +3114,8 @@
      "note": null,
      "lostCells": 127611,
      "belowFloor": false,
-     "recoveredCells": 19364,
-     "unconfirmedCells": 2842
+     "recoveredCells": 18714,
+     "unconfirmedCells": 3492
     },
     {
      "decade": "1995-2004",
@@ -3122,8 +3123,8 @@
      "note": null,
      "lostCells": 226314,
      "belowFloor": false,
-     "recoveredCells": 19343,
-     "unconfirmedCells": 6379
+     "recoveredCells": 18224,
+     "unconfirmedCells": 7498
     },
     {
      "decade": "2005-2014",
@@ -3134,8 +3135,8 @@
      },
      "lostCells": 387972,
      "belowFloor": false,
-     "recoveredCells": 47010,
-     "unconfirmedCells": 14037
+     "recoveredCells": 44087,
+     "unconfirmedCells": 16960
     },
     {
      "decade": "2015-2022",
@@ -3146,8 +3147,8 @@
      },
      "lostCells": 746825,
      "belowFloor": false,
-     "recoveredCells": 73675,
-     "unconfirmedCells": 100962
+     "recoveredCells": 20849,
+     "unconfirmedCells": 153788
     }
    ],
    "causes": [
@@ -3155,7 +3156,7 @@
      "cause": "notRecorded",
      "lostCells": 1479474,
      "belowFloor": false,
-     "recoveredCells": 158374
+     "recoveredCells": 100887
     },
     {
      "cause": "fire",
@@ -3167,7 +3168,7 @@
      "cause": "harvest",
      "lostCells": 8215,
      "belowFloor": false,
-     "recoveredCells": 852
+     "recoveredCells": 824
     },
     {
      "cause": "fireAndHarvest",
@@ -3192,9 +3193,9 @@
    "everTreedCells": 1891421,
    "lostCells": 1066541,
    "belowFloor": false,
-   "latestRecoveredCells": 227218,
-   "anyRecoveredCells": 427785,
-   "unconfirmedCells": 134538,
+   "latestRecoveredCells": 168364,
+   "anyRecoveredCells": 284471,
+   "unconfirmedCells": 193392,
    "decades": [
     {
      "decade": "1985-1994",
@@ -3202,8 +3203,8 @@
      "note": null,
      "lostCells": 107108,
      "belowFloor": false,
-     "recoveredCells": 31669,
-     "unconfirmedCells": 2913
+     "recoveredCells": 30709,
+     "unconfirmedCells": 3873
     },
     {
      "decade": "1995-2004",
@@ -3211,8 +3212,8 @@
      "note": null,
      "lostCells": 137806,
      "belowFloor": false,
-     "recoveredCells": 45427,
-     "unconfirmedCells": 5706
+     "recoveredCells": 43563,
+     "unconfirmedCells": 7570
     },
     {
      "decade": "2005-2014",
@@ -3223,8 +3224,8 @@
      },
      "lostCells": 206741,
      "belowFloor": false,
-     "recoveredCells": 58134,
-     "unconfirmedCells": 13181
+     "recoveredCells": 53902,
+     "unconfirmedCells": 17413
     },
     {
      "decade": "2015-2022",
@@ -3235,8 +3236,8 @@
      },
      "lostCells": 614886,
      "belowFloor": false,
-     "recoveredCells": 91988,
-     "unconfirmedCells": 112738
+     "recoveredCells": 40190,
+     "unconfirmedCells": 164536
     }
    ],
    "causes": [
@@ -3244,7 +3245,7 @@
      "cause": "notRecorded",
      "lostCells": 1032782,
      "belowFloor": false,
-     "recoveredCells": 215104
+     "recoveredCells": 157128
     },
     {
      "cause": "fire",
@@ -3256,7 +3257,7 @@
      "cause": "harvest",
      "lostCells": 33188,
      "belowFloor": false,
-     "recoveredCells": 11987
+     "recoveredCells": 11121
     },
     {
      "cause": "fireAndHarvest",
@@ -3281,9 +3282,9 @@
    "everTreedCells": 56765171,
    "lostCells": 12824978,
    "belowFloor": false,
-   "latestRecoveredCells": 4319701,
-   "anyRecoveredCells": 5264499,
-   "unconfirmedCells": 813989,
+   "latestRecoveredCells": 3763129,
+   "anyRecoveredCells": 4307574,
+   "unconfirmedCells": 1370561,
    "decades": [
     {
      "decade": "1985-1994",
@@ -3291,8 +3292,8 @@
      "note": null,
      "lostCells": 1571227,
      "belowFloor": false,
-     "recoveredCells": 1132650,
-     "unconfirmedCells": 23249
+     "recoveredCells": 1115340,
+     "unconfirmedCells": 40559
     },
     {
      "decade": "1995-2004",
@@ -3300,8 +3301,8 @@
      "note": null,
      "lostCells": 3253832,
      "belowFloor": false,
-     "recoveredCells": 1953028,
-     "unconfirmedCells": 111464
+     "recoveredCells": 1828794,
+     "unconfirmedCells": 235698
     },
     {
      "decade": "2005-2014",
@@ -3312,8 +3313,8 @@
      },
      "lostCells": 3614392,
      "belowFloor": false,
-     "recoveredCells": 934752,
-     "unconfirmedCells": 274955
+     "recoveredCells": 711082,
+     "unconfirmedCells": 498625
     },
     {
      "decade": "2015-2022",
@@ -3324,8 +3325,8 @@
      },
      "lostCells": 4385527,
      "belowFloor": false,
-     "recoveredCells": 299271,
-     "unconfirmedCells": 404321
+     "recoveredCells": 107913,
+     "unconfirmedCells": 595679
     }
    ],
    "causes": [
@@ -3333,19 +3334,19 @@
      "cause": "notRecorded",
      "lostCells": 5549950,
      "belowFloor": false,
-     "recoveredCells": 1253989
+     "recoveredCells": 1009684
     },
     {
      "cause": "fire",
      "lostCells": 1021221,
      "belowFloor": false,
-     "recoveredCells": 350200
+     "recoveredCells": 309501
     },
     {
      "cause": "harvest",
      "lostCells": 6253807,
      "belowFloor": false,
-     "recoveredCells": 2715512
+     "recoveredCells": 2443944
     },
     {
      "cause": "fireAndHarvest",
@@ -3370,9 +3371,9 @@
    "everTreedCells": 2794998,
    "lostCells": 2445885,
    "belowFloor": false,
-   "latestRecoveredCells": 303484,
-   "anyRecoveredCells": 1112830,
-   "unconfirmedCells": 444449,
+   "latestRecoveredCells": 157769,
+   "anyRecoveredCells": 545873,
+   "unconfirmedCells": 590164,
    "decades": [
     {
      "decade": "1985-1994",
@@ -3380,8 +3381,8 @@
      "note": null,
      "lostCells": 125723,
      "belowFloor": false,
-     "recoveredCells": 29508,
-     "unconfirmedCells": 6410
+     "recoveredCells": 28752,
+     "unconfirmedCells": 7166
     },
     {
      "decade": "1995-2004",
@@ -3389,8 +3390,8 @@
      "note": null,
      "lostCells": 259609,
      "belowFloor": false,
-     "recoveredCells": 36371,
-     "unconfirmedCells": 19038
+     "recoveredCells": 33647,
+     "unconfirmedCells": 21762
     },
     {
      "decade": "2005-2014",
@@ -3401,8 +3402,8 @@
      },
      "lostCells": 526649,
      "belowFloor": false,
-     "recoveredCells": 84465,
-     "unconfirmedCells": 63921
+     "recoveredCells": 66352,
+     "unconfirmedCells": 82034
     },
     {
      "decade": "2015-2022",
@@ -3413,8 +3414,8 @@
      },
      "lostCells": 1533904,
      "belowFloor": false,
-     "recoveredCells": 153140,
-     "unconfirmedCells": 355080
+     "recoveredCells": 29018,
+     "unconfirmedCells": 479202
     }
    ],
    "causes": [
@@ -3422,7 +3423,7 @@
      "cause": "notRecorded",
      "lostCells": 2432708,
      "belowFloor": false,
-     "recoveredCells": 300722
+     "recoveredCells": 155237
     },
     {
      "cause": "fire",
@@ -3434,7 +3435,7 @@
      "cause": "harvest",
      "lostCells": 12919,
      "belowFloor": false,
-     "recoveredCells": 2718
+     "recoveredCells": 2508
     },
     {
      "cause": "fireAndHarvest",
@@ -3459,9 +3460,9 @@
    "everTreedCells": 7119981,
    "lostCells": 4394272,
    "belowFloor": false,
-   "latestRecoveredCells": 837316,
-   "anyRecoveredCells": 1888878,
-   "unconfirmedCells": 640485,
+   "latestRecoveredCells": 638821,
+   "anyRecoveredCells": 1255596,
+   "unconfirmedCells": 838980,
    "decades": [
     {
      "decade": "1985-1994",
@@ -3469,8 +3470,8 @@
      "note": null,
      "lostCells": 395347,
      "belowFloor": false,
-     "recoveredCells": 187737,
-     "unconfirmedCells": 13061
+     "recoveredCells": 186242,
+     "unconfirmedCells": 14556
     },
     {
      "decade": "1995-2004",
@@ -3478,8 +3479,8 @@
      "note": null,
      "lostCells": 622191,
      "belowFloor": false,
-     "recoveredCells": 184422,
-     "unconfirmedCells": 31262
+     "recoveredCells": 180058,
+     "unconfirmedCells": 35626
     },
     {
      "decade": "2005-2014",
@@ -3490,8 +3491,8 @@
      },
      "lostCells": 1113346,
      "belowFloor": false,
-     "recoveredCells": 236075,
-     "unconfirmedCells": 100358
+     "recoveredCells": 210686,
+     "unconfirmedCells": 125747
     },
     {
      "decade": "2015-2022",
@@ -3502,8 +3503,8 @@
      },
      "lostCells": 2263388,
      "belowFloor": false,
-     "recoveredCells": 229082,
-     "unconfirmedCells": 495804
+     "recoveredCells": 61835,
+     "unconfirmedCells": 663051
     }
    ],
    "causes": [
@@ -3511,19 +3512,19 @@
      "cause": "notRecorded",
      "lostCells": 4187747,
      "belowFloor": false,
-     "recoveredCells": 747304
+     "recoveredCells": 553602
     },
     {
      "cause": "fire",
      "lostCells": 25866,
      "belowFloor": false,
-     "recoveredCells": 5510
+     "recoveredCells": 4951
     },
     {
      "cause": "harvest",
      "lostCells": 180659,
      "belowFloor": false,
-     "recoveredCells": 84502
+     "recoveredCells": 80268
     },
     {
      "cause": "fireAndHarvest",
@@ -3548,9 +3549,9 @@
    "everTreedCells": 209928595,
    "lostCells": 66077048,
    "belowFloor": false,
-   "latestRecoveredCells": 16439021,
-   "anyRecoveredCells": 21250352,
-   "unconfirmedCells": 3670922,
+   "latestRecoveredCells": 14122145,
+   "anyRecoveredCells": 17608203,
+   "unconfirmedCells": 5987798,
    "decades": [
     {
      "decade": "1985-1994",
@@ -3558,8 +3559,8 @@
      "note": null,
      "lostCells": 7504324,
      "belowFloor": false,
-     "recoveredCells": 4036265,
-     "unconfirmedCells": 111023
+     "recoveredCells": 3973352,
+     "unconfirmedCells": 173936
     },
     {
      "decade": "1995-2004",
@@ -3567,8 +3568,8 @@
      "note": null,
      "lostCells": 16628136,
      "belowFloor": false,
-     "recoveredCells": 7340531,
-     "unconfirmedCells": 458784
+     "recoveredCells": 6963958,
+     "unconfirmedCells": 835357
     },
     {
      "decade": "2005-2014",
@@ -3579,8 +3580,8 @@
      },
      "lostCells": 18696808,
      "belowFloor": false,
-     "recoveredCells": 3517109,
-     "unconfirmedCells": 997385
+     "recoveredCells": 2837177,
+     "unconfirmedCells": 1677317
     },
     {
      "decade": "2015-2022",
@@ -3591,8 +3592,8 @@
      },
      "lostCells": 23247780,
      "belowFloor": false,
-     "recoveredCells": 1545116,
-     "unconfirmedCells": 2103730
+     "recoveredCells": 347658,
+     "unconfirmedCells": 3301188
     }
    ],
    "causes": [
@@ -3600,19 +3601,19 @@
      "cause": "notRecorded",
      "lostCells": 39845043,
      "belowFloor": false,
-     "recoveredCells": 5589905
+     "recoveredCells": 4324042
     },
     {
      "cause": "fire",
      "lostCells": 10985405,
      "belowFloor": false,
-     "recoveredCells": 3574061
+     "recoveredCells": 3096791
     },
     {
      "cause": "harvest",
      "lostCells": 15246160,
      "belowFloor": false,
-     "recoveredCells": 7274896
+     "recoveredCells": 6701162
     },
     {
      "cause": "fireAndHarvest",
@@ -3637,9 +3638,9 @@
    "everTreedCells": 94924159,
    "lostCells": 34900026,
    "belowFloor": false,
-   "latestRecoveredCells": 12915513,
-   "anyRecoveredCells": 15109422,
-   "unconfirmedCells": 1521439,
+   "latestRecoveredCells": 11006596,
+   "anyRecoveredCells": 12721247,
+   "unconfirmedCells": 3430356,
    "decades": [
     {
      "decade": "1985-1994",
@@ -3647,8 +3648,8 @@
      "note": null,
      "lostCells": 2118664,
      "belowFloor": false,
-     "recoveredCells": 1038939,
-     "unconfirmedCells": 21891
+     "recoveredCells": 1019198,
+     "unconfirmedCells": 41632
     },
     {
      "decade": "1995-2004",
@@ -3656,8 +3657,8 @@
      "note": null,
      "lostCells": 7832459,
      "belowFloor": false,
-     "recoveredCells": 4413446,
-     "unconfirmedCells": 90604
+     "recoveredCells": 4309881,
+     "unconfirmedCells": 194169
     },
     {
      "decade": "2005-2014",
@@ -3668,8 +3669,8 @@
      },
      "lostCells": 14127460,
      "belowFloor": false,
-     "recoveredCells": 5790802,
-     "unconfirmedCells": 528407
+     "recoveredCells": 4718382,
+     "unconfirmedCells": 1600827
     },
     {
      "decade": "2015-2022",
@@ -3680,8 +3681,8 @@
      },
      "lostCells": 10821443,
      "belowFloor": false,
-     "recoveredCells": 1672326,
-     "unconfirmedCells": 880537
+     "recoveredCells": 959135,
+     "unconfirmedCells": 1593728
     }
    ],
    "causes": [
@@ -3689,19 +3690,19 @@
      "cause": "notRecorded",
      "lostCells": 13636439,
      "belowFloor": false,
-     "recoveredCells": 2425757
+     "recoveredCells": 1985166
     },
     {
      "cause": "fire",
      "lostCells": 19218509,
      "belowFloor": false,
-     "recoveredCells": 9579814
+     "recoveredCells": 8173491
     },
     {
      "cause": "harvest",
      "lostCells": 2045045,
      "belowFloor": false,
-     "recoveredCells": 909909
+     "recoveredCells": 847906
     },
     {
      "cause": "fireAndHarvest",
@@ -3726,9 +3727,9 @@
    "everTreedCells": 68661673,
    "lostCells": 12135408,
    "belowFloor": false,
-   "latestRecoveredCells": 5988934,
-   "anyRecoveredCells": 6143676,
-   "unconfirmedCells": 344121,
+   "latestRecoveredCells": 5504210,
+   "anyRecoveredCells": 5638305,
+   "unconfirmedCells": 828845,
    "decades": [
     {
      "decade": "1985-1994",
@@ -3736,8 +3737,8 @@
      "note": null,
      "lostCells": 2957754,
      "belowFloor": false,
-     "recoveredCells": 2394722,
-     "unconfirmedCells": 27706
+     "recoveredCells": 2355700,
+     "unconfirmedCells": 66728
     },
     {
      "decade": "1995-2004",
@@ -3745,8 +3746,8 @@
      "note": null,
      "lostCells": 3001378,
      "belowFloor": false,
-     "recoveredCells": 2022079,
-     "unconfirmedCells": 61124
+     "recoveredCells": 1920209,
+     "unconfirmedCells": 162994
     },
     {
      "decade": "2005-2014",
@@ -3757,8 +3758,8 @@
      },
      "lostCells": 3653152,
      "belowFloor": false,
-     "recoveredCells": 1437193,
-     "unconfirmedCells": 148764
+     "recoveredCells": 1183464,
+     "unconfirmedCells": 402493
     },
     {
      "decade": "2015-2022",
@@ -3769,8 +3770,8 @@
      },
      "lostCells": 2523124,
      "belowFloor": false,
-     "recoveredCells": 134940,
-     "unconfirmedCells": 106527
+     "recoveredCells": 44837,
+     "unconfirmedCells": 196630
     }
    ],
    "causes": [
@@ -3778,19 +3779,19 @@
      "cause": "notRecorded",
      "lostCells": 2856304,
      "belowFloor": false,
-     "recoveredCells": 1349633
+     "recoveredCells": 1236849
     },
     {
      "cause": "fire",
      "lostCells": 521545,
      "belowFloor": false,
-     "recoveredCells": 137206
+     "recoveredCells": 125780
     },
     {
      "cause": "harvest",
      "lostCells": 8757527,
      "belowFloor": false,
-     "recoveredCells": 4502071
+     "recoveredCells": 4141559
     },
     {
      "cause": "fireAndHarvest",
@@ -3815,9 +3816,9 @@
    "everTreedCells": 26865441,
    "lostCells": 4008923,
    "belowFloor": false,
-   "latestRecoveredCells": 2070480,
-   "anyRecoveredCells": 2203140,
-   "unconfirmedCells": 107560,
+   "latestRecoveredCells": 1938369,
+   "anyRecoveredCells": 2041604,
+   "unconfirmedCells": 239671,
    "decades": [
     {
      "decade": "1985-1994",
@@ -3825,8 +3826,8 @@
      "note": null,
      "lostCells": 979589,
      "belowFloor": false,
-     "recoveredCells": 820433,
-     "unconfirmedCells": 7459
+     "recoveredCells": 809958,
+     "unconfirmedCells": 17934
     },
     {
      "decade": "1995-2004",
@@ -3834,8 +3835,8 @@
      "note": null,
      "lostCells": 807631,
      "belowFloor": false,
-     "recoveredCells": 547246,
-     "unconfirmedCells": 17734
+     "recoveredCells": 519453,
+     "unconfirmedCells": 45527
     },
     {
      "decade": "2005-2014",
@@ -3846,8 +3847,8 @@
      },
      "lostCells": 1207325,
      "belowFloor": false,
-     "recoveredCells": 636954,
-     "unconfirmedCells": 39941
+     "recoveredCells": 582650,
+     "unconfirmedCells": 94245
     },
     {
      "decade": "2015-2022",
@@ -3858,8 +3859,8 @@
      },
      "lostCells": 1014378,
      "belowFloor": false,
-     "recoveredCells": 65847,
-     "unconfirmedCells": 42426
+     "recoveredCells": 26308,
+     "unconfirmedCells": 81965
     }
    ],
    "causes": [
@@ -3867,19 +3868,19 @@
      "cause": "notRecorded",
      "lostCells": 1664064,
      "belowFloor": false,
-     "recoveredCells": 847125
+     "recoveredCells": 789933
     },
     {
      "cause": "fire",
      "lostCells": 576656,
      "belowFloor": false,
-     "recoveredCells": 87482
+     "recoveredCells": 78545
     },
     {
      "cause": "harvest",
      "lostCells": 1768203,
      "belowFloor": false,
-     "recoveredCells": 1135873
+     "recoveredCells": 1069891
     },
     {
      "cause": "fireAndHarvest",
@@ -3904,9 +3905,9 @@
    "everTreedCells": 79070129,
    "lostCells": 21560507,
    "belowFloor": false,
-   "latestRecoveredCells": 7084654,
-   "anyRecoveredCells": 7818328,
-   "unconfirmedCells": 771937,
+   "latestRecoveredCells": 6158561,
+   "anyRecoveredCells": 6713546,
+   "unconfirmedCells": 1698030,
    "decades": [
     {
      "decade": "1985-1994",
@@ -3914,8 +3915,8 @@
      "note": null,
      "lostCells": 3353379,
      "belowFloor": false,
-     "recoveredCells": 2811802,
-     "unconfirmedCells": 43695
+     "recoveredCells": 2748540,
+     "unconfirmedCells": 106957
     },
     {
      "decade": "1995-2004",
@@ -3923,8 +3924,8 @@
      "note": null,
      "lostCells": 4657762,
      "belowFloor": false,
-     "recoveredCells": 2707980,
-     "unconfirmedCells": 154080
+     "recoveredCells": 2426355,
+     "unconfirmedCells": 435705
     },
     {
      "decade": "2005-2014",
@@ -3935,8 +3936,8 @@
      },
      "lostCells": 6242846,
      "belowFloor": false,
-     "recoveredCells": 1317848,
-     "unconfirmedCells": 308576
+     "recoveredCells": 887677,
+     "unconfirmedCells": 738747
     },
     {
      "decade": "2015-2022",
@@ -3947,8 +3948,8 @@
      },
      "lostCells": 7306520,
      "belowFloor": false,
-     "recoveredCells": 247024,
-     "unconfirmedCells": 265586
+     "recoveredCells": 95989,
+     "unconfirmedCells": 416621
     }
    ],
    "causes": [
@@ -3956,19 +3957,19 @@
      "cause": "notRecorded",
      "lostCells": 6712676,
      "belowFloor": false,
-     "recoveredCells": 1819944
+     "recoveredCells": 1553252
     },
     {
      "cause": "fire",
      "lostCells": 3992898,
      "belowFloor": false,
-     "recoveredCells": 402387
+     "recoveredCells": 343090
     },
     {
      "cause": "harvest",
      "lostCells": 10854770,
      "belowFloor": false,
-     "recoveredCells": 4862274
+     "recoveredCells": 4262170
     },
     {
      "cause": "fireAndHarvest",
@@ -3993,9 +3994,9 @@
    "everTreedCells": 49631439,
    "lostCells": 11049064,
    "belowFloor": false,
-   "latestRecoveredCells": 3546271,
-   "anyRecoveredCells": 3883723,
-   "unconfirmedCells": 566120,
+   "latestRecoveredCells": 3112303,
+   "anyRecoveredCells": 3378793,
+   "unconfirmedCells": 1000088,
    "decades": [
     {
      "decade": "1985-1994",
@@ -4003,8 +4004,8 @@
      "note": null,
      "lostCells": 2194292,
      "belowFloor": false,
-     "recoveredCells": 1734420,
-     "unconfirmedCells": 53857
+     "recoveredCells": 1681606,
+     "unconfirmedCells": 106671
     },
     {
      "decade": "1995-2004",
@@ -4012,8 +4013,8 @@
      "note": null,
      "lostCells": 2643510,
      "belowFloor": false,
-     "recoveredCells": 1261606,
-     "unconfirmedCells": 155701
+     "recoveredCells": 1087721,
+     "unconfirmedCells": 329586
     },
     {
      "decade": "2005-2014",
@@ -4024,8 +4025,8 @@
      },
      "lostCells": 2646517,
      "belowFloor": false,
-     "recoveredCells": 443356,
-     "unconfirmedCells": 196307
+     "recoveredCells": 304676,
+     "unconfirmedCells": 334987
     },
     {
      "decade": "2015-2022",
@@ -4036,8 +4037,8 @@
      },
      "lostCells": 3564745,
      "belowFloor": false,
-     "recoveredCells": 106889,
-     "unconfirmedCells": 160255
+     "recoveredCells": 38300,
+     "unconfirmedCells": 228844
     }
    ],
    "causes": [
@@ -4045,19 +4046,19 @@
      "cause": "notRecorded",
      "lostCells": 3119577,
      "belowFloor": false,
-     "recoveredCells": 861524
+     "recoveredCells": 741360
     },
     {
      "cause": "fire",
      "lostCells": 2123021,
      "belowFloor": false,
-     "recoveredCells": 351545
+     "recoveredCells": 306983
     },
     {
      "cause": "harvest",
      "lostCells": 5806466,
      "belowFloor": false,
-     "recoveredCells": 2333202
+     "recoveredCells": 2063960
     },
     {
      "cause": "fireAndHarvest",
@@ -4082,9 +4083,9 @@
    "everTreedCells": 118955637,
    "lostCells": 34388046,
    "belowFloor": false,
-   "latestRecoveredCells": 13890874,
-   "anyRecoveredCells": 14730544,
-   "unconfirmedCells": 1201585,
+   "latestRecoveredCells": 12207589,
+   "anyRecoveredCells": 12877754,
+   "unconfirmedCells": 2884870,
    "decades": [
     {
      "decade": "1985-1994",
@@ -4092,8 +4093,8 @@
      "note": null,
      "lostCells": 6647267,
      "belowFloor": false,
-     "recoveredCells": 5918589,
-     "unconfirmedCells": 44004
+     "recoveredCells": 5834442,
+     "unconfirmedCells": 128151
     },
     {
      "decade": "1995-2004",
@@ -4101,8 +4102,8 @@
      "note": null,
      "lostCells": 7172557,
      "belowFloor": false,
-     "recoveredCells": 4878228,
-     "unconfirmedCells": 220433
+     "recoveredCells": 4424772,
+     "unconfirmedCells": 673889
     },
     {
      "decade": "2005-2014",
@@ -4113,8 +4114,8 @@
      },
      "lostCells": 10027980,
      "belowFloor": false,
-     "recoveredCells": 2614679,
-     "unconfirmedCells": 616473
+     "recoveredCells": 1773887,
+     "unconfirmedCells": 1457265
     },
     {
      "decade": "2015-2022",
@@ -4125,8 +4126,8 @@
      },
      "lostCells": 10540242,
      "belowFloor": false,
-     "recoveredCells": 479378,
-     "unconfirmedCells": 320675
+     "recoveredCells": 174488,
+     "unconfirmedCells": 625565
     }
    ],
    "causes": [
@@ -4134,19 +4135,19 @@
      "cause": "notRecorded",
      "lostCells": 11170880,
      "belowFloor": false,
-     "recoveredCells": 3766727
+     "recoveredCells": 3186370
     },
     {
      "cause": "fire",
      "lostCells": 6140871,
      "belowFloor": false,
-     "recoveredCells": 778306
+     "recoveredCells": 598626
     },
     {
      "cause": "harvest",
      "lostCells": 17076275,
      "belowFloor": false,
-     "recoveredCells": 9345821
+     "recoveredCells": 8422573
     },
     {
      "cause": "fireAndHarvest",
@@ -4171,9 +4172,9 @@
    "everTreedCells": 81257288,
    "lostCells": 7308922,
    "belowFloor": false,
-   "latestRecoveredCells": 3038943,
-   "anyRecoveredCells": 3107642,
-   "unconfirmedCells": 370638,
+   "latestRecoveredCells": 2670202,
+   "anyRecoveredCells": 2735433,
+   "unconfirmedCells": 739379,
    "decades": [
     {
      "decade": "1985-1994",
@@ -4181,8 +4182,8 @@
      "note": null,
      "lostCells": 2196458,
      "belowFloor": false,
-     "recoveredCells": 1547003,
-     "unconfirmedCells": 74778
+     "recoveredCells": 1458119,
+     "unconfirmedCells": 163662
     },
     {
      "decade": "1995-2004",
@@ -4190,8 +4191,8 @@
      "note": null,
      "lostCells": 1709004,
      "belowFloor": false,
-     "recoveredCells": 812152,
-     "unconfirmedCells": 102276
+     "recoveredCells": 709492,
+     "unconfirmedCells": 204936
     },
     {
      "decade": "2005-2014",
@@ -4202,8 +4203,8 @@
      },
      "lostCells": 1744575,
      "belowFloor": false,
-     "recoveredCells": 513537,
-     "unconfirmedCells": 132142
+     "recoveredCells": 375740,
+     "unconfirmedCells": 269939
     },
     {
      "decade": "2015-2022",
@@ -4214,8 +4215,8 @@
      },
      "lostCells": 1658885,
      "belowFloor": false,
-     "recoveredCells": 166251,
-     "unconfirmedCells": 61442
+     "recoveredCells": 126851,
+     "unconfirmedCells": 100842
     }
    ],
    "causes": [
@@ -4223,19 +4224,19 @@
      "cause": "notRecorded",
      "lostCells": 3456437,
      "belowFloor": false,
-     "recoveredCells": 1442961
+     "recoveredCells": 1247333
     },
     {
      "cause": "fire",
      "lostCells": 897060,
      "belowFloor": false,
-     "recoveredCells": 142345
+     "recoveredCells": 125600
     },
     {
      "cause": "harvest",
      "lostCells": 2955339,
      "belowFloor": false,
-     "recoveredCells": 1453587
+     "recoveredCells": 1297220
     },
     {
      "cause": "fireAndHarvest",
@@ -4260,9 +4261,9 @@
    "everTreedCells": 138872225,
    "lostCells": 25814700,
    "belowFloor": false,
-   "latestRecoveredCells": 7835876,
-   "anyRecoveredCells": 8118839,
-   "unconfirmedCells": 894760,
+   "latestRecoveredCells": 6689151,
+   "anyRecoveredCells": 6923364,
+   "unconfirmedCells": 2041485,
    "decades": [
     {
      "decade": "1985-1994",
@@ -4270,8 +4271,8 @@
      "note": null,
      "lostCells": 3510250,
      "belowFloor": false,
-     "recoveredCells": 3040300,
-     "unconfirmedCells": 37969
+     "recoveredCells": 2980007,
+     "unconfirmedCells": 98262
     },
     {
      "decade": "1995-2004",
@@ -4279,8 +4280,8 @@
      "note": null,
      "lostCells": 4772407,
      "belowFloor": false,
-     "recoveredCells": 2954023,
-     "unconfirmedCells": 192397
+     "recoveredCells": 2586223,
+     "unconfirmedCells": 560197
     },
     {
      "decade": "2005-2014",
@@ -4291,8 +4292,8 @@
      },
      "lostCells": 7856089,
      "belowFloor": false,
-     "recoveredCells": 1436553,
-     "unconfirmedCells": 446676
+     "recoveredCells": 900102,
+     "unconfirmedCells": 983127
     },
     {
      "decade": "2015-2022",
@@ -4303,8 +4304,8 @@
      },
      "lostCells": 9675954,
      "belowFloor": false,
-     "recoveredCells": 405000,
-     "unconfirmedCells": 217718
+     "recoveredCells": 222819,
+     "unconfirmedCells": 399899
     }
    ],
    "causes": [
@@ -4312,19 +4313,19 @@
      "cause": "notRecorded",
      "lostCells": 6793733,
      "belowFloor": false,
-     "recoveredCells": 1910676
+     "recoveredCells": 1562644
     },
     {
      "cause": "fire",
      "lostCells": 7710637,
      "belowFloor": false,
-     "recoveredCells": 737125
+     "recoveredCells": 543444
     },
     {
      "cause": "harvest",
      "lostCells": 11310323,
      "belowFloor": false,
-     "recoveredCells": 5188075
+     "recoveredCells": 4583063
     },
     {
      "cause": "fireAndHarvest",
@@ -4349,9 +4350,9 @@
    "everTreedCells": 157844987,
    "lostCells": 22345581,
    "belowFloor": false,
-   "latestRecoveredCells": 7721444,
-   "anyRecoveredCells": 8975046,
-   "unconfirmedCells": 937718,
+   "latestRecoveredCells": 6678247,
+   "anyRecoveredCells": 7669358,
+   "unconfirmedCells": 1980915,
    "decades": [
     {
      "decade": "1985-1994",
@@ -4359,8 +4360,8 @@
      "note": null,
      "lostCells": 3571082,
      "belowFloor": false,
-     "recoveredCells": 2491197,
-     "unconfirmedCells": 45638
+     "recoveredCells": 2437729,
+     "unconfirmedCells": 99106
     },
     {
      "decade": "1995-2004",
@@ -4368,8 +4369,8 @@
      "note": null,
      "lostCells": 4568767,
      "belowFloor": false,
-     "recoveredCells": 2467173,
-     "unconfirmedCells": 123509
+     "recoveredCells": 2285785,
+     "unconfirmedCells": 304897
     },
     {
      "decade": "2005-2014",
@@ -4380,8 +4381,8 @@
      },
      "lostCells": 6768550,
      "belowFloor": false,
-     "recoveredCells": 1892811,
-     "unconfirmedCells": 287796
+     "recoveredCells": 1560931,
+     "unconfirmedCells": 619676
     },
     {
      "decade": "2015-2022",
@@ -4392,8 +4393,8 @@
      },
      "lostCells": 7437182,
      "belowFloor": false,
-     "recoveredCells": 870263,
-     "unconfirmedCells": 480775
+     "recoveredCells": 393802,
+     "unconfirmedCells": 957236
     }
    ],
    "causes": [
@@ -4401,19 +4402,19 @@
      "cause": "notRecorded",
      "lostCells": 12480383,
      "belowFloor": false,
-     "recoveredCells": 3926546
+     "recoveredCells": 3270121
     },
     {
      "cause": "fire",
      "lostCells": 4699108,
      "belowFloor": false,
-     "recoveredCells": 847145
+     "recoveredCells": 721490
     },
     {
      "cause": "harvest",
      "lostCells": 5165922,
      "belowFloor": false,
-     "recoveredCells": 2947753
+     "recoveredCells": 2686636
     },
     {
      "cause": "fireAndHarvest",
@@ -4424,51 +4425,5 @@
    ]
   }
  ],
- "perCellTiles": {
-  "builder": "scripts/phase4_condition_recovery_tiles.py",
-  "builderSha256": "423f8589dc3c26b146be135202ecad65f07e1123c35c9b0951f432b543a93f8b",
-  "manifest": "derived/phase4-condition-recovery-tiles-v1/manifest.json",
-  "executedAt": "2026-09-24T13:40:33+00:00",
-  "layer": "condition_recovery",
-  "minZoom": 8,
-  "maxZoom": 14,
-  "states": {
-   "1": "unknown",
-   "4": "recovered",
-   "5": "notRecovered",
-   "6": "notRecoveredUnconfirmedReturn"
-  },
-  "decades": {
-   "0": "1985-1994",
-   "1": "1995-2004",
-   "2": "2005-2014",
-   "3": "2015-2022"
-  },
-  "strips": 860,
-  "features": 104312891,
-  "cellsByCode": {
-   "10": 515830199,
-   "40": 78106528,
-   "41": 90606774,
-   "42": 45945343,
-   "43": 10067016,
-   "50": 39107449,
-   "51": 74943354,
-   "52": 115623151,
-   "53": 129436252,
-   "60": 1900583,
-   "61": 5429028,
-   "62": 9998244,
-   "63": 11414858
-  },
-  "archive": {
-   "path": "derived/phase4-condition-recovery-tiles-v1/condition-recovery.pmtiles",
-   "byteLength": 6509434494,
-   "sha256": "b572e9db285f9b78b8a5d70d6efcf4181ecd829ee209d2a67d0cf079f05e9c98"
-  },
-  "uploaded": false,
-  "workers": 4,
-  "tilerResumed": true,
-  "elapsedSeconds": 1065.7
- }
+ "perCellTiles": null
 }

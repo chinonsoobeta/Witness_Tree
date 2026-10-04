@@ -4,22 +4,26 @@ import { LocaleAnchor, LocaleLink } from "./LocaleLink";
 import { ThemeToggle } from "./ThemeToggle";
 
 /**
- * Four items, not five. Search left this list when the homepage grew a search
- * field of its own: a control the reader uses in place, under the question it
- * answers, rather than a destination competing with Explore and Compare.
+ * Home leads the list, because the wordmark is plain text rather than a link,
+ * and About closes it. Search stays out: the homepage has a search field of its
+ * own, a control the reader uses in place rather than a destination.
  */
 const NAV = {
   en: [
+    ["Home", "/en"],
     ["Explore", "/en/explore"],
     ["Compare", "/en/compare"],
     ["Methods", "/en/methods"],
     ["Data", "/en/data"],
+    ["About", "/en/about"],
   ],
   fr: [
+    ["Accueil", "/fr"],
     ["Explorer", "/fr/explorer"],
     ["Comparer", "/fr/comparer"],
     ["Méthodes", "/fr/methodes"],
     ["Données", "/fr/donnees"],
+    ["À propos", "/fr/a-propos"],
   ],
 } as const;
 
@@ -35,7 +39,7 @@ export function SiteHeader({ locale }: { locale: Locale }) {
     <header className="site-header">
       <a className="skip-link" href="#main">{locale === "en" ? "Skip to content" : "Passer au contenu"}</a>
       <div className="site-header-inner">
-        <a className="wordmark" href={`/${locale}`}>{PRODUCT_NAME[locale]}</a>
+        <span className="wordmark">{PRODUCT_NAME[locale]}</span>
         <nav className="global-nav" aria-label={locale === "en" ? "Primary navigation" : "Navigation principale"}>
           {/*
             A real disclosure, not a horizontally scrolled row. <details> needs no JavaScript, so

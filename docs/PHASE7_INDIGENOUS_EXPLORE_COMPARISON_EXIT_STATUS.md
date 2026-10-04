@@ -1,6 +1,6 @@
 # Phase 7 Indigenous geographies, Explore, and comparison exit status
 
-**Current: 14/14, complete.** On 2026-09-26 the owner removed the reserve-and-treaty layer gate and the right-of-reply gate, which the Plan scopes to reserve and treaty pages, because Witness Tree will not publish reserve or treaty geography ([decision](PHASE_SCOPE_DECISION_2026-09-26.md)). Neither removed gate was met. No reserve or treaty geometry, Indigenous name, or reply route is published. The rest of this page describes the position before that decision.
+**Current: 12/14, incomplete.** On 2026-10-03 the owner removed the Decisions and Engagement pages, so the engagement-register and Mistik-outcome gates no longer pass; they pass again only if the pages return or the owner removes the gates by a recorded scope decision. Before that, on 2026-09-26 the owner removed the reserve-and-treaty layer gate and the right-of-reply gate, which the Plan scopes to reserve and treaty pages, because Witness Tree will not publish reserve or treaty geography ([decision](PHASE_SCOPE_DECISION_2026-09-26.md)). Neither removed gate was met. No reserve or treaty geometry, Indigenous name, or reply route is published. The rest of this page describes the position before that decision.
 
 The checksum-verified record at [`data/phase7-indigenous-explore-comparison-exit-status.json`](../data/phase7-indigenous-explore-comparison-exit-status.json) records **14/16 (87.5%)** literal engineering and evidence gates. This is an unweighted implementation result, not a production or public-release claim.
 

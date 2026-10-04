@@ -98,6 +98,8 @@
   --harvest: #2a78d6;
   --fire: #eb6834;
   --insect: #4a3aa7;
+  --recovery: #4a3aa7;
+  --map-ground: #eeefe9; /* the map canvas, which does not follow the theme */
   --unknown: #6b7670;
 
   /* observed-loss ramp: held in :root only, and never themed, because the
@@ -279,6 +281,8 @@
     --harvest: #3987e5;
     --fire: #d95926;
     --insect: #9085e9;
+    --recovery: #9085e9;
+    --map-ground: #eeefe9; /* the map canvas, which does not follow the theme */
     --unknown: #93a099;
 
     /* shape and depth */
@@ -374,6 +378,8 @@
   --harvest: #2a78d6;
   --fire: #eb6834;
   --insect: #4a3aa7;
+  --recovery: #4a3aa7;
+  --map-ground: #eeefe9; /* the map canvas, which does not follow the theme */
   --unknown: #6b7670;
 
   /* shape and depth */
@@ -475,6 +481,8 @@
   --harvest: #3987e5;
   --fire: #d95926;
   --insect: #9085e9;
+  --recovery: #9085e9;
+  --map-ground: #eeefe9; /* the map canvas, which does not follow the theme */
   --unknown: #93a099;
 
   /* shape and depth */
@@ -535,6 +543,16 @@ a {
   text-decoration-thickness: 1px;
   text-underline-offset: 3px;
   transition: color var(--dur) var(--ease);
+}
+/* Links in page content are bold and underline only under the pointer. The
+   weight, not colour alone, is what marks them as links (WCAG 1.4.1). Buttons
+   keep their own treatment. */
+main a:not(.btn) {
+  font-weight: 700;
+  text-decoration: none;
+}
+main a:not(.btn):hover {
+  text-decoration: underline;
 }
 a:focus-visible,
 button:focus-visible,
@@ -1429,28 +1447,33 @@ h4 {
   position: absolute;
   inset: 0;
 }
-/* The riding rankings on the home page: two plain cards, each an ordered list
-   of links, so every riding is its own target rather than one stretched tile. */
+/* The rankings on the home page: four plain cards in a row, BC, AB, ON and QC,
+   each an ordered list of links, so every place is its own target. */
 .ridings-most-lost-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
-  margin-top: 24px;
+  margin: 12px 0 24px;
 }
-@media (max-width: 760px) {
+@media (max-width: 1100px) {
+  .ridings-most-lost-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 560px) {
   .ridings-most-lost-grid { grid-template-columns: minmax(0, 1fr); }
 }
-.page-wrap .ridings-most-lost-card h3 {
+.page-wrap .ridings-most-lost-card h4 {
   margin: 0 0 12px;
   font-size: 17px;
   font-weight: 700;
 }
+.ridings-most-lost-empty { margin: 8px 0 0; color: var(--ink-2); }
 .ridings-most-lost-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
   margin: 0;
   padding-left: 1.4em;
+  list-style: decimal;
 }
 .ridings-most-lost-list a { font-weight: 700; }
 .ridings-most-lost-figure {
@@ -1992,6 +2015,10 @@ h4 {
     min-height: 44px;
     white-space: normal;
   }
+  /* All four provinces takes the first row; the provinces sit two by two. */
+  .province-bar--map button:first-child {
+    grid-column: 1 / -1;
+  }
   .explore-map-controls {
     grid-template-columns: minmax(0, 1fr) auto;
   }
@@ -2099,6 +2126,10 @@ h4 {
   color: var(--ink);
   font-style: normal;
   line-height: 1;
+}
+/* Matches the map's hatching of partly mapped regions. */
+.loss-swatch--hatch {
+  background: repeating-linear-gradient(45deg, rgba(20, 32, 26, 0.8) 0 2px, rgba(238, 239, 233, 0.8) 2px 3px, transparent 3px 6px), var(--map-ground);
 }
 .loss-0 {
   background: var(--loss-0);
@@ -3641,10 +3672,19 @@ dd > a:only-child {
   align-items: start;
 }
 @media (min-width: 1100px) {
+  /* The figures sit under the map in the left column, beside the reading
+     panel, so they don't start below the panel's full height. */
   .explore-workspace {
     grid-template-columns: minmax(0, 1fr) 336px;
+    grid-template-areas: "map reading" "data reading";
   }
+  .explore-workspace > .explore-canvas { grid-area: map; }
+  .explore-workspace > .explore-reading { grid-area: reading; }
+  .explore-workspace > .explore-data { grid-area: data; }
 }
+.explore-data-lead { max-width: 70ch; color: var(--ink-2); }
+.explore-unknown { margin-top: 20px; max-width: 70ch; }
+.explore-unknown h3 { margin: 0 0 8px; font-size: 17px; }
 
 .explore-toolbar {
   display: flex;
@@ -4227,6 +4267,34 @@ dd > a:only-child {
 .explore-bar--fire {
   border-color: var(--fire);
   background: var(--fire);
+}
+/* Condition and recovery wears the map's recovery colour, which is a fixed
+   printed-map colour on its own light ground in both themes. */
+.explore-bar--recovery {
+  border-color: var(--recovery);
+  background: var(--recovery);
+}
+.recovery-bar {
+  display: flex;
+  width: 100%;
+  height: 12px;
+  margin: 0.25rem 0 0.5rem;
+  border: 1px solid var(--rule-strong);
+  background: var(--ground);
+  overflow: hidden;
+}
+.recovery-bar-part {
+  display: block;
+  min-width: 0;
+}
+.recovery-bar-part--recovered {
+  background: var(--recovery);
+}
+.recovery-lead {
+  font-size: 1.125rem;
+}
+.recovery-figures h3 {
+  margin-top: 1.5rem;
 }
 .explore-bar-name,
 .explore-bar-label {
@@ -5407,4 +5475,31 @@ dd > a:only-child {
   .place-stat-cards { grid-template-columns: minmax(0, 1fr); }
   .place-year { grid-template-columns: 56px minmax(0, 1fr); }
   .place-year-value { grid-column: 2; text-align: left; }
+}
+
+.recovery-answer-provinces {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+  gap: 0.5rem 1.5rem;
+  padding: 0;
+  list-style: none;
+}
+.recovery-answer-provinces li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 0.25rem;
+}
+.explore-reading .recovery-headline p {
+  font-size: var(--text-small);
+  font-weight: 400;
+  line-height: 1.45;
+}
+.recovery-headline p + p,
+.recovery-answer > p {
+  margin-top: 0.5rem;
+}
+.recovery-answer .eyebrow {
+  margin-top: 1.25rem;
 }
