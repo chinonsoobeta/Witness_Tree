@@ -136,6 +136,9 @@ export function SearchSuggest({
 
   const onKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Escape") {
+      // A search field clears itself on Escape. While anything is showing under
+      // it, Escape only closes that, so the reader's words survive.
+      if (showList || showNone || showFailed) event.preventDefault();
       setOpen(false);
       return;
     }

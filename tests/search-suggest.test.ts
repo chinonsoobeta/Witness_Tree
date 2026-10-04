@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import test from "node:test";
 
 import { SEARCH_SUGGEST_PATH, handleSearchSuggest } from "../worker/search-suggest";
@@ -72,4 +73,13 @@ test("a riding under 1% unmapped reads the same in search as in the rankings, wi
   const fr = suggestSearch(ranked.name.fr, "fr").suggestions.find((entry) => entry.kind === "riding" && entry.id === ranked.id);
   assert.match(fr?.detail ?? "", / ha · (<\s?0,01|0,\d+)\s?% non cartographié$/);
   assert.match(ridingFigure(row, "fr") ?? "", /de la forêt cartographiée détectée comme perdue · (<\s?0,01|0,\d+)\s?% non cartographié$/);
+});
+
+test("Escape closes the suggestions without wiping what the reader typed", () => {
+  // The field is type="search", which a browser clears on Escape. While anything
+  // shows under the field, the handler must cancel that default and only close it.
+  const source = readFileSync(new URL("../components/search/SearchSuggest.tsx", import.meta.url), "utf8");
+  const escape = source.slice(source.indexOf('if (event.key === "Escape")'), source.indexOf("if (!showList) return;"));
+  assert.match(escape, /if \(showList \|\| showNone \|\| showFailed\) event\.preventDefault\(\);/);
+  assert.match(escape, /setOpen\(false\);/);
 });

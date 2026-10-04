@@ -1064,8 +1064,10 @@ export function ExploreMapClient({
         });
         mapRef.current = map;
         if (!map) return;
-        map.on("styleimagemissing", (event: { id: string }) => {
-          if (event.id === REGION_HATCH_IMAGE && map && !map.hasImage(REGION_HATCH_IMAGE)) map.addImage(REGION_HATCH_IMAGE, hatchImage());
+        // MapLibre 6 asks this resolver before it answers a tile, so the hatch is
+        // in the first tiles drawn; the styleimagemissing event only fires after.
+        map.setMissingStyleImageResolver((id) => {
+          if (id === REGION_HATCH_IMAGE && map && !map.hasImage(REGION_HATCH_IMAGE)) map.addImage(REGION_HATCH_IMAGE, hatchImage());
         });
         const publishView = () => {
           if (!active || !map) return;
