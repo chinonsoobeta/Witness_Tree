@@ -98,6 +98,8 @@
   --harvest: #2a78d6;
   --fire: #eb6834;
   --insect: #4a3aa7;
+  --recovery: #4a3aa7;
+  --map-ground: #eeefe9; /* the map canvas, which does not follow the theme */
   --unknown: #6b7670;
 
   /* observed-loss ramp: held in :root only, and never themed, because the
@@ -279,6 +281,8 @@
     --harvest: #3987e5;
     --fire: #d95926;
     --insect: #9085e9;
+    --recovery: #9085e9;
+    --map-ground: #eeefe9; /* the map canvas, which does not follow the theme */
     --unknown: #93a099;
 
     /* shape and depth */
@@ -374,6 +378,8 @@
   --harvest: #2a78d6;
   --fire: #eb6834;
   --insect: #4a3aa7;
+  --recovery: #4a3aa7;
+  --map-ground: #eeefe9; /* the map canvas, which does not follow the theme */
   --unknown: #6b7670;
 
   /* shape and depth */
@@ -475,6 +481,8 @@
   --harvest: #3987e5;
   --fire: #d95926;
   --insect: #9085e9;
+  --recovery: #9085e9;
+  --map-ground: #eeefe9; /* the map canvas, which does not follow the theme */
   --unknown: #93a099;
 
   /* shape and depth */
@@ -2007,6 +2015,10 @@ h4 {
     min-height: 44px;
     white-space: normal;
   }
+  /* All four provinces takes the first row; the provinces sit two by two. */
+  .province-bar--map button:first-child {
+    grid-column: 1 / -1;
+  }
   .explore-map-controls {
     grid-template-columns: minmax(0, 1fr) auto;
   }
@@ -2117,7 +2129,7 @@ h4 {
 }
 /* Matches the map's hatching of partly mapped regions. */
 .loss-swatch--hatch {
-  background: repeating-linear-gradient(45deg, rgba(20, 32, 26, 0.8) 0 2px, rgba(238, 239, 233, 0.8) 2px 3px, transparent 3px 6px), #eeefe9;
+  background: repeating-linear-gradient(45deg, rgba(20, 32, 26, 0.8) 0 2px, rgba(238, 239, 233, 0.8) 2px 3px, transparent 3px 6px), var(--map-ground);
 }
 .loss-0 {
   background: var(--loss-0);
@@ -4259,8 +4271,8 @@ dd > a:only-child {
 /* Condition and recovery wears the map's recovery colour, which is a fixed
    printed-map colour on its own light ground in both themes. */
 .explore-bar--recovery {
-  border-color: #4a3aa7;
-  background: #4a3aa7;
+  border-color: var(--recovery);
+  background: var(--recovery);
 }
 .recovery-bar {
   display: flex;
@@ -4276,7 +4288,7 @@ dd > a:only-child {
   min-width: 0;
 }
 .recovery-bar-part--recovered {
-  background: #4a3aa7;
+  background: var(--recovery);
 }
 .recovery-lead {
   font-size: 1.125rem;

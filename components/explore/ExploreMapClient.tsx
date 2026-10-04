@@ -49,7 +49,7 @@ import {
 } from "@/lib/explore/census-subdivisions";
 import { ProvinceBar } from "@/components/site";
 import { economicRegionTileId, FOREST_REGIONS, type ForestRegionFigure } from "@/lib/explore/forest-regions";
-import { RECOVERY_BREAKS, RECOVERY_RAMP, recoveryBand, type RecoveryRegionShade } from "@/lib/explore/recovery-shading";
+import { NO_FOREST_COLOUR, RECOVERY_BREAKS, RECOVERY_RAMP, recoveryBand, type RecoveryRegionShade } from "@/lib/explore/recovery-shading";
 
 const text = {
   en: {
@@ -370,8 +370,6 @@ const REGION_HATCH_LAYER_ID = "forest-regions-hatch";
 const REGION_HATCH_IMAGE = "forest-region-hatch";
 const PROVINCE_MASK_LAYER_ID = "province-mask";
 const PROVINCE_FOCUS_LAYER_ID = "province-focus-outline";
-// Grey, not the lightest band: no forest was mapped, so no share was measured.
-const NO_FOREST_COLOUR = "#c3c5bd";
 const TRANSPARENT = "rgba(0, 0, 0, 0)";
 const REGION_OVERLAY = BOUNDARY_OVERLAYS["economic-regions"];
 
