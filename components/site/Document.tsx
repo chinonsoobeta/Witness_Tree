@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import type { Locale } from "@/lib/domain";
 import { THEME_BOOT_SCRIPT } from "@/lib/theme";
+import { Analytics } from "@vercel/analytics/next";
 import "@bcgov/bc-sans/css/BC_Sans.css";
 import "maplibre-gl/dist/maplibre-gl.css";
 import "@/app/globals.css";
@@ -34,6 +35,7 @@ export function Document({ lang, children }: { lang: Locale; children: ReactNode
         */}
         <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
         {children}
+        <Analytics />
       </body>
     </html>
   );
