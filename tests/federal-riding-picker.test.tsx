@@ -49,7 +49,7 @@ test("the picker names an unresolved request and its visible fallback", () => {
   const french = renderToStaticMarkup(<FederalRidingPicker rows={rankedRidingFixtures} locale="fr" leftId="r2" rightId="missing-right" />);
   assert.match(english, /The left riding “missing-left” isn’t available here, since this comparison covers four provinces only\. Showing Example North instead\./);
   assert.match(english, /role="status"/);
-  assert.match(french, /La circonscription de droite «\u00A0missing-right\u00A0» n’est pas offerte ici, car cette comparaison ne couvre que quatre provinces\. Exemple Nord est affichée à la place\./);
+  assert.match(french, /La circonscription de droite «\u00A0missing-right\u00A0» n’est pas offerte ici, car cette comparaison ne couvre que quatre provinces\. La circonscription Exemple Nord est affichée à la place\./);
   assert.doesNotMatch(renderToStaticMarkup(<FederalRidingPicker rows={rankedRidingFixtures} locale="en" leftId="r1" rightId="r2" />), /not available/);
 });
 

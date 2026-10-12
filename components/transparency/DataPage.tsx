@@ -66,7 +66,7 @@ const COPY = {
     title: "Données et transparence",
     accessTitle: "Ce que vous pouvez télécharger",
     accessSummary:
-      `Un aperçu préliminaire des chiffres provinciaux pour ${formatYearRangeKey(PROVINCE_BULK_TIME_RANGE, "fr", "span")} est offert en tableur (CSV) et en fichier cartographique (GeoPackage). Les deux contiennent les mêmes chiffres pour la Colombie-Britannique, l’Alberta, l’Ontario et le Québec.`,
+      `Un aperçu préliminaire des chiffres provinciaux pour la période ${formatYearRangeKey(PROVINCE_BULK_TIME_RANGE, "fr", "from")} est offert en tableur (CSV) et en fichier cartographique (GeoPackage). Les deux contiennent les mêmes chiffres pour la Colombie-Britannique, l’Alberta, l’Ontario et le Québec.`,
     notice:
       "Il s’agit de résumés provinciaux, et non de formes cartographiques détaillées ni d’un flux de données en direct.",
     csv: "Télécharger les valeurs provinciales (CSV)",
@@ -75,12 +75,12 @@ const COPY = {
     spanSummary:
       `La perte forestière détectée pour chaque période ${formatYearRangeKey(PROVINCE_SPAN_TIME_RANGE, "fr", "from")} (741 au total), une ligne par province et par période, comme sur la page Explorer. Chaque ligne donne la forêt au départ, la forêt perdue au moins une fois et sa part, les pertes annuelles additionnées et le territoire sans données au départ.`,
     spanLimits:
-      "Chaque valeur est un minimum, car chaque province compte un territoire sans données l’année de départ\u202F; ce territoire est Inconnu, jamais une absence de perte. Les pertes annuelles additionnées comptent deux fois un lieu perdu deux fois\u202F: elles sont donc en hectares, sans pourcentage. Aucun spécialiste n’a examiné ces chiffres, et ils n’indiquent pas si la récolte ou un incendie a causé la perte.",
+      "Chaque valeur est un minimum, car chaque province compte un territoire sans données l’année de départ\u202F; ce territoire compte comme inconnu, jamais comme une absence de perte. Les pertes annuelles additionnées comptent deux fois un lieu perdu deux fois\u202F: elles sont donc en hectares, sans pourcentage. Aucun spécialiste n’a examiné ces chiffres, et ils n’indiquent pas si la récolte ou un incendie a causé la perte.",
     spanCsv: "Télécharger toutes les périodes (CSV)",
     spanJson: "Télécharger toutes les périodes (JSON)",
     spanManifest: "Ouvrir le manifeste du téléchargement par période",
-    harvestTitle: "Ce qui a été récolté, et ce qui a brûlé",
-    harvestLead: "Un satellite peut voir que des arbres ont disparu, mais pas pourquoi. Ces pages font appel aux statistiques officielles sur la récolte, aux volumes de bois de chaque province et aux cartes annuelles de la récolte et des feux de Ressources naturelles Canada.",
+    harvestTitle: "Ce qui a été récolté et ce qui a brûlé",
+    harvestLead: "Un satellite peut voir que des arbres ont disparu, mais pas pourquoi. Ces pages font appel aux statistiques officielles sur la récolte, aux volumes de bois de chaque province et aux cartes annuelles de la récolte et des feux produites par Ressources naturelles Canada.",
     comparison: "Comparer les valeurs aux statistiques officielles sur la récolte",
     harvestVolume: "Volume récolté et possibilité annuelle de coupe en C.-B.",
     provincialVolume: "Volume récolté et possibilité de coupe en Alberta, en Ontario et au Québec",
@@ -89,7 +89,7 @@ const COPY = {
     limits:
       "Chaque province compte un territoire sans données\u202F; chaque chiffre de perte est donc un minimum. Ces fichiers n’indiquent ni la cause d’une perte, ni qui en est responsable, ni sa légalité, ni la quantité de bois vendable, ni les conditions sur le terrain.",
     previewLimits:
-      "Il s’agit d’un aperçu préliminaire, et non de la version définitive. Lisez toujours un chiffre avec sa catégorie de preuve, sa couverture et sa confiance, et ne l’appliquez pas au-delà des limites et des années qu’il couvre.",
+      "Il s’agit d’un aperçu préliminaire, et non de la version définitive. Lisez toujours un chiffre avec sa catégorie de preuve, sa couverture et son niveau de confiance, et ne l’appliquez pas au-delà des limites et des années qu’il couvre.",
     recordsTitle: "Registres des sources et documentation",
     description:
       "Le registre des sources énumère les 31 sources prévues par le plan, avec les preuves que nous avons pour chacune et ce qui bloque encore son usage.",
@@ -99,13 +99,13 @@ const COPY = {
     gate:
       "Identifiants de version et sommes de contrôle, pour vérifier les fichiers. Ils ne modifient pas les limites ci-dessus.",
     release: "Identifiant de version",
-    csvArtifact: "Artefact CSV",
-    geopackageArtifact: "Artefact GeoPackage",
+    csvArtifact: "Fichier CSV",
+    geopackageArtifact: "Fichier GeoPackage",
     checksum: "SHA-256",
     manifest: "Ouvrir le manifeste de version lisible par machine",
     licence: "Licence et attribution",
     attribution:
-      "Contient des informations octroyées sous licence en vertu de la Licence du gouvernement ouvert - Canada. Adapté de Ressources naturelles Canada, Couverture terrestre annuelle à haute résolution des forêts du Canada (1984-2022). Adapté de Statistique Canada, Fichier des limites cartographiques des provinces et territoires du Recensement de 2021, date de référence le 1er janvier 2021. Ces adaptations ne constituent pas une approbation de Ressources naturelles Canada ni de Statistique Canada.",
+      "Contient de l’information visée par la Licence du gouvernement ouvert – Canada. Adapté de Ressources naturelles Canada, Couverture forestière annuelle à haute résolution pour le Canada (1984-2022). Adapté de Statistique Canada, Fichier des limites cartographiques des provinces et territoires du Recensement de 2021, date de référence le 1er janvier 2021. Ces adaptations ne constituent pas une approbation de ce produit par Ressources naturelles Canada ni par Statistique Canada.",
     stagingTitle: "Données en préparation",
     staging:
       "Deux archives sources ont été vérifiées dans une zone d’essai distincte, et l’attribution du Québec a été confirmée à partir des métadonnées officielles. Une copie vérifiée de deux couches québécoises existe, mais n’est pas encore utilisée sur le site. L’Alberta est en attente, car les vérifications ont relevé 608 auto-intersections (des formes qui se croisent elles-mêmes).",

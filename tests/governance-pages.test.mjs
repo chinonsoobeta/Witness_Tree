@@ -60,7 +60,7 @@ test("glossary separates event grades from measurement states and defines reader
     "Étendue cartographiée",
     "Part inconnue",
     "Décret de représentation",
-    "Zone de perte détectée",
+    "Parcelle de perte détectée",
   ]) assert.match(content, new RegExp(`heading: "${heading}"`));
 });
 

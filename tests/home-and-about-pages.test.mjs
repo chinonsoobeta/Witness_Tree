@@ -21,7 +21,7 @@ test("landing pages use the released province span and retain the bounded scope"
      * owner's request by a plain statement of the years. What stays binding is
      * the span, the methods and data links, and the source attribution.
      */
-    assert.match(page, /provinceSpanReach\("(?:en|fr)", "span"\)/);
+    assert.match(page, /provinceSpanReach\("(?:en|fr)", "(?:span|from)"\)/);
     assert.match(page, /attribution\.href/);
   }
   assert.match(english, /These are figures for \{provinceSpanReach\("en", "span"\)\}/);

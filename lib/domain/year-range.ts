@@ -104,7 +104,7 @@ export function formatYearRange(
    */
   if (range.fromYear === range.toYear) {
     const year = String(range.fromYear);
-    if (form === "from") return locale === "fr" ? `de ${year}` : `in ${year}`;
+    if (form === "from") return locale === "fr" ? `en ${year}` : `in ${year}`;
     if (form === "between") return locale === "fr" ? `en ${year}` : `in ${year}`;
     return year;
   }

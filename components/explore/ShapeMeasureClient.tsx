@@ -133,32 +133,36 @@ const copy = {
     measuring: "Mesure en cours",
     clear: "Effacer",
     degrees: "degrés",
-    resultsHeading: "Ce que dit le relevé",
+    resultsHeading: "Ce que dit le registre",
     unionHeading: "Forêt perturbée au moins une fois",
     unionExplain: "Chaque endroit est compté une seule fois, quel que soit le nombre de perturbations.",
     sumHeading: "Perturbations additionnées",
     sumExplain:
-      "Un endroit perturbé deux années différentes est compté deux fois ici, donc il s’agit toujours d’une superficie et jamais d’une proportion.",
+      "Un endroit perturbé au cours de deux années différentes est compté deux fois ici\u202F: ce total est donc toujours une superficie, jamais une proportion.",
     forestHeading: "Forêt au début de la période",
     shareLabel: "Proportion de cette forêt",
     between: (low: string, high: string) => `entre ${low} et ${high}`,
     hectares: (value: string) => `${value} ha`,
     precisionHeading: "Précision de ce résultat",
     precisionExact: (block: number) =>
-      `Votre forme correspond à des carrés entiers de ${block} m, donc ces nombres sont des comptes exacts et non des estimations.`,
+      `Votre forme correspond à des carrés entiers de ${block} m, ces nombres sont donc des dénombrements exacts, et non des estimations.`,
     precisionEdge: (block: number, edge: number, share: string) =>
-      `Les données sont en carrés de ${block} m, et votre forme en traverse ${edge}. Ces carrés sont comptés selon la part que votre forme en couvre, ce qui représente environ ${share} du nombre central. La fourchette montre le résultat si aucun, ou si tous, ces carrés comptaient.`,
+      edge === 1
+        ? `Les données sont en carrés de ${block} m, et votre forme en traverse un. Ce carré est compté selon la part que votre forme en couvre, ce qui représente environ ${share} du nombre central. La fourchette donne le résultat obtenu si ce carré n’était pas compté, ou s’il l’était en entier.`
+        : `Les données sont en carrés de ${block} m, et votre forme en traverse ${edge}. Ces carrés sont comptés selon la part que votre forme en couvre, ce qui représente environ ${share} du nombre central. La fourchette donne le résultat obtenu si aucun de ces carrés n’était compté, ou si tous l’étaient.`,
     precisionMissing: (blocks: number) =>
-      `${blocks} des carrés couverts par cette forme n’ont jamais été mesurés, donc rien n’est affirmé à leur sujet. Ils sont exclus plutôt que comptés comme sans perte.`,
+      blocks === 1
+        ? "Un des carrés couverts par cette forme n’a jamais été mesuré\u202F: rien n’est donc affirmé à son sujet. Il est exclu plutôt que compté comme sans perte."
+        : `${blocks} des carrés couverts par cette forme n’ont jamais été mesurés\u202F: rien n’est donc affirmé à leur sujet. Ils sont exclus plutôt que comptés comme sans perte.`,
     outsideGrid: (hectares: string) =>
-      `Environ ${hectares} ha de cette forme se trouvent hors de la zone cartographiée et ne sont pas inclus.`,
+      `La partie de cette forme située hors de la zone cartographiée, soit environ ${hectares} ha, n’est pas incluse.`,
     problem: "Cette zone n’a pas pu être mesurée.",
     unconfigured: "La mesure de zone n’est pas encore offerte sur ce site.",
     tooLarge: "Cette zone dépasse ce que cet outil mesure. Dessinez-en une plus petite.",
     tooSpreadOut: "Cette forme s’étend sur une trop grande partie de la carte pour être mesurée d’un coup.",
-    offGrid: "Cette zone se trouve hors de la partie du Canada couverte par ce relevé.",
+    offGrid: "Cette zone se trouve hors de la partie du Canada couverte par ce registre.",
     noArea: "Ces coins ne délimitent aucune aire.",
-    tooFew: "Une zone a besoin d’au moins trois coins.",
+    tooFew: "Une zone doit avoir au moins trois coins.",
     badYears: `Choisissez une période comprise ${formatYearRange(EXPLORE_COVERAGE_SPAN, "fr", "between")}.`,
   },
 } as const;
@@ -446,7 +450,7 @@ export function ShapeMeasurementResult({ locale, measurement }: Readonly<{ local
           : "Les chiffres ci-dessous portent seulement sur la partie qui a pu être mesurée. Le territoire sans données est exclu, jamais compté comme sans perte."}</p>
         <div className="shape-coverage-states">
           <div>
-            <h3>{locale === "en" ? "Blocks without data" : "Blocs sans données"}</h3>
+            <h3>{locale === "en" ? "Blocks without data" : "Carrés sans données"}</h3>
             <p>{words.precisionMissing(measurement.coverage.blocksWithoutData)}</p>
           </div>
           <div>

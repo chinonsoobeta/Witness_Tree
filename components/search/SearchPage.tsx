@@ -130,7 +130,7 @@ function SearchResults({ locale, query }: { locale: Locale; query: string }) {
       <section key={kind} aria-label={groupTitle[kind]}>
         <h3>{groupTitle[kind]}</h3>
         <ul className="search-results">{results.map((result) => <SearchResultCard key={`${result.kind}-${result.id}`} locale={locale} result={result} />)}</ul>
-        {page.more[kind] > 0 ? <p className="search-note">{locale === "en" ? `${page.more[kind]} more ${kind} results.` : `${page.more[kind]} autres résultats de ${kind === "riding" ? "circonscription" : kind === "community" ? "collectivité" : "province"}.`}</p> : null}
+        {page.more[kind] > 0 ? <p className="search-note">{locale === "en" ? `${page.more[kind]} more ${kind} results.` : `${page.more[kind] === 1 ? "Un autre résultat" : `${page.more[kind]} autres résultats`} parmi les ${kind === "riding" ? "circonscriptions" : kind === "community" ? "collectivités" : "provinces"}.`}</p> : null}
       </section>
     ) : null)}
     {page.results.some((result) => result.kind === "community") ? <>
@@ -159,8 +159,8 @@ function SearchResultCard({ locale, result }: { locale: Locale; result: SiteSear
     return <li className="card card--lift search-result">
       <h4>{resultName(result, locale)}</h4>
       <p className="search-result-figure"><span className="mark-glyph mark-glyph--satellite" aria-hidden="true" />{result.unionLossHectares === null || result.unionLossHectares === undefined ? unknown : formatHectares(result.unionLossHectares, locale)} · {result.unionLossPercent === null || result.unionLossPercent === undefined ? unknown : `${formatPercent(result.unionLossPercent, locale)} ${text.lost}`}</p>
-      <p className="search-result-figure"><span className="mark-glyph mark-glyph--unknown" aria-hidden="true" />{result.unknownHectares === null || result.unknownHectares === undefined ? unknown : formatHectares(result.unknownHectares, locale)} {locale === "en" ? "Unknown area" : "zone inconnue"}{semicolon(locale)} {result.unknownSharePercent === null || result.unknownSharePercent === undefined ? unknown : formatUnknownSharePercent(result.unknownSharePercent, locale)}</p>
-      {result.unmappedCharacter ? <p>{locale === "en" ? "Here that gap is" : "Ici, l’écart se trouve"} {result.unmappedCharacter[locale]}.</p> : null}
+      <p className="search-result-figure"><span className="mark-glyph mark-glyph--unknown" aria-hidden="true" />{result.unknownHectares === null || result.unknownHectares === undefined ? unknown : formatHectares(result.unknownHectares, locale)} {locale === "en" ? "Unknown area" : "de superficie inconnue"}{semicolon(locale)} {result.unknownSharePercent === null || result.unknownSharePercent === undefined ? unknown : formatUnknownSharePercent(result.unknownSharePercent, locale)}</p>
+      {result.unmappedCharacter ? <p>{locale === "en" ? "Here that gap is" : "Ici, la lacune se trouve"} {result.unmappedCharacter[locale]}.</p> : null}
     </li>;
   }
   if (result.kind === "riding") {

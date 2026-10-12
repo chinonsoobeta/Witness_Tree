@@ -35,8 +35,10 @@ const COPY = {
     provincial: "Circonscriptions provinciales",
     search: "/fr/recherche",
     lost: "perdus",
-    none: "Aucune circonscription d’ici n’est assez cartographiée, avec assez de forêt, pour être classée.",
-    fewer: (count: number) => `Seulement ${count} ${count === 1 ? "circonscription est assez cartographiée" : "circonscriptions sont assez cartographiées"}, avec assez de forêt, pour être classées.`,
+    none: "Aucune circonscription de cette province n’est suffisamment cartographiée et boisée pour être classée.",
+    fewer: (count: number) => count === 1
+      ? "Une seule circonscription est suffisamment cartographiée et boisée pour être classée."
+      : `Seules ${count} circonscriptions sont suffisamment cartographiées et boisées pour être classées.`,
     unmapped: "non cartographié",
     reason: (where: string) => `Les terres non cartographiées se trouvent ici ${where}.`,
     note: "Une part peut être élevée à cause de la récolte, du feu ou des deux\u202F; l’imagerie satellitaire ne peut pas dire pourquoi les arbres ont disparu.",
@@ -131,8 +133,10 @@ const CITY_COPY = {
   fr: {
     heading: "Villes ayant perdu la plus grande part de leur forêt, 1984–2022",
     lead: (floor: string) => `La part de la forêt cartographiée de chaque ville détectée comme perdue au moins une fois de 1984 à 2022, les cinq premières de chaque province. Une ville est ici un lieu que Statistique Canada classe comme ville (City, Ville ou Cité). Seules les villes ayant au moins ${floor} de forêt sont classées.`,
-    none: "Aucune ville d’ici n’avait assez de forêt pour être classée.",
-    fewer: (count: number) => `Seulement ${count} ${count === 1 ? "ville est entièrement cartographiée" : "villes sont entièrement cartographiées"} avec assez de forêt pour être classées.`,
+    none: "Aucune ville de cette province n’a assez de forêt pour être classée.",
+    fewer: (count: number) => count === 1
+      ? "Une seule ville est entièrement cartographiée et assez boisée pour être classée."
+      : `Seules ${count} villes sont entièrement cartographiées et assez boisées pour être classées.`,
     note: "Une part peut être élevée à cause de la récolte, du feu ou des deux. L’imagerie satellitaire ne peut pas dire pourquoi les arbres ont disparu.",
   },
 } as const;

@@ -239,7 +239,7 @@ test("renders localized place and location records with semantic content and pro
   assert.match(englishPlace, /Illustrative source-ledger entries/);
   assert.match(frenchPlace, /<html lang="fr">/);
   assert.match(frenchPlace, /<meta name="content-language" content="fr"/);
-  assert.match(frenchPlace, /Colombie-Britannique illustrative/);
+  assert.match(frenchPlace, /illustrative en Colombie-Britannique/);
   assert.match(frenchPlace, /<table/);
   assert.match(frenchPlace, /Entrées illustratives du registre des sources/);
   assert.match(englishLocation, /Coordinates and accuracy/);

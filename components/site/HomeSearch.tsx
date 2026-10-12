@@ -25,8 +25,8 @@ const COPY = {
     action: "/fr/recherche",
     label: "Rechercher un lieu",
     placeholder: "Prince George, Colombie-Britannique",
-    submit: "Ouvrir le relevé",
-    note: "Recherchez une province, une circonscription ou une collectivité. Les chiffres couvrent 1984 à 2022.",
+    submit: "Ouvrir le registre",
+    note: "Recherchez une province, une circonscription ou une collectivité. Les chiffres couvrent la période de 1984 à 2022.",
   },
 } as const;
 

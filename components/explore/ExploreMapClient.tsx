@@ -111,6 +111,7 @@ const text = {
     causeLegendHeading: { harvest: "Recorded harvest", fire: "Recorded fire" },
     causeLegendCaption: "Average share of the forest per year",
     coverage: "Coverage",
+    mapTitle: "Map",
     zoomIn: "Zoom in",
     zoomOut: "Zoom out",
     resetView: "Reset the view",
@@ -142,7 +143,7 @@ const text = {
     loading:
       "Chargement des couches cartographiques pour l’année choisie.",
     ready:
-      `Chaque région est ombrée selon la part de sa forêt cartographiée perdue pendant les années choisies, chaque lieu étant compté une seule fois. Choisissez n’importe quelles années ${provinceSpanReach("fr", "from")}. Les limites sont simplifiées et omettent les petites îles.`,
+      `Chaque région est colorée selon la part de sa forêt cartographiée perdue pendant les années choisies, chaque lieu étant compté une seule fois. Choisissez n’importe quelles années ${provinceSpanReach("fr", "between")}. Les limites sont simplifiées et omettent les petites îles.`,
     readyPerCell:
       `Affichage de chaque parcelle de perte forestière détectée pendant les années choisies, dans les quatre provinces. Choisissez n’importe quelles années comprises dans ${perCellArchiveSpan("fr")}.`,
     readyHarvest:
@@ -150,13 +151,13 @@ const text = {
     readyFire:
       "Affichage des seules parcelles de perte que le registre national indique comme brûlées l’année où elles ont été perdues.",
     readyBoth:
-      `Les régions sont ombrées selon la part de leur forêt cartographiée perdue pendant les années choisies, et le zoom avant montre chaque parcelle de perte. Choisissez n’importe quelles années ${provinceSpanReach("fr", "from")}. Les limites sont simplifiées et omettent les petites îles.`,
+      `Les régions sont colorées selon la part de leur forêt cartographiée perdue pendant les années choisies, et le zoom avant montre chaque parcelle de perte. Choisissez n’importe quelles années ${provinceSpanReach("fr", "between")}. Les limites sont simplifiées et omettent les petites îles.`,
     fallbackTimeout:
       "La carte interactive tarde à se charger\u202F; une carte fixe est donc affichée à sa place. Les chiffres ci-dessous ne sont pas touchés.",
     fallbackError:
       "La carte interactive ne s’est pas chargée\u202F; une carte fixe est donc affichée à sa place. Les chiffres ci-dessous ne sont pas touchés.",
     readyRecovery:
-      "Chaque région économique est ombrée selon la part des terres ayant perdu leur couvert arboré de 1984 à 2022 qui sont redevenues boisées pendant au moins cinq années consécutives après leur dernière perte. Elle ne change pas selon les années choisies. Les limites sont simplifiées et omettent les petites îles.",
+      "Chaque région économique est colorée selon la part des terres ayant perdu leur couvert arboré de 1984 à 2022 qui sont redevenues boisées pendant au moins cinq années consécutives après leur dernière perte. Cette coloration ne change pas selon les années choisies. Les limites sont simplifiées et omettent les petites îles.",
     unavailable:
       "L’état et le rétablissement ne sont pas offerts pour le moment. Les autres couches ne sont pas touchées.",
     unavailableYear:
@@ -177,9 +178,9 @@ const text = {
     perCellFilteredLimits:
       "Seules les parcelles ainsi désignées par le registre officiel sont dessinées. Une zone vide ne veut pas dire que rien ne s’y est produit\u202F; le registre ne la couvre peut-être pas.",
     legend:
-      "Perte forestière détectée pendant ces années, en part de la forêt au début",
+      "Perte forestière détectée pendant ces années, en proportion de la forêt au début",
     legendHeading: "Perte forestière détectée",
-    legendCaption: "En part de la forêt cartographiée au début",
+    legendCaption: "En proportion de la forêt cartographiée au début",
     legendPartly: "Partiellement cartographiée – un minimum",
     legendNoForest: "Aucune forêt cartographiée",
     region: "Région",
@@ -198,6 +199,7 @@ const text = {
     causeLegendHeading: { harvest: "Récoltes consignées", fire: "Incendies consignés" },
     causeLegendCaption: "Part moyenne de la forêt par année",
     coverage: "Couverture",
+    mapTitle: "Carte",
     zoomIn: "Zoom avant",
     zoomOut: "Zoom arrière",
     resetView: "Réinitialiser la vue",
@@ -212,7 +214,7 @@ const text = {
     placeFiguresLoading: "Chargement des chiffres de ce lieu…",
     placeFiguresFailed: "Les chiffres de ce lieu n’ont pas pu être chargés. Réessayez plus tard.",
     clearBoundary: "Effacer la limite",
-    interval: "Intervalle",
+    interval: "Période",
     normalizedShare: "Part de perte détectée",
     totalLoss: "Perte détectée",
     knownObservedSubtotal: "Sous-total détecté connu",
@@ -222,7 +224,7 @@ const text = {
     exitFullscreen: "Quitter le plein écran",
     mapPanelHarvest: "Récolte consignée",
     mapPanelFire: "Incendie consigné",
-    mapPanelNeither: "Ni l’un ni l’autre consigné\u202F; le registre ne couvre peut-être pas cette zone",
+    mapPanelNeither: "Ni récolte ni incendie consignés\u202F; le registre ne couvre peut-être pas cette zone",
   },
 } as const;
 
@@ -1061,6 +1063,8 @@ export function ExploreMapClient({
           // aggregate to magnify and the old ceiling still applies.
           maxZoom: patchCapable ? EXPLORE_PER_CELL_SPAN_LAYER.maxZoom : 6,
           attributionControl: false,
+          // MapLibre names the canvas for screen readers, in English unless told otherwise.
+          locale: { "Map.Title": text[locale].mapTitle },
         });
         mapRef.current = map;
         if (!map) return;

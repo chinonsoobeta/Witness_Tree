@@ -42,7 +42,7 @@ function TableHeaders({
       <th scope="col">{copy.hectares}</th>
       <th scope="col">{copy.forested}</th>
       <th scope="col">{locale === "en" ? "Coverage" : "Couverture"}</th>
-      <th scope="col">{locale === "en" ? "Evidence" : "Élément de preuve"}</th>
+      <th scope="col">{locale === "en" ? "Evidence" : "Type de preuve"}</th>
     </tr>
   );
 }

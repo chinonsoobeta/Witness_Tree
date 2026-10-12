@@ -27,15 +27,15 @@ const COPY = {
     terms: "Terms and limitations",
   },
   fr: {
-    title: "État du service de compte",
+    title: "État du service des comptes",
     status:
       "Les comptes ne sont pas encore actifs. L’inscription, la connexion, les zones enregistrées, les téléchargements, les demandes de suppression et les courriels ne sont pas disponibles dans cet aperçu.",
     future: "Ce qu’il faut pour activer les comptes",
-    planned: "Fonctions prévues de la version 1",
+    planned: "Ce que les comptes permettront de faire",
     capabilities: [
-      "Enregistrer jusqu’à 25 lieux ou zones dessinées, chacune d’au plus 5 000 km².",
+      "Enregistrer jusqu’à 25 lieux ou zones que vous dessinez, chacun d’au plus 5\u00A0000 km².",
       "Utiliser une adresse courriel vérifiée et recevoir les alertes dans l’une ou l’autre langue, quelle que soit la langue de navigation.",
-      "Choisir les alertes reçues et leur fréquence, consulter les alertes passées avec la version exacte des données utilisée, et télécharger vos zones et vos alertes.",
+      "Choisir les alertes reçues et leur fréquence, consulter les alertes passées avec la version exacte des données utilisée, et télécharger vos zones enregistrées et vos alertes.",
       "Demander la suppression de votre compte et de vos données personnelles\u202F; une fois cette fonction en place, la suppression se fera dans les 30 jours.",
     ],
     safeguards: "Conditions requises avant la mise en service",
@@ -43,9 +43,9 @@ const COPY = {
       "Une base de données hébergée au Canada qui sépare les données de chaque compte.",
       "Chiffrement des zones enregistrées.",
       "Un service de courriel qui limite la fréquence d’envoi, évite les doublons et peut arrêter toutes les alertes.",
-      "Un examen de la confidentialité, et une équipe externe pour surveiller le service et réagir aux problèmes.",
+      "Un examen de la confidentialité et une équipe externe chargée de surveiller le service et de réagir aux problèmes.",
     ],
-    alerts: "Contenu d’alerte conforme aux preuves",
+    alerts: "Ce que diront les alertes",
     alertCopy:
       "Chaque alerte commencera par son type de preuve, puis donnera la version des données, l’organisme source, l’heure d’observation et un lien vers la page, dans votre langue. Les alertes d’incendie afficheront d’abord le lien de sécurité de l’organisme. Les alertes ne constituent pas des directives d’urgence.",
     links: "Consultez les conditions et limites.",

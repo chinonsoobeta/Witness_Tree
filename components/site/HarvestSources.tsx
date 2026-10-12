@@ -45,8 +45,8 @@ const COPY = {
     ],
   },
   fr: {
-    heading: "Ce qui a été récolté, et ce qui a brûlé",
-    lead: "Un satellite peut voir que des arbres ont disparu, mais pas pourquoi. Ces pages font appel à d’autres sources\u202F: les statistiques officielles sur la récolte, les volumes de bois de chaque province et les cartes annuelles de la récolte et des feux de Ressources naturelles Canada.",
+    heading: "Ce qui a été récolté et ce qui a brûlé",
+    lead: "Un satellite peut voir que des arbres ont disparu, mais pas pourquoi. Ces pages font appel à d’autres sources\u202F: les statistiques officielles sur la récolte, les volumes de bois de chaque province et les cartes annuelles de la récolte et des feux produites par Ressources naturelles Canada.",
     cards: [
       {
         eyebrow: "Statistiques officielles",
@@ -58,7 +58,7 @@ const COPY = {
       {
         eyebrow: "Récolte et feu",
         title: "Récolte et feu par province, 1985–2022",
-        body: "Les cartes de Ressources naturelles Canada de la forêt dégagée par la récolte et par le feu, chaque année. Choisissez les provinces et les années, puis téléchargez le graphique ou ses chiffres.",
+        body: "Les cartes annuelles de Ressources naturelles Canada de la forêt récoltée et de la forêt brûlée. Choisissez les provinces et les années, puis téléchargez le graphique ou ses chiffres.",
         link: "Créer un graphique",
         href: HARVEST_FIRE_ROUTES.fr,
       },

@@ -40,6 +40,7 @@ const CORNER_RADIUS = 5;
 const copy = {
   en: {
     label: "Map for drawing an area",
+    mapTitle: "Map",
     caption:
       "Optional: click the map to place corners, or type them in the fields above.",
     hintPolygon: "Click the map to add a corner.",
@@ -56,6 +57,7 @@ const copy = {
   },
   fr: {
     label: "Carte pour dessiner une zone",
+    mapTitle: "Carte",
     caption:
       "Facultatif\u202F: cliquez sur la carte pour placer des coins, ou saisissez-les dans les champs ci-dessus.",
     hintPolygon: "Cliquez sur la carte pour ajouter un coin.",
@@ -64,7 +66,7 @@ const copy = {
     undo: "Retirer le dernier coin",
     reset: "Recommencer",
     added: (index: number, latitude: string, longitude: string) =>
-      `Coin ${index} placé à ${latitude}, ${longitude}.`,
+      `Coin ${index} placé à la latitude ${latitude.replace(".", ",")} et à la longitude ${longitude.replace(".", ",")}.`,
     removed: (index: number) => `Coin ${index} retiré.`,
     rectangleSet: "Rectangle défini à partir des deux coins cliqués.",
     cleared: "Coins effacés.",
@@ -238,6 +240,8 @@ export function ShapeDrawMap({
           style: drawStyle(),
           bounds: NATIONAL_BOUNDS,
           attributionControl: false,
+          // MapLibre names the canvas for screen readers, in English unless told otherwise.
+          locale: { "Map.Title": copy[locale].mapTitle },
         });
         instance.on("click", (event: MapMouseEvent) => {
           click.current(cornerFromPoint(event.lngLat.lat, event.lngLat.lng));
@@ -269,7 +273,7 @@ export function ShapeDrawMap({
       map.current?.remove();
       map.current = null;
     };
-  }, []);
+  }, [locale]);
 
   useEffect(() => {
     const instance = map.current;

@@ -61,14 +61,14 @@ const copy = {
     } as Record<string, string>,
   },
   fr: {
-    title: "Trouver la circonscription d’une adresse",
+    title: "Trouver les circonscriptions d’une adresse",
     label: "Adresse",
     submit: "Trouver les circonscriptions",
     searching: "Recherche en cours",
     resolving: "Lecture de l’index des circonscriptions",
     guide: "Entrez une adresse canadienne. Nous l’utilisons seulement pour trouver l’emplacement, et ne la conservons pas.",
     privacy:
-      "L’adresse n’est jamais inscrite dans l’adresse web de cette page, ni dans ses liens, ni dans son historique.",
+      "Votre adresse n’apparaît jamais dans l’adresse web de cette page, dans ses liens ni dans l’historique de votre navigateur.",
     results: "Choisissez l’adresse correspondante",
     none: "Aucune adresse ne correspond à cette recherche.",
     failed: "L’adresse n’a pas pu être trouvée pour le moment.",
@@ -77,9 +77,9 @@ const copy = {
     provincial: "Circonscription provinciale",
     outside: "Ce point est à l’extérieur du territoire couvert par l’index.",
     near: (names: string, metres: number) =>
-      `Ce point est à moins de ${metres} m d’une limite de circonscription\u202F; nous ne pouvons donc pas dire de quel côté il se trouve. Il est dans l’une des suivantes\u202F: ${names}.`,
+      `Ce point est à moins de ${metres} m d’une limite de circonscription\u202F; nous ne pouvons donc pas dire de quel côté il se trouve. Il se trouve dans l’une des circonscriptions suivantes\u202F: ${names}.`,
     precision: (block: number) =>
-      `Situé sur une grille de ${block} m\u202F; un point à moins de ${block} m d’une limite est donc indiqué comme proche de celle-ci, et non d’un côté ou de l’autre.`,
+      `La localisation se fait sur une grille de ${block} m\u202F: un point situé à moins de ${block} m d’une limite est donc indiqué comme proche de celle-ci, et non d’un côté ou de l’autre.`,
     compare: "Voir les mesures",
     provinces: {
       "bc-2023": "Colombie-Britannique",

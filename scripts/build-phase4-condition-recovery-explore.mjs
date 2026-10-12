@@ -35,8 +35,8 @@ const CAUSES = ["notRecorded", "fire", "harvest", "fireAndHarvest"];
 // years in a row, and losses from 2018 on cannot show them yet. The 2005-2014 losses
 // had eight to seventeen. Neither decade's recovery share is a final answer.
 const DECADE_NOTES = {
-  "2005-2014": { en: "Partial follow-up: 8 to 17 years to recover", fr: "Suivi partiel : de 8 à 17 ans pour se rétablir" },
-  "2015-2022": { en: "Too recent to judge: 7 years or less to recover", fr: "Trop récent pour conclure : 7 ans ou moins pour se rétablir" },
+  "2005-2014": { en: "Partial follow-up: 8 to 17 years to recover", fr: "Suivi partiel\u202F: de 8 à 17 ans pour se rétablir" },
+  "2015-2022": { en: "Too recent to judge: 7 years or less to recover", fr: "Trop récent pour conclure\u202F: 7 ans ou moins pour se rétablir" },
 };
 
 // Coverage grades from lib/domain/coverage.ts. The whole product is the national

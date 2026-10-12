@@ -112,7 +112,7 @@ test("methods explain the unmapped extent and inconclusive sampling in both loca
     "Where the source has no data", "What we know about the area with no data",
     "Là où la source n’a pas de données", "Ce que nous savons de la zone sans données",
     "No data doesn’t mean no forest, and we never treat it that way", "L’absence de données ne veut pas dire l’absence de forêt",
-    "not yet cleared for public use", "pas encore autorisés pour un usage public",
+    "not yet cleared for public use", "leur usage public n’est pas encore autorisé",
     "images can’t show whether the land met the forest definition", "les images ne montrent pas si le territoire répondait à la définition de la forêt",
     "a later start year didn’t help", "une année de départ plus récente n’a pas aidé",
     "field plots, air photos or lidar", "placettes de terrain, des photos aériennes ou des données lidar",

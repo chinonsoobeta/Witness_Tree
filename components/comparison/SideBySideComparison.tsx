@@ -3,7 +3,7 @@ import {
   comparePlaces,
   type ComparisonPlace,
 } from "@/lib/comparison";
-import { formatHectares, formatPercent, type Locale } from "@/lib/domain";
+import { colon, formatHectares, formatPercent, type Locale } from "@/lib/domain";
 import { MeasurementCoverage, missingMeasurement } from "./MeasurementCoverage";
 
 export function SideBySideComparison({
@@ -38,13 +38,13 @@ export function SideBySideComparison({
       : {
           title: "Comparaison côte à côte",
           table: "Afficher en tableau",
-          cards: "Afficher en cartes",
+          cards: "Afficher en fiches",
           measure: "Mesure",
           share: "Part de perte détectée",
           change: "Perte détectée",
           forest: "Superficie forestière",
           coverage: "Couverture",
-          evidence: "Élément de preuve",
+          evidence: "Type de preuve",
         };
   const percent = (place: ComparisonPlace) => place.detectedChangePercent === null ? missingMeasurement(place, locale) : formatPercent(place.detectedChangePercent, locale);
   const hectares = (place: ComparisonPlace) => place.detectedChangeHectares === null ? missingMeasurement(place, locale) : formatHectares(place.detectedChangeHectares, locale);
@@ -71,8 +71,8 @@ export function SideBySideComparison({
             <thead>
               <tr>
                 <th scope="col">{labels.measure}</th>
-                <th scope="col">{left.name[locale]}<div className="comparison-heading-coverage">{labels.coverage}: <MeasurementCoverage place={left} locale={locale} /></div></th>
-                <th scope="col">{right.name[locale]}<div className="comparison-heading-coverage">{labels.coverage}: <MeasurementCoverage place={right} locale={locale} /></div></th>
+                <th scope="col">{left.name[locale]}<div className="comparison-heading-coverage">{labels.coverage}{colon(locale)} <MeasurementCoverage place={left} locale={locale} /></div></th>
+                <th scope="col">{right.name[locale]}<div className="comparison-heading-coverage">{labels.coverage}{colon(locale)} <MeasurementCoverage place={right} locale={locale} /></div></th>
               </tr>
             </thead>
             <tbody>
@@ -128,7 +128,7 @@ function Place({ place, locale }: { place: ComparisonPlace; locale: Locale }) {
     <article className="card card--lift comparison-card">
       <header>
         <h2>{place.name[locale]}</h2>
-        <div className="comparison-heading-coverage">{locale === "en" ? "Coverage" : "Couverture"}: <MeasurementCoverage place={place} locale={locale} /></div>
+        <div className="comparison-heading-coverage">{locale === "en" ? "Coverage" : "Couverture"}{colon(locale)} <MeasurementCoverage place={place} locale={locale} /></div>
       </header>
       <dl className="comparison-figures">
         <dt>{locale === "en" ? "Detected loss share" : "Part de perte détectée"}</dt><dd>{percent}</dd>

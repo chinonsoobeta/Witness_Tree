@@ -3,7 +3,7 @@ import type { ComparisonPlace, RankedRiding, RankingContext } from "./types";
 export const comparisonContext: RankingContext = {
   timeRange: "2000–2024", boundaryEdition: "2023 Representation Order", dataVersion: "illustrative-1", evidence: "satellite-observation",
   denominatorDefinition: { en: "Share of forested hectares at the first year of the range.", fr: "Part des hectares forestiers de la première année de la période." },
-  method: { en: "Rows are ordered by detected change as a share of forested area.", fr: "Les lignes sont ordonnées selon le changement détecté en part de la superficie forestière." },
+  method: { en: "Rows are ordered by detected change as a share of forested area.", fr: "Les lignes sont ordonnées selon le changement détecté en proportion de la superficie forestière." },
 };
 export const rankedRidingFixtures: readonly RankedRiding[] = [
   { id: "r1", name: { en: "Example North", fr: "Exemple Nord" }, placeType: "federal-riding", detectedChangePercent: 4.2, detectedChangeHectares: 420, forestedHectares: 10000, unmatchedSharePercent: 35, coverageGrade: "national-baseline", measurementCoverage: "complete", evidence: "satellite-observation", sufficientCoverage: true },
