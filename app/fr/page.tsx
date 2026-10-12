@@ -89,7 +89,7 @@ export default function FrenchHome() {
         </ul>
         <p>{PRODUCT_NAME.fr} rapporte seulement ce que ses sources consignent et ce que les images satellites détectent.</p>
         <p>Un satellite peut voir que des arbres ont disparu, mais pas pourquoi.</p>
-        <p>Ce sont des chiffres pour {provinceSpanReach("fr", "span")}.</p>
+        <p>Ces chiffres portent sur la période {provinceSpanReach("fr", "from")}.</p>
         <p><Link href="/fr/methodes">Comment fonctionnent les méthodes</Link></p>
         <p><Link href="/fr/donnees">Données, sources et licences</Link></p>
         <p><small>{"Source du contexte\u202F: "}{EXPLORE_PRODUCTION_LAYER.attribution.fr} <a href={EXPLORE_PRODUCTION_LAYER.attribution.href}>Catalogue source</a>.</small></p>

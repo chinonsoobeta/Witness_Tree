@@ -8,9 +8,9 @@ export type ProvenanceBlockProps = Readonly<{
 const LABELS = {
   dataset: { en: "Dataset", fr: "Jeu de données" },
   version: { en: "Version", fr: "Version" },
-  retrieved: { en: "Retrieved", fr: "Récupéré" },
+  retrieved: { en: "Retrieved", fr: "Date de consultation" },
   licence: { en: "Licence", fr: "Licence" },
-  record: { en: "Record", fr: "Registre" },
+  record: { en: "Record", fr: "Fiche" },
 } as const;
 
 export function ProvenanceBlock({ provenance, locale }: ProvenanceBlockProps) {

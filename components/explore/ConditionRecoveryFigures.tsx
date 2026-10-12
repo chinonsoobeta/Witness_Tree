@@ -54,11 +54,11 @@ const COPY = {
     provinces: "Par province",
     decades: "Par décennie de la dernière perte, quatre provinces",
     decadesLead:
-      "Les pertes plus anciennes ont eu plus de temps pour se rétablir. Les pertes depuis 2015 ont eu au plus sept ans et doivent être boisées pendant cinq d’entre eux\u202F: cette décennie est trop récente pour conclure.",
+      "Les pertes plus anciennes ont eu plus de temps pour se rétablir. Les pertes survenues depuis 2015 ont eu au plus sept ans, et le terrain doit être boisé pendant cinq d’entre eux\u202F: cette décennie est donc trop récente pour conclure.",
     causes: "Par cause consignée de la dernière perte, quatre provinces",
     causesLead: "La cause est ce que le registre national des perturbations indique pour l’année de la perte. Une grande partie de la perte n’a aucune cause consignée.",
     regions: "Par région économique",
-    regionsLead: "La carte ombre ces mêmes régions, les régions économiques de 2021 de Statistique Canada.",
+    regionsLead: "La carte colore ces mêmes régions, soit les régions économiques de 2021 de Statistique Canada.",
     survey: "Comparaison avec les relevés provinciaux",
     place: "Lieu",
     province: "Province",

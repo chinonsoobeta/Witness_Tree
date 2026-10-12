@@ -25,7 +25,7 @@ test("the bilingual public table discloses rounding, withholding, and non-compar
   assert.equal((english.match(/scope="col"/g) ?? []).length, 8);
   assert.equal((french.match(/scope="col"/g) ?? []).length, 8);
   assert.match(english, /neither series may be summed across intervals/i);
-  assert.match(french, /aucune série ne peut être additionnée entre les intervalles/i);
+  assert.match(french, /aucune des deux séries ne peut être additionnée d’un intervalle à l’autre/i);
 });
 
 test("the checked-in public artifact contains 104 rounded rows, 14 withheld rows, and no restricted values", () => {

@@ -71,7 +71,7 @@ export const wildfireText = (locale: Locale) => locale === "en" ? {
   perimeter: "A fire perimeter is not a damage or mortality map.",
 } : {
   title: "Contexte des incendies",
-  fixture: "Exemple illustratif; ces données sur les incendies ne sont pas en direct.",
+  fixture: "Exemple illustratif\u202F; ces données sur les incendies ne sont pas en direct.",
   sourceUpdated: "Mise à jour de la source",
   lastRefresh: `Dernière actualisation réussie de ${PRODUCT_NAME.fr}`,
   agency: "Organisme source",
@@ -79,7 +79,7 @@ export const wildfireText = (locale: Locale) => locale === "en" ? {
   emergency: "Information officielle d’urgence",
   context: `${PRODUCT_NAME.fr} fournit du contexte, et non des directives d’urgence. L’organisme responsable fait autorité pour les renseignements de sécurité publique.`,
   degraded: "Cette source illustrative est dégradée. Consultez l’organisme responsable.",
-  stale: "Cette source illustrative a plus de 24 heures. Le contenu actuel sur les incendies est indisponible; consultez l’organisme responsable.",
+  stale: "Cette source illustrative a plus de 24 heures. Le contenu actuel sur les incendies est indisponible\u202F; consultez l’organisme responsable.",
   summary: "Estimation dérivée illustrative",
   perimeter: "Le périmètre d’un incendie n’est pas une carte des dommages ou de la mortalité.",
 };

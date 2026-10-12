@@ -104,7 +104,7 @@ export function provinceSeries(province, source) {
         fireCells: null,
         unknownReason: {
           en: "1984 is the first image in the record. A change is dated by comparing a year with the year before it, so no harvest or fire can be dated to 1984.",
-          fr: "1984 est la première image de la série. Un changement est daté en comparant une année à la précédente; aucune récolte ni aucun incendie ne peut donc être daté de 1984.",
+          fr: "1984 est la première image de la série. Un changement est daté en comparant une année à la précédente\u202F; aucune récolte ni aucun incendie ne peut donc être daté de 1984.",
         },
       },
       ...expectedBins.slice(1).map((bin, i) => ({
@@ -152,7 +152,7 @@ export function buildSeries({ sources, inputs }) {
       },
       {
         en: "Each 30 m cell carries one change year per product, so a stand that burned twice, or was cut twice, appears once.",
-        fr: "Chaque cellule de 30 m porte une seule année de changement par produit : un peuplement brûlé deux fois, ou coupé deux fois, n’apparaît qu’une fois.",
+        fr: "Chaque cellule de 30 m porte une seule année de changement par produit\u202F: un peuplement brûlé deux fois, ou coupé deux fois, n’apparaît qu’une fois.",
       },
       {
         en: "A burned stand that was later salvage-logged is usually counted as fire.",
@@ -164,7 +164,7 @@ export function buildSeries({ sources, inputs }) {
       },
       {
         en: "The record ends in 2022. Later fire seasons, including 2023, are not in it.",
-        fr: "La série se termine en 2022. Les saisons des feux suivantes, dont celle de 2023, n’y figurent pas.",
+        fr: "La série se termine en 2022. Les saisons de feux ultérieures, dont celle de 2023, n’y figurent pas.",
       },
     ],
     sources: {

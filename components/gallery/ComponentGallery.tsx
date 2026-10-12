@@ -29,13 +29,13 @@ const COPY: Record<Locale, GalleryCopy> = {
   },
   fr: {
     title: "Comment les chiffres sont marqués",
-    intro: "Chaque chiffre du site affiche sa preuve, sa confiance, sa couverture et sa source.",
+    intro: "Chaque chiffre du site indique sa preuve, son niveau de confiance, sa couverture et sa source.",
     light: "Thème clair",
     dark: "Thème sombre",
     evidence: "Catégories de preuves",
     confidence: "Confiance",
     coverage: "Couverture",
-    values: "Valeurs d’exemple (inventées, pas des registres)",
+    values: "Valeurs d’exemple (inventées, et non tirées de registres)",
     figure: "Valeur chiffrée",
     unknown: "Inconnu",
   },
@@ -45,7 +45,7 @@ const EVIDENCE: EvidenceClass[] = ["official-record", "satellite-observation", "
 const CONFIDENCE: ConfidenceResult[] = [
   { level: "high", ruleId: "CONF-HIGH-001", reason: { en: "Direct authoritative record with clear geometry, date and attributes.", fr: "Registre faisant directement autorité, avec une géométrie, une date et des attributs clairs." } },
   { level: "medium", ruleId: "CONF-MEDIUM-001", reason: { en: "Good evidence, with one important gap: the attribution is partial.", fr: "Bonne preuve, avec une lacune importante\u202F: l’attribution est partielle." } },
-  { level: "limited", ruleId: "CONF-LIMITED-001", reason: { en: "The forest inventory is 6 years older than the event, and its details were not updated for tree growth.", fr: "L’inventaire forestier a 6 ans de plus que l’événement, et ses détails n’ont pas été mis à jour selon la croissance des arbres." } },
+  { level: "limited", ruleId: "CONF-LIMITED-001", reason: { en: "The forest inventory is 6 years older than the event, and its details were not updated for tree growth.", fr: "L’inventaire forestier est antérieur de 6 ans à l’événement, et ses détails n’ont pas été mis à jour pour tenir compte de la croissance des arbres." } },
 ];
 
 const COVERAGE = ["national-baseline", "extended-record-sparse-official-matching", "national-baseline-plus-local-context"] as const;

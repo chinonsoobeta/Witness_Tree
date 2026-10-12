@@ -5,7 +5,7 @@ import { PLACE_PROVINCES, PLACE_TYPES, type Location, type Place, type PlaceEven
 const local = (en: string, fr: string): LocalizedString => ({ en, fr });
 const provenance: Provenance = { dataset: "Illustrative source-ledger entry", version: "example-1.0", retrievedDate: "2026-08-11", licence: "ogl-canada-2.0", recordUrl: "https://example.local/record" };
 const high: ConfidenceResult = { level: "high", ruleId: "CONF-HIGH-001", reason: local("An official record with a clear location, date and details.", "Un registre officiel avec un emplacement, une date et des détails clairs.") };
-const limited: ConfidenceResult = { level: "limited", ruleId: "CONF-LIMITED-001", reason: local("A rough guide only: the data here has a known gap or is not detailed enough.", "Simple indication\u202F: les données ont ici une lacune connue ou manquent de précision.") };
+const limited: ConfidenceResult = { level: "limited", ruleId: "CONF-LIMITED-001", reason: local("A rough guide only: the data here has a known gap or is not detailed enough.", "À titre indicatif seulement. Les données ont ici une lacune connue ou manquent de précision.") };
 
 function event(id: string, year: number, evidence: PlaceEvent["evidence"], title: LocalizedString, confidence = high): PlaceEvent {
   return { id, year, evidence, title, confidence, limitation: confidence.reason, provenance };
@@ -28,19 +28,27 @@ const typeNames: Record<PlaceType, LocalizedString> = {
   "federal-riding": local("federal riding", "circonscription fédérale"),
 };
 
+// French agrees the adjective and article with the type and puts each province after its own preposition.
+const masculineTypes: ReadonlySet<PlaceType> = new Set(["watershed", "forest-district"]);
+const provinceIn: Record<PlaceProvince, string> = { BC: "en Colombie-Britannique", AB: "en Alberta", ON: "en Ontario", QC: "au Québec" };
+const frenchType = (type: PlaceType, province: PlaceProvince) =>
+  `${typeNames[type].fr} ${masculineTypes.has(type) ? "illustratif" : "illustrative"} ${provinceIn[province]}`;
+const frenchArticle = (type: PlaceType) => masculineTypes.has(type) ? "le" : "la";
+const capitalized = (text: string) => `${text[0]!.toUpperCase()}${text.slice(1)}`;
+
 const specs: ReadonlyArray<readonly [string, PlaceType, PlaceProvince, LocalizedString]> = PLACE_PROVINCES.flatMap((province) => PLACE_TYPES.map((type) => [
   `${province.toLowerCase()}-${type}`,
   type,
   province,
-  local(`Illustrative ${provinceNames[province].en} ${typeNames[type].en}`, `${provinceNames[province].fr} illustrative : ${typeNames[type].fr}`),
+  local(`Illustrative ${provinceNames[province].en} ${typeNames[type].en}`, capitalized(frenchType(type, province))),
 ] as const));
 
 export const PLACES: readonly Place[] = specs.map(([id, type, province, name], index) => {
   const first = event(`${id}-2024`, 2024, "official-record", local("Illustrative recorded intervention", "Intervention consignée illustrative"));
   const second = event(`${id}-2022`, 2022, "satellite-observation", local("Illustrative detected tree cover reduction", "Réduction illustrative du couvert arboré détectée"), limited);
   const aliases = type === "municipality" && province === "QC"
-    ? local("Illustrative Québec municipality alias", "Alias de municipalité québécoise")
-    : local(`${name.en} alias`, `Alias de ${name.fr}`);
+    ? local("Illustrative Québec municipality alias", "Alias illustratif d’une municipalité québécoise")
+    : local(`${name.en} alias`, `Alias ${masculineTypes.has(type) ? "du" : "de la"} ${frenchType(type, province)}`);
   return {
     status: "example", id, type, province, name, aliases, boundaryEdition: `example-boundary-${province.toLowerCase()}-2026`, boundaryVersion: "example-2026.1", forestHectares: 1000 + index * 100,
     coverage: [{ grade: "national-baseline", share: 0.7 }, { grade: "national-baseline-plus-local-context", share: 0.3 }],
@@ -52,6 +60,6 @@ export const PLACES: readonly Place[] = specs.map(([id, type, province, name], i
   };
 });
 
-export const LOCATIONS: readonly Location[] = PLACES.map((place, index) => ({ status: "example", id: `location-${place.id}`, summary: local(`Illustrative location in ${place.name.en}.`, `Emplacement illustratif dans ${place.name.fr}.`), latitude: 49 + index, longitude: -123 + index, accuracyMetres: 100, containingPlaceIds: [place.id], events: [...place.events].sort((a, b) => b.year - a.year) }));
+export const LOCATIONS: readonly Location[] = PLACES.map((place, index) => ({ status: "example", id: `location-${place.id}`, summary: local(`Illustrative location in ${place.name.en}.`, `Emplacement illustratif dans ${frenchArticle(place.type)} ${frenchType(place.type, place.province)}.`), latitude: 49 + index, longitude: -123 + index, accuracyMetres: 100, containingPlaceIds: [place.id], events: [...place.events].sort((a, b) => b.year - a.year) }));
 export const placeById = (id: string) => PLACES.find((place) => place.id === id);
 export const locationById = (id: string) => LOCATIONS.find((location) => location.id === id);

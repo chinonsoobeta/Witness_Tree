@@ -44,7 +44,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
           heading: "Coverage",
           paragraphs: [
             "Event coverage grades say how many records support one event, from most to least: enhanced local records, national baseline plus local context, national baseline, extended record with few official matches, or not applicable. A grade describes one event, not a whole province or riding.",
-            "Coverage for a province or riding says how much of it was mapped: all of it, part of it with the rest unknown, or none of it. Only a fully mapped area gets a full figure and a percentage. Explore shows these as “Fully mapped” or “Some of this area has no data, so this is a minimum”; Compare uses “Complete mapped coverage”, “Partial mapped coverage; unknown area remains” and “No mapped coverage”.",
+            "Coverage for a province or riding says how much of it was mapped: all of it, part of it with the rest unknown, or none of it. Only a fully mapped area gets a full figure and a percentage. Explore and Compare show these as “Fully mapped”, “Partly mapped; an unknown area remains” or “Not mapped”, and Explore marks a partly mapped figure “Some of this area has no data, so this is a minimum”.",
           ],
         },
         {
@@ -118,7 +118,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
           heading: "Couverture",
           paragraphs: [
             "Les catégories de couverture des événements indiquent combien de registres appuient un événement, du plus au moins\u202F: registres locaux enrichis, référence nationale avec contexte local, référence nationale, registre prolongé avec peu d’appariements officiels, ou sans objet. Une catégorie décrit un événement, et non une province ou une circonscription entière.",
-            "La couverture d’une province ou d’une circonscription indique quelle part a été cartographiée\u202F: la totalité, une partie avec le reste inconnu, ou rien. Seule une zone entièrement cartographiée reçoit un chiffre complet et un pourcentage. Explorer affiche «\u00A0Entièrement cartographié\u00A0» ou «\u00A0Une partie de cette zone n’a pas de données\u202F: il s’agit donc d’un minimum\u00A0»\u202F; Comparer emploie «\u00A0Couverture cartographiée complète\u00A0», «\u00A0Couverture cartographiée partielle\u202F; une zone inconnue demeure\u00A0» et «\u00A0Aucune couverture cartographiée\u00A0».",
+            "La couverture d’une province ou d’une circonscription indique quelle part a été cartographiée\u202F: la totalité, une partie avec le reste inconnu, ou rien. Seule une zone entièrement cartographiée reçoit un chiffre complet et un pourcentage. Explorer et Comparer les affichent sous la forme «\u00A0Entièrement cartographiée\u00A0», «\u00A0Partiellement cartographiée\u202F; une zone inconnue demeure\u00A0» ou «\u00A0Non cartographiée\u00A0», et Explorer marque un chiffre partiel de la mention «\u00A0Une partie de cette zone n’a pas de données\u202F: il s’agit donc d’un minimum\u00A0».",
           ],
         },
         {
@@ -164,9 +164,9 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
           ],
         },
         {
-          heading: "Zone de perte détectée",
+          heading: "Parcelle de perte détectée",
           paragraphs: [
-            "Une forme cartographique simplifiée qui montre où les satellites ont détecté une perte forestière pendant une année. Les zones ne peuvent pas être additionnées pour obtenir une superficie exacte et, à elles seules, ne montrent ni exploitation, ni incendie, ni déforestation, ni illégalité, ni responsable.",
+            "Une forme cartographique simplifiée qui montre où les satellites ont détecté une perte forestière pendant une année. Les parcelles ne peuvent pas être additionnées pour obtenir une superficie exacte et, à elles seules, ne montrent ni exploitation, ni incendie, ni déforestation, ni illégalité, ni qui en est responsable.",
           ],
         },
       ],
@@ -204,9 +204,9 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         "Aucune correction de production n’a été déposée, car aucune donnée définitive n’a encore été publiée.",
       sections: [
         {
-          heading: "Délais de service",
+          heading: "Niveaux de service",
           paragraphs: [
-            "Délais de réponse, en jours ouvrables pour accuser réception puis pour régler\u202F: critique, 1 et 5\u202F; important, 3 et 15\u202F; mineur, 5 et 30.",
+            "Délais de réponse, en jours ouvrables pour accuser réception puis pour résoudre\u202F: critique, 1 et 5\u202F; important, 3 et 15\u202F; mineur, 5 et 30.",
           ],
         },
         {
@@ -218,7 +218,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Instructions provisoires",
           paragraphs: [
-            `Si l’erreur se trouve dans le registre d’une source, suivez le lien source et utilisez le processus de correction de cet éditeur. Si elle se trouve sur ${frBrand}, notez le lien de la page, les mots ou le chiffre exacts, la date et l’heure, la langue, pourquoi l’information semble erronée et toute source officielle. Il n’y a pas encore de moyen de nous l’envoyer\u202F: revenez ici\u202F; n’envoyez aucun renseignement personnel à une adresse que cette page n’indique pas. Vos notes n’ouvrent pas de demande et ne déclenchent aucun délai de réponse.`,
+            `Si l’erreur se trouve dans le registre d’une source, suivez le lien source et utilisez le processus de correction de cet éditeur. Si elle se trouve sur ${frBrand}, notez le lien de la page, les mots ou le chiffre exacts, la date et l’heure, la langue, pourquoi l’information semble erronée et toute source officielle. Il n’y a pas encore de moyen de nous l’envoyer\u202F: revenez consulter cette page\u202F; n’envoyez aucun renseignement personnel à une adresse que cette page n’indique pas. Vos notes n’ouvrent pas de demande et ne déclenchent aucun délai de réponse.`,
           ],
         },
       ],
@@ -253,7 +253,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
       title: "Conditions",
       sections: [
         {
-          heading: "Registre d’information",
+          heading: "Registre à titre informatif",
           paragraphs: [
             `${frBrand} est un registre de preuves. Ce n’est ni un service d’urgence, ni un avis juridique, ni une conclusion de conformité, ni un historique de propriété, ni une estimation du bois vendable, ni une prévision des incendies. Les organismes sources demeurent l’autorité.`,
           ],
@@ -261,7 +261,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Interprétation",
           paragraphs: [
-            "Un changement vu par satellite ne montre pas sa cause. Une organisation n’est nommée que dans le rôle exact, et la version datée, indiqués dans un registre public officiel\u202F; la proximité ne la rend jamais responsable.",
+            "Un changement vu par satellite ne montre pas sa cause. Une organisation n’est nommée que dans le rôle exact indiqué par une version datée d’un registre public officiel\u202F; le simple fait d’être à proximité ne la rend jamais responsable.",
           ],
         },
         {

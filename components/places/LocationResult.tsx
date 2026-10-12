@@ -24,7 +24,7 @@ export function LocationResult({
         }
       : {
           coordinates: "Coordonnées et précision",
-          contains: "Géographies contenantes",
+          contains: "Territoires englobants",
           events: "Événements",
           limitation: "Pourquoi ce niveau de confiance",
           provenance: "Provenance",
@@ -46,8 +46,9 @@ export function LocationResult({
       <section className="record-block">
         <h2>{text.coordinates}</h2>
         <p className="coordinates">
-          {location.latitude}, {location.longitude}; ±{location.accuracyMetres}{" "}
-          m
+          {locale === "en"
+            ? `${location.latitude}, ${location.longitude}; ±${location.accuracyMetres} m`
+            : `${location.latitude}\u202F; ${location.longitude}\u202F; ±${location.accuracyMetres} m`}
         </p>
       </section>
 

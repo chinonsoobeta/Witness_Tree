@@ -50,7 +50,7 @@ test("a one-year span is printed as one year rather than as a range to itself", 
   assert.equal(formatYearRange(single, "en"), "2022");
   assert.equal(formatYearRange(single, "en", "span"), "2022");
   assert.equal(formatYearRange(single, "en", "from"), "in 2022");
-  assert.equal(formatYearRange(single, "fr", "from"), "de 2022");
+  assert.equal(formatYearRange(single, "fr", "from"), "en 2022");
   assert.equal(formatYearRange(single, "en", "between"), "in 2022");
   assert.equal(formatYearRange(single, "fr", "between"), "en 2022");
 });

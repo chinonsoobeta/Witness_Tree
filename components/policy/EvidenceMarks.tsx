@@ -39,7 +39,7 @@ const MEANING: Record<EvidenceClass, Record<Locale, string>> = {
   },
   unknown: {
     en: "We don’t yet have an official public record that answers this.",
-    fr: "Nous n’avons pas encore de registre public officiel qui répond à cette question.",
+    fr: "Nous n’avons pas encore de registre public officiel qui réponde à cette question.",
   },
 };
 

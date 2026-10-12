@@ -40,7 +40,7 @@ const COPY = {
     behind:
       "Le diffuseur offre une année plus récente que nous n’avons pas encore chargée\u202F; ce site est donc en retard.",
     revised:
-      "Le diffuseur a aussi révisé une année déjà chargée\u202F; une valeur présentée ici peut donc différer de la source aujourd'hui.",
+      "Le diffuseur a aussi révisé une année déjà chargée\u202F; une valeur présentée ici peut donc différer de la source aujourd’hui.",
     hostLabel: "Vérifié auprès de",
   },
 } as const;

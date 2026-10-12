@@ -71,17 +71,18 @@ const COPY = {
     limitsTitle: "Read these before comparing",
     notesHeading: "Notes",
     sourceTitle: "Sources",
+    boundary: (recorded: string) => recorded,
     tabulation: `Tabulation: ${PRODUCT_NAME.en}, technical preview, not expert reviewed.`,
     explore: "See harvest and fire on the map",
   },
   fr: {
     eyebrow: "Récolte et feu",
     title: "Récolte et feu par province",
-    lead: "La superficie de forêt dégagée par la récolte et celle dégagée par le feu en Colombie-Britannique, en Alberta, en Ontario et au Québec, chaque année de 1985 à 2022. Choisissez les provinces, les années et le regroupement, puis téléchargez le graphique ou ses chiffres.",
+    lead: "La superficie forestière récoltée et la superficie forestière brûlée en Colombie-Britannique, en Alberta, en Ontario et au Québec, chaque année de 1985 à 2022. Choisissez les provinces, les années et le regroupement, puis téléchargez le graphique ou ses chiffres.",
     unavailable: "Ces chiffres ne sont pas disponibles pour le moment.",
     measureTitle: "Ce que montrent les barres",
     sumTitle: "Pourquoi les années peuvent être additionnées ici",
-    sumBody: "Ailleurs sur ce site, les pertes annuelles ne sont jamais additionnées, car un lieu perdu deux années serait compté deux fois. Ces chiffres sont différents\u202F: le registre national donne à chaque carré de 30 m au plus une année de récolte et une année de feu. Additionner les années de récolte compte chaque carré une seule fois, tout comme additionner les années de feu.",
+    sumBody: "Ailleurs sur ce site, les pertes annuelles ne sont jamais additionnées, car un lieu perdu au cours de deux années serait compté deux fois. Ces chiffres sont différents\u202F: le registre national donne à chaque carré de 30 m au plus une année de récolte et une année de feu. Additionner les années de récolte compte chaque carré une seule fois, tout comme additionner les années de feu.",
     sumNever: "La récolte et le feu ne sont jamais additionnés, car un même carré peut porter les deux.",
     builderTitle: "Créer un graphique",
     provinces: "Provinces",
@@ -92,11 +93,11 @@ const COPY = {
     scale: "Échelle verticale",
     shared: "Même échelle pour chaque graphique",
     own: "Chaque graphique s’ajuste à ses barres",
-    view: "Afficher en",
+    view: "Afficher sous forme de",
     chart: "Graphiques",
     table: "Tableau",
     submit: "Afficher",
-    chartTitle: (name: string, range: string) => `${name}\u202F: forêt dégagée par la récolte et par le feu, ${range}`,
+    chartTitle: (name: string, range: string) => `${name}\u202F: forêt récoltée et forêt brûlée, ${range}`,
     subtitle: { 1: "Hectares par année", 5: "Hectares par période de cinq ans", 10: "Hectares par période de dix ans", span: "Hectares sur toute la période" } as Record<string, string>,
     sharedNote: "même échelle pour chaque graphique",
     harvest: "Récolte",
@@ -105,7 +106,7 @@ const COPY = {
     yAxis: "Hectares",
     tooltip: (name: string, label: string, kind: string, value: string) => `${name}, ${label}, ${kind.toLowerCase()}\u202F: ${value} ha`,
     short: (label: string, years: number) => `* ${label} ne couvre que ${years} ${years === 1 ? "année" : "années"}\u202F; la série se termine en 2022.`,
-    png: (name: string) => `Télécharger le graphique ${name} (PNG)`,
+    png: (name: string) => `Télécharger le graphique (PNG)\u202F: ${name}`,
     csv: "Télécharger ces chiffres (CSV)",
     record: "Ouvrir la série annuelle complète (JSON)",
     decision: "Lire la décision de publication",
@@ -121,6 +122,7 @@ const COPY = {
     limitsTitle: "À lire avant de comparer",
     notesHeading: "Notes",
     sourceTitle: "Sources",
+    boundary: () => "Statistique Canada, Fichier des limites cartographiques des provinces et territoires, Recensement de 2021, date de référence\u202F: 1er janvier 2021.",
     tabulation: `Compilation\u202F: ${PRODUCT_NAME.fr}, aperçu technique, non examiné par des spécialistes.`,
     explore: "Voir la récolte et le feu sur la carte",
   },
@@ -382,7 +384,7 @@ export function HarvestFirePage({ locale, query }: Readonly<{ locale: Locale; qu
           <li><a href={series.sources.fire.url}>{series.sources.fire.title}</a></li>
         </ul>
         <p>{series.sources.citation}</p>
-        <p>{series.sources.boundary}</p>
+        <p>{text.boundary(series.sources.boundary)}</p>
         <p>{text.tabulation}</p>
       </section>
     </>

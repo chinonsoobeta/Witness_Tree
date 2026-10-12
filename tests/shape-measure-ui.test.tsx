@@ -133,7 +133,7 @@ test("draw results put both missing coverage states before all three bounded amo
   for (const locale of ["en", "fr"] as const) {
     const markup = renderToStaticMarkup(<ShapeMeasurementResult locale={locale} measurement={measurement} />);
     const figures = markup.indexOf('class="shape-readout"');
-    for (const label of locale === "en" ? ["Blocks without data", "Outside the mapped area"] : ["Blocs sans données", "Hors de la zone cartographiée"]) {
+    for (const label of locale === "en" ? ["Blocks without data", "Outside the mapped area"] : ["Carrés sans données", "Hors de la zone cartographiée"]) {
       assert.ok(markup.indexOf(label) >= 0 && markup.indexOf(label) < figures);
     }
     assert.equal((markup.match(/class="shape-range"/g) ?? []).length, 3);

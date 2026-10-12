@@ -127,7 +127,7 @@ export const BOUNDARY_OVERLAYS: Readonly<Record<BoundaryOverlayId, BoundaryOverl
       },
       attribution: {
         en: "Natural Resources Canada, Atlas of Canada drainage areas, version 6.0 (2008).",
-        fr: "Ressources naturelles Canada, aires de drainage de l'Atlas du Canada, version 6.0 (2008).",
+        fr: "Ressources naturelles Canada, aires de drainage de l’Atlas du Canada, version 6.0 (2008).",
       },
     },
   });

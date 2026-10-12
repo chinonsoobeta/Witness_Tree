@@ -9,7 +9,7 @@ import { PlaceFinder }
 from "../components/search/PlaceFinder.tsx";
 // @ts-expect-error Node test runner needs extensions.
 import { formatSearchShare, searchSite } from "../lib/search/site-search.ts";
-test("normalizes aliases and diacritics", () => { assert.equal(normalizeSearch("Québec!") , "quebec"); assert.ok(searchPlaces("alias de municipalite quebecoise").length); });
+test("normalizes aliases and diacritics", () => { assert.equal(normalizeSearch("Québec!") , "quebec"); assert.ok(searchPlaces("alias illustratif d’une municipalite quebecoise").length); });
 test("empty and missing results never become zero", () => { assert.deepEqual(searchPlaces(""), []); assert.deepEqual(searchPlaces("not-a-place"), []); });
 test("fixture names have bilingual parity", () => { const found = searchPlaces("illustrative"); assert.equal(found.filter((place) => place.name.en).length, found.filter((place) => place.name.fr).length); });
 test("renders empty and no-result states plainly and never as zero", () => {
@@ -122,8 +122,8 @@ test("the real search module stays out of client modules", () => {
   }
 });
 test("renders the bilingual place finder with a hidden label and compact submit text", () => {
-  const en = renderToStaticMarkup(<PlaceFinder locale="en" query="alias de municipalite quebecoise" />);
-  const fr = renderToStaticMarkup(<PlaceFinder locale="fr" query="alias de municipalite quebecoise" />);
+  const en = renderToStaticMarkup(<PlaceFinder locale="en" query="alias illustratif d’une municipalite quebecoise" />);
+  const fr = renderToStaticMarkup(<PlaceFinder locale="fr" query="alias illustratif d’une municipalite quebecoise" />);
   assert.match(en, /Search places/);
   assert.match(en, /<label[^>]*class="field-label sr-only"[^>]*id="search-label"[^>]*>Search places<\/label>/);
   assert.match(en, /<input[^>]*aria-labelledby="search-label"/);

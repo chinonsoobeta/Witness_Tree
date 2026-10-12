@@ -23,9 +23,9 @@ export const TERMS_LICENCES = {
     "The site’s own code has no open-source licence yet.",
   ],
   fr: [
-    "Ressources naturelles Canada, Couverture terrestre annuelle à haute résolution des forêts du Canada (VLCE2, 1984–2022) : Licence du gouvernement ouvert – Canada. Contient des informations octroyées sous licence en vertu de la Licence du gouvernement ouvert – Canada.",
+    "Ressources naturelles Canada, Couverture forestière annuelle à haute résolution pour le Canada (VLCE2, 1984–2022) : Licence du gouvernement ouvert – Canada. Contient de l’information visée par la Licence du gouvernement ouvert – Canada.",
     "Ressources naturelles Canada, Système national de surveillance des écosystèmes terrestres, CA Forest Harvest 1985–2022 et Wildfire change year 1985–2022 : Licence du gouvernement ouvert – Canada.",
-    "Statistique Canada, fichiers des limites du Recensement de 2021 (provinces et territoires, régions économiques, subdivisions de recensement) : Licence ouverte de Statistique Canada. Adapté de Statistique Canada ; cela ne constitue pas une approbation de Statistique Canada.",
+    "Statistique Canada, fichiers des limites du Recensement de 2021 (provinces et territoires, régions économiques, subdivisions de recensement) : Licence ouverte de Statistique Canada. Adapté de Statistique Canada ; cela ne constitue pas une approbation de ce produit par Statistique Canada.",
     "Statistique Canada, tableau 2.10, Superficie forestière récoltée selon la province et le territoire, 1975 à 2015 : Licence ouverte de Statistique Canada.",
     "Conseil canadien des ministres des forêts, Base de données nationale sur les forêts : superficie récoltée, volume marchand net de bois rond récolté et estimations de l’approvisionnement en bois : Licence du gouvernement ouvert – Canada 2.0.",
     "Ressources naturelles Canada, Atlas du Canada, aires de drainage, version 6.0 : Licence du gouvernement ouvert – Canada.",
