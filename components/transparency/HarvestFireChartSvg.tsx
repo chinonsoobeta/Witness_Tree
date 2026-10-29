@@ -45,7 +45,7 @@ export function HarvestFireChartSvg({ chart, locale, label, words, size = SVG_SI
                 <title>{words.tooltip(name, bin.label, kindLabel, formatNumber(bar.value, locale, 0))}</title>
               </rect>
               {geometry.showValues ? (
-                <text className="hf-value" x={bar.x + bar.width / 2} y={bar.y - 5} textAnchor="middle">{bar.text}</text>
+                <text className="hf-value" x={bar.x + bar.width / 2} y={bar.labelY} textAnchor="middle">{bar.text}</text>
               ) : null}
             </g>
           ))}
