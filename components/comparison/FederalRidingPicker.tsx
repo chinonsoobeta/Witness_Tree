@@ -1,6 +1,8 @@
 import type { ComparisonPlace } from "@/lib/comparison";
 import type { Locale } from "@/lib/domain";
 import { provinceSpanDisplayRows } from "@/lib/explore/province-spans";
+import { ridingProvincePrefix, type RidingChoice } from "@/lib/comparison/riding-typeahead";
+import { FederalRidingFields } from "./FederalRidingFields";
 
 type SelectedFederalRidings = Readonly<{
   left: ComparisonPlace;
@@ -43,29 +45,25 @@ export function selectFederalRidings(
 const PROVINCES = provinceSpanDisplayRows({ fromYear: 1984, toYear: 2022 }).map((row) => ({ prefix: row.id, name: row.name }));
 
 /**
- * The ridings under one heading per province, alphabetical within it, so a
- * reader finds a riding among the four provinces’ by where it is. Rows whose id carries
- * no province are listed as they came.
+ * The ridings in the page’s language, under one heading per province, west to
+ * east and alphabetical within it, so a reader finds a riding among the four
+ * provinces’ by where it is. Rows whose id carries no province are listed as
+ * they came, with no province.
  */
-function RidingOptions({ rows, locale }: { rows: readonly ComparisonPlace[]; locale: Locale }) {
+export function federalRidingChoices(rows: readonly ComparisonPlace[], locale: Locale): RidingChoice[] {
   const groups = PROVINCES.map((province) => ({
     ...province,
     rows: rows
-      .filter((row) => row.id.startsWith(`federal-${province.prefix}`))
+      .filter((row) => ridingProvincePrefix(row.id) === province.prefix)
       .sort((a, b) => a.name[locale].localeCompare(b.name[locale], locale)),
   }));
   if (groups.reduce((total, group) => total + group.rows.length, 0) !== rows.length) {
-    return <>{rows.map((row) => <option key={row.id} value={row.id}>{row.name[locale]}</option>)}</>;
+    return rows.map((row) => {
+      const prefix = ridingProvincePrefix(row.id);
+      return { id: row.id, name: row.name[locale], province: PROVINCES.find((province) => province.prefix === prefix)?.name[locale] ?? null };
+    });
   }
-  return (
-    <>
-      {groups.filter((group) => group.rows.length > 0).map((group) => (
-        <optgroup key={group.prefix} label={group.name[locale]}>
-          {group.rows.map((row) => <option key={row.id} value={row.id}>{row.name[locale]}</option>)}
-        </optgroup>
-      ))}
-    </>
-  );
+  return groups.flatMap((group) => group.rows.map((row) => ({ id: row.id, name: row.name[locale], province: group.name[locale] })));
 }
 
 export function FederalRidingPicker({
@@ -118,18 +116,14 @@ export function FederalRidingPicker({
       <form className="comparison-picker" method="get" aria-label={labels.title}>
         {view && <input type="hidden" name="view" value={view} />}
         {sort && <input type="hidden" name="sort" value={sort} />}
-        <label>
-          {labels.left}
-          <select name="left" defaultValue={selected.left.id}>
-            <RidingOptions rows={candidates} locale={locale} />
-          </select>
-        </label>
-        <label>
-          {labels.right}
-          <select name="right" defaultValue={selected.right.id}>
-            <RidingOptions rows={candidates} locale={locale} />
-          </select>
-        </label>
+        <FederalRidingFields
+          locale={locale}
+          choices={federalRidingChoices(candidates, locale)}
+          leftId={selected.left.id}
+          rightId={selected.right.id}
+          leftLabel={labels.left}
+          rightLabel={labels.right}
+        />
         <button className="btn btn--primary" type="submit">{labels.submit}</button>
       </form>
       {missing.length > 0 ? (
