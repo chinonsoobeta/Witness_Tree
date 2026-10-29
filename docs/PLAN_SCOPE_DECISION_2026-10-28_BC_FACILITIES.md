@@ -1,9 +1,25 @@
 # Plan scope decision, 2026-10-28: BC timber processing facilities
 
-Decided by the owner, Chinonso Obeta, on 2026-10-28, in these words: "I approve
-the plan amendment". Machine-readable record:
+Decided by the owner, Chinonso Obeta, on 2026-10-28. Machine-readable record:
 [`data/plan-scope-decision-2026-10-28-bc-facilities.json`](../data/plan-scope-decision-2026-10-28-bc-facilities.json),
 checked by `npm run check:bc-timber-facilities-access`.
+
+The owner's full message, replying to the feature plan:
+
+> I approve all except for Feature #9: Reproduce it yourself. I approve the
+> plan amendment for #9. For #5, I agree: We must not name individuals, but
+> licenses and agencies are okay. Does this one require an FOI request? If so,
+> hold it for now. Assign Opus 5.5 subagents on high reasoning to complete the
+> implementation of these features.
+
+## Interpretation, awaiting the owner's confirmation
+
+The sentence approving a plan amendment names #9. Feature #9 (reproducibility)
+needed no plan amendment, and the same message held it. Feature #10 (BC mill
+facilities) was the only feature whose plan required amending sections 1.3 and
+14.2, so the lead session applied the approval to #10 and told the owner so in
+its reply. This amendment rests on that interpretation until the owner confirms
+it; the record carries `ownerConfirmedInterpretation: false`.
 
 ## Plan sections amended
 

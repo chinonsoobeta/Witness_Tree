@@ -9,6 +9,8 @@ const block = JSON.parse(readFileSync(new URL("../data/bc-timber-facilities-acce
 test("the BC facilities decision is recorded and the source stays blocked", async () => {
   const result = await checkBcTimberFacilities();
   assert.equal(result.decision.owner, "Chinonso Obeta");
+  assert.ok(result.decision.ownerWords.includes("I approve the plan amendment for #9."));
+  assert.equal(result.decision.ownerConfirmedInterpretation, false);
   assert.equal(result.block.status, "blocked");
   assert.equal(result.block.rights.openLicence, false);
   assert.equal(result.block.admission.published, false);
@@ -19,6 +21,9 @@ test("the decision refuses widened scope or granted gates", () => {
   assert.throws(() => validateFacilitiesDecision({ ...decision, scope: { ...decision.scope, provinces: ["BC", "QC"] } }), /British Columbia only/);
   assert.throws(() => validateFacilitiesDecision({ ...decision, scope: { ...decision.scope, noCause: "" } }), /noCause/);
   assert.throws(() => validateFacilitiesDecision({ ...decision, planSectionsAmended: decision.planSectionsAmended.slice(0, 1) }), /1\.3 and 14\.2/);
+  assert.throws(() => validateFacilitiesDecision({ ...decision, ownerWords: "I approve the plan amendment" }), /in full/);
+  assert.throws(() => validateFacilitiesDecision({ ...decision, interpretation: undefined }), /interpretation/);
+  assert.throws(() => validateFacilitiesDecision({ ...decision, ownerConfirmedInterpretation: undefined }), /ownerConfirmedInterpretation/);
 });
 
 test("the access block refuses open-licence, staging, publication or sent-request drift", () => {

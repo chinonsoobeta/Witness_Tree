@@ -25,7 +25,11 @@ function https(value, field) {
 export function validateFacilitiesDecision(decision) {
   if (decision?.schemaVersion !== "witness-tree/plan-scope-decision/1") fail("Decision schema drifted.");
   if (decision.status !== "owner-scope-decision" || decision.decidedAt !== "2026-10-28" || decision.owner !== "Chinonso Obeta") fail("Decision must name the owner and the 2026-10-28 date.");
-  if (decision.ownerWords !== "I approve the plan amendment") fail("Owner words must be recorded verbatim.");
+  // The owner's approval named #9; it is applied to this feature by a recorded interpretation.
+  // The quote must stay whole, and the interpretation must stay visible until the owner confirms it.
+  if (typeof decision.ownerWords !== "string" || !decision.ownerWords.includes("I approve the plan amendment for #9.")) fail("Owner words must quote the approval sentence in full.");
+  if (typeof decision.interpretation !== "string" || !/#9/.test(decision.interpretation) || !/#10/.test(decision.interpretation) || !/until the owner confirms/i.test(decision.interpretation)) fail("The interpretation applying the #9 approval to #10 must be recorded until the owner confirms it.");
+  if (typeof decision.ownerConfirmedInterpretation !== "boolean") fail("ownerConfirmedInterpretation must be recorded.");
   const sections = (decision.planSectionsAmended ?? []).map((entry) => entry.section).sort();
   if (sections.join(",") !== "1.3,14.2") fail("Decision must amend plan sections 1.3 and 14.2 and no others.");
   const scope = decision.scope ?? {};
