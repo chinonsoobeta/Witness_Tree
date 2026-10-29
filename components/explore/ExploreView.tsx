@@ -184,9 +184,9 @@ const copy = {
     fixtureList:
       "Le graphique et le tableau utilisent des données d’exemple inventées, et non de vrais registres.",
     recoveryNote:
-      "Les chiffres et les tableaux proviennent de la couverture terrestre annuelle par satellite, de 1984 à 2022. Boisé de nouveau signifie boisé pendant au moins cinq années de suite\u202F; c’est le retour du couvert arboré, pas celui de la même forêt.",
+      "Les chiffres et les tableaux proviennent de la couverture terrestre annuelle par satellite, de 1984 à 2022. «\u00A0Redevenu boisé\u00A0» signifie boisé pendant au moins cinq années de suite\u202F; c’est le retour du couvert arboré, pas celui de la même forêt.",
     recoverySource: "Ressources naturelles Canada, couverture forestière annuelle (VLCE2), 1984–2022",
-    harvestFireNote: "Ces chiffres provinciaux additionnent la récolte, et séparément le feu, pour chaque année après la première année choisie, jusqu’à la dernière. Le registre satellitaire national donne à chaque carré de 30 m au plus une année de récolte et une année de feu\u202F: aucun carré n’est compté deux fois. La récolte et le feu ne sont jamais additionnés. La série se termine en 2022, et chaque chiffre est un minimum, car une partie de chaque province n’a pas de données.",
+    harvestFireNote: "Ces chiffres provinciaux additionnent la récolte, et séparément le feu, pour chaque année après la première année choisie, jusqu’à la dernière. Le registre satellitaire national donne à chaque carré de 30 m au plus une année de récolte et une année de feu\u202F: aucun carré n’est compté deux fois. La récolte et le feu ne sont jamais additionnés l’un à l’autre. La série se termine en 2022, et chaque chiffre est un minimum, car une partie de chaque province n’a pas de données.",
     harvestFireHectares: "Récolte (ha)",
     fireHectares: "Feu (ha)",
     changeYears: "Années de changement",

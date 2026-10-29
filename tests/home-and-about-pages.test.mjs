@@ -200,6 +200,18 @@ test("about routes are bilingual and carry the owner's own text", async () => {
     assert.match(page, /https:\/\/www\.chinonsoobeta\.dev/);
     assert.doesNotMatch(page, /Coming soon|À venir/);
   }
+  // On 2026-10-28 the page stopped promising a count of trees left, which the
+  // record cannot give (plan section 1.3), and lists what it does answer.
+  assert.doesNotMatch(english, /How many trees are left, and where are they\?/);
+  assert.doesNotMatch(french, /combien d’arbres reste-t-il/);
+  for (const [page, routes] of [
+    [english, ["/en/explore", "/en/search", "/en/explore?mode=condition-recovery", "/en/data/harvest-and-fire", "/en/data/bc-harvest-volume", "/en/data/provincial-harvest-volume", "/en/methods"]],
+    [french, ["/fr/explorer", "/fr/recherche", "/fr/explorer?mode=condition-recovery", "/fr/donnees/recolte-et-incendies", "/fr/donnees/volume-recolte-bc", "/fr/donnees/volume-recolte-provinces", "/fr/methodes"]],
+  ]) {
+    for (const route of routes) assert.ok(page.includes(`<Link href="${route}">`), route);
+  }
+  assert.match(english, /does not estimate how many trees are left/);
+  assert.match(french, /n’estime pas combien d’arbres il reste/);
   // About moved from the footer to the main menu, right after Data.
   assert.match(header, /\["Data", "\/en\/data"\],\s*\["About", "\/en\/about"\]/);
   assert.match(header, /\["Données", "\/fr\/donnees"\],\s*\["À propos", "\/fr\/a-propos"\]/);
