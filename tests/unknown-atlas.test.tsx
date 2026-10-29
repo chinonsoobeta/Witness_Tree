@@ -18,7 +18,8 @@ const read = (file: string) => readFileSync(new URL(`../${file}`, import.meta.ur
 const comparisonRecord = JSON.parse(read("data/phase2-official-published-harvest-comparison.json"));
 const gapReceipt = JSON.parse(read("data/coverage-gap-investigation-2026-09-08.json"));
 const render = (locale: "en" | "fr") => renderToStaticMarkup(createElement(UnknownAtlasPage, { locale }));
-const text = (html: string) => html.replace(/<[^>]+>/g, " ").replace(/&amp;/g, "&").replace(/&#x27;|&#39;/g, "'").replace(/\s+/g, " ");
+// Entities are unescaped once, with `&amp;` last, so `&amp;#39;` never becomes an apostrophe.
+const text = (html: string) => html.replace(/<[^>]+>/g, " ").replace(/&#x27;|&#39;/g, "'").replace(/&amp;/g, "&").replace(/\s+/g, " ");
 const section = (html: string, id: string) => {
   const match = html.match(new RegExp(`<section[^>]*id="${id}"[\\s\\S]*?</section>`));
   assert.ok(match, `section ${id} must render`);
@@ -120,7 +121,8 @@ test("Section B renders one row per withheld class, with its count, reason, view
     for (const row of rows) {
       const tr = html.match(new RegExp(`<tr data-withheld="${row.id}" data-count="${row.items.length}">[\\s\\S]*?</tr>`))?.[0];
       assert.ok(tr, `${locale}: ${row.id} renders with its count`);
-      assert.match(tr, new RegExp(`<th scope="row"><a href="${row.href[locale].replace(/[?]/g, "\\?").replace(/&/g, "&amp;")}">`));
+      // React escapes `&` in an attribute; the expected markup is compared as text, not as a pattern.
+      assert.ok(tr.includes(`<th scope="row"><a href="${row.href[locale].replace(/&/g, "&amp;")}">`), `${locale}: ${row.id} links its view`);
       assert.match(tr, /<q>[^<]+<\/q>/, `${locale}: ${row.id} quotes the view's own words`);
       const count = new Intl.NumberFormat(locale === "en" ? "en-CA" : "fr-CA").format(row.items.length);
       if (row.reasonClass !== "too-recent" && row.items.length) assert.ok(text(tr).includes(count), `${locale}: ${row.id} states ${count}`);
