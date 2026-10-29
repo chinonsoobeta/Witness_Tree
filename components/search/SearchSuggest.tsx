@@ -33,6 +33,7 @@ const COPY = {
     federal: "Federal ridings",
     provincial: "Provincial ridings",
     allFor: "See all results for this place",
+    page: "Open this place’s page",
     compare: "Compare with another riding",
     key: "Key",
   },
@@ -48,6 +49,7 @@ const COPY = {
     federal: "Circonscriptions fédérales",
     provincial: "Circonscriptions provinciales",
     allFor: "Voir tous les résultats pour ce lieu",
+    page: "Ouvrir la page de ce lieu",
     compare: "Comparer avec une autre circonscription",
     key: "Légende",
   },
@@ -285,7 +287,7 @@ export function SearchSuggest({
                       {rows.map((riding) => (
                         <li key={riding.name}>
                           <span className="search-chosen-riding-name">
-                            {riding.compareHref ? <a href={riding.compareHref}>{riding.name}</a> : riding.name}
+                            {riding.href ? <a href={riding.href}>{riding.name}</a> : riding.name}
                           </span>
                           {riding.figure ? (
                             <span className="search-chosen-riding-figure">
@@ -304,6 +306,7 @@ export function SearchSuggest({
             </div>
           ) : null}
           <div className="search-chosen-foot">
+            {chosen.href ? <a href={chosen.href}>{text.page}</a> : null}
             <a href={`${action}?q=${encodeURIComponent(chosen.name)}`}>{text.allFor}</a>
             {chosen.compareHref ? <a href={chosen.compareHref}>{text.compare}</a> : null}
             <p className="evidence-key">

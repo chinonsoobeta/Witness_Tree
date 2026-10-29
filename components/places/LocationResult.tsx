@@ -1,7 +1,7 @@
 import { CoverageStatement } from "@/components/policy/CoverageStatement";
 import { NoRecordResult } from "@/components/search/NoRecordResult";
 import { colon, type Locale } from "@/lib/domain";
-import type { Location, Place } from "@/lib/places";
+import { examplePlacePath, type Location, type Place } from "@/lib/places";
 import {
   ConfidenceBadge,
   EvidenceChip,
@@ -57,13 +57,7 @@ export function LocationResult({
         <ul className="source-list">
           {places.map((place) => (
             <li className="card card--lift" key={place.id}>
-              <a
-                href={
-                  locale === "en"
-                    ? `/en/places/${place.id}`
-                    : `/fr/lieux/${place.id}`
-                }
-              >
+              <a href={examplePlacePath(locale, place.id)}>
                 {place.name[locale]}
               </a>
             </li>

@@ -33,6 +33,9 @@ const SAFE_QUERY_PARAMETERS = new Set([
 export function localeCounterpart(pathname: string, locale: Locale): string {
   const staticCounterpart = COUNTERPARTS[pathname];
   if (staticCounterpart) return staticCounterpart;
+  if (pathname.startsWith("/en/components/example-places/")) return pathname.replace("/en/components/example-places/", "/fr/composants/exemples-lieux/");
+  if (pathname.startsWith("/fr/composants/exemples-lieux/")) return pathname.replace("/fr/composants/exemples-lieux/", "/en/components/example-places/");
+  // A real place keeps its data version, geography and code in both languages.
   if (pathname.startsWith("/en/places/")) return pathname.replace("/en/places/", "/fr/lieux/");
   if (pathname.startsWith("/fr/lieux/")) return pathname.replace("/fr/lieux/", "/en/places/");
   if (pathname.startsWith("/en/location/")) return pathname.replace("/en/location/", "/fr/emplacement/");
