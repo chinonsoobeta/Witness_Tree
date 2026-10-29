@@ -1,7 +1,7 @@
-import type { Metadata } from "next"; import { SiteShell } from "@/components/site"; import { SearchPage } from "@/components/search/SearchPage"; import { localizedAlternates } from "@/lib/site-metadata";
+import type { Metadata } from "next"; import { SiteShell } from "@/components/site"; import { SearchPage } from "@/components/search/SearchPage"; import { routeMetadata } from "@/lib/site-metadata";
 import { addressLookupConfigured } from "@/lib/address/runtime";
 import { districtIndexAvailable } from "@/lib/districts/runtime";
-export const metadata: Metadata = { title: "Search places", alternates: localizedAlternates("en", { en: "/en/search", fr: "/fr/recherche" }) };
+export const metadata: Metadata = routeMetadata("en", { en: "/en/search", fr: "/fr/recherche" });
 export default async function Page({ searchParams }: Readonly<{ searchParams: Promise<{ q?: string; district?: string; scope?: string }> }>) { const query = await searchParams;
   // The address field needs a provider key and a reachable index. Both
   // answers come from the worker's stamped headers, so a field that cannot

@@ -68,8 +68,8 @@ test("the builder maps by header, keeps blanks null and refuses a changed header
 });
 
 test("both routes are registered, independently citable and linked from the data page", () => {
-  assert.match(read("app/en/data/bc-harvest-volume/page.tsx"), /localizedAlternates\("en"/);
-  assert.match(read("app/fr/donnees/volume-recolte-bc/page.tsx"), /localizedAlternates\("fr"/);
+  assert.match(read("app/en/data/bc-harvest-volume/page.tsx"), /routeMetadata\("en"/);
+  assert.match(read("app/fr/donnees/volume-recolte-bc/page.tsx"), /routeMetadata\("fr"/);
   for (const file of ["scripts/check-bilingual.mjs", "lib/site-metadata.ts", "lib/locale-navigation.ts", "components/transparency/DataPage.tsx"]) {
     assert.match(read(file), /bc-harvest-volume/, file);
     assert.match(read(file), /volume-recolte-bc/, file);

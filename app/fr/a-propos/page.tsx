@@ -2,12 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteShell } from "@/components/site";
 import { PRODUCT_NAME } from "@/lib/domain";
-import { localizedAlternates } from "@/lib/site-metadata";
+import { routeMetadata } from "@/lib/site-metadata";
 
-export const metadata: Metadata = {
-  title: "À propos",
-  alternates: localizedAlternates("fr", { en: "/en/about", fr: "/fr/a-propos" }),
-};
+export const metadata: Metadata = routeMetadata("fr", { en: "/en/about", fr: "/fr/a-propos" });
 
 // A translation of the owner's own words of 2026-10-03, with the closing
 // paragraph reframed on 2026-10-28 as in English. A draft awaiting his review.
