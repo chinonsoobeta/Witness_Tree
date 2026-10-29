@@ -82,8 +82,12 @@ to the place page, or show the figure without its caveats by cropping or
 covering the frame. The draft embed terms forbid that cropping; nothing
 technical can prevent it, and the place page remains the authority. The
 oEmbed endpoint (`/api/oembed`) returns only an iframe for an existing place
-page on this site and keeps `DENY`. The owner may narrow `*` to a list of
-named sites; that changes `EMBED_FRAME_ANCESTORS` in `next.config.ts`.
+page on this site and keeps `DENY`. On 2026-10-29 the owner decided to keep
+`*` rather than an allow-list. The frame has no control, form, script or
+session, so there is nothing in it to hijack; a list would make every embedder
+ask first and would not stop a screenshot, which drops the caveats the frame
+keeps attached. Narrowing it later changes `EMBED_FRAME_ANCESTORS` in
+`next.config.ts`.
 
 ## SSD data root
 

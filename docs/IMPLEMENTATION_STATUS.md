@@ -388,8 +388,9 @@ path keeps `frame-ancestors 'none'` and `X-Frame-Options: DENY`.
 `tests/security-headers.test.ts` checks that each path class matches exactly
 one rule, `tests/rendered-html.test.mjs` checks the served headers, and
 `tests/browser/embed-framing.spec.ts` frames an embed and its place page from
-another local origin and sees the first render and the second refused. The
-owner may narrow `*` to a list of named sites (`EMBED_FRAME_ANCESTORS`).
+another local origin and sees the first render and the second refused. On
+2026-10-29 the owner decided to keep `*` rather than a list of named sites
+(`EMBED_FRAME_ANCESTORS`; reasons in `docs/THREAT_MODEL.md`).
 `/api/oembed?url=` answers only for an existing place page on this site, and
 each place page names it in a `json+oembed` discovery link and offers the
 snippet under "Embed this figure". The terms page has a draft embedding clause

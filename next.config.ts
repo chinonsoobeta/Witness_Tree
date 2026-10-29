@@ -41,8 +41,9 @@ const SECURITY_HEADERS = {
  * A place's embedded figure (lib/embed/card.ts) is the one thing another site
  * may frame. Its paths drop X-Frame-Options and allow any ancestor; every other
  * path keeps DENY and frame-ancestors 'none'. The embed runs no script, so its
- * policy refuses scripts outright. The owner may narrow `*` to a list of named
- * sites by replacing EMBED_FRAME_ANCESTORS with that list.
+ * policy refuses scripts outright. On 2026-10-29 the owner decided to keep `*`,
+ * so any site may frame a place's figure (docs/THREAT_MODEL.md). Narrowing it
+ * later means replacing EMBED_FRAME_ANCESTORS with a list of named sites.
  */
 const EMBED_FRAME_ANCESTORS = "*";
 const EMBED_PATHS = ["en/embed/", "fr/integrer/"] as const;

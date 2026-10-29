@@ -365,8 +365,8 @@ test("a federal and a provincial riding each serve a one-page print sheet in bot
     assert.match(html, /<svg[^>]*class="hf-chart-svg"[^>]*role="img"/, pathname);
     assert.match(html, /dataset\/2785c103-9c2d-429b-9f3d-89f5cd9ea94d/, pathname);
     // The page address prints in plain text, and the back link goes to the riding's page.
-    assert.match(html, new RegExp(`https://www\\.witnesstree\\.ca${pathname.replace(/[/.-]/g, "\\$&")}`), pathname);
-    assert.match(html, new RegExp(`<a href="${page.replace(/[/.-]/g, "\\$&")}">`), pathname);
+    assert.ok(html.includes(`https://www.witnesstree.ca${pathname}`), pathname);
+    assert.ok(html.includes(`<a href="${page}">`), pathname);
     // No navigation shell, ranking position or colour scale on the sheet.
     assert.doesNotMatch(html, /class="site-shell"/, pathname);
     assert.doesNotMatch(html, /\b(rank|ranked|classement|rang)\b/i, pathname);
@@ -452,7 +452,7 @@ test("renders a place's embed in each language: the card alone, versioned, with 
     for (const pattern of text) assert.match(html, pattern, `${pathname} ${pattern}`);
     const links = [...html.matchAll(/<a\b([^>]*)>([^<]+)<\/a>/g)];
     assert.equal(links.length, 1, `${pathname} has one control, its link back`);
-    assert.match(links[0][1], new RegExp(`href="https://www\\.witnesstree\\.ca${page.replace(/[/.-]/g, "\\$&")}" target="_blank" rel="noopener"`));
+    assert.ok(links[0][1].includes(`href="https://www.witnesstree.ca${page}" target="_blank" rel="noopener"`), `${pathname} links back to its place page in a new tab`);
     assert.match(links[0][2], /Campbell River/);
     // No Next.js runtime, navigation, analytics or any other script.
     assert.doesNotMatch(html, /<script\b|<nav\b|_next\/static|_vercel/);

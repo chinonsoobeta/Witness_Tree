@@ -426,8 +426,8 @@ embed has no interactive controls except the link, which is the mitigation).
 
 **Rules and decisions.** The terms page gains an embed clause in both languages;
 the owner approves the wording. Whether to restrict `frame-ancestors` to an
-allow-list or open it. Depends on real place pages and on the receipt renderer
-for a consistent look.
+allow-list or open it: decided 2026-10-29, open (`*`), no allow-list. Depends
+on real place pages and on the receipt renderer for a consistent look.
 
 **Verification.** Header tests for both route classes; a Playwright test that
 frames the embed route from a different origin and that a normal route refuses;
