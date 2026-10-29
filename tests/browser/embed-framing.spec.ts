@@ -1,3 +1,5 @@
+import { createServer, type Server } from "node:http";
+import type { AddressInfo } from "node:net";
 import { test, expect, type Frame, type Page } from "@playwright/test";
 import { EMBED_SIZE } from "../../lib/embed/paths";
 
@@ -5,11 +7,14 @@ import { EMBED_SIZE } from "../../lib/embed/paths";
  * Feature plan item 3, in a browser. A page on another origin frames a place's
  * embed and its place page side by side: the embed renders inside the frame,
  * whole at the snippet's size, and the place page is refused by the browser.
- * The other origin is served by request interception, so nothing leaves the
- * machine; the frames load from the production server under test.
+ *
+ * The other origin is a small server on localhost, a different host and port
+ * from the production server under test, so nothing leaves the machine. It is
+ * a real server rather than request interception because Chromium treats an
+ * intercepted page as a public address, and its local-network-access rule then
+ * blocks every frame of 127.0.0.1 before frame-ancestors is consulted.
  */
 
-const EMBEDDER = "http://embedder.test/";
 const SERVER = "http://127.0.0.1:4173";
 
 const CASES = [
@@ -20,17 +25,29 @@ const CASES = [
   { embed: "/fr/integrer/1984-2022-v1/csd-2021/2421015", page: "/fr/lieux/1984-2022-v1/csd-2021/2421015", heading: null, link: /Registre complet de / },
 ] as const;
 
-async function frameEmbedder(page: Page, embed: string, placePage: string) {
-  await page.route(EMBEDDER, (route) => route.fulfill({
-    status: 200,
-    contentType: "text/html; charset=utf-8",
-    body: `<!DOCTYPE html><html lang="en"><head><title>Another site</title></head><body style="margin:8px">
-<iframe id="embed" src="${SERVER}${embed}" title="Embedded figure" width="${EMBED_SIZE.width}" height="${EMBED_SIZE.height}" style="border:0;max-width:100%"></iframe>
-<iframe id="page" src="${SERVER}${placePage}" title="Place page" width="560" height="200"></iframe>
-</body></html>`,
-  }));
-  await page.goto(EMBEDDER, { waitUntil: "load" });
-}
+// GET /<case index> answers a page that frames that case's embed and place page.
+let embedder: Server;
+let embedderOrigin = "";
+
+test.beforeAll(async () => {
+  embedder = createServer((request, response) => {
+    const chosen = CASES[Number(request.url?.slice(1))];
+    if (!chosen) {
+      response.writeHead(404).end();
+      return;
+    }
+    response.writeHead(200, { "content-type": "text/html; charset=utf-8" }).end(`<!DOCTYPE html><html lang="en"><head><title>Another site</title></head><body style="margin:8px">
+<iframe id="embed" src="${SERVER}${chosen.embed}" title="Embedded figure" width="${EMBED_SIZE.width}" height="${EMBED_SIZE.height}" style="border:0;max-width:100%"></iframe>
+<iframe id="page" src="${SERVER}${chosen.page}" title="Place page" width="560" height="200"></iframe>
+</body></html>`);
+  });
+  await new Promise<void>((resolve) => embedder.listen(0, "localhost", resolve));
+  embedderOrigin = `http://localhost:${(embedder.address() as AddressInfo).port}`;
+});
+
+test.afterAll(async () => {
+  await new Promise((resolve) => embedder.close(resolve));
+});
 
 function childFrame(page: Page, id: string): Promise<Frame> {
   return page.locator(`iframe#${id}`).elementHandle().then(async (handle) => {
@@ -40,9 +57,9 @@ function childFrame(page: Page, id: string): Promise<Frame> {
   });
 }
 
-for (const { embed, page: placePage, heading, link } of CASES) {
+for (const [index, { embed, page: placePage, heading, link }] of CASES.entries()) {
   test(`another origin can frame ${embed}, and its place page refuses`, async ({ page }) => {
-    await frameEmbedder(page, embed, placePage);
+    await page.goto(`${embedderOrigin}/${index}`, { waitUntil: "load" });
 
     const figure = page.frameLocator("iframe#embed");
     const card = figure.locator("article.embed");
@@ -64,7 +81,8 @@ for (const { embed, page: placePage, heading, link } of CASES) {
     expect(await frame.evaluate(() => document.scripts.length)).toBe(0);
 
     // The place page keeps X-Frame-Options: DENY and frame-ancestors 'none', so
-    // the browser shows its own error in place of the page.
+    // the browser shows its own error in place of the page. The embed beside it
+    // loaded from the same server, so the refusal is the framing rule.
     const refused = await childFrame(page, "page");
     expect(refused.url()).not.toBe(`${SERVER}${placePage}`);
     expect(await refused.evaluate(() => document.querySelector("main#main"))).toBeNull();

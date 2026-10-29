@@ -365,6 +365,52 @@ The shared JavaScript gate went from 135,846 to 136,323 gzip bytes (limit
 page's sheet link are drafts awaiting bilingual review. The sheets are not
 expert reviewed, not a formal release and not production eligible.
 
+### Embedded figures
+
+On 2026-10-29 feature plan item 3 (branch `feature/embeds`) gave each of the
+6,092 places a frameable card at
+`/en/embed/<data version>/<geography>/<code>` and
+`/fr/integrer/<data version>/<geography>/<code>`. `lib/embed/card.ts` writes it
+as a whole HTML document from a prerendered route handler, so it carries no
+Next.js runtime, navigation, analytics, theme script or any other script. It
+shows the place's name, its figure or Unknown statement with the reason
+(never `0`), coverage, span, unmapped share, boundary edition, evidence class,
+a visible data-version stamp (also `data-version` on the card), attribution,
+the VLCE2 licence line, the preview notice and one link back to the place page
+in a new tab. The wording is shared with the place summary and the share card
+(`lib/share/card-parts.ts`). It uses a system font, because BC Sans arrives
+only through the root CSS import that a route handler does not load.
+
+Framing headers live in `next.config.ts`. Embed paths alone send
+`frame-ancestors *`, `script-src 'none'` and no `X-Frame-Options`; every other
+path keeps `frame-ancestors 'none'` and `X-Frame-Options: DENY`.
+`tests/security-headers.test.ts` checks that each path class matches exactly
+one rule, `tests/rendered-html.test.mjs` checks the served headers, and
+`tests/browser/embed-framing.spec.ts` frames an embed and its place page from
+another local origin and sees the first render and the second refused. The
+owner may narrow `*` to a list of named sites (`EMBED_FRAME_ANCESTORS`).
+`/api/oembed?url=` answers only for an existing place page on this site, and
+each place page names it in a `json+oembed` discovery link and offers the
+snippet under "Embed this figure". The terms page has a draft embedding clause
+(`/en/terms#embedding`) that has no effect until the owner approves it. The
+French embed strings, snippet block and clause are drafts awaiting bilingual
+review. `check:bilingual` now pairs route handlers (22 pairs with the print sheets) and
+`check:accessibility` audits the embed document (no script or control, a
+language, a title, a card labelled by its heading, named links). The digests
+these changes touched were refreshed with one dated sentence each and no
+status change: the two checkers in the Phase 3 record (still 4/5) and
+`GovernancePage.tsx` in the Phase 0 (still 7/8) and Phase 7 (still 12/14)
+records; no other record binds those records.
+
+Measured on the owner's Mac with a clean `.next`, back to back:
+`npm run build` went from 103.0 s and 1,622,688 KB (12,339 static items, static
+generation 84 s) to 104.3 s and 1,730,508 KB (18,431 items, 94 s), with peak
+memory 1.42 GB to 1.45 GB. The two embed trees are 24.4 MB each. The shared
+JavaScript gate is unchanged at 135,846 gzip bytes (limit 139,264). The embed
+URL pins the data version, so a framed figure does not move to a new release on
+its own. The embeds are not expert reviewed, not a formal release and not
+production eligible.
+
 ### BC timber processing facilities
 
 On 2026-10-28 the owner amended plan sections 1.3 and 14.2 to allow British
