@@ -1,20 +1,11 @@
 /**
- * Search helpers that hold no data, so the results page, the suggestion route
- * and the search field in the browser all read a query and an Unknown the same
- * way.
+ * Why a search row has no loss figure, and how many same-reason Unknowns are
+ * gathered under one counted line, so the results page and the suggestions
+ * read an Unknown the same way. Server-side: the search field receives the
+ * headings already written, in the suggestion response.
  */
 
 import type { Locale } from "@/lib/domain/localized";
-
-/**
- * The query as search reads it: one string, with every run of whitespace
- * (including non-breaking and zero-width spaces) made one space and the ends
- * trimmed. A query that is nothing but whitespace is no query.
- */
-export function cleanSearchQuery(value: unknown): string {
-  if (typeof value !== "string") return "";
-  return value.replace(/[\s\u200B-\u200D\u2060\uFEFF]+/g, " ").trim();
-}
 
 /** Why a place has no loss figure. It is a stated state, never a zero. */
 export type UnknownReason = "no-satellite-data" | "no-forest-mapped" | "partly-mapped" | "no-figure";

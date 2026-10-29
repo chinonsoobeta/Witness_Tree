@@ -13,7 +13,8 @@ import { colon, formatHectares, formatPercent, semicolon, type Locale } from "@/
 import { formatUnknownSharePercent } from "@/lib/explore/map-style";
 import { communityPagePath, ridingPagePath } from "@/lib/place-pages/paths";
 import { placeFigure, type PlaceFigure } from "./place-figures";
-import { cleanSearchQuery, figureUnknownReason, type UnknownReason } from "./shared";
+import { cleanSearchQuery } from "./query";
+import { figureUnknownReason, splitUnknownRows, unknownGroupHeading, type UnknownReason } from "./unknown-groups";
 import {
   formatSearchShare,
   ridingSearchRow,
@@ -57,7 +58,15 @@ export type Suggestion = Readonly<{
   /** For a place: what its riding figures cover, shown above them. */
   ridingsNote?: string;
   ridings: readonly SuggestionRiding[];
+  /**
+   * For a place: the ridings of one level and one Unknown reason that read as
+   * one counted line, with that line already written. Their rows stay in
+   * `ridings`; the field gathers them by level and reason.
+   */
+  ridingGroups?: readonly SuggestionRidingGroup[];
 }>;
+
+export type SuggestionRidingGroup = Readonly<{ level: SuggestionRiding["level"]; reason: UnknownReason; heading: string }>;
 
 export type SuggestionPage = Readonly<{ query: string; suggestions: readonly Suggestion[]; more: number }>;
 
@@ -239,6 +248,13 @@ function toSuggestion(result: SiteSearchResult, locale: Locale): Suggestion {
       ? `The ridings it’s in. Their figures are for the whole riding.`
       : `Les circonscriptions où il se trouve. Leurs chiffres portent sur toute la circonscription.`,
     ridings: [...federal, ...provincial],
+    ridingGroups: (["federal", "provincial"] as const).flatMap((level) =>
+      splitUnknownRows(level === "federal" ? federal : provincial, (riding) => riding.unknownReason).groups.map((group) => ({
+        level,
+        reason: group.reason,
+        heading: unknownGroupHeading(group.reason, group.rows.length, level === "federal" ? "federal-ridings" : "provincial-ridings", locale),
+      })),
+    ),
   };
 }
 

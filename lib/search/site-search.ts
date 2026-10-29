@@ -5,7 +5,8 @@ import { ridingIntervalMeasurements, type RidingIntervalMeasurement } from "@/li
 import { formatPercent, type Locale } from "@/lib/domain";
 import release from "@/data/phase3-riding-interval-measurements.json";
 import { placeFigure } from "./place-figures";
-import { cleanSearchQuery, figureUnknownReason, type UnknownReason } from "./shared";
+import { cleanSearchQuery } from "./query";
+import { figureUnknownReason, type UnknownReason } from "./unknown-groups";
 import {
   PLACE_NAME_INDEX,
   displayPlaceName,

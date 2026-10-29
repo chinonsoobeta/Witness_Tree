@@ -105,6 +105,18 @@ test("suggestions name what each row is and where, and mark an Unknown as Unknow
     assert.equal(riding.unknownReason, "no-satellite-data");
     assert.equal(riding.detail, "Loss unknown; no satellite data here");
   }
+  // The field gathers those ridings under lines the server has already written.
+  assert.deepEqual(montreal.ridingGroups, [
+    { level: "federal", reason: "no-satellite-data", heading: "18 federal ridings have no satellite data, so their loss is Unknown" },
+    { level: "provincial", reason: "no-satellite-data", heading: "26 provincial ridings have no satellite data, so their loss is Unknown" },
+  ]);
+  const montrealFr = suggestSearch("montreal", "fr").suggestions.find((entry) => entry.name === "Montréal")!;
+  assert.equal(montrealFr.ridingGroups?.[0]?.heading, "18 circonscriptions fédérales n’ont pas de données satellitaires, donc leur perte est inconnue");
+  // Prince George's two federal ridings are measured, so nothing is gathered.
+  assert.deepEqual(suggestSearch("Prince George", "en").suggestions.find((entry) => entry.name === "Prince George")?.ridingGroups, []);
+  // The field imports only the query reader, never the grouping or its strings.
+  const field = readFileSync(new URL("../components/search/SearchSuggest.tsx", import.meta.url), "utf8");
+  assert.doesNotMatch(field, /unknown-groups/);
   for (const entry of suggestSearch("Prince George", "en").suggestions) {
     assert.equal(entry.unknownReason === null, entry.figure !== null || /^At least /.test(entry.detail), entry.name);
   }

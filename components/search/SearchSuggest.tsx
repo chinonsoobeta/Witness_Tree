@@ -18,7 +18,7 @@
 import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { EVIDENCE_DEFINITIONS } from "@/lib/domain/evidence";
 import type { Locale } from "@/lib/domain/localized";
-import { cleanSearchQuery, splitUnknownRows, unknownGroupHeading } from "@/lib/search/shared";
+import { cleanSearchQuery } from "@/lib/search/query";
 import type { Suggestion, SuggestionPage, SuggestionRiding } from "@/lib/search/suggest";
 
 const COPY = {
@@ -288,8 +288,10 @@ export function SearchSuggest({
               {(["federal", "provincial"] as const).map((level) => {
                 const rows = chosen.ridings.filter((riding) => riding.level === level);
                 if (rows.length === 0) return null;
-                // Many ridings with the same Unknown read as one line with their count.
-                const { listed, groups } = splitUnknownRows(rows, (riding) => riding.unknownReason);
+                // Many ridings with the same Unknown read as one line with their
+                // count; the server names those groups and writes their lines.
+                const groups = (chosen.ridingGroups ?? []).filter((group) => group.level === level);
+                const listed = rows.filter((riding) => !groups.some((group) => group.reason === riding.unknownReason));
                 const list = (members: readonly SuggestionRiding[]) => (
                   <ul>
                     {members.map((riding) => (
@@ -317,9 +319,9 @@ export function SearchSuggest({
                       <details key={group.reason} className="search-unknown-group">
                         <summary>
                           <span className="mark-glyph mark-glyph--unknown" aria-hidden="true" />
-                          <span>{unknownGroupHeading(group.reason, group.rows.length, level === "federal" ? "federal-ridings" : "provincial-ridings", locale)}</span>
+                          <span>{group.heading}</span>
                         </summary>
-                        {list(group.rows)}
+                        {list(rows.filter((riding) => riding.unknownReason === group.reason))}
                       </details>
                     ))}
                   </div>

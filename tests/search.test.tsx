@@ -192,7 +192,8 @@ test("address results distinguish a missing boundary from a found boundary witho
   }
 });
 
-import { cleanSearchQuery, splitUnknownRows, UNKNOWN_GROUP_MIN } from "../lib/search/shared";
+import { cleanSearchQuery } from "../lib/search/query";
+import { splitUnknownRows, UNKNOWN_GROUP_MIN } from "../lib/search/unknown-groups";
 
 const WHITESPACE_QUERIES = [" ", "   ", "\u00a0", " \u00a0\t\n ", "\u202f\u2003", "\u200b", "\ufeff "];
 
