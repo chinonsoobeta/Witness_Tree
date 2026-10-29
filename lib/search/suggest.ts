@@ -194,7 +194,7 @@ function suggestionRiding(reference: SearchRidingReference, level: "federal" | "
     share: formatSearchShare(reference.share, locale),
     figure: completeFigure(row, locale),
     detail: ridingDetail(row, locale),
-    compareHref: level === "federal" ? ridingCompareHref(reference.id, locale) : null,
+    compareHref: ridingCompareHref(reference.id, locale),
     href: ridingPagePath(locale, reference.id),
     unknownReason: reference.unknownReason,
   };

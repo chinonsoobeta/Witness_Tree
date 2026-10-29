@@ -248,8 +248,9 @@ function SearchResultCard({ locale, result }: { locale: Locale; result: SiteSear
   }
   if (result.kind === "riding") {
     const row = ridingSearchRow(result.id);
-    // A riding opens on its own page; a federal one also opens in Compare,
-    // which does not cover provincial ridings.
+    // A riding opens on its own page and in Compare, which covers federal and
+    // provincial ridings in the four provinces; ridingCompareHref is null for
+    // any other riding.
     const href = ridingPagePath(locale, result.id);
     const compareHref = ridingCompareHref(result.id, locale);
     return <li className="card card--lift search-result">
