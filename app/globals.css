@@ -2179,6 +2179,25 @@ h4 {
 .explore-map-retry {
   margin-top: 4px;
 }
+/* The still map, or no map: what the reader is seeing, why, and the way back,
+   in one box under the map rather than a line lost between the legend and the
+   figures. The figures are untouched and stay where they are. */
+.explore-map-notice--fallback {
+  margin-top: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--rule-strong);
+  border-inline-start: 4px solid var(--unknown);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+.explore-map-notice--fallback .explore-map-status {
+  margin: 0;
+  color: var(--ink);
+  font-size: var(--text-small);
+}
+.explore-map-notice--fallback .explore-map-retry {
+  margin-top: 10px;
+}
 .explore-map[data-state="error"] {
   border-color: var(--unknown);
 }
@@ -3975,6 +3994,33 @@ dd > a:only-child {
   .explore-workspace > .explore-canvas { grid-area: map; }
   .explore-workspace > .explore-reading { grid-area: reading; }
   .explore-workspace > .explore-data { grid-area: data; }
+}
+/* The span and its total, one line over the map. Only a phone needs it: wider
+   screens show the year controls above the map and the reading panel beside
+   or right under it. */
+.explore-map-readout {
+  display: none;
+  margin: 0 0 10px;
+  font-weight: 700;
+}
+/*
+ * A phone opens on the map. The document keeps the order a screen reader takes
+ * (explain, choose, map, figures), and only the boxes move: the workspace
+ * gives its three sections to the page column, the map section goes first,
+ * and the controls follow it, before the figures. Nothing is hidden.
+ */
+@media (max-width: 759px) {
+  .explore-workspace {
+    display: contents;
+  }
+  .explore-workspace > .explore-canvas { order: 1; }
+  .explore > .explore-toolbar { order: 2; }
+  .explore-workspace > .explore-reading { order: 3; }
+  .explore-workspace > .explore-data { order: 4; }
+  .explore > .explore-more { order: 5; }
+  .explore-map-readout {
+    display: block;
+  }
 }
 .explore-data-lead { max-width: 70ch; color: var(--ink-2); }
 .explore-unknown { margin-top: 20px; max-width: 70ch; }

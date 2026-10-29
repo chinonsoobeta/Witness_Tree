@@ -215,6 +215,37 @@ test("Explore sends its map legend and the tile connection in the first HTML", a
   }
 });
 
+/*
+ * The 2026-10-28 adversarial audit's Explore items, as the server sends them:
+ * the rankings link names the span it ranks (B3), Play names where it starts
+ * and carries no pressed state beside a changing name (B4, B6), the map's
+ * status sits in the notice box that turns into the still-map notice (UX 3),
+ * and the one-line readout precedes the map while the controls still precede
+ * the map in the document (UX 1).
+ */
+test("Explore serves its span-honest rankings link, Play name, map notice and phone readout", async () => {
+  const cases = [
+    ["/en/explore", "Ridings with the largest share of forest lost over the whole record, 1984–2022, not the years you chose (2021–2022)", 'aria-label="Play year by year from 1984">Play<', "2021–2022 · 1,352,468.43 ha detected as lost, a minimum"],
+    ["/fr/explorer", "Circonscriptions ayant perdu la plus grande part de leur forêt sur l’ensemble du registre, 1984–2022, et non pendant les années choisies (2021–2022)", 'aria-label="Lecture année par année depuis 1984">Lecture<', "2021–2022 · "],
+    ["/en/explore?from=1990&year=2000", "not the years you chose (1990–2000)", 'aria-label="Play year by year from 1990">Play<', "1990–2000 · "],
+    ["/en/explore?from=1984&year=2022", "Ridings with the largest share of forest lost, 1984–2022<", 'aria-label="Play year by year from 1984">Play<', "1984–2022 · "],
+  ];
+  for (const [pathname, ranking, play, readout] of cases) {
+    const html = (await (await render(pathname)).text()).replaceAll("&#x27;", "'");
+    assert.ok(html.includes(ranking), `${pathname}: rankings link`);
+    assert.ok(html.includes(play), `${pathname}: play name`);
+    assert.doesNotMatch(html, /class="year-play"[^>]*aria-pressed/);
+    assert.match(html, /<div class="explore-map-notice"><p id="explore-map-status"/);
+    const line = /<p class="explore-map-readout">([^<]*)<\/p>/.exec(html)?.[1] ?? "";
+    assert.ok(line.startsWith(readout), `${pathname}: readout ${line}`);
+    const toolbar = html.indexOf('class="explore-toolbar"');
+    const readoutAt = html.indexOf('class="explore-map-readout"');
+    const map = html.indexOf('<div class="explore-map"');
+    const reading = html.indexOf('class="explore-annual explore-reading"');
+    assert.ok(toolbar > 0 && toolbar < readoutAt && readoutAt < map && map < reading, `${pathname}: document order`);
+  }
+});
+
 test("renders both localized public records with neutral non-claims", async () => {
   const [english, french] = await Promise.all([
     render("/en").then((response) => response.text()),
