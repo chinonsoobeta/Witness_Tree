@@ -174,6 +174,25 @@ record. The RESULTS comparison above was measured under the three-year rule
 and is labelled that way. The three-year per-cell tiles are not published.
 The French strings are Claude's translations awaiting the owner's review.
 
+### Within 10 km of me
+
+On 2026-10-28 the Draw page (`/en/explore/draw`, `/fr/explorer/dessiner`) gained
+a third shape, Circle: a centre set by the address field, a map click or two
+coordinate fields, and a radius of 5, 10 (default) or 25 km.
+`lib/shapes/circle.ts` turns it into a 64-vertex polygon, placed in metres on the
+GRS80 ellipsoid, and sends it to the unchanged shape endpoint. The result keeps
+the existing readout and adds the federal and provincial ridings at the centre
+from the district endpoint. The district index holds no economic-region layer, so
+the economic region is stated as not named, with a link to the Explore overlay;
+naming it needs a new index layer and the owner's approval. A measured circle's
+address carries only its centre, rounded to three decimals, and its radius;
+`circleResultHref` refuses anything else, and `npm run check:shape-measure` holds
+every history write to it. The address field appears only when the address
+service is configured, which on Vercel it is not yet (`proxy.ts` stamps it off),
+so there the centre comes from the map or the coordinate fields. The home page
+links to the circle as "What happened within 10 km of me?". The French strings
+are drafts awaiting the owner's review.
+
 ### Phase 4 provincial matching run
 
 On 2026-09-26 the first Phase 4 matching run was computed for British Columbia and Québec: 11.1% of 100,731,284 detected changes match an official harvest, fire, insect or windthrow record (56% by area). An independent recount agrees exactly on four intervals. The owner admitted the run the same day ([admission](../data/phase4-provincial-matching-admission-2026-09-26.json)); it is published on the methods page in both languages ([publication](../data/phase4-provincial-matching-publication-2026-09-26.json)) and released as `phase4-provincial-matching-v1` ([release](../data/phase4-provincial-matching-release-2026-09-26.json)). The owner retired the outside provincial review checkpoint ([scope decision](PHASE_SCOPE_DECISION_2026-09-26.md)); no outside review took place. Phase 4 is 4/4. See [the run record](PHASE4_PROVINCIAL_MATCHING_RUN.md). A cross-tabulation of the same run shows what the provincial records add where the national rasters record no cause: in BC and Québec, 19% of that loss lies in changes matching a provincial harvest, fire, insect or windthrow record ([cross-tabulation](../data/phase4-provincial-cause-crosstab.json)).
@@ -201,6 +220,48 @@ sources, and the rows on screen as CSV. The Explore "Recorded harvest" and
 example data, with a link to the page. The series is not expert reviewed, not a
 formal release and not production eligible; the French strings are drafts
 awaiting bilingual review.
+
+### Unknown Atlas
+
+On 2026-10-28 the page "What the record cannot see" (`/en/unknown`,
+`/fr/inconnu`) was added, linked from the Data page and from the Methods
+section on land with no data. It gathers four things, each generated from the
+records the other views read: land with no data per province (from the
+coverage-gap receipt Methods uses, drawn as hatched bars with a table), the
+figures each view withholds and why (`lib/unknown/atlas.ts`), the sources the
+record could not use (`lib/sources/blocked.ts`, which reads each field from its
+record and fails the build if one is missing), and what would settle each
+Unknown, in the Methods wording. Following the owner's 2026-10-28 condition, the
+sources section names agencies and licences but never a person, an address or
+any freedom-of-information request. `tests/unknown-atlas.test.tsx` checks the
+withheld list against the official comparison and Compare, and checks the
+sources section against every address and name the records hold. The French
+strings on this page are drafts for the owner's review (2026-10-28).
+### Place pages
+
+On 2026-10-28 every community (2,291 Statistics Canada 2021 census
+subdivisions), in-scope federal riding (280 in British Columbia, Alberta,
+Ontario and Québec), provincial riding (431) and economic region (44) gained a
+statically generated page in English and French, 6,092 pages in all, at
+`/en/places/1984-2022-v1/<geography>/<code>` and
+`/fr/lieux/1984-2022-v1/<geography>/<code>`. The geography segment names the
+boundary edition (`csd-2021`, `er-2021`, `federal-2023`, `bc-2023`, `ab-2019`,
+`on-2022`, `qc-2026`) and the code is the official identifier; the product
+name is never in the path. Each page reads only checked-in records
+(`lib/place-pages`): the 1984 to 2022 hectares lost at least once, the share of
+mapped forest when the record supports one, or else a labelled minimum with
+the share Unknown and its reason, plus coverage, unmapped share, satellite
+evidence, confidence, the VLCE2 source, boundary edition, data version,
+limitations, a citation, and links between a community and its region and
+ridings. The community-to-region link comes from
+[a derived mapping record](../data/place-economic-regions.json), built by
+`scripts/build-place-economic-regions.mjs` from the data root file whose
+SHA-256 the region figures already record. Search results and suggestions link
+to these pages, and the sitemap lists them. The illustrative fixture place
+template moved to `/en/components/example-places/<id>` and
+`/fr/composants/exemples-lieux/<id>` and stays noindex. These pages are not
+expert reviewed, not a formal release and not production eligible; the French
+strings are drafts awaiting bilingual review.
 
 ## Other formal phase counts
 

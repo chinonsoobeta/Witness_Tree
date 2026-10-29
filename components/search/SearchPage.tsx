@@ -10,6 +10,7 @@ import { SearchSuggest } from "./SearchSuggest";
 import { EvidenceKey } from "@/components/policy/EvidenceKey";
 import { placeDetail, ridingCompareHref, ridingFigure, ridingFigureIsDetected, ridingMeta } from "@/lib/search/suggest";
 import { placeFigure } from "@/lib/search/place-figures";
+import { communityPagePath, ridingPagePath } from "@/lib/place-pages/paths";
 
 export type SearchScope = "places" | "districts";
 
@@ -144,10 +145,10 @@ function resultName(result: SiteSearchResult, locale: Locale) {
   return locale === "fr" && result.nameFr ? result.nameFr : result.name;
 }
 
-function ridingReferenceMarkup(reference: SearchRidingReference, locale: Locale, federal: boolean) {
+function ridingReferenceMarkup(reference: SearchRidingReference, locale: Locale) {
   const row = ridingSearchRow(reference.id);
   const name = locale === "fr" ? reference.nameFr : reference.name;
-  const href = federal ? ridingCompareHref(reference.id, locale) : null;
+  const href = ridingPagePath(locale, reference.id);
   const label = href ? <a href={href}>{name}</a> : name;
   return <li key={reference.id}>{label}{colon(locale)} {formatSearchShare(reference.share, locale)}{row ? <>. {locale === "en" ? "Whole riding" : "Toute la circonscription"}{colon(locale)} {ridingFigure(row, locale)}</> : null}</li>;
 }
@@ -165,24 +166,26 @@ function SearchResultCard({ locale, result }: { locale: Locale; result: SiteSear
   }
   if (result.kind === "riding") {
     const row = ridingSearchRow(result.id);
-    // A federal riding opens in Compare, as it does from the suggestions and
-    // from a community's list; Compare does not cover provincial ridings.
-    const href = ridingCompareHref(result.id, locale);
+    // A riding opens on its own page; a federal one also opens in Compare,
+    // which does not cover provincial ridings.
+    const href = ridingPagePath(locale, result.id);
+    const compareHref = ridingCompareHref(result.id, locale);
     return <li className="card card--lift search-result">
       <h4>{href ? <a href={href}>{resultName(result, locale)}</a> : resultName(result, locale)}</h4>
       <p>{ridingMeta(result, locale)}</p>
       <p className="search-result-figure"><span className={`mark-glyph ${ridingFigureIsDetected(row) ? "mark-glyph--satellite" : "mark-glyph--unknown"}`} aria-hidden="true" />{ridingFigure(row, locale)}</p>
+      {compareHref ? <p><a href={compareHref}>{locale === "en" ? "Compare this riding" : "Comparer cette circonscription"}</a></p> : null}
     </li>;
   }
   const figure = placeFigure(result.id);
   const text = copy[locale];
   return <li className="card card--lift search-result">
-    <h4>{resultName(result, locale)}</h4>
+    <h4><a href={communityPagePath(locale, result.id)}>{resultName(result, locale)}</a></h4>
     <p>{searchPlaceTypeLabel(result.type!, locale)} · {result.province}</p>
     <p className="search-result-figure"><span className={`mark-glyph ${ridingFigureIsDetected(figure) ? "mark-glyph--satellite" : "mark-glyph--unknown"}`} aria-hidden="true" />{figure?.coverage === "complete" && figure.observedLossPercent !== null ? `${formatPercent(figure.observedLossPercent, locale)} ${text.lost} · ` : null}{placeDetail(figure, locale)}</p>
     <p>{locale === "en" ? "Federal ridings" : "Circonscriptions fédérales"}</p>
-    <ul>{result.federal?.length ? result.federal.map((reference) => ridingReferenceMarkup(reference, locale, true)) : <li>{locale === "en" ? "No federal riding is recorded for this community." : "Aucune circonscription fédérale n’est enregistrée pour cette collectivité."}</li>}</ul>
+    <ul>{result.federal?.length ? result.federal.map((reference) => ridingReferenceMarkup(reference, locale)) : <li>{locale === "en" ? "No federal riding is recorded for this community." : "Aucune circonscription fédérale n’est enregistrée pour cette collectivité."}</li>}</ul>
     <p>{locale === "en" ? "Provincial ridings" : "Circonscriptions provinciales"}</p>
-    <ul>{result.provincial?.length ? result.provincial.map((reference) => ridingReferenceMarkup(reference, locale, false)) : <li>{locale === "en" ? "No provincial riding is recorded for this community." : "Aucune circonscription provinciale n’est enregistrée pour cette collectivité."}</li>}</ul>
+    <ul>{result.provincial?.length ? result.provincial.map((reference) => ridingReferenceMarkup(reference, locale)) : <li>{locale === "en" ? "No provincial riding is recorded for this community." : "Aucune circonscription provinciale n’est enregistrée pour cette collectivité."}</li>}</ul>
   </li>;
 }

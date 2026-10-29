@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { HarvestFirePage } from "@/components/transparency/HarvestFirePage";
 import { SiteShell } from "@/components/site";
 import { HARVEST_FIRE_ROUTES, parseHarvestFireQuery } from "@/lib/harvest-fire";
-import { localizedAlternates } from "@/lib/site-metadata";
+import { routeMetadata } from "@/lib/site-metadata";
 
-export const metadata: Metadata = { title: "Harvest and fire by province", alternates: localizedAlternates("en", HARVEST_FIRE_ROUTES) };
+export const metadata: Metadata = routeMetadata("en", HARVEST_FIRE_ROUTES);
 
 export default async function EnglishHarvestFirePage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   // Checkboxes repeat their name, so a list arrives as an array.

@@ -35,6 +35,13 @@ remain an XSS risk boundary; no claim of strict CSP enforcement is made.
 The control plane's account security, deployment approval, secret rotation,
 operational logs and incident response still need an independent review.
 
+Addresses and drawn shapes travel in POST bodies, never in a URL. Since
+2026-10-28 one coarse location does: a measured Draw-page circle writes its
+centre, rounded to three decimals (about 100 m), and its radius into the page
+address so the result can be shared, which puts that point in browser history
+and request logs. The address text that found it is never written; the link
+builder refuses any other field.
+
 ## Public PMTiles and GeoJSON artifacts
 
 Immutable public delivery URLs cross an untrusted network into the map parser,

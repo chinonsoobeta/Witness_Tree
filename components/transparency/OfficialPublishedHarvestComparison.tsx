@@ -117,6 +117,9 @@ function flags(value: SourceFlags | null, locale: Locale) {
   return labels.length ? labels.join(", ") : text.none;
 }
 
+/** The sentence this view prints for its withheld rows, read by the Unknown Atlas. */
+export const OFFICIAL_COMPARISON_WITHHELD = { en: COPY.en.withheld, fr: COPY.fr.withheld } as const;
+
 export function OfficialPublishedHarvestComparison({ rows, locale, province }: Readonly<{ rows: readonly OfficialPublishedHarvestRow[]; locale: Locale; province?: string }>) {
   const text = COPY[locale];
   const selectedProvince = PROVINCES.includes(province as typeof PROVINCES[number]) ? province : null;

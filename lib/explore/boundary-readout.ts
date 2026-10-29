@@ -89,6 +89,9 @@ const words = {
   },
 } as const;
 
+/** The readout's coverage words, read by the Unknown Atlas so it never retypes a reason. */
+export const BOUNDARY_READOUT_WORDS = words;
+
 const isMeasuredOverlay = (overlay: BoundaryOverlayId): overlay is MeasuredBoundaryOverlayId =>
   (MEASURED_BOUNDARY_OVERLAYS as readonly BoundaryOverlayId[]).includes(overlay);
 

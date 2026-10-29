@@ -11,14 +11,11 @@ import {
   parseRankingSort,
 } from "@/lib/comparison";
 import { SiteShell } from "@/components/site";
-import { localizedAlternates } from "@/lib/site-metadata";
+import { routeMetadata } from "@/lib/site-metadata";
 
 const TITLE = "Riding comparison";
 
-export const metadata: Metadata = {
-  title: TITLE,
-  alternates: localizedAlternates("en", { en: "/en/compare", fr: "/fr/comparer" }),
-};
+export const metadata: Metadata = routeMetadata("en", { en: "/en/compare", fr: "/fr/comparer" });
 
 export default async function ComparePage({
   searchParams,

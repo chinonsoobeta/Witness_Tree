@@ -15,10 +15,17 @@ import {
   gatewayAlternates,
   localizedAlternates,
   PUBLIC_LOCALE_ROUTE_PAIRS,
+  PUBLIC_ROUTE_TEXT,
+  routeMetadata,
   SITE_ORIGIN,
   siteMetadata,
   // @ts-expect-error -- Node's TypeScript runner requires explicit local extensions.
 } from "../lib/site-metadata.ts";
+import {
+  PRODUCT_NAME,
+  PRODUCT_PURPOSE,
+  // @ts-expect-error -- Node's TypeScript runner requires explicit local extensions.
+} from "../lib/domain/brand.ts";
 
 test("the shared metadata uses the canonical public host and compressed social card", async () => {
   assert.ok(siteMetadata.metadataBase instanceof URL);
@@ -54,9 +61,36 @@ test("every public sitemap page declares its locale-specific canonical", async (
   for (const paths of PUBLIC_LOCALE_ROUTE_PAIRS) {
     for (const locale of ["en", "fr"] as const) {
       const source = await readFile(new URL("../app" + paths[locale] + "/page.tsx", import.meta.url), "utf8");
-      assert.match(source, new RegExp('localizedAlternates\\("' + locale + '"'), "Missing " + locale + " canonical on " + paths[locale] + ".");
+      assert.match(source, new RegExp('routeMetadata\\("' + locale + '"'), "Missing " + locale + " metadata on " + paths[locale] + ".");
+      assert.deepEqual(routeMetadata(locale, paths).alternates, localizedAlternates(locale, paths));
     }
   }
+});
+
+test("every public route has its own title and description in each language", () => {
+  for (const locale of ["en", "fr"] as const) {
+    const titles = new Set<string>();
+    for (const paths of PUBLIC_LOCALE_ROUTE_PAIRS) {
+      const text = PUBLIC_ROUTE_TEXT[paths.en];
+      const metadata = routeMetadata(locale, paths);
+      const description = metadata.description ?? "";
+      assert.ok(description.length > 0, "No description on " + paths[locale] + ".");
+      assert.notEqual(description, PRODUCT_PURPOSE[locale], paths[locale] + " repeats the site description.");
+      assert.ok(description.length <= 160, paths[locale] + " description is " + description.length + " characters.");
+      assert.equal((description.match(/[.?!](?=\s|$)/g) ?? []).length, 1, paths[locale] + " description is not one sentence.");
+      assert.ok(!titles.has(text.title[locale]), paths[locale] + " shares its title with another page.");
+      titles.add(text.title[locale]);
+      // The rendered title, with the product name the template adds.
+      const rendered = text.title[locale] + " · " + PRODUCT_NAME[locale];
+      assert.ok(rendered.length <= 60, paths[locale] + " title is " + rendered.length + " characters.");
+      assert.ok(!text.title[locale].includes(PRODUCT_NAME[locale]), paths[locale] + " title repeats the product name.");
+    }
+    assert.ok(!titles.has(PRODUCT_NAME[locale]));
+  }
+  // The home page shares its segment with the layout, so the template does not
+  // reach it and it carries the product name itself.
+  assert.deepEqual(routeMetadata("en", PUBLIC_LOCALE_ROUTE_PAIRS[0]).title, { absolute: PUBLIC_ROUTE_TEXT["/en"].title.en + " · " + PRODUCT_NAME.en });
+  assert.equal(routeMetadata("fr", PUBLIC_LOCALE_ROUTE_PAIRS[1]).title, PUBLIC_ROUTE_TEXT["/en/explore"].title.fr);
 });
 
 test("robots and sitemap expose both locales without fixture routes", () => {
@@ -66,7 +100,8 @@ test("robots and sitemap expose both locales without fixture routes", () => {
   assert.equal(robotsRecord.host, SITE_ORIGIN);
 
   const entries = sitemap();
-  assert.equal(entries.length, 1 + PUBLIC_LOCALE_ROUTE_PAIRS.length * 2);
+  // The gateway, each static pair, and 3,046 record-backed place pages in each language.
+  assert.equal(entries.length, 1 + PUBLIC_LOCALE_ROUTE_PAIRS.length * 2 + 3046 * 2);
   const urls = entries.map(({ url }) => url);
   assert.equal(urls[0], SITE_ORIGIN);
   for (const paths of PUBLIC_LOCALE_ROUTE_PAIRS) {
@@ -77,14 +112,20 @@ test("robots and sitemap expose both locales without fixture routes", () => {
   assert.ok(urls.includes(SITE_ORIGIN + "/fr/composants"));
   assert.ok(urls.includes(SITE_ORIGIN + "/en/explore/draw"));
   assert.ok(urls.includes(SITE_ORIGIN + "/fr/explorer/dessiner"));
-  assert.equal(urls.some((url) => /\/(?:places|lieux|location|emplacement)\//.test(url)), false);
+  // Real place pages are listed in both languages; the illustrative fixtures never are.
+  assert.ok(urls.includes(`${SITE_ORIGIN}/en/places/1984-2022-v1/csd-2021/5924034`));
+  assert.ok(urls.includes(`${SITE_ORIGIN}/fr/lieux/1984-2022-v1/csd-2021/5924034`));
+  assert.equal(urls.filter((url) => url.includes("/en/places/")).length, 3046);
+  assert.equal(urls.filter((url) => url.includes("/fr/lieux/")).length, 3046);
+  assert.equal(urls.some((url) => /\/(?:location|emplacement|example-places|exemples-lieux)\//.test(url)), false);
+  assert.equal(urls.some((url) => /\/(?:places|lieux)\/(?!1984-2022-v1\/)/.test(url)), false);
   assert.equal(entries[0]?.alternates?.languages?.["x-default"], SITE_ORIGIN);
 });
 
 test("fixture place and location routes are noindex", async () => {
   const sources = await Promise.all([
-    readFile(new URL("../app/en/places/[placeId]/page.tsx", import.meta.url), "utf8"),
-    readFile(new URL("../app/fr/lieux/[placeId]/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/en/components/example-places/[placeId]/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/fr/composants/exemples-lieux/[placeId]/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/en/location/[locationId]/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/fr/emplacement/[locationId]/page.tsx", import.meta.url), "utf8"),
   ]);

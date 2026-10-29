@@ -2,12 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteShell } from "@/components/site";
 import { PRODUCT_NAME } from "@/lib/domain";
-import { localizedAlternates } from "@/lib/site-metadata";
+import { routeMetadata } from "@/lib/site-metadata";
 
-export const metadata: Metadata = {
-  title: "About",
-  alternates: localizedAlternates("en", { en: "/en/about", fr: "/fr/a-propos" }),
-};
+export const metadata: Metadata = routeMetadata("en", { en: "/en/about", fr: "/fr/a-propos" });
 
 // The owner's own words of 2026-10-03. On 2026-10-28 the closing paragraph was
 // reframed around what the record answers: it measures loss, not standing

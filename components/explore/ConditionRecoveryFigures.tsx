@@ -12,7 +12,8 @@ const COPY = {
       `${area} is Unknown because at least one year there is unclassified or missing. It’s left out, not counted as zero.`,
     meaning:
       "“Treed” means the yearly land-cover map shows coniferous, broadleaf or mixed trees. This measures trees coming back, not the return of the forest that was there: a young plantation and an old stand both count as treed.",
-    floor: "Where less than 500 ha lost tree cover, the share is withheld. Where nothing was mapped, loss and recovery are Unknown.",
+    floor: "Where less than 500 ha lost tree cover, the share is withheld.",
+    unmappedNote: "Where nothing was mapped, loss and recovery are Unknown.",
     provinces: "By province",
     decades: "By decade of the latest loss, four provinces",
     decadesLead:
@@ -50,7 +51,8 @@ const COPY = {
       `${area} sont inconnus parce qu’au moins une année y est non classée ou manquante. Ils sont exclus, et non comptés comme zéro.`,
     meaning:
       "«\u00a0Boisé\u00a0» signifie que la carte annuelle de couverture terrestre montre des conifères, des feuillus ou un peuplement mixte. On mesure le retour des arbres, et non celui de la forêt qui s’y trouvait\u202F: une jeune plantation et un vieux peuplement comptent tous deux comme boisés.",
-    floor: "Lorsque moins de 500 ha ont perdu leur couvert arboré, la part n’est pas présentée. Là où rien n’a été cartographié, la perte et le rétablissement sont inconnus.",
+    floor: "Lorsque moins de 500 ha ont perdu leur couvert arboré, la part n’est pas présentée.",
+    unmappedNote: "Là où rien n’a été cartographié, la perte et le rétablissement sont inconnus.",
     provinces: "Par province",
     decades: "Par décennie de la dernière perte, quatre provinces",
     decadesLead:
@@ -81,6 +83,9 @@ const COPY = {
     tableCaption: (heading: string) => `État et rétablissement${colon("fr")} ${heading.toLowerCase()}`,
   },
 } as const;
+
+/** The view's own wording, read by the Unknown Atlas so it never retypes a reason. */
+export const CONDITION_RECOVERY_COPY = COPY;
 
 const PROVINCE_FOR_PREFIX: Readonly<Record<string, Readonly<{ en: string; fr: string }>>> = {
   "59": { en: "British Columbia", fr: "Colombie-Britannique" },
@@ -226,7 +231,7 @@ export function ConditionRecoveryFigures({
       </div>
 
       <h3>{text.regions}</h3>
-      <p>{text.regionsLead} {text.floor}</p>
+      <p>{text.regionsLead} {text.floor} {text.unmappedNote}</p>
       {placeTable("recovery-regions-caption", text.regions, regions, true)}
 
       <h3>{text.survey}</h3>

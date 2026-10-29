@@ -2,6 +2,7 @@ import { CoverageStatement } from "@/components/policy/CoverageStatement";
 import { colon, formatYearRangeKey, type Locale } from "@/lib/domain";
 import { HARVEST_FIRE_ROUTES } from "@/lib/harvest-fire";
 import { SourceCurrency } from "./SourceCurrency";
+import { provinceBulkDataset, provinceSpanDataset, StructuredData } from "@/lib/structured-data";
 import {
   PROVINCE_BULK_TIME_RANGE,
   PROVINCE_SPAN_TIME_RANGE,
@@ -39,6 +40,7 @@ const COPY = {
       "Every province has some land with no data, so every loss figure is a minimum. These files don’t show what caused a loss, who is responsible, whether it was legal, how much sellable timber there is, or conditions on the ground.",
     previewLimits:
       "This is an early preview, not the final release. Always read a figure with its evidence label, coverage and confidence, and don’t apply it beyond the boundaries and years it covers.",
+    unknownAtlas: "What the record cannot see: land with no data, figures withheld and sources we could not use",
     recordsTitle: "Source records and documentation",
     description:
       "The source ledger lists the 31 sources the plan names, with the evidence we hold for each and anything still blocking its use.",
@@ -90,6 +92,7 @@ const COPY = {
       "Chaque province compte un territoire sans données\u202F; chaque chiffre de perte est donc un minimum. Ces fichiers n’indiquent ni la cause d’une perte, ni qui en est responsable, ni sa légalité, ni la quantité de bois vendable, ni les conditions sur le terrain.",
     previewLimits:
       "Il s’agit d’un aperçu préliminaire, et non de la version définitive. Lisez toujours un chiffre avec sa catégorie de preuve, sa couverture et son niveau de confiance, et ne l’appliquez pas au-delà des limites et des années qu’il couvre.",
+    unknownAtlas: "Ce que le registre ne peut pas voir\u202F: le territoire sans données, les chiffres non présentés et les sources que nous n’avons pas pu utiliser",
     recordsTitle: "Registres des sources et documentation",
     description:
       "Le registre des sources énumère les 31 sources prévues par le plan, avec les preuves que nous avons pour chacune et ce qui bloque encore son usage.",
@@ -120,6 +123,7 @@ export function DataPage({ locale }: Readonly<{ locale: Locale }>) {
   const [csv, geopackage] = provinceBulkRelease.artifacts;
   return (
     <main id="main" className="page-wrap data-page">
+      <StructuredData data={[provinceBulkDataset(locale), provinceSpanDataset(locale)]} />
       <header className="masthead">
         <h1>{copy.title}</h1>
       </header>
@@ -196,6 +200,7 @@ export function DataPage({ locale }: Readonly<{ locale: Locale }>) {
       <aside className="card card--sand prose-measure">
         <h2>{copy.limitsTitle}</h2>
         <p>{copy.previewLimits}</p>
+        <p><a href={locale === "en" ? "/en/unknown" : "/fr/inconnu"}>{copy.unknownAtlas}</a></p>
       </aside>
 
       <SourceCurrency locale={locale} />

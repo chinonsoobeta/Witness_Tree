@@ -2154,8 +2154,10 @@ h4 {
   font-style: normal;
   line-height: 1;
 }
-/* Matches the map's hatching of partly mapped regions. */
-.loss-swatch--hatch {
+/* Matches the map's hatching of partly mapped regions. The Unknown Atlas
+   draws land with no data in the same hatch. */
+.loss-swatch--hatch,
+.unknown-atlas-chart .explore-bar--unmapped {
   background: repeating-linear-gradient(45deg, rgba(20, 32, 26, 0.8) 0 2px, rgba(238, 239, 233, 0.8) 2px 3px, transparent 3px 6px), var(--map-ground);
 }
 .loss-0 {
@@ -2960,6 +2962,56 @@ h4 {
   flex-wrap: wrap;
   gap: 8px;
   padding: 8px 12px 0;
+}
+/* The circle: a place field, its centre as two numbers, and three radii. */
+.shape-finder {
+  margin-bottom: 12px;
+}
+.shape-finder-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.shape-finder-row input {
+  flex: 1 1 16rem;
+  min-width: 0;
+}
+.shape-finder-results {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+.shape-finder-results .btn {
+  text-align: start;
+}
+.shape-measure fieldset.shape-radius {
+  margin: 12px 0 0;
+}
+.shape-districts {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 4px 24px;
+  margin: 0 0 8px;
+}
+.shape-districts dt {
+  font-weight: 700;
+  margin-top: 8px;
+}
+.shape-districts dd {
+  margin: 0;
+}
+@media (min-width: 640px) {
+  .shape-districts {
+    grid-template-columns: minmax(0, 18ch) minmax(0, 1fr);
+  }
+  .shape-districts dt {
+    margin-top: 0;
+  }
+  .shape-districts dd + dd {
+    grid-column: 2;
+  }
 }
 @media (min-width: 640px) {
   .shape-readout {
@@ -4311,6 +4363,30 @@ dd > a:only-child {
   border-color: var(--fire);
   background: var(--fire);
 }
+/* The Unknown Atlas: each track is the whole province, so the hatched bar is
+   the share with no data. Its text label carries the value. */
+.unknown-atlas-chart .explore-bar-track {
+  border: 1px solid var(--rule-strong);
+  background: var(--ground);
+}
+.unknown-atlas-chart .explore-bar--unmapped {
+  min-width: 1px;
+  border-color: var(--ink);
+  border-radius: 0;
+}
+.unknown-atlas-chart {
+  margin-bottom: 24px;
+}
+/* The Atlas's withheld and source tables are prose, so they read left to right. */
+.unknown-atlas-table th,
+.unknown-atlas-table td {
+  text-align: left;
+}
+.unknown-atlas-source-title {
+  display: block;
+  font-weight: 400;
+  color: var(--muted);
+}
 /* Condition and recovery wears the map's recovery colour, which is a fixed
    printed-map colour on its own light ground in both themes. */
 .explore-bar--recovery {
@@ -4665,6 +4741,118 @@ dd > a:only-child {
 }
 .comparison-picker select {
   max-width: 100%;
+}
+
+/* The Compare form's riding fields once they hydrate: a text field with a
+   suggestion list, and the chosen riding as a chip above it. Each field takes
+   the row's width on a phone and shrinks to fit a 320px viewport. The popup
+   is an overlay, so it takes an opaque surface and a --rule-strong edge, as
+   the search suggestions do. */
+.riding-typeahead {
+  display: grid;
+  gap: 6px;
+  flex: 1 1 18rem;
+  min-width: 0;
+  max-width: 28rem;
+}
+.riding-typeahead-field {
+  position: relative;
+  min-width: 0;
+}
+.riding-typeahead .input:placeholder-shown { text-overflow: ellipsis; }
+.riding-chip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0;
+  padding: 4px 4px 4px 12px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-control);
+  background: var(--surface-2);
+  color: var(--ink);
+}
+.riding-chip-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+.riding-chip-name { font-weight: 700; }
+.riding-chip-meta,
+.riding-typeahead-meta { color: var(--ink-2); font-size: var(--text-small); }
+.riding-chip-remove {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--ink);
+  font-size: 22px;
+  cursor: pointer;
+}
+.riding-chip-remove:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.riding-typeahead-popup {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 6px);
+  left: 0;
+  width: 100%;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+  color: var(--ink);
+}
+.riding-typeahead-list {
+  margin: 0;
+  padding: 6px 0;
+  list-style: none;
+}
+/* The active option is marked by a bar at its start edge as well as its
+   fill, so it is never shown by colour alone. */
+.riding-typeahead-option {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 48px;
+  padding: 6px 14px;
+  border-inline-start: 4px solid transparent;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+.riding-typeahead-option[aria-selected="true"] {
+  border-inline-start-color: var(--accent);
+  background: var(--surface-2);
+}
+.riding-typeahead-more,
+.riding-typeahead-message {
+  margin: 0;
+  padding: 10px 14px;
+  font-size: var(--text-small);
+  color: var(--ink-2);
+}
+.riding-typeahead-more { border-top: 1px solid var(--rule); }
+@media (forced-colors: active) {
+  /* A forced palette paints a transparent edge in the text colour and drops
+     the fill, so the bar is hidden on every other option and the active one
+     takes the system highlight pair instead. The page sets every element
+     back to auto adjustment, so the option's text needs the pair too. */
+  .riding-typeahead-option { border-inline-start-color: Canvas; }
+  .riding-typeahead-option[aria-selected="true"],
+  .riding-typeahead-option[aria-selected="true"] * {
+    background: Highlight;
+    color: HighlightText;
+    forced-color-adjust: none;
+  }
+  .riding-typeahead-option[aria-selected="true"] { border-inline-start-color: HighlightText; }
 }
 
 /* Transparency keeps provenance beside downloads and rule explanations in reach. */
@@ -5407,6 +5595,10 @@ dd > a:only-child {
   font-size: var(--text-small);
   color: var(--ink-2);
 }
+.home-search-nearby {
+  margin: 8px 0 0;
+  font-weight: 700;
+}
 .search-page-field { margin-bottom: 32px; }
 @media (max-width: 560px) {
   .search-suggest-row { grid-template-columns: minmax(0, 1fr); }
@@ -5501,7 +5693,15 @@ dd > a:only-child {
 .place-caution p { margin: 0; }
 .place-download { text-align: center; }
 .place-provenance .source-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
-.record-citation p { margin: 0; }
+.record-citation p { margin: 0; overflow-wrap: anywhere; }
+/* A real place's page: the minimum note, its limitations and the places it links to. */
+.place-stat-minimum { margin: 0; color: var(--muted); font-size: 0.85rem; }
+.place-limitations { margin: 0; padding-inline-start: 1.1rem; display: flex; flex-direction: column; gap: 6px; }
+.place-observed h3 { margin: 6px 0 0; font-size: 0.95rem; }
+.place-related { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr)); gap: 8px 20px; }
+.place-related li { display: flex; flex-direction: column; min-width: 0; }
+.place-related-share { color: var(--muted); font-size: 0.85rem; }
+.place-related-links { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 8px 0 0; }
 
 @media (max-width: 1000px) {
   .place-hero { grid-template-columns: minmax(0, 1fr); }

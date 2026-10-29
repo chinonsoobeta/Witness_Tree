@@ -16,12 +16,9 @@ import {
 import { forestRegionFigures, regionIntervalMeasurements } from "@/lib/explore/region-intervals";
 import { ridingIntervalMeasurements } from "@/lib/explore/riding-intervals";
 import { conditionRecoveryView } from "@/lib/explore/condition-recovery";
-import { localizedAlternates } from "@/lib/site-metadata";
+import { routeMetadata } from "@/lib/site-metadata";
 
-export const metadata: Metadata = {
-  title: "Explorer",
-  alternates: localizedAlternates("fr", { en: "/en/explore", fr: "/fr/explorer" }),
-};
+export const metadata: Metadata = routeMetadata("fr", { en: "/en/explore", fr: "/fr/explorer" });
 
 export default async function Page({
   searchParams,

@@ -1,8 +1,26 @@
 import type { Locale } from "@/lib/domain";
 import { CoverageStatement } from "@/components/policy/CoverageStatement";
+import { federalRidingComparison } from "@/lib/comparison";
+import type { InitialCircle } from "@/lib/shapes/circle";
 import { ShapeMeasureClient } from "./ShapeMeasureClient";
 
-export function DrawPage({ locale, available }: Readonly<{ locale: Locale; available: boolean }>) {
+// The federal ridings the Compare page can actually show. A link to any other
+// riding would quietly open a different pair, so those get an Explore link.
+const COMPARABLE_FEDERAL_IDS = federalRidingComparison.comparisonRows.map((row) => row.id);
+
+export function DrawPage({
+  locale,
+  available,
+  initialCircle = null,
+  addressLookup = false,
+  districtLookup = false,
+}: Readonly<{
+  locale: Locale;
+  available: boolean;
+  initialCircle?: InitialCircle | null;
+  addressLookup?: boolean;
+  districtLookup?: boolean;
+}>) {
   return (
     <section className="page-wrap draw-page">
       <header className="masthead">
@@ -16,7 +34,15 @@ export function DrawPage({ locale, available }: Readonly<{ locale: Locale; avail
           ? "The map is only a guide. The measurement comes from the underlying data grid."
           : "La carte sert seulement de guide. La mesure provient de la grille de données sous-jacente."}</p>
       </CoverageStatement>
-      {available ? <ShapeMeasureClient locale={locale} /> : (
+      {available ? (
+        <ShapeMeasureClient
+          locale={locale}
+          initialCircle={initialCircle}
+          addressLookup={addressLookup}
+          districtLookup={districtLookup}
+          comparableFederalIds={COMPARABLE_FEDERAL_IDS}
+        />
+      ) : (
         <p className="no-record-result" role="status">{locale === "en"
           ? "– Area measurement is not available on this site yet. No result has been calculated."
           : "– La mesure de zone n’est pas encore offerte sur ce site. Aucun résultat n’a été calculé."}</p>

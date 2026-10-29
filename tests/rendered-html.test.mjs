@@ -202,6 +202,19 @@ test("emits application security headers with the map delivery allowances", asyn
   }
 });
 
+test("Explore sends its map legend and the tile connection in the first HTML", async () => {
+  for (const [pathname, heading] of [["/en/explore", "Detected forest loss, 2021–2022"], ["/fr/explorer", "Perte forestière détectée, 2021–2022"]]) {
+    const html = await (await render(pathname)).text();
+    const head = /<head>([\s\S]*?)<\/head>/.exec(html)?.[1] ?? "";
+    // Opened while the page loads, so the first archive range does not wait for a handshake.
+    for (const origin of browserFetchedOrigins()) assert.match(head, new RegExp(`<link rel="preconnect" href="${origin.replaceAll(".", "\\.")}" crossorigin="anonymous"/>`));
+    // The key is server-rendered beside the loading map, not added when the tiles arrive.
+    assert.match(html, /<div class="explore-map"[^>]*data-state="loading"/);
+    assert.match(html, /class="explore-map-layer-panel"/);
+    assert.ok(html.includes(heading), `${pathname} omits its legend heading`);
+  }
+});
+
 test("renders both localized public records with neutral non-claims", async () => {
   const [english, french] = await Promise.all([
     render("/en").then((response) => response.text()),
@@ -219,10 +232,31 @@ test("renders both localized public records with neutral non-claims", async () =
   assert.doesNotMatch(`${english}\n${french}`, /the truth|real-time|complete record/i);
 });
 
+test("renders the Unknown Atlas in both languages with its four sections", async () => {
+  const [englishResponse, frenchResponse] = await Promise.all([render("/en/unknown"), render("/fr/inconnu")]);
+  assert.equal(englishResponse.status, 200);
+  assert.equal(frenchResponse.status, 200);
+  const [english, french] = await Promise.all([englishResponse.text(), frenchResponse.text()]);
+  assert.match(english, /<html lang="en">/);
+  assert.match(french, /<html lang="fr">/);
+  assert.match(english, /<h1>What the record cannot see<\/h1>/);
+  assert.match(french, /<h1>Ce que le registre ne peut pas voir<\/h1>/);
+  assert.match(english, /<link rel="alternate" hrefLang="fr" href="[^"]*\/fr\/inconnu"/i);
+  for (const html of [english, french]) {
+    assert.match(html, /<main id="main"/);
+    for (const id of ["no-data", "withheld", "blocked-sources", "settle"]) assert.match(html, new RegExp(`<section[^>]*id="${id}"`));
+    assert.equal((html.match(/<table>/g) ?? []).length, (html.match(/<caption/g) ?? []).length);
+    assert.doesNotMatch(html, /@[a-z0-9-]+\.[a-z]{2,}/i);
+    assert.doesNotMatch(html, /\bFOI\b|freedom of information|accès à l’information/i);
+  }
+  assert.match(english, /Missing data never means no loss\./);
+  assert.match(french, /Des données manquantes ne signifient jamais une absence de perte\./);
+});
+
 test("renders localized place and location records with semantic content and provenance", async () => {
   const [englishPlace, frenchPlace, englishLocation, frenchLocation] = await Promise.all([
-    render("/en/places/bc-province?view=table").then((response) => response.text()),
-    render("/fr/lieux/bc-province?view=table").then((response) => response.text()),
+    render("/en/components/example-places/bc-province?view=table").then((response) => response.text()),
+    render("/fr/composants/exemples-lieux/bc-province?view=table").then((response) => response.text()),
     render("/en/location/location-bc-province").then((response) => response.text()),
     render("/fr/emplacement/location-bc-province").then((response) => response.text()),
   ]);
@@ -246,6 +280,37 @@ test("renders localized place and location records with semantic content and pro
   assert.match(englishLocation, /Provenance/);
   assert.match(frenchLocation, /Coordonnées et précision/);
   assert.match(frenchLocation, /Provenance/);
+});
+
+test("renders a real community page in each language from its checked-in record", async () => {
+  const [englishResponse, frenchResponse, missing] = await Promise.all([
+    render("/en/places/1984-2022-v1/csd-2021/5924034"),
+    render("/fr/lieux/1984-2022-v1/csd-2021/5924034"),
+    render("/en/places/1984-2022-v1/csd-2021/0000000"),
+  ]);
+  assert.equal(englishResponse.status, 200);
+  assert.equal(frenchResponse.status, 200);
+  assert.equal(missing.status, 404);
+  const [english, french] = await Promise.all([englishResponse.text(), frenchResponse.text()]);
+  for (const html of [english, french]) {
+    assert.match(html, /<main\b[^>]*id="main"/);
+    assert.match(html, /<h1[^>]*>Campbell River<\/h1>/);
+    assert.match(html, /4,518\.63 ha|4[\u00a0\u202f]518,63 ha/);
+    assert.match(html, /1984-2022-v1/);
+    assert.match(html, /dataset\/2785c103-9c2d-429b-9f3d-89f5cd9ea94d/);
+    assert.doesNotMatch(html, /noindex/);
+    assert.match(html, /hrefLang="en" href="https:\/\/www\.witnesstree\.ca\/en\/places\/1984-2022-v1\/csd-2021\/5924034"|hreflang="en" href="https:\/\/www\.witnesstree\.ca\/en\/places\/1984-2022-v1\/csd-2021\/5924034"/);
+  }
+  assert.match(english, /<html lang="en">/);
+  assert.match(english, /Satellite observation/);
+  assert.match(english, /Annual High-resolution forest land cover/);
+  assert.match(french, /Couverture forestière annuelle à haute résolution/);
+  assert.match(english, /Vancouver Island and Coast/);
+  assert.match(english, /href="\/en\/places\/1984-2022-v1\/er-2021\/\d{4}"/);
+  assert.match(english, /href="\/en\/places\/1984-2022-v1\/federal-2023\/\d{5}"/);
+  assert.match(french, /<html lang="fr">/);
+  assert.match(french, /Observation satellitaire/);
+  assert.match(french, /href="\/fr\/lieux\/1984-2022-v1\/er-2021\/\d{4}"/);
 });
 
 test("renders localized search results and the Explore table without browser JavaScript, including from an old List address", async () => {

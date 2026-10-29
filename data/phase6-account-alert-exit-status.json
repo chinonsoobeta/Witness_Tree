@@ -5,7 +5,7 @@
   "phaseComplete": false,
   "completedCriteria": 4,
   "totalCriteria": 5,
-  "percentage": 80.0,
+  "percentage": 80,
   "exitCriteria": [
     {
       "id": "direct-database-tenant-isolation",

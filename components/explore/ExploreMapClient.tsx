@@ -299,6 +299,28 @@ const patchZoomCentre = ({ lng, lat }: Readonly<{ lng: number; lat: number }>): 
 // byte-identical to the installed maplibre-gl distribution.
 const MAPLIBRE_WORKER_VERSION = "6.9.0";
 const MAPLIBRE_WORKER_URL = `/maplibre/${MAPLIBRE_WORKER_VERSION}/maplibre-gl-worker.mjs`;
+// Every archive the map reads is on this one origin. The page names it in its
+// head, so the connection is open before the map asks for its first range.
+const TILE_ORIGIN = new URL(EXPLORE_PRODUCTION_LAYER.url).origin;
+
+/*
+ * The archives the first view reads, each opened on the protocol before
+ * MapLibre has loaded. PMTiles reads an archive's header and root directory
+ * once and shares that answer, so these reads run while the MapLibre chunk is
+ * still downloading instead of after it. The style, its sources and their URLs
+ * are the ones MapLibre is given; a failed read fails the map exactly as it
+ * would have without this, because MapLibre is handed the same answer.
+ */
+const openStyleArchives = (pmtiles: typeof import("pmtiles"), style: StyleSpecification) => {
+  const protocol = new pmtiles.Protocol();
+  for (const source of Object.values(style.sources)) {
+    if (!("url" in source) || !source.url?.startsWith("pmtiles://")) continue;
+    const archive = new pmtiles.PMTiles(source.url.slice("pmtiles://".length));
+    protocol.add(archive);
+    archive.getHeader().catch(() => undefined);
+  }
+  return protocol;
+};
 type ProvinceFeature = {
   id: string;
   properties: {
@@ -1029,9 +1051,10 @@ export function ExploreMapClient({
 
     const initializePmtiles = async () => {
       try {
-        const [maplibreModule, { Protocol }] = await Promise.all([
+        const style = buildStyle(shading, null, overlays, "all", { fromYear, toYear: year }, regionsRef.current, focusRef.current, recoveryRef.current);
+        const [maplibreModule, protocol] = await Promise.all([
           import("maplibre-gl"),
-          import("pmtiles"),
+          import("pmtiles").then((pmtiles) => openStyleArchives(pmtiles, style)),
         ]);
         if (!active || !mapContainerRef.current) {
           if (active) void loadGeoJsonFallback("error");
@@ -1039,12 +1062,11 @@ export function ExploreMapClient({
         }
         maplibre = maplibreModule;
         maplibre.setWorkerUrl(MAPLIBRE_WORKER_URL);
-        const protocol = new Protocol();
         maplibre.addProtocol("pmtiles", protocol.tile);
         protocolRegistered = true;
         map = new maplibre.Map({
           container: mapContainerRef.current,
-          style: buildStyle(shading, null, overlays, "all", { fromYear, toYear: year }, regionsRef.current, focusRef.current, recoveryRef.current),
+          style,
           bounds: COMBINED_PROVINCE_BOUNDS,
           fitBoundsOptions: { padding: FRAME_PADDING, maxZoom: 6 },
           // The pan limit is the same envelope widened to what the framed
@@ -1415,8 +1437,13 @@ export function ExploreMapClient({
    * This is the map's one legend. The province scale and the patch key used
    * to be drawn twice, once here and again under the map beside a table that
    * repeated the figures section; the figures now live only in that section.
+   *
+   * It is drawn while the map loads as well. Everything in it follows from the
+   * mode and the span, never from the tiles, so it arrives in the server's
+   * HTML: the reader has the key before MapLibre does, and the page below no
+   * longer jumps down by the legend's height when the map appears.
    */
-  const layerPanel = state === "ready" ? (
+  const layerPanel = state === "ready" || state === "loading" ? (
     <div
       className="explore-map-layer-panel"
       tabIndex={0}
@@ -1512,6 +1539,8 @@ export function ExploreMapClient({
 
   return (
     <div className="explore-map-client">
+      {/* React hoists this into the head of the server's HTML. */}
+      <link rel="preconnect" href={TILE_ORIGIN} crossOrigin="anonymous" />
       <div className="explore-map-stack">
       <ProvinceBar
         locale={locale}

@@ -11,7 +11,7 @@ import {
 import { formatHectares, formatPercent, type Locale } from "@/lib/domain";
 import { MeasurementCoverage, missingMeasurement } from "./MeasurementCoverage";
 
-const UNRANKED_COPY = {
+export const UNRANKED_COPY = {
   en: {
     noneMapped: "No mapped coverage, not ranked",
     partial: "Partial mapped coverage, not ranked",

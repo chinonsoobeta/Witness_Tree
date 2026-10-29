@@ -3,7 +3,10 @@ import path from "node:path";
 import { runInNewContext } from "node:vm";
 import { gzipSync } from "node:zlib";
 
-export const SHARED_LIMIT = 128 * 1024;
+// 128 KiB was approved on 2026-10-02. On 2026-10-28 the owner wrote "The bundle
+// limit can be raised as necessary."; the Compare riding typeahead measured the
+// shared total at 133,352 gzip bytes, so the limit is 136 KiB (see docs/PERFORMANCE.md).
+export const SHARED_LIMIT = 136 * 1024;
 export const EXPLORE_LIMIT = 400 * 1024;
 
 const manifestPath = (root) => path.join(root, ".vite", "manifest.json");

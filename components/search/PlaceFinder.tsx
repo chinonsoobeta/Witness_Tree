@@ -1,6 +1,7 @@
 import { NoRecordResult } from "./NoRecordResult";
 import type { Locale } from "@/lib/domain";
 import { searchPlaces } from "@/lib/search";
+import { examplePlacePath } from "@/lib/places";
 
 const copy = {
   en: {
@@ -53,13 +54,7 @@ export function PlaceFinder({
         <ul className="search-results">
           {results.map((place) => (
             <li className="card card--lift search-result" key={place.id}>
-              <a
-                href={
-                  locale === "en"
-                    ? `/en/places/${place.id}`
-                    : `/fr/lieux/${place.id}`
-                }
-              >
+              <a href={examplePlacePath(locale, place.id)}>
                 {place.name[locale]}
               </a>
             </li>
