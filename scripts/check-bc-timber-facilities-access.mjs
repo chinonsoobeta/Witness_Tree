@@ -26,10 +26,15 @@ export function validateFacilitiesDecision(decision) {
   if (decision?.schemaVersion !== "witness-tree/plan-scope-decision/1") fail("Decision schema drifted.");
   if (decision.status !== "owner-scope-decision" || decision.decidedAt !== "2026-10-28" || decision.owner !== "Chinonso Obeta") fail("Decision must name the owner and the 2026-10-28 date.");
   // The owner's approval named #9; it is applied to this feature by a recorded interpretation.
-  // The quote must stay whole, and the interpretation must stay visible until the owner confirms it.
+  // The quote must stay whole, the interpretation must stay visible, and a confirmation must
+  // carry the owner's own words and date. The owner confirmed it on 2026-10-28.
   if (typeof decision.ownerWords !== "string" || !decision.ownerWords.includes("I approve the plan amendment for #9.")) fail("Owner words must quote the approval sentence in full.");
   if (typeof decision.interpretation !== "string" || !/#9/.test(decision.interpretation) || !/#10/.test(decision.interpretation) || !/until the owner confirms/i.test(decision.interpretation)) fail("The interpretation applying the #9 approval to #10 must be recorded until the owner confirms it.");
   if (typeof decision.ownerConfirmedInterpretation !== "boolean") fail("ownerConfirmedInterpretation must be recorded.");
+  if (decision.ownerConfirmedInterpretation) {
+    const confirmation = decision.ownerConfirmation ?? {};
+    if (confirmation.words !== "I did mean plan amendment for #9 should actually be for #10." || confirmation.date !== "2026-10-28" || typeof confirmation.source !== "string" || !confirmation.source.trim()) fail("A confirmed interpretation must quote the owner's confirmation with its date and source.");
+  }
   const sections = (decision.planSectionsAmended ?? []).map((entry) => entry.section).sort();
   if (sections.join(",") !== "1.3,14.2") fail("Decision must amend plan sections 1.3 and 14.2 and no others.");
   const scope = decision.scope ?? {};

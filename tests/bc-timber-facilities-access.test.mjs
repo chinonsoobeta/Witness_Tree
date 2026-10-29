@@ -10,7 +10,9 @@ test("the BC facilities decision is recorded and the source stays blocked", asyn
   const result = await checkBcTimberFacilities();
   assert.equal(result.decision.owner, "Chinonso Obeta");
   assert.ok(result.decision.ownerWords.includes("I approve the plan amendment for #9."));
-  assert.equal(result.decision.ownerConfirmedInterpretation, false);
+  assert.equal(result.decision.ownerConfirmedInterpretation, true);
+  assert.equal(result.decision.ownerConfirmation.words, "I did mean plan amendment for #9 should actually be for #10.");
+  assert.equal(result.decision.ownerConfirmation.date, "2026-10-28");
   assert.equal(result.block.status, "blocked");
   assert.equal(result.block.rights.openLicence, false);
   assert.equal(result.block.admission.published, false);
@@ -24,6 +26,8 @@ test("the decision refuses widened scope or granted gates", () => {
   assert.throws(() => validateFacilitiesDecision({ ...decision, ownerWords: "I approve the plan amendment" }), /in full/);
   assert.throws(() => validateFacilitiesDecision({ ...decision, interpretation: undefined }), /interpretation/);
   assert.throws(() => validateFacilitiesDecision({ ...decision, ownerConfirmedInterpretation: undefined }), /ownerConfirmedInterpretation/);
+  assert.throws(() => validateFacilitiesDecision({ ...decision, ownerConfirmation: undefined }), /confirmation/);
+  assert.throws(() => validateFacilitiesDecision({ ...decision, ownerConfirmation: { ...decision.ownerConfirmation, words: "Yes" } }), /confirmation/);
 });
 
 test("the access block refuses open-licence, staging, publication or sent-request drift", () => {

@@ -218,7 +218,7 @@ These stay out. If a stakeholder asks for one of them, the answer is a separate 
 
 - No legal, regulatory, trespass or compliance finding about any organisation.
 
-- No corporate ownership histories. Amended 2026-10-28 by the owner, on an interpretation of the approval that awaits the owner's confirmation: British Columbia timber processing facilities may be listed from the provincial Major Primary Timber Processing Facilities survey under the Open Government Licence – British Columbia, within the scope of [the decision record](PLAN_SCOPE_DECISION_2026-10-28_BC_FACILITIES.md). That listing is not an ownership history. The survey was found not to be openly licensed, so nothing is built under it yet.
+- No corporate ownership histories. Amended 2026-10-28 by the owner, whose approval named #9 and who confirmed the same day that it was meant for this feature (#10) ("I did mean plan amendment for #9 should actually be for #10."): British Columbia timber processing facilities may be listed from the provincial Major Primary Timber Processing Facilities survey under the Open Government Licence – British Columbia, within the scope of [the decision record](PLAN_SCOPE_DECISION_2026-10-28_BC_FACILITIES.md). That listing is not an ownership history. The survey was found not to be openly licensed, so nothing is built under it yet.
 
 - No coverage beyond the four provinces in version 1.
 
@@ -1190,7 +1190,7 @@ Naming a company next to forest loss is the highest risk thing this product does
 
 - Publish a named contact route for an organisation to dispute an attribution, with a 10 business day resolution commitment.
 
-Amended 2026-10-28 by the owner, on an interpretation of the approval that awaits the owner's confirmation: a facility named by the British Columbia Major Primary Timber Processing Facilities survey may be listed within the scope of [the decision record](PLAN_SCOPE_DECISION_2026-10-28_BC_FACILITIES.md). Every rule above still applies, and the facilities table may not be published before the dispute route is live.
+Amended 2026-10-28 by the owner, whose approval named #9 and who confirmed the same day that it was meant for this feature (#10) ("I did mean plan amendment for #9 should actually be for #10."): a facility named by the British Columbia Major Primary Timber Processing Facilities survey may be listed within the scope of [the decision record](PLAN_SCOPE_DECISION_2026-10-28_BC_FACILITIES.md). Every rule above still applies, and the facilities table may not be published before the dispute route is live.
 
 ## 14.3 Corrections, with service levels
 

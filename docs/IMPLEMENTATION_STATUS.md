@@ -210,8 +210,9 @@ Primary Timber Processing Facilities survey under the Open Government Licence â€
 British Columbia, with the dispute route live first and legal review of the
 wording still external. See [the decision](PLAN_SCOPE_DECISION_2026-10-28_BC_FACILITIES.md).
 The owner's message approved "the plan amendment for #9"; #9 needed none and was
-held, so the lead session applied it to this feature (#10). The amendment rests
-on that interpretation until the owner confirms it.
+held, so the lead session applied it to this feature (#10). The owner confirmed
+that reading the same day: "I did mean plan amendment for #9 should actually be
+for #10."
 The rights check the same day found the survey's facility data Access Only in
 the BC Data Catalogue and all rights reserved on gov.bc.ca; only 2023 is a
 spreadsheet, and it has no status column. The source is recorded as blocked in

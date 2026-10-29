@@ -12,14 +12,17 @@ The owner's full message, replying to the feature plan:
 > hold it for now. Assign Opus 5.5 subagents on high reasoning to complete the
 > implementation of these features.
 
-## Interpretation, awaiting the owner's confirmation
+## Interpretation, confirmed by the owner on 2026-10-28
 
 The sentence approving a plan amendment names #9. Feature #9 (reproducibility)
 needed no plan amendment, and the same message held it. Feature #10 (BC mill
 facilities) was the only feature whose plan required amending sections 1.3 and
 14.2, so the lead session applied the approval to #10 and told the owner so in
-its reply. This amendment rests on that interpretation until the owner confirms
-it; the record carries `ownerConfirmedInterpretation: false`.
+its reply.
+
+The owner confirmed this the same day, in the working session: "I did mean plan
+amendment for #9 should actually be for #10." The record carries
+`ownerConfirmedInterpretation: true` and the confirmation in `ownerConfirmation`.
 
 ## Plan sections amended
 

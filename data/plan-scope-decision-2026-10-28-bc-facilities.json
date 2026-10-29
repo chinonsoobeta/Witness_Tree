@@ -8,7 +8,12 @@
   "ownerWords": "I approve all except for Feature #9: Reproduce it yourself. I approve the plan amendment for #9. For #5, I agree: We must not name individuals, but licenses and agencies are okay. Does this one require an FOI request? If so, hold it for now. Assign Opus 5.5 subagents on high reasoning to complete the implementation of these features.",
   "source": "owner, in the lead Claude Code session of 2026-10-28, replying to the feature plan; the full message is quoted above",
   "interpretation": "The owner's sentence approving a plan amendment names #9. Feature #9 (reproducibility) needed no plan amendment and was held by the same message. Feature #10 (BC mill facilities) was the only feature whose plan required amending sections 1.3 and 14.2, so the lead session applied the approval to #10 and told the owner so in its reply. This amendment rests on that interpretation until the owner confirms it.",
-  "ownerConfirmedInterpretation": false,
+  "ownerConfirmedInterpretation": true,
+  "ownerConfirmation": {
+    "words": "I did mean plan amendment for #9 should actually be for #10.",
+    "date": "2026-10-28",
+    "source": "owner, in the 2026-10-28 working session, after the interpretation was recorded; relayed verbatim by the lead session"
+  },
   "record": "docs/PLAN_SCOPE_DECISION_2026-10-28_BC_FACILITIES.md",
   "planSectionsAmended": [
     {
