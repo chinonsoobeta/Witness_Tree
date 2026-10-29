@@ -264,9 +264,9 @@ function SearchResultCard({ locale, result }: { locale: Locale; result: SiteSear
     <h4><a href={communityPagePath(locale, result.id)}>{resultName(result, locale)}</a></h4>
     {kind}
     <p className="search-result-figure"><span className={`mark-glyph ${ridingFigureIsDetected(figure) ? "mark-glyph--satellite" : "mark-glyph--unknown"}`} aria-hidden="true" /><span><FigureLabel kind="community" locale={locale} /> {figure?.coverage === "complete" && figure.observedLossPercent !== null ? `${formatPercent(figure.observedLossPercent, locale)} ${text.lost} · ` : null}{placeDetail(figure, locale)}</span></p>
-    <p>{text.ridingLists.federal}</p>
+    <p className="search-result-ridings-label">{text.ridingLists.federal}</p>
     <RidingReferences references={result.federal ?? []} level="federal" locale={locale} />
-    <p>{text.ridingLists.provincial}</p>
+    <p className="search-result-ridings-label">{text.ridingLists.provincial}</p>
     <RidingReferences references={result.provincial ?? []} level="provincial" locale={locale} />
   </li>;
 }

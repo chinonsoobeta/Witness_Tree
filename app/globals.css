@@ -2761,6 +2761,16 @@ h4 {
 .search-result-figure-label {
   font-weight: 700;
 }
+/* A figure can wrap to several lines; its mark sits on the first. */
+.search-result .search-result-figure {
+  align-items: flex-start;
+}
+.search-result .search-result-figure .mark-glyph {
+  margin-top: calc(0.75em - 5px);
+}
+.search-result .search-result-ridings-label {
+  margin-top: 8px;
+}
 /* Many Unknowns for one reason: one line with their count, open to the rows. */
 .search-unknown-group {
   margin: 12px 0 0;
@@ -2787,7 +2797,7 @@ h4 {
 .search-unknown-group > .search-results {
   margin-top: 4px;
 }
-.search-suggest-figure--unknown {
+.search-suggest-figure.search-suggest-figure--unknown {
   font-weight: 400;
   color: var(--muted);
 }
