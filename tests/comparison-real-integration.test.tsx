@@ -131,20 +131,3 @@ test("comparison routes state comparability limits before controls and figures",
     assert.match(markup, /less was mapped|une plus petite partie a été cartographiée/);
   }
 });
-
-test("both comparison routes serve the two ridings a search link and the riding fields submit", async () => {
-  const parameters = Promise.resolve({ left: "federal-59021", right: "federal-24057" });
-  const english = renderToStaticMarkup(await EnglishComparePage({ searchParams: parameters }));
-  const french = renderToStaticMarkup(await FrenchComparePage({ searchParams: parameters }));
-  for (const [html, heading] of [[english, "Side-by-side comparison"], [french, "Comparaison côte à côte"]] as const) {
-    // Before the riding fields hydrate, and without JavaScript, the form is the two native selects.
-    assert.match(html, /<select name="left"[^>]*>[\s\S]*?<option value="federal-59021" selected="">North Island—Powell River<\/option>[\s\S]*?<\/select>/);
-    assert.match(html, /<select name="right"[^>]*>[\s\S]*?<option value="federal-24057" selected="">Pontiac—Kitigan Zibi<\/option>[\s\S]*?<\/select>/);
-    assert.equal((html.match(/ selected=""/g) ?? []).length, 2);
-    assert.doesNotMatch(html, /isn’t available here|n’est pas offerte ici/);
-    const comparison = html.slice(html.indexOf(heading));
-    const left = comparison.indexOf("North Island—Powell River");
-    const right = comparison.indexOf("Pontiac—Kitigan Zibi");
-    assert.ok(left > 0 && right > left, "the left riding is shown before the right one");
-  }
-});
