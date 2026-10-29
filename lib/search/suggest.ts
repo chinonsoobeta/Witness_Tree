@@ -9,14 +9,17 @@
  * rows of text.
  */
 
-import { formatHectares, formatPercent, semicolon, type Locale } from "@/lib/domain";
+import { colon, formatHectares, formatPercent, semicolon, type Locale } from "@/lib/domain";
 import { formatUnknownSharePercent } from "@/lib/explore/map-style";
 import { communityPagePath, ridingPagePath } from "@/lib/place-pages/paths";
 import { placeFigure, type PlaceFigure } from "./place-figures";
+import { cleanSearchQuery } from "./query";
+import { figureUnknownReason, splitUnknownRows, unknownGroupHeading, type UnknownReason } from "./unknown-groups";
 import {
   formatSearchShare,
   ridingSearchRow,
   searchPlaceTypeLabel,
+  searchProvinceName,
   searchSite,
   type SearchRidingReference,
   type SiteSearchResult,
@@ -34,6 +37,8 @@ export type SuggestionRiding = Readonly<{
   compareHref: string | null;
   /** The riding's own page. */
   href: string | null;
+  /** Null when the whole riding has a detected figure; otherwise why its loss is Unknown. */
+  unknownReason: UnknownReason | null;
 }>;
 
 export type Suggestion = Readonly<{
@@ -48,10 +53,20 @@ export type Suggestion = Readonly<{
   compareHref: string | null;
   /** The community's or riding's own page; a province has none. */
   href: string | null;
+  /** Null when the row has a detected figure; otherwise why its loss is Unknown. */
+  unknownReason: UnknownReason | null;
   /** For a place: what its riding figures cover, shown above them. */
   ridingsNote?: string;
   ridings: readonly SuggestionRiding[];
+  /**
+   * For a place: the ridings of one level and one Unknown reason that read as
+   * one counted line, with that line already written. Their rows stay in
+   * `ridings`; the field gathers them by level and reason.
+   */
+  ridingGroups?: readonly SuggestionRidingGroup[];
 }>;
+
+export type SuggestionRidingGroup = Readonly<{ level: SuggestionRiding["level"]; reason: UnknownReason; heading: string }>;
 
 export type SuggestionPage = Readonly<{ query: string; suggestions: readonly Suggestion[]; more: number }>;
 
@@ -75,13 +90,17 @@ type RidingRow = Pick<
 export function ridingFigure(row: RidingRow | undefined, locale: Locale): string | null {
   if (!row) return null;
   const text = locale === "en"
-    ? { unknown: "Unknown", lossUnknown: "Loss unknown", atLeast: "At least", share: "of the mapped forest detected as lost", lost: "detected as lost", unknownShare: "of the forest is unknown", unmapped: "unmapped" }
-    : { unknown: "Inconnu", lossUnknown: "Perte inconnue", atLeast: "Au moins", share: "de la forêt cartographiée détectée comme perdue", lost: "détectés comme perdus", unknownShare: "de la forêt est inconnue", unmapped: "non cartographié" };
+    ? { unknown: "Unknown", lossUnknown: "Loss unknown", atLeast: "At least", share: "of the mapped forest detected as lost", lost: "detected as lost", unknownShare: "of the forest is unknown", unmapped: "unmapped", noSatellite: "no satellite data here", noForest: "No forest was mapped here in 1984" }
+    : { unknown: "Inconnu", lossUnknown: "Perte inconnue", atLeast: "Au moins", share: "de la forêt cartographiée détectée comme perdue", lost: "détectés comme perdus", unknownShare: "de la forêt est inconnue", unmapped: "non cartographié", noSatellite: "aucune donnée satellitaire ici", noForest: "Aucune forêt n’était cartographiée ici en 1984" };
   if (row.coverage === "complete" && row.observedLossHectares !== null && row.observedLossPercent !== null) {
     const unmapped = row.admittedUnknownPercent === undefined ? "" : ` · ${formatUnknownSharePercent(row.admittedUnknownPercent, locale)} ${text.unmapped}`;
     return `${formatHectares(row.observedLossHectares, locale)} · ${formatPercent(row.observedLossPercent, locale)} ${text.share}${unmapped}`;
   }
-  const unknown = row.unknownSharePercent === null ? null : `${formatUnknownSharePercent(row.unknownSharePercent, locale)} ${text.unknownShare}`;
+  // Not reached by the satellite source at all: say that, not "100% unknown".
+  const reason = figureUnknownReason(row);
+  if (reason === "no-satellite-data") return `${text.lossUnknown}${semicolon(locale)} ${text.noSatellite}`;
+  if (reason === "no-forest-mapped") return text.noForest;
+  const unknown = row.unknownSharePercent === null || row.unknownSharePercent === undefined ? null : `${formatUnknownSharePercent(row.unknownSharePercent, locale)} ${text.unknownShare}`;
   if (row.coverage === "partial-with-unknown" && row.knownObservedSubtotalHectares !== null && row.knownObservedSubtotalHectares !== undefined && row.knownObservedSubtotalHectares > 0) {
     return `${text.atLeast} ${formatHectares(row.knownObservedSubtotalHectares, locale)} ${text.lost}${unknown ? `${semicolon(locale)} ${unknown}` : ""}`;
   }
@@ -90,18 +109,31 @@ export function ridingFigure(row: RidingRow | undefined, locale: Locale): string
 
 /** Whether {@link ridingFigure} states a detected figure, rather than only an unknown share. */
 export function ridingFigureIsDetected(row: RidingRow | undefined): boolean {
-  if (!row) return false;
-  if (row.coverage === "complete") return row.observedLossHectares !== null && row.observedLossPercent !== null;
-  return row.coverage === "partial-with-unknown" && (row.knownObservedSubtotalHectares ?? 0) > 0;
+  return figureUnknownReason(row) === null;
 }
 
-/** A riding's level and province, such as "Federal riding · QC", read the same in results and suggestions. */
-export function ridingMeta(result: SiteSearchResult, locale: Locale): string {
-  const level = result.id.startsWith("CA-") ? "federal" : "provincial";
-  const levelName = locale === "en"
-    ? (level === "federal" ? "Federal riding" : "Provincial riding")
-    : (level === "federal" ? "Circonscription fédérale" : "Circonscription provinciale");
-  return `${levelName} · ${provinceCode(result)}`;
+/**
+ * What a result is and where, such as "Federal riding · Québec" or
+ * "Community · City · British Columbia", read the same in results and
+ * suggestions. A community that shares its name, type and province with
+ * another match also names the federal riding holding most of it.
+ */
+export function resultMeta(result: SiteSearchResult, locale: Locale): string {
+  const province = searchProvinceName(provinceCode(result), locale);
+  if (result.kind === "province") return "Province";
+  if (result.kind === "riding") {
+    const federal = result.id.startsWith("CA-");
+    const level = locale === "en"
+      ? (federal ? "Federal riding" : "Provincial riding")
+      : (federal ? "Circonscription fédérale" : "Circonscription provinciale");
+    return `${level} · ${province}`;
+  }
+  const kind = locale === "en" ? "Community" : "Collectivité";
+  const parts = [kind, searchPlaceTypeLabel(result.type!, locale), province];
+  if (result.distinguishedBy) {
+    parts.push(`${locale === "en" ? "Federal riding" : "Circonscription fédérale"}${colon(locale)} ${result.distinguishedBy[locale]}`);
+  }
+  return parts.join(" · ");
 }
 
 /**
@@ -164,12 +196,12 @@ function suggestionRiding(reference: SearchRidingReference, level: "federal" | "
     detail: ridingDetail(row, locale),
     compareHref: level === "federal" ? ridingCompareHref(reference.id, locale) : null,
     href: ridingPagePath(locale, reference.id),
+    unknownReason: reference.unknownReason,
   };
 }
 
 function toSuggestion(result: SiteSearchResult, locale: Locale): Suggestion {
   const name = locale === "fr" && result.nameFr ? result.nameFr : result.name;
-  const code = provinceCode(result);
   if (result.kind === "province") {
     const unknown = result.unknownSharePercent === null || result.unknownSharePercent === undefined
       ? (locale === "en" ? "Unknown" : "Inconnu")
@@ -188,6 +220,7 @@ function toSuggestion(result: SiteSearchResult, locale: Locale): Suggestion {
         : `${hectares} · Un minimum\u202F: ${unknown} de la province n’a pas de données satellitaires`,
       compareHref: null,
       href: null,
+      unknownReason: result.unknownReason,
       ridings: [],
     };
   }
@@ -197,11 +230,12 @@ function toSuggestion(result: SiteSearchResult, locale: Locale): Suggestion {
       kind: "riding",
       id: result.id,
       name,
-      meta: ridingMeta(result, locale),
+      meta: resultMeta(result, locale),
       figure: completeFigure(row, locale),
       detail: ridingDetail(row, locale),
       compareHref: ridingCompareHref(result.id, locale),
       href: ridingPagePath(locale, result.id),
+      unknownReason: result.unknownReason,
       ridings: [],
     };
   }
@@ -212,21 +246,29 @@ function toSuggestion(result: SiteSearchResult, locale: Locale): Suggestion {
     kind: "community",
     id: result.id,
     name,
-    meta: `${searchPlaceTypeLabel(result.type!, locale)} · ${code}`,
+    meta: resultMeta(result, locale),
     figure: completeFigure(figure, locale),
     detail: placeDetail(figure, locale),
     compareHref: null,
     href: communityPagePath(locale, result.id),
+    unknownReason: result.unknownReason,
     ridingsNote: locale === "en"
       ? `The ridings it’s in. Their figures are for the whole riding.`
       : `Les circonscriptions où il se trouve. Leurs chiffres portent sur toute la circonscription.`,
     ridings: [...federal, ...provincial],
+    ridingGroups: (["federal", "provincial"] as const).flatMap((level) =>
+      splitUnknownRows(level === "federal" ? federal : provincial, (riding) => riding.unknownReason).groups.map((group) => ({
+        level,
+        reason: group.reason,
+        heading: unknownGroupHeading(group.reason, group.rows.length, level === "federal" ? "federal-ridings" : "provincial-ridings", locale),
+      })),
+    ),
   };
 }
 
 /** Suggestions for a query, grouped communities first, then ridings, then provinces. */
 export function suggestSearch(query: string, locale: Locale): SuggestionPage {
-  const trimmed = query.trim();
+  const trimmed = cleanSearchQuery(query);
   if (trimmed.length < 2) return { query: trimmed, suggestions: [], more: 0 };
   const page = searchSite(trimmed);
   const order = ["community", "riding", "province"] as const;
