@@ -143,3 +143,90 @@ test("draw results put both missing coverage states before all three bounded amo
     assert.match(markup, /25 ha/);
   }
 });
+
+// @ts-expect-error Node test runner needs extensions.
+import { CircleDistricts } from "../components/explore/ShapeCircle.tsx";
+// @ts-expect-error Node test runner needs extensions.
+import { HomeSearch } from "../components/site/HomeSearch.tsx";
+
+const circleOpened = { centre: null, radiusKm: 10 as const };
+
+test("the Draw page offers a circle beside the rectangle and polygon in both locales", () => {
+  for (const locale of ["en", "fr"] as const) {
+    const markup = renderToStaticMarkup(<DrawPage locale={locale} available />);
+    for (const label of locale === "en" ? ["Rectangle", "Polygon", "Circle"] : ["Rectangle", "Polygone", "Cercle"]) {
+      assert.match(markup, new RegExp(`<label[^>]*><input[^>]*type="radio"[^>]*/>${label}</label>`), `${locale}: ${label}`);
+    }
+    // The rectangle is still the default; the circle's own fields wait until it is chosen.
+    assert.doesNotMatch(markup, /Centre latitude|Latitude du centre/);
+  }
+});
+
+test("a circle opened from the home page starts empty at 10 km with its place field and the provider sentence", () => {
+  for (const locale of ["en", "fr"] as const) {
+    const markup = renderToStaticMarkup(
+      <DrawPage locale={locale} available initialCircle={circleOpened} addressLookup districtLookup />,
+    );
+    const words = locale === "en"
+      ? { circle: "Circle", lat: "Centre latitude", lon: "Centre longitude", radius: "Radius", place: "Address or place", note: "Your search is sent to Google Places, the address service this site uses, to find the point. This site does not keep it." }
+      : { circle: "Cercle", lat: "Latitude du centre", lon: "Longitude du centre", radius: "Rayon", place: "Adresse ou lieu", note: "Votre recherche est transmise à Google Places, le service d’adresses utilisé par ce site, pour trouver le point. Ce site ne la conserve pas." };
+    for (const label of Object.values(words)) assert.ok(markup.includes(label), `${locale}: ${label} is missing`);
+    assert.match(markup, new RegExp(`<input[^>]*checked=""[^>]*/>${words.circle}</label>`), `${locale}: circle not chosen`);
+    const radii = [...markup.matchAll(/<input[^>]*type="radio"[^>]*\/>(\d+)(?:\s|\u00a0)km<\/label>/g)];
+    assert.deepEqual(radii.map((match) => match[1]), ["5", "10", "25"]);
+    assert.match(radii[1][0], /checked=""/, `${locale}: 10 km is not the default`);
+    // The centre is empty rather than a default point, and nothing is measured yet.
+    assert.doesNotMatch(markup, /class="shape-readout"/);
+    assert.doesNotMatch(markup, /\bha\b/);
+    // Every control is labelled, and the place field submits its own form, never the measurement.
+    const ids = new Set([...markup.matchAll(/<label[^>]*\bfor="([^"]+)"/g)].map((match) => match[1]));
+    for (const match of markup.matchAll(/<(?:input|select)\b[^>]*\bid="([^"]+)"/g)) assert.ok(ids.has(match[1]), `${locale}: ${match[1]} has no label`);
+    const finder = markup.match(/<form id="([^"]+)"><\/form>/);
+    assert.ok(finder, `${locale}: the place field has no form of its own`);
+    assert.match(markup, new RegExp(`<input[^>]*form="${finder[1]}"`));
+    assert.match(markup, new RegExp(`<button type="submit" form="${finder[1]}"`));
+    assert.doesNotMatch(markup, /\baction=/);
+  }
+});
+
+test("without an address service the circle still has its centre fields and makes no provider claim", () => {
+  for (const locale of ["en", "fr"] as const) {
+    const markup = renderToStaticMarkup(<DrawPage locale={locale} available initialCircle={circleOpened} />);
+    assert.ok(markup.includes(locale === "en" ? "Centre latitude" : "Latitude du centre"));
+    assert.doesNotMatch(markup, /Google Places/);
+    assert.equal(markup.match(/<form\b/g)?.length, 1);
+  }
+});
+
+test("the circle's districts link out, and a district the index cannot name is stated, never blank or zero", () => {
+  const resolved = {
+    federal: { kind: "single" as const, districtId: "59001", name: { en: "Abbotsford", fr: "Abbotsford" } },
+    provincial: [{ layerId: "bc-2023", lookup: { kind: "single" as const, districtId: "ABM", name: { en: "Abbotsford-Mission", fr: "Abbotsford-Mission" } } }],
+    precision: { blockMetres: 960 },
+  };
+  for (const locale of ["en", "fr"] as const) {
+    const markup = renderToStaticMarkup(
+      <CircleDistricts locale={locale} state={{ status: "ready", resolved }} comparableFederalIds={["federal-59001"]} />,
+    );
+    assert.match(markup, new RegExp(`href="/${locale === "en" ? "en/compare" : "fr/comparer"}\\?left=federal-59001"`));
+    assert.match(markup, new RegExp(`href="/${locale === "en" ? "en/explore" : "fr/explorer"}\\?overlays=provincial-ridings"`));
+    assert.match(markup, new RegExp(`href="/${locale === "en" ? "en/explore" : "fr/explorer"}\\?overlays=economic-regions"`));
+    assert.match(markup, locale === "en" ? /Economic region<\/dt><dd>– / : /Région économique<\/dt><dd>– /);
+    assert.doesNotMatch(markup, />\s*0\s*</);
+    const outside = renderToStaticMarkup(<CircleDistricts locale={locale} state={{ status: "outside" }} comparableFederalIds={[]} />);
+    assert.match(outside, /<p>– /);
+  }
+  // A riding the Compare page cannot show is sent to Explore instead.
+  const uncompared = renderToStaticMarkup(
+    <CircleDistricts locale="en" state={{ status: "ready", resolved }} comparableFederalIds={[]} />,
+  );
+  assert.doesNotMatch(uncompared, /\/en\/compare/);
+  assert.match(uncompared, /href="\/en\/explore\?overlays=federal-ridings"/);
+});
+
+test("the home page asks what happened within 10 km and opens the circle without any address", () => {
+  const english = renderToStaticMarkup(<HomeSearch locale="en" />);
+  const french = renderToStaticMarkup(<HomeSearch locale="fr" />);
+  assert.match(english, /<a href="\/en\/explore\/draw\?shape=circle">What happened within 10 km of me\?<\/a>/);
+  assert.match(french, /<a href="\/fr\/explorer\/dessiner\?shape=circle">Qu’est-il arrivé dans un rayon de 10\u00a0km autour de moi\u202F\?<\/a>/);
+});

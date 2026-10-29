@@ -1,5 +1,6 @@
 import type { Locale } from "@/lib/domain";
 import { SearchSuggest } from "@/components/search/SearchSuggest";
+import { drawPagePath } from "@/lib/shapes/circle";
 
 /**
  * The homepage asks "What happened to the forest here?" and, until now,
@@ -20,6 +21,7 @@ const COPY = {
     placeholder: "Prince George, British Columbia",
     submit: "Open the record",
     note: "Search provinces, ridings and communities. Figures cover 1984 to 2022.",
+    nearby: "What happened within 10 km of me?",
   },
   fr: {
     action: "/fr/recherche",
@@ -27,6 +29,7 @@ const COPY = {
     placeholder: "Prince George, Colombie-Britannique",
     submit: "Ouvrir le registre",
     note: "Recherchez une province, une circonscription ou une collectivité. Les chiffres couvrent la période de 1984 à 2022.",
+    nearby: "Qu’est-il arrivé dans un rayon de 10\u00a0km autour de moi\u202F?",
   },
 } as const;
 
@@ -40,7 +43,15 @@ export function HomeSearch({ locale }: { locale: Locale }) {
       label={text.label}
       placeholder={text.placeholder}
       submitLabel={text.submit}
-      note={<p className="home-search-note">{text.note}</p>}
+      note={
+        <>
+          <p className="home-search-note">{text.note}</p>
+          {/* Opens the Draw page on the circle with its place field focused. No address travels in this link. */}
+          <p className="home-search-nearby">
+            <a href={`${drawPagePath(locale)}?shape=circle`}>{text.nearby}</a>
+          </p>
+        </>
+      }
     />
   );
 }

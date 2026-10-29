@@ -12,7 +12,10 @@
  *
  * The shape goes out as a POST body and never into the page's own address, so
  * a shape drawn around someone's own land does not end up in a link, in
- * history, or in a server log.
+ * history, or in a server log. The one exception is deliberate and coarse: a
+ * measured circle writes its centre, rounded to about 100 m, and its radius
+ * into the address so the result can be shared. Whatever address text found
+ * that centre is never part of it; lib/shapes/circle.ts refuses it.
  *
  * The counts come back from the coarse grid, not from the map tiles being
  * looked at. The tiles are simplified for drawing and would give a plausible
@@ -20,10 +23,21 @@
  */
 
 import { CoverageStatement } from "@/components/policy/CoverageStatement";
-import { useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { formatYearRange, type Locale } from "@/lib/domain";
 import { EXPLORE_COVERAGE_SPAN } from "@/lib/explore/types";
+import {
+  CIRCLE_RADII_KM,
+  DEFAULT_CIRCLE_RADIUS_KM,
+  circlePolygon,
+  circleResultHref,
+  drawPagePath,
+  roundCentre,
+  type CircleRadiusKm,
+  type InitialCircle,
+} from "@/lib/shapes/circle";
 import { ShapeDrawMap } from "./ShapeDrawMap";
+import { CircleCentreFinder, CircleDistricts, type DistrictState, type ResolvedDistricts } from "./ShapeCircle";
 
 type Corner = Readonly<{ latitude: number; longitude: number }>;
 type Bracket = Readonly<{ low: number; estimate: number; high: number }>;
@@ -68,6 +82,17 @@ const copy = {
     shapeKind: "Shape",
     rectangle: "Rectangle",
     polygon: "Polygon",
+    circle: "Circle",
+    centreLatitude: "Centre latitude",
+    centreLongitude: "Centre longitude",
+    radius: "Radius",
+    kilometres: (value: number) => `${value} km`,
+    noCentre: "Choose a centre first: find a place, click the map, or type its latitude and longitude.",
+    centreFound: (label: string) => `Centre set to ${label}.`,
+    circleHeading: (radius: number, latitude: string, longitude: string) =>
+      `Within ${radius} km of ${latitude}, ${longitude}`,
+    resultLink: "Link to this result",
+    resultLinkNote: "The link holds only the centre, rounded to about 100 m, and the radius.",
     north: "North edge",
     south: "South edge",
     west: "West edge",
@@ -118,6 +143,18 @@ const copy = {
     shapeKind: "Forme",
     rectangle: "Rectangle",
     polygon: "Polygone",
+    circle: "Cercle",
+    centreLatitude: "Latitude du centre",
+    centreLongitude: "Longitude du centre",
+    radius: "Rayon",
+    kilometres: (value: number) => `${value}\u00a0km`,
+    noCentre:
+      "Choisissez d’abord un centre\u202F: trouvez un lieu, cliquez sur la carte ou saisissez sa latitude et sa longitude.",
+    centreFound: (label: string) => `Centre placé\u202F: ${label}.`,
+    circleHeading: (radius: number, latitude: string, longitude: string) =>
+      `Dans un rayon de ${radius}\u00a0km autour de la latitude ${latitude.replace(".", ",")} et de la longitude ${longitude.replace(".", ",")}`,
+    resultLink: "Lien vers ce résultat",
+    resultLinkNote: "Le lien contient seulement le centre, arrondi à environ 100\u00a0m, et le rayon.",
     north: "Limite nord",
     south: "Limite sud",
     west: "Limite ouest",
@@ -215,7 +252,68 @@ function problemText(words: (typeof copy)[Locale], kind: string | undefined, sta
   }
 }
 
-export function ShapeMeasureClient({ locale }: { locale: Locale }) {
+type CircleState = Readonly<{ latitude: number; longitude: number; radiusKm: CircleRadiusKm }>;
+type MeasureOutcome = Readonly<{ measurement: Measurement }> | Readonly<{ kind: string | undefined; status: number }> | null;
+
+/** The typed centre, rounded as its link will round it, or null when there is none. */
+function centreFromText(text: Readonly<{ latitude: string; longitude: string }>): Corner | null {
+  if (text.latitude.trim() === "" || text.longitude.trim() === "") return null;
+  const latitude = Number(text.latitude);
+  const longitude = Number(text.longitude);
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return null;
+  if (Math.abs(latitude) >= 89 || Math.abs(longitude) > 180) return null;
+  return { latitude: roundCentre(latitude), longitude: roundCentre(longitude) };
+}
+
+async function requestMeasurement(points: readonly Corner[], startYear: number, endYear: number): Promise<MeasureOutcome> {
+  try {
+    const response = await fetch("/api/shape/measure", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ points, startYear, endYear }),
+    });
+    if (!response.ok) {
+      const body = (await response.json().catch(() => ({}))) as { kind?: string };
+      return { kind: body.kind, status: response.status };
+    }
+    return { measurement: (await response.json()) as Measurement };
+  } catch {
+    return null;
+  }
+}
+
+/** The district route is given the rounded centre and nothing else. */
+async function requestDistricts(centre: Corner): Promise<DistrictState> {
+  try {
+    const response = await fetch("/api/district/resolve", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ latitude: centre.latitude, longitude: centre.longitude }),
+    });
+    if (response.status === 422) return { status: "outside" };
+    if (response.status === 503) return { status: "unavailable" };
+    if (!response.ok) return { status: "failed" };
+    return { status: "ready", resolved: (await response.json()) as ResolvedDistricts };
+  } catch {
+    return { status: "failed" };
+  }
+}
+
+export function ShapeMeasureClient({
+  locale,
+  initialCircle = null,
+  addressLookup = false,
+  districtLookup = false,
+  comparableFederalIds = [],
+}: Readonly<{
+  locale: Locale;
+  /** A circle read from the page address, or null for the usual rectangle. */
+  initialCircle?: InitialCircle | null;
+  addressLookup?: boolean;
+  districtLookup?: boolean;
+  /** Federal ridings the Compare page can show, as `federal-<id>`. */
+  comparableFederalIds?: readonly string[];
+}>) {
   const words = copy[locale];
   const fieldId = useId();
   // Each control's id is a named value rather than an inline template, so a
@@ -224,48 +322,122 @@ export function ShapeMeasureClient({ locale }: { locale: Locale }) {
   const titleId = `${fieldId}-title`;
   const rectangleId = `${fieldId}-rectangle`;
   const polygonId = `${fieldId}-polygon`;
+  const circleId = `${fieldId}-circle`;
   const kindName = `${fieldId}-kind`;
+  const centreLatitudeId = `${fieldId}-centre-lat`;
+  const centreLongitudeId = `${fieldId}-centre-lon`;
+  const radiusName = `${fieldId}-radius`;
+  const finderFormId = `${fieldId}-finder`;
+  const finderInputId = `${fieldId}-finder-input`;
   const fromId = `${fieldId}-from`;
   const toId = `${fieldId}-to`;
-  const [kind, setKind] = useState<"rectangle" | "polygon">("rectangle");
+  const [kind, setKind] = useState<"rectangle" | "polygon" | "circle">(initialCircle ? "circle" : "rectangle");
   const [edges, setEdges] = useState({ north: 45.44, south: 45.4, west: -75.72, east: -75.66 });
   const [corners, setCorners] = useState<Corner[]>(DEFAULT_CORNERS);
+  const [centreText, setCentreText] = useState({
+    latitude: initialCircle?.centre ? initialCircle.centre.latitude.toString() : "",
+    longitude: initialCircle?.centre ? initialCircle.centre.longitude.toString() : "",
+  });
+  const [radiusKm, setRadiusKm] = useState<CircleRadiusKm>(initialCircle?.radiusKm ?? DEFAULT_CIRCLE_RADIUS_KM);
+  const [centreNote, setCentreNote] = useState("");
   const [startYear, setStartYear] = useState(2000);
   const [endYear, setEndYear] = useState(LAST_YEAR);
-  const [busy, setBusy] = useState(false);
+  // A shared circle link is measured as soon as the page opens, so it starts busy.
+  const [busy, setBusy] = useState(Boolean(initialCircle?.centre));
   const [problem, setProblem] = useState<string | null>(null);
   const [measurement, setMeasurement] = useState<Measurement | null>(null);
+  const [measuredCircle, setMeasuredCircle] = useState<CircleState | null>(null);
+  const [districts, setDistricts] = useState<DistrictState | null>(null);
+  const finderRef = useRef<HTMLInputElement | null>(null);
+  const centreLatitudeRef = useRef<HTMLInputElement | null>(null);
+  const opened = useRef(false);
 
+  const centre = centreFromText(centreText);
   const activeCorners =
-    kind === "rectangle" ? cornersFromEdges(edges.north, edges.south, edges.west, edges.east) : corners;
+    kind === "rectangle"
+      ? cornersFromEdges(edges.north, edges.south, edges.west, edges.east)
+      : kind === "circle"
+        ? centre ? circlePolygon(centre, radiusKm) : []
+        : corners;
 
   const years: number[] = [];
   for (let year = FIRST_YEAR; year <= LAST_YEAR; year += 1) years.push(year);
 
+  function settle(outcome: MeasureOutcome): boolean {
+    if (outcome === null) {
+      setProblem(words.problem);
+      return false;
+    }
+    if ("measurement" in outcome) {
+      setMeasurement(outcome.measurement);
+      return true;
+    }
+    setProblem(problemText(words, outcome.kind, outcome.status));
+    return false;
+  }
+
+  /*
+   * A circle is measured from its rounded centre, the same one its link
+   * carries, so opening the link reproduces this result rather than one about
+   * 100 m away. The district lookup runs beside the measurement and is given
+   * that centre alone.
+   */
+  function fetchCircle(circle: CircleState) {
+    return Promise.all([
+      requestMeasurement(circlePolygon(circle, circle.radiusKm), startYear, endYear),
+      districtLookup ? requestDistricts(circle) : Promise.resolve<DistrictState>({ status: "unavailable" }),
+    ]);
+  }
+
+  function showCircle(circle: CircleState, [outcome, found]: Awaited<ReturnType<typeof fetchCircle>>) {
+    const measured = settle(outcome);
+    setMeasuredCircle(measured ? circle : null);
+    setDistricts(measured ? found : null);
+    setBusy(false);
+    if (measured) window.history.replaceState(window.history.state, "", circleResultHref(locale, circle));
+  }
+
   async function measure(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setBusy(true);
     setProblem(null);
     setMeasurement(null);
+    setMeasuredCircle(null);
+    setDistricts(null);
+    if (kind === "circle" && !centre) {
+      setProblem(words.noCentre);
+      return;
+    }
+    setBusy(true);
     try {
-      const response = await fetch("/api/shape/measure", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ points: activeCorners, startYear, endYear }),
-      });
-      if (!response.ok) {
-        const body = (await response.json().catch(() => ({}))) as { kind?: string };
-        setProblem(problemText(words, body.kind, response.status));
+      if (kind === "circle" && centre) {
+        const circle = { latitude: centre.latitude, longitude: centre.longitude, radiusKm };
+        setCentreText({ latitude: centre.latitude.toString(), longitude: centre.longitude.toString() });
+        showCircle(circle, await fetchCircle(circle));
         return;
       }
-      setMeasurement((await response.json()) as Measurement);
-    } catch {
-      setProblem(words.problem);
+      settle(await requestMeasurement(activeCorners, startYear, endYear));
+      // A rectangle or polygon never enters the address. A circle link left
+      // over from before would describe a different result, so it is removed.
+      if (window.location.search) window.history.replaceState(window.history.state, "", drawPagePath(locale));
     } finally {
       setBusy(false);
     }
   }
 
+  // A shared circle link is answered on arrival. The home entry opens the page
+  // with no centre yet, so it puts the reader in the address field instead, or
+  // in the latitude field where there is no address service.
+  useEffect(() => {
+    if (opened.current || !initialCircle) return;
+    opened.current = true;
+    const start = initialCircle.centre;
+    if (!start) {
+      (finderRef.current ?? centreLatitudeRef.current)?.focus();
+      return;
+    }
+    const circle = { latitude: start.latitude, longitude: start.longitude, radiusKm: initialCircle.radiusKm };
+    void fetchCircle(circle).then((answers) => showCircle(circle, answers));
+  });
 
   return (
     <section className="shape-measure" aria-labelledby={titleId}>
@@ -295,9 +467,92 @@ export function ShapeMeasureClient({ locale }: { locale: Locale }) {
             />
             {words.polygon}
           </label>
+          <label htmlFor={circleId}>
+            <input
+              id={circleId}
+              type="radio"
+              name={kindName}
+              checked={kind === "circle"}
+              onChange={() => setKind("circle")}
+            />
+            {words.circle}
+          </label>
         </fieldset>
 
-        {kind === "rectangle" ? (
+        {kind === "circle" ? (
+          <fieldset className="shape-circle">
+            <legend>{words.circle}</legend>
+            {addressLookup ? (
+              <CircleCentreFinder
+                locale={locale}
+                formId={finderFormId}
+                inputId={finderInputId}
+                inputRef={finderRef}
+                onPoint={(point, label) => {
+                  setCentreText({
+                    latitude: roundCentre(point.latitude).toString(),
+                    longitude: roundCentre(point.longitude).toString(),
+                  });
+                  setCentreNote(words.centreFound(label));
+                }}
+              />
+            ) : null}
+            <div className="shape-edges">
+              <div className="shape-field">
+                <label htmlFor={centreLatitudeId}>{words.centreLatitude}</label>
+                <input
+                  id={centreLatitudeId}
+                  ref={centreLatitudeRef}
+                  type="number"
+                  step="0.001"
+                  inputMode="decimal"
+                  value={centreText.latitude}
+                  onChange={(event) => {
+                    const latitude = event.target.value;
+                    setCentreText((previous) => ({ ...previous, latitude }));
+                    setCentreNote("");
+                  }}
+                />
+                <span className="shape-unit">{words.degrees}</span>
+              </div>
+              <div className="shape-field">
+                <label htmlFor={centreLongitudeId}>{words.centreLongitude}</label>
+                <input
+                  id={centreLongitudeId}
+                  type="number"
+                  step="0.001"
+                  inputMode="decimal"
+                  value={centreText.longitude}
+                  onChange={(event) => {
+                    const longitude = event.target.value;
+                    setCentreText((previous) => ({ ...previous, longitude }));
+                    setCentreNote("");
+                  }}
+                />
+                <span className="shape-unit">{words.degrees}</span>
+              </div>
+            </div>
+            <p className="shape-note" role="status">{centreNote}</p>
+            <fieldset className="shape-kind shape-radius">
+              <legend>{words.radius}</legend>
+              {CIRCLE_RADII_KM.map((radius) => {
+                const radiusId = `${fieldId}-radius-${radius}`;
+                return (
+                  <label htmlFor={radiusId} key={radius}>
+                    <input
+                      id={radiusId}
+                      type="radio"
+                      name={radiusName}
+                      checked={radiusKm === radius}
+                      onChange={() => setRadiusKm(radius)}
+                    />
+                    {words.kilometres(radius)}
+                  </label>
+                );
+              })}
+            </fieldset>
+          </fieldset>
+        ) : kind === "rectangle" ? (
           <fieldset className="shape-edges">
             <legend>{words.rectangle}</legend>
             {(["north", "south", "west", "east"] as const).map((edge) => {
@@ -388,10 +643,19 @@ export function ShapeMeasureClient({ locale }: { locale: Locale }) {
         <ShapeDrawMap
           locale={locale}
           kind={kind}
-          corners={kind === "rectangle" ? activeCorners : corners}
+          corners={activeCorners}
           maxCorners={MAX_CORNERS}
           onPolygon={setCorners}
           onRectangle={setEdges}
+          centre={centre}
+          onCentre={(point) => {
+            setCentreText(
+              point
+                ? { latitude: roundCentre(point.latitude).toString(), longitude: roundCentre(point.longitude).toString() }
+                : { latitude: "", longitude: "" },
+            );
+            setCentreNote("");
+          }}
         />
 
         <div className="shape-period">
@@ -428,8 +692,25 @@ export function ShapeMeasureClient({ locale }: { locale: Locale }) {
 
       <div className="shape-results" aria-live="polite">
         {problem ? <p className="shape-problem">{problem}</p> : null}
+        {measurement && measuredCircle ? (
+          <h3>
+            {words.circleHeading(
+              measuredCircle.radiusKm,
+              measuredCircle.latitude.toFixed(3),
+              measuredCircle.longitude.toFixed(3),
+            )}
+          </h3>
+        ) : null}
         {measurement ? (
           <ShapeMeasurementResult locale={locale} measurement={measurement} />
+        ) : null}
+        {measurement && measuredCircle && districts ? (
+          <>
+            <CircleDistricts locale={locale} state={districts} comparableFederalIds={comparableFederalIds} />
+            <p className="shape-note">
+              <a href={circleResultHref(locale, measuredCircle)}>{words.resultLink}</a> {words.resultLinkNote}
+            </p>
+          </>
         ) : null}
       </div>
     </section>
