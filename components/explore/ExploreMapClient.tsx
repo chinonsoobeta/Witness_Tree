@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import type {
   ExpressionSpecification,
   FilterSpecification,
@@ -33,6 +33,7 @@ import {
 } from "@/lib/explore";
 import {
   boundaryReadout,
+  MEASURED_BOUNDARY_OVERLAYS,
   type BoundarySelection,
   type RidingBoundaryMeasurement,
 } from "@/lib/explore/boundary-readout";
@@ -50,6 +51,10 @@ import {
 import { ProvinceBar } from "@/components/site";
 import { economicRegionTileId, FOREST_REGIONS, type ForestRegionFigure } from "@/lib/explore/forest-regions";
 import { NO_FOREST_COLOUR, RECOVERY_BREAKS, RECOVERY_RAMP, recoveryBand, type RecoveryRegionShade } from "@/lib/explore/recovery-shading";
+import type { TimelapseHooks } from "./TimelapseExport";
+
+// Loaded when a reader asks for it, so the map's first paint does not carry it.
+const TimelapseExport = lazy(() => import("./TimelapseExport"));
 
 const text = {
   en: {
@@ -137,6 +142,7 @@ const text = {
     mapPanelHarvest: "Harvest recorded",
     mapPanelFire: "Fire recorded",
     mapPanelNeither: "Neither recorded; the record may not cover it",
+    timelapse: "Download the years as an animation",
   },
   fr: {
     label: "Carte des pertes forestières",
@@ -225,6 +231,7 @@ const text = {
     mapPanelHarvest: "Récolte consignée",
     mapPanelFire: "Incendie consigné",
     mapPanelNeither: "Ni récolte ni incendie consignés\u202F; le registre ne couvre peut-être pas cette zone",
+    timelapse: "Télécharger les années en animation",
   },
 } as const;
 
@@ -647,6 +654,31 @@ function swapPerCellLayer(
   );
 }
 
+/*
+ * One span on a map built from this map's style, for the time-lapse export:
+ * the same colours, region figures and patch filter the year control would
+ * give it, and the selected boundary outlined. The live map is not touched.
+ */
+function showTimelapseSpan(
+  map: MapLibreMap,
+  options: Readonly<{ shading: ProvinceShading | null; cause: PerCellCause; overlays: readonly BoundaryOverlayId[]; boundary: BoundarySelection }>,
+  span: Readonly<{ fromYear: number; toYear: number }>,
+  regions: readonly ForestRegionFigure[],
+) {
+  if (options.shading && map.getLayer(PROVINCE_FILL_LAYER_ID))
+    map.setPaintProperty(PROVINCE_FILL_LAYER_ID, "fill-color", provinceFillColour(span.fromYear, span.toYear, options.shading));
+  if (map.getLayer(REGION_HATCH_LAYER_ID)) {
+    map.setPaintProperty(REGION_FILL_LAYER_ID, "fill-color", regionFillColour(regions));
+    map.setFilter(REGION_HATCH_LAYER_ID, regionHatchFilter(regions));
+  }
+  swapPerCellLayer(map, perCellSpanYears(span.fromYear, span.toYear), options.cause, boundaryLayerIds(options.overlays)[0]);
+  for (const id of options.overlays) {
+    const layerId = `boundary-${id}-selected`;
+    if (map.getLayer(layerId))
+      map.setFilter(layerId, boundaryHighlightFilter(options.boundary.overlay === id ? options.boundary : null) as FilterSpecification);
+  }
+}
+
 const buildStyle = (
   province: ProvinceShading | null,
   years: PerCellSpanYears | null,
@@ -910,6 +942,7 @@ export function ExploreMapClient({
   const [retryNonce, setRetryNonce] = useState(0);
   const [hoveredBoundary, setHoveredBoundary] = useState<BoundarySelection | null>(null);
   const [pinnedBoundary, setPinnedBoundary] = useState<BoundarySelection | null>(null);
+  const [timelapseOpen, setTimelapseOpen] = useState(false);
   const state: MapState = !available
     ? "unavailable"
     : failed
@@ -966,6 +999,7 @@ export function ExploreMapClient({
       setView(null);
       setHoveredBoundary(null);
       setPinnedBoundary(null);
+      setTimelapseOpen(false);
     });
 
     const loadGeoJsonFallback = async (kind: MapFailureKind) => {
@@ -1359,6 +1393,27 @@ export function ExploreMapClient({
     )
     : null;
   const province = boundary ? boundaryProvince(boundary) : null;
+  // A riding, region, city or town that is pinned, in a mode whose years change the map.
+  const timelapseBoundary =
+    cause !== null && source === "pmtiles" && pinnedBoundary &&
+    (MEASURED_BOUNDARY_OVERLAYS as readonly string[]).includes(pinnedBoundary.overlay)
+      ? pinnedBoundary
+      : null;
+  const timelapseHooks: TimelapseHooks | null = timelapseBoundary && cause
+    ? {
+        prepare: (target) =>
+          target.setMissingStyleImageResolver((id) => {
+            if (id === REGION_HATCH_IMAGE && !target.hasImage(REGION_HATCH_IMAGE)) target.addImage(REGION_HATCH_IMAGE, hatchImage());
+          }),
+        apply: (target, span, regions) => showTimelapseSpan(target, { shading, cause, overlays, boundary: timelapseBoundary }, span, regions),
+        needsRegions: shading === "loss",
+        boundarySet: BOUNDARY_OVERLAYS[timelapseBoundary.overlay].label[locale],
+        boundarySource: BOUNDARY_OVERLAYS[timelapseBoundary.overlay].attribution?.[locale] ?? "",
+        dataVersion: `${EXPLORE_PER_CELL_SPAN_LAYER.productId} (${EXPLORE_PER_CELL_SPAN_LAYER.releaseId.slice(0, 12)})`,
+        firstYear: EXPLORE_PER_CELL_SPAN_LAYER.firstYear - 1,
+        lastYear: EXPLORE_PER_CELL_SPAN_LAYER.lastYear,
+      }
+    : null;
   const regionDefinition = hoveredRegion && !boundary ? FOREST_REGIONS.find((region) => region.id === hoveredRegion) : undefined;
   const regionFigure = regionDefinition ? forestRegions.find((figure) => figure.id === regionDefinition.id) : undefined;
   const recoveryRegion = hoveredRegion && !boundary && recoveryAvailable ? recoveryRegions.find((row) => row.id === hoveredRegion) : undefined;
@@ -1644,10 +1699,16 @@ export function ExploreMapClient({
                     {readout.summedLoss ? <p>{readout.summedLossLabel}{colon(locale)} {readout.summedLoss}</p> : null}
                   </>
                 ) : null}
+                {timelapseBoundary && activeBoundaryKey === `${timelapseBoundary.overlay}:${timelapseBoundary.jurisdiction}:${timelapseBoundary.boundaryId}` ? (
+                  <button type="button" aria-expanded={timelapseOpen} onClick={() => setTimelapseOpen(true)}>
+                    {text[locale].timelapse}
+                  </button>
+                ) : null}
                 {pinnedBoundary ? (
                   <button type="button" onClick={() => {
                     setHoveredBoundary(null);
                     setPinnedBoundary(null);
+                    setTimelapseOpen(false);
                   }}>
                     {text[locale].clearBoundary}
                   </button>
@@ -1721,6 +1782,20 @@ export function ExploreMapClient({
         </div>
       </div>
       {layerPanel}
+      {timelapseOpen && timelapseBoundary && timelapseHooks && cause ? (
+        <div id="explore-timelapse">
+          <Suspense fallback={null}>
+            <TimelapseExport
+              locale={locale}
+              getMap={() => mapRef.current}
+              boundary={timelapseBoundary}
+              cause={cause}
+              hooks={timelapseHooks}
+              onClose={() => setTimelapseOpen(false)}
+            />
+          </Suspense>
+        </div>
+      ) : null}
       </div>
       <p
         id={statusId}

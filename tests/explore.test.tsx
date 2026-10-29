@@ -465,7 +465,10 @@ test("map failures retain diagnostics, retry, and a reachable patch zoom", async
   assert.match(map, /className="explore-map-scale"[\s\S]*className="explore-map-control-cluster"/);
   assert.match(map, /const layerPanel = state === "ready" \? \(/);
   assert.match(map, /className="explore-map-stack"/);
-  assert.match(map, /<\/div>\n\s*\{layerPanel\}\n\s*<\/div>/);
+  // The time-lapse export panel, when open, follows the layer panel in the
+  // same normal flow, outside the frame.
+  assert.match(map, /<\/div>\n\s*\{layerPanel\}\n\s*(?:\{timelapseOpen [^\n]*\n\s*<div id="explore-timelapse">[\s\S]*?\) : null\}\n\s*)?<\/div>/);
+  assert.doesNotMatch(map, /className="explore-map"[\s\S]*?id="explore-timelapse"[\s\S]*?\{layerPanel\}/);
   assert.doesNotMatch(map, /className="explore-map"[\s\S]*?className="explore-map-layer-panel"/);
   assert.match(map, /className="explore-map-layer-panel"[\s\S]*tabIndex=\{0\}[\s\S]*role="region"/);
   assert.match(map, /className="[^"]*explore-map-fullscreen-button"[\s\S]*className="explore-map-zoom"/);
