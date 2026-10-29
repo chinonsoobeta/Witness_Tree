@@ -552,7 +552,7 @@ test("one bilingual inline-SVG province bar serves landing and every map state",
   assert.ok(english.indexOf("province-bar--map") < english.indexOf("Condition and recovery isn’t available right now"));
 });
 
-test("playback swaps only the patch layer, starts at 1985, and stops visibly", async () => {
+test("playback swaps only the patch layer, holds the chosen first year, and stops visibly", async () => {
   const { readFile } = await import("node:fs/promises");
   const map = await readFile(
     new URL("../components/explore/ExploreMapClient.tsx", import.meta.url),
@@ -579,11 +579,134 @@ test("playback swaps only the patch layer, starts at 1985, and stops visibly", a
   assert.match(yearControl, /History\.prototype\.pushState/);
   assert.match(yearControl, /History\.prototype\.replaceState/);
   assert.match(yearControl, /write\.call\(window\.history/);
-  assert.match(yearControl, /toYear: EXPLORE_YEAR_MIN \}\s*:/);
+  // The first year stays where the reader put it; only the last year moves.
+  assert.match(yearControl, /const nextSpan: Span = \{ fromYear: committed\.fromYear, toYear: Math\.min\(EXPLORE_YEAR_MAX, committed\.toYear \+ 1\) \}/);
+  assert.match(yearControl, /commit\(\{ fromYear: playStart, toYear: playStart \+ 1 \}, "replace"\)/);
+  assert.doesNotMatch(yearControl, /toYear: EXPLORE_YEAR_MIN \}\s*:/);
+  // Every step writes `from`, annual spans included, so a copied address keeps it.
+  assert.match(yearControl, /const nextHref = spanHref\(pathname, state, nextSpan\)/);
+  assert.match(yearControl, /span\.fromYear === span\.toYear - 1 \? `&from=\$\{span\.fromYear\}` : ""/);
+  // A map that has not drawn holds the step; a fallen-back map pauses it with a reason.
+  assert.match(yearControl, /committed\.toYear >= EXPLORE_YEAR_MAX \|\| mapWaiting\) return;/);
+  assert.match(yearControl, /if \(mapBlocked\) \{\s*setPlaying\(false\);\s*setPlayStatus\("stalled"\);/);
+  assert.match(yearControl, /disabled=\{!ready \|\| wholeRecord \|\| \(mapBlocked && !isPlaying\)\}/);
   assert.match(yearControl, /if \(nextSpan\.toYear === EXPLORE_YEAR_MAX\)/);
   assert.match(yearControl, /setPlaying\(false\)/);
   assert.match(yearControl, /year-play-status/);
-  assert.match(yearControl, /Playback reached the end of the record/);
+  assert.match(yearControl, /Playback reached \$\{EXPLORE_YEAR_MAX\}, the end of the record\./);
+  assert.match(yearControl, /La lecture a atteint \$\{EXPLORE_YEAR_MAX\}, la fin du registre\./);
+  // The map reports what it can show, from the same state its frame carries.
+  assert.match(map, /state === "ready" && source === "pmtiles" \? "interactive" : "fallback"/);
+});
+
+/*
+ * B4 and B6 of the 2026-10-28 adversarial audit. The button names where Play
+ * starts, and its accessible name begins with the word it shows, so a reader
+ * who searches for "Pause" finds the control that says "Pause".
+ */
+test("Play names the first year it starts from, and its accessible name follows its visible state", async () => {
+  const cases = [
+    { locale: "en", fromYear: 2021, year: 2022, name: "Play year by year from 1984", short: "Play" },
+    { locale: "en", fromYear: 1990, year: 2000, name: "Play year by year from 1990", short: "Play" },
+    { locale: "en", fromYear: 1994, year: 1995, name: "Play year by year from 1994", short: "Play" },
+    { locale: "fr", fromYear: 2021, year: 2022, name: "Lecture année par année depuis 1984", short: "Lecture" },
+    { locale: "fr", fromYear: 1990, year: 2000, name: "Lecture année par année depuis 1990", short: "Lecture" },
+  ] as const;
+  for (const { locale, fromYear, year, name, short } of cases) {
+    const markup = renderToStaticMarkup(
+      <ExploreView events={exploreFixtures} locale={locale} year={year} fromYear={fromYear} />,
+    );
+    const button = markup.match(/<button type="button" class="year-play"[^>]*>([^<]*)<\/button>/);
+    assert.ok(button, `${locale} ${fromYear}–${year}: play button`);
+    assert.match(button[0], new RegExp(`aria-label="${name}"`));
+    assert.equal(button[1], short);
+    // A toggle whose name changes must not also claim a pressed state.
+    assert.doesNotMatch(button[0], /aria-pressed/);
+    assert.ok(name.startsWith(short));
+  }
+  const yearControl = readFileSync(new URL("../components/explore/ExploreYearControl.tsx", import.meta.url), "utf8");
+  // Each state's name starts with the word on the button, in both languages.
+  for (const [short, name] of [["Pause", "Pause playback"], ["Resume", "Resume playback"], ["Pause", "Mettre la lecture en pause"], ["Reprendre", "Reprendre la lecture"]]) {
+    assert.ok(yearControl.includes(`"${name}"`), name);
+    assert.ok(name.toLowerCase().includes(short.toLowerCase()), `${name} contains ${short}`);
+  }
+  assert.match(yearControl, /aria-label=\{playLabel\.name\}/);
+  assert.match(yearControl, /\{playLabel\.short\}/);
+});
+
+/*
+ * B3 of the 2026-10-28 adversarial audit. The link names the span its ranking
+ * covers, the whole record, and says so when that is not the span on display.
+ */
+test("the rankings link names the span it ranks and never passes for the reader's span", () => {
+  const whole = { en: "Ridings with the largest share of forest lost, 1984–2022", fr: "Circonscriptions ayant perdu la plus grande part de leur forêt, 1984–2022" } as const;
+  const other = {
+    en: "Ridings with the largest share of forest lost over the whole record, 1984–2022, not the years you chose (2021–2022)",
+    fr: "Circonscriptions ayant perdu la plus grande part de leur forêt sur l’ensemble du registre, 1984–2022, et non pendant les années choisies (2021–2022)",
+  } as const;
+  for (const locale of ["en", "fr"] as const) {
+    const fallback = renderToStaticMarkup(<ExploreView events={exploreFixtures} locale={locale} />);
+    const link = (markup: string) => markup.match(/<p class="explore-reading-ridings"><a [^>]*>([^<]*)<\/a><\/p>/)?.[1];
+    assert.equal(link(fallback), other[locale]);
+    const narrow = renderToStaticMarkup(<ExploreView events={exploreFixtures} locale={locale} year={1995} fromYear={1990} />);
+    assert.equal(link(narrow), other[locale].replace("2021–2022", "1990–1995"));
+    const full = renderToStaticMarkup(<ExploreView events={exploreFixtures} locale={locale} year={2022} fromYear={1984} />);
+    assert.equal(link(full), whole[locale]);
+  }
+  const view = readFileSync(new URL("../components/explore/ExploreView.tsx", import.meta.url), "utf8");
+  assert.doesNotMatch(view, /ridingsMostLost: "/);
+});
+
+/*
+ * UX 3 of the 2026-10-28 adversarial audit. The still map says what it is and
+ * why in one box with the retry, and the figures are not touched.
+ */
+test("the still-map fallback is one notice with its reason and the retry, and the live region is never remounted", () => {
+  const map = readFileSync(new URL("../components/explore/ExploreMapClient.tsx", import.meta.url), "utf8");
+  assert.match(map, /stillDetail:\s*"The still map shades each province for the years you chose\./);
+  assert.match(map, /stillDetail:\s*"La carte fixe colore chaque province pour les années choisies\./);
+  assert.match(map, /\? `\$\{failureKind === "timeout" \? text\[locale\]\.fallbackTimeout : text\[locale\]\.fallbackError\} \$\{text\[locale\]\.stillDetail\}`/);
+  // The wrapper is unconditional; only its class and the retry inside it change.
+  assert.match(map, /<div className=\{state === "error" \|\| source === "geojson" \? "explore-map-notice explore-map-notice--fallback" : "explore-map-notice"\}>\s*<p\s+id=\{statusId\}/);
+  assert.match(map, /explore-map-notice--fallback[\s\S]*?className="btn btn--secondary explore-map-retry"[\s\S]*?<\/div>/);
+  const loading = renderToStaticMarkup(<ExploreMapClient locale="fr" mode="forest-change" year={2022} fromYear={2021} />);
+  assert.match(loading, /<div class="explore-map-notice"><p id="explore-map-status"/);
+  const css = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
+  assert.match(css, /\.explore-map-notice--fallback \{[^}]*border-inline-start: 4px solid var\(--unknown\)/);
+});
+
+/*
+ * UX 1 of the 2026-10-28 adversarial audit. On a phone the map comes first;
+ * the document order, which a screen reader follows, does not change.
+ */
+test("a phone opens on the map, with a one-line readout, while the document keeps its order", () => {
+  for (const [locale, readout] of [
+    ["en", "2021–2022 · 1,352,468.43 ha detected as lost, a minimum"],
+    ["fr", "2021–2022 · 1\u00a0352\u00a0468,43\u00a0ha détectés comme perdus, un minimum"],
+  ] as const) {
+    const markup = renderToStaticMarkup(<ExploreView events={exploreFixtures} locale={locale} />);
+    const line = markup.match(/<p class="explore-map-readout">([^<]*)<\/p>/)?.[1] ?? "";
+    // French groups digits with a narrow or plain no-break space; either is right.
+    const spaces = (value: string) => value.replace(/[\u202f\u00a0]/g, " ");
+    assert.equal(spaces(line), spaces(readout));
+    const toolbar = markup.indexOf('class="explore-toolbar"');
+    const canvas = markup.indexOf('class="explore-section explore-canvas"');
+    const readoutAt = markup.indexOf('class="explore-map-readout"');
+    const map = markup.indexOf('class="explore-map"');
+    const reading = markup.indexOf('class="explore-annual explore-reading"');
+    assert.ok(toolbar < canvas && canvas < readoutAt && readoutAt < map && map < reading);
+  }
+  const recovery = renderToStaticMarkup(<ExploreView events={exploreFixtures} locale="en" mode="condition-recovery" conditionRecovery={conditionRecoveryView()} />);
+  assert.match(recovery, /<p class="explore-map-readout">Condition and recovery · 1984–2022<\/p>/);
+  const css = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
+  const narrow = css.match(/@media \(max-width: 759px\) \{\n {2}\.explore-workspace \{[\s\S]*?\n\}/)?.[0] ?? "";
+  assert.match(narrow, /\.explore-workspace \{\s*display: contents;/);
+  assert.match(narrow, /\.explore-workspace > \.explore-canvas \{ order: 1; \}/);
+  assert.match(narrow, /\.explore > \.explore-toolbar \{ order: 2; \}/);
+  assert.match(narrow, /\.explore-workspace > \.explore-reading \{ order: 3; \}/);
+  assert.match(narrow, /\.explore-workspace > \.explore-data \{ order: 4; \}/);
+  assert.match(narrow, /\.explore-map-readout \{\s*display: block;/);
+  assert.match(css, /\.explore-map-readout \{\n {2}display: none;/);
 });
 
 test("the map uses fixed hydration-safe status and attribution ids", async () => {

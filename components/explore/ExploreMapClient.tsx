@@ -50,6 +50,7 @@ import {
 import { ProvinceBar } from "@/components/site";
 import { economicRegionTileId, FOREST_REGIONS, type ForestRegionFigure } from "@/lib/explore/forest-regions";
 import { NO_FOREST_COLOUR, RECOVERY_BREAKS, RECOVERY_RAMP, recoveryBand, type RecoveryRegionShade } from "@/lib/explore/recovery-shading";
+import type { ExploreMapPlayback } from "./ExploreYearControl";
 
 const text = {
   en: {
@@ -69,6 +70,8 @@ const text = {
       "The interactive map is taking too long, so a still map is shown instead. The figures below are not affected.",
     fallbackError:
       "The interactive map didn’t load, so a still map is shown instead. The figures below are not affected.",
+    stillDetail:
+      "The still map shades each province for the years you chose. It has no loss patches, boundaries or zoom, and playing through the years waits for the interactive map.",
     readyRecovery:
       "Each economic region is shaded by how much of the land that lost tree cover from 1984 to 2022 was treed again for at least five years in a row after its latest loss. It doesn’t change with the years you pick. Boundaries are simplified and leave out small islands.",
     unavailable:
@@ -156,6 +159,8 @@ const text = {
       "La carte interactive tarde à se charger\u202F; une carte fixe est donc affichée à sa place. Les chiffres ci-dessous ne sont pas touchés.",
     fallbackError:
       "La carte interactive ne s’est pas chargée\u202F; une carte fixe est donc affichée à sa place. Les chiffres ci-dessous ne sont pas touchés.",
+    stillDetail:
+      "La carte fixe colore chaque province pour les années choisies. Elle n’a ni parcelles de perte, ni limites, ni zoom, et la lecture des années attend la carte interactive.",
     readyRecovery:
       "Chaque région économique est colorée selon la part des terres ayant perdu leur couvert arboré de 1984 à 2022 qui sont redevenues boisées pendant au moins cinq années consécutives après leur dernière perte. Cette coloration ne change pas selon les années choisies. Les limites sont simplifiées et omettent les petites îles.",
     unavailable:
@@ -856,6 +861,7 @@ export function ExploreMapClient({
   ridingMeasurements = [],
   forestRegions = [],
   recoveryRegions = [],
+  onPlaybackChange,
 }: Readonly<{
   locale: Locale;
   mode: ExploreMode;
@@ -876,6 +882,8 @@ export function ExploreMapClient({
   forestRegions?: readonly ForestRegionFigure[];
   /** Condition and recovery by economic region, in that mode only. */
   recoveryRegions?: readonly RecoveryRegionShade[];
+  /** Told whether the map can follow playback, so Play waits or pauses rather than stepping a map that isn't drawing. */
+  onPlaybackChange?: (playback: ExploreMapPlayback) => void;
 }>) {
   const statusId = STATUS_ID;
   const attributionId = ATTRIBUTION_ID;
@@ -939,6 +947,11 @@ export function ExploreMapClient({
       : source
         ? "ready"
         : "loading";
+  const playback: ExploreMapPlayback =
+    state === "unavailable" ? "none" : state === "loading" ? "loading" : state === "ready" && source === "pmtiles" ? "interactive" : "fallback";
+  useEffect(() => {
+    onPlaybackChange?.(playback);
+  }, [playback, onPlaybackChange]);
   useEffect(() => {
     const frame = mapFrameRef.current;
     const available = Boolean(
@@ -1309,9 +1322,7 @@ export function ExploreMapClient({
         ? text[locale].unavailable
         : text[locale].unavailableYear
       : source === "geojson"
-        ? failureKind === "timeout"
-          ? text[locale].fallbackTimeout
-          : text[locale].fallbackError
+        ? `${failureKind === "timeout" ? text[locale].fallbackTimeout : text[locale].fallbackError} ${text[locale].stillDetail}`
         : state === "ready"
           ? text[locale][readyKey]
           : state === "error" && failureKind === "timeout"
@@ -1751,19 +1762,26 @@ export function ExploreMapClient({
       </div>
       {layerPanel}
       </div>
-      <p
-        id={statusId}
-        className="explore-map-status"
-        role={state === "error" ? "alert" : "status"}
-        aria-live="polite"
-      >
-        {message}
-      </p>
-      {state === "error" || source === "geojson" ? (
-        <button className="btn btn--secondary explore-map-retry" type="button" onClick={retryMap}>
-          {text[locale].retry}
-        </button>
-      ) : null}
+      {/*
+        One box for what the reader is looking at, why, and the way back to the
+        interactive map. The wrapper is always rendered, so the live region in
+        it is never remounted when the map falls back.
+      */}
+      <div className={state === "error" || source === "geojson" ? "explore-map-notice explore-map-notice--fallback" : "explore-map-notice"}>
+        <p
+          id={statusId}
+          className="explore-map-status"
+          role={state === "error" ? "alert" : "status"}
+          aria-live="polite"
+        >
+          {message}
+        </p>
+        {state === "error" || source === "geojson" ? (
+          <button className="btn btn--secondary explore-map-retry" type="button" onClick={retryMap}>
+            {text[locale].retry}
+          </button>
+        ) : null}
+      </div>
       <p id={attributionId} className="explore-map-attribution">
         {text[locale].attribution}
         {colon(locale)}{" "}

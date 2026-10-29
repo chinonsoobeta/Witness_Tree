@@ -23,12 +23,18 @@ const TEXT = {
     help: "Choose a first and last year to set a span. The record runs from 1984 to 2022.",
     between: (fromYear: number, toYear: number) => `Change between ${fromYear} and ${toYear}`,
     moved: (which: "first" | "last", year: number) => `${which === "first" ? "First" : "Last"} year moved to ${year} so the span stays at least one year long.`,
-    play: "Play through the years",
-    pause: "Stop playing",
+    play: (start: number) => `Play year by year from ${start}`,
+    pause: "Pause playback",
+    resume: "Resume playback",
     playShort: "Play",
     pauseShort: "Pause",
-    playing: "Playing from the beginning of the record.",
-    complete: "Playback reached the end of the record.",
+    resumeShort: "Resume",
+    playing: (start: number) => `Playing year by year from ${start}: the first year stays at ${start} and the last year moves on one year at a time.`,
+    waiting: "Waiting for the interactive map to load before moving on.",
+    paused: "Paused. Press Resume to carry on from these years.",
+    stalled: "Paused, because the interactive map isn’t showing and a still map is shown instead. Retry the interactive map, then press Resume.",
+    stillMap: "Play needs the interactive map, which isn’t showing. Retry the interactive map to play through the years.",
+    complete: `Playback reached ${EXPLORE_YEAR_MAX}, the end of the record.`,
     update: "Update",
   },
   fr: {
@@ -38,17 +44,43 @@ const TEXT = {
     help: "Choisissez une première et une dernière année pour établir une période. Le registre couvre la période de 1984 à 2022.",
     between: (fromYear: number, toYear: number) => `Changement entre ${fromYear} et ${toYear}`,
     moved: (which: "first" | "last", year: number) => `${which === "first" ? "La première" : "La dernière"} année a été déplacée à ${year} pour garder une période d’au moins un an.`,
-    play: "Faire défiler les années",
-    pause: "Arrêter le défilement",
+    play: (start: number) => `Lecture année par année depuis ${start}`,
+    pause: "Mettre la lecture en pause",
+    resume: "Reprendre la lecture",
     playShort: "Lecture",
     pauseShort: "Pause",
-    playing: "Lecture depuis le début du registre.",
-    complete: "La lecture a atteint la fin du registre.",
+    resumeShort: "Reprendre",
+    playing: (start: number) => `Lecture année par année depuis ${start}\u202F: la première année reste ${start} et la dernière avance d’un an à la fois.`,
+    waiting: "En attente du chargement de la carte interactive avant de continuer.",
+    paused: "En pause. Appuyez sur Reprendre pour continuer à partir de ces années.",
+    stalled: "En pause, car la carte interactive ne s’affiche pas et une carte fixe est affichée à sa place. Réessayez la carte interactive, puis appuyez sur Reprendre.",
+    stillMap: "La lecture a besoin de la carte interactive, qui ne s’affiche pas. Réessayez la carte interactive pour faire défiler les années.",
+    complete: `La lecture a atteint ${EXPLORE_YEAR_MAX}, la fin du registre.`,
     update: "Mettre à jour",
   },
 } as const;
 
 const STEP_MS = 1500;
+
+/**
+ * What the map beside this control can show, as far as playback cares.
+ *
+ * `interactive` draws each span as it arrives; `loading` has not drawn yet;
+ * `fallback` is the still map or no map at all, which cannot follow the years
+ * the way the reader expects; `none` means the mode has no map layer to wait for.
+ */
+export type ExploreMapPlayback = "loading" | "interactive" | "fallback" | "none";
+
+/*
+ * The address for a span, always naming its first year. exploreHref leaves
+ * `from` out of an annual span, because a bare year has always meant that span,
+ * but playback holds the first year fixed and a reader who copies the address
+ * mid-play has to get the same first year back.
+ */
+function spanHref(pathname: string, state: ExploreQueryState, span: Span) {
+  const href = exploreHref({ ...state, year: span.toYear, fromYear: span.fromYear });
+  return `${pathname}${href}${span.fromYear === span.toYear - 1 ? `&from=${span.fromYear}` : ""}`;
+}
 
 function writeHistory(method: "push" | "replace", url: string) {
   // Vinext patches the instance methods to start an RSC navigation. Calling
@@ -145,6 +177,7 @@ export function ExploreYearControl({
   onYearChange,
   onIntervalChange,
   wholeRecord = false,
+  mapPlayback = "interactive",
 }: {
   locale: Locale;
   state: ExploreQueryState;
@@ -156,6 +189,8 @@ export function ExploreYearControl({
    * own years stay in the URL for the other views.
    */
   wholeRecord?: boolean;
+  /** Whether the map can follow playback; see ExploreMapPlayback. */
+  mapPlayback?: ExploreMapPlayback;
 }) {
   const text = TEXT[locale];
   const pathname = usePathname();
@@ -175,7 +210,7 @@ export function ExploreYearControl({
    * it costs one extra render rather than an effect and a second commit.
    */
   const [draft, setDraft] = useState<{ from: string; span: Span } | null>(null);
-  const [playStatus, setPlayStatus] = useState<"idle" | "playing" | "complete">("idle");
+  const [playStatus, setPlayStatus] = useState<"idle" | "playing" | "paused" | "stalled" | "complete">("idle");
   const [orderStatus, setOrderStatus] = useState<{ which: "first" | "last"; year: number } | null>(null);
   const changeGroup = useRef<{ name: "from" | "to"; started: number; span: Span } | null>(null);
   if (draft && draft.from !== committedKey) setDraft(null);
@@ -198,9 +233,7 @@ export function ExploreYearControl({
     setDraft({ from: committedKey, span: next });
     onYearChange(next.toYear);
     onIntervalChange?.(next);
-    const href = exploreHref({ ...state, year: next.toYear, fromYear: next.fromYear });
-    const nextUrl = `${pathname}${href}${next.fromYear === next.toYear - 1 ? `&from=${next.fromYear}` : ""}`;
-    writeHistory(history, nextUrl);
+    writeHistory(history, spanHref(pathname, state, next));
   };
 
   const selectYear = (name: "from" | "to", value: number, timestamp: number) => {
@@ -230,26 +263,30 @@ export function ExploreYearControl({
    * every server render, and depending on the object would restart the clock on
    * every unrelated re-render, so the years would never advance while dragging.
    *
-   * Playback moves the closing year. When the span is a single year the opening
-   * year moves with it, which is exactly what the control did before spans
-   * existed; when the reader has chosen a wider span the opening year stays put
-   * and the window grows, which is the honest reading of a fixed start date.
+   * Playback holds the first year the reader chose and moves only the last
+   * year, one year a step, to the end of the record; the button says so. A
+   * first year with no later span to grow into (the default 2021 to 2022)
+   * starts from the beginning of the record instead, and the button names
+   * that year too, so the reader is never surprised by where it starts.
    */
-  const nextToYear = Math.min(EXPLORE_YEAR_MAX, committed.toYear + 1);
-  const nextSpan: Span = isAnnualInterval(committed)
-    ? { fromYear: nextToYear - 1, toYear: nextToYear }
-    : { fromYear: committed.fromYear, toYear: nextToYear };
-  const nextHref = `${pathname}${exploreHref({
-    ...state,
-    year: nextSpan.toYear,
-    fromYear: nextSpan.fromYear,
-  })}`;
+  const nextSpan: Span = { fromYear: committed.fromYear, toYear: Math.min(EXPLORE_YEAR_MAX, committed.toYear + 1) };
+  const nextHref = spanHref(pathname, state, nextSpan);
+  const playStart = committed.fromYear < EXPLORE_YEAR_MAX - 1 ? committed.fromYear : EXPLORE_INTERVAL_FIRST_YEAR;
+  // Nothing to step while the map has not drawn yet, and nothing honest to
+  // step while it has fallen back: playback waits, or pauses with a reason.
+  const mapBlocked = mapPlayback === "fallback";
+  const mapWaiting = mapPlayback === "loading";
 
   // Playback changes only the active source and URL state. It neither asks the
   // App Router for a new page nor silently wraps at the end of the record.
   useEffect(() => {
-    if (wholeRecord || !isPlaying || committed.toYear >= EXPLORE_YEAR_MAX) return;
+    if (wholeRecord || !isPlaying || committed.toYear >= EXPLORE_YEAR_MAX || mapWaiting) return;
     const timer = setTimeout(() => {
+      if (mapBlocked) {
+        setPlaying(false);
+        setPlayStatus("stalled");
+        return;
+      }
       setDraft({ from: committedKey, span: nextSpan });
       onYearChange(nextSpan.toYear);
       onIntervalChange?.(nextSpan);
@@ -258,26 +295,47 @@ export function ExploreYearControl({
         setPlaying(false);
         setPlayStatus("complete");
       }
-    }, STEP_MS);
+    }, mapBlocked ? 0 : STEP_MS);
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [wholeRecord, isPlaying, nextHref, committedKey, onYearChange, onIntervalChange]);
+  }, [wholeRecord, isPlaying, nextHref, committedKey, onYearChange, onIntervalChange, mapWaiting, mapBlocked]);
 
+  const resumable = (playStatus === "paused" || playStatus === "stalled") && committed.toYear < EXPLORE_YEAR_MAX;
   const togglePlayback = () => {
     if (isPlaying) {
       setPlaying(false);
-      setPlayStatus("idle");
+      setPlayStatus("paused");
       return;
     }
     setPlayStatus("playing");
     setPlaying(true);
-    commit(
-      isAnnualInterval(committed)
-        ? { fromYear: EXPLORE_INTERVAL_FIRST_YEAR, toYear: EXPLORE_YEAR_MIN }
-        : { fromYear: committed.fromYear, toYear: committed.fromYear + 1 },
-      "replace",
-    );
+    // Resume carries on from the span on display; Play starts the walk again.
+    if (!resumable) commit({ fromYear: playStart, toYear: playStart + 1 }, "replace");
   };
+  // The accessible name starts with the visible word, so a reader who says or
+  // searches for "Pause" finds the control that shows "Pause".
+  const playLabel = isPlaying
+    ? { short: text.pauseShort, name: text.pause }
+    : resumable
+      ? { short: text.resumeShort, name: text.resume }
+      : { short: text.playShort, name: text.play(playStart) };
+  const playMessage = wholeRecord
+    ? null
+    : isPlaying
+      ? mapBlocked
+        ? text.stalled
+        : mapWaiting
+          ? `${text.playing(shown.fromYear)} ${text.waiting}`
+          : text.playing(shown.fromYear)
+      : playStatus === "stalled"
+        ? text.stalled
+        : mapBlocked
+          ? text.stillMap
+          : playStatus === "paused" && resumable
+            ? text.paused
+            : playStatus === "complete"
+              ? text.complete
+              : null;
 
   return (
     <div className="year-control">
@@ -320,11 +378,10 @@ export function ExploreYearControl({
           type="button"
           className="year-play"
           onClick={togglePlayback}
-          disabled={!ready || wholeRecord}
-          aria-pressed={isPlaying}
-          aria-label={isPlaying ? text.pause : text.play}
+          disabled={!ready || wholeRecord || (mapBlocked && !isPlaying)}
+          aria-label={playLabel.name}
         >
-          {isPlaying ? text.pauseShort : text.playShort}
+          {playLabel.short}
         </button>
         <button className="btn btn--primary year-submit" type="submit" hidden={ready || wholeRecord}>
           {text.update}
@@ -332,9 +389,9 @@ export function ExploreYearControl({
         {wholeRecord ? null : <p className="year-help" id={HELP_ID}>{text.help}</p>}
       </div>
       {orderStatus !== null ? <p className="year-order-status" role="status">{text.moved(orderStatus.which, orderStatus.year)}</p> : null}
-      {playStatus !== "idle" ? (
+      {playMessage !== null ? (
         <p className="year-play-status" role="status">
-          {playStatus === "playing" ? text.playing : text.complete}
+          {playMessage}
         </p>
       ) : null}
     </div>

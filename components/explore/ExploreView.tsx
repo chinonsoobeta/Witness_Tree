@@ -16,6 +16,7 @@ import { colon, formatHectares, formatNumber, formatPercent, formatYearRange, fo
 import {
   BOUNDARY_OVERLAY_IDS,
   BOUNDARY_OVERLAYS,
+  EXPLORE_COVERAGE_SPAN,
   EXPLORE_DEFAULT_YEAR,
   EXPLORE_MODES,
   EXPLORE_PRODUCTION_LAYER,
@@ -41,7 +42,7 @@ import { harvestFireHref, harvestFireSpanTotals } from "@/lib/harvest-fire";
 import type { ForestRegionFigure } from "@/lib/explore/forest-regions";
 import type { ProvincialCauseBreakdown } from "@/lib/phase4/provincial-cause";
 import { ExploreMapClient } from "./ExploreMapClient";
-import { ExploreYearControl } from "./ExploreYearControl";
+import { ExploreYearControl, type ExploreMapPlayback } from "./ExploreYearControl";
 
 const copy = {
   en: {
@@ -54,7 +55,10 @@ const copy = {
     minimum: "A minimum.",
     neverMapped: (hectares: string) => `${hectares} have no satellite data.`,
     byProvince: "By province",
-    ridingsMostLost: "Ridings with the largest share of forest lost, 1984–2022",
+    ridingsMostLost: (ranked: string) => `Ridings with the largest share of forest lost, ${ranked}`,
+    ridingsMostLostOther: (ranked: string, chosen: string) =>
+      `Ridings with the largest share of forest lost over the whole record, ${ranked}, not the years you chose (${chosen})`,
+    mapReadoutLost: (hectares: string) => `${hectares} detected as lost, a minimum`,
     provinceUnknown: (share: string) => `${share} unknown`,
     figuresFor: (period: string) => `Detected forest loss by province, ${period}`,
     figuresLead: (fromYear: number, toYear: number) =>
@@ -149,7 +153,10 @@ const copy = {
     minimum: "Un minimum.",
     neverMapped: (hectares: string) => `${hectares} n’ont pas de données satellitaires.`,
     byProvince: "Par province",
-    ridingsMostLost: "Circonscriptions ayant perdu la plus grande part de leur forêt, 1984–2022",
+    ridingsMostLost: (ranked: string) => `Circonscriptions ayant perdu la plus grande part de leur forêt, ${ranked}`,
+    ridingsMostLostOther: (ranked: string, chosen: string) =>
+      `Circonscriptions ayant perdu la plus grande part de leur forêt sur l’ensemble du registre, ${ranked}, et non pendant les années choisies (${chosen})`,
+    mapReadoutLost: (hectares: string) => `${hectares} détectés comme perdus, un minimum`,
     provinceUnknown: (share: string) => `${share} inconnu`,
     figuresFor: (period: string) => `Perte forestière détectée par province, ${period}`,
     figuresLead: (fromYear: number, toYear: number) =>
@@ -331,6 +338,8 @@ export function ExploreView({
   const [activeFrom, setActiveFrom] = useState(routeFrom);
   const [lastRouteYear, setLastRouteYear] = useState(year);
   const [lastRouteFrom, setLastRouteFrom] = useState(routeFrom);
+  // Whether the map can follow playback, reported by the map itself.
+  const [mapPlayback, setMapPlayback] = useState<ExploreMapPlayback>("loading");
   if (lastRouteYear !== year) {
     setLastRouteYear(year);
     setActiveYear(year);
@@ -443,6 +452,22 @@ export function ExploreView({
   const shownOverlays = overlays.filter((id) => BOUNDARY_OVERLAYS[id].available);
   const maxShare = Math.max(...provinceRows.map((row) => row.unionLossPercent ?? 0), 0);
   const rankedProvinces = [...provinceRows].sort((a, b) => (b.unionLossPercent ?? -1) - (a.unionLossPercent ?? -1));
+  /*
+   * The riding ranking the reading panel links to is the whole record's, on the
+   * home page. Its heading names that span, and says plainly when it is not the
+   * span on display, so the two figures are never read as the same years.
+   */
+  const rankedSpan = formatYearRange(EXPLORE_COVERAGE_SPAN, locale);
+  const rankingHeading =
+    activeFrom === EXPLORE_COVERAGE_SPAN.fromYear && activeYear === EXPLORE_COVERAGE_SPAN.toYear
+      ? text.ridingsMostLost(rankedSpan)
+      : text.ridingsMostLostOther(rankedSpan, spanPeriod);
+  // One line over the map on a phone, where the reading panel falls below it.
+  const mapReadout = recovery
+    ? `${text.modes[mode]} · ${formatYearRange(EXPLORE_COVERAGE_SPAN, locale)}`
+    : fourProvinces && fourProvinces.unionLossHectares !== null
+      ? `${spanPeriod} · ${text.mapReadoutLost(formatHectares(fourProvinces.unionLossHectares, locale))}`
+      : `${text.modes[mode]} · ${spanPeriod}`;
 
   return (
     <section className="explore" aria-label={text.title}>
@@ -548,6 +573,7 @@ export function ExploreView({
                 setActiveYear(span.toYear);
               }}
               wholeRecord={mode === "condition-recovery"}
+              mapPlayback={mapPlayback}
             />
           </form>
         </section>
@@ -557,6 +583,7 @@ export function ExploreView({
       <div className="explore-workspace">
       <section className="explore-section explore-canvas" aria-labelledby="explore-map-heading">
         <h2 id="explore-map-heading" className="sr-only">{text.mapHeading}</h2>
+        <p className="explore-map-readout">{mapReadout}</p>
         <ExploreMapClient
           locale={locale}
           mode={mode}
@@ -566,6 +593,7 @@ export function ExploreView({
           ridingMeasurements={servedMeasurements}
           forestRegions={recovery ? [] : servedForestRegions}
           recoveryRegions={recovery ? recovery.rows.filter((row) => row.kind === "region") : []}
+          onPlaybackChange={setMapPlayback}
         />
         {activeYear > activeFrom + 1 && !recovery ? (
           <p className="explore-note">{text.spanNote(activeFrom, activeYear)}</p>
@@ -684,7 +712,7 @@ export function ExploreView({
                   </li>
                 ))}
               </ul>
-              <p className="explore-reading-ridings"><a href={locale === "en" ? "/en#ridings-most-lost" : "/fr#ridings-most-lost"}>{text.ridingsMostLost}</a></p>
+              <p className="explore-reading-ridings"><a href={locale === "en" ? "/en#ridings-most-lost" : "/fr#ridings-most-lost"}>{rankingHeading}</a></p>
             </div>
           ) : null}
           <EvidenceKey locale={locale} classes={["satellite-observation", "unknown"]} />
