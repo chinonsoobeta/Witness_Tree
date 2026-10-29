@@ -50,7 +50,9 @@ test("the primary navigation marks one current item, never Home on every page", 
 test("shared navigation exposes localized search and dynamic pages publish record-specific alternates", () => {
   const header = readFileSync(new URL("../components/site/SiteHeader.tsx", import.meta.url), "utf8");
   const homeSearch = readFileSync(new URL("../components/site/HomeSearch.tsx", import.meta.url), "utf8");
-  const placeRoute = readFileSync(new URL("../app/en/places/[placeId]/page.tsx", import.meta.url), "utf8");
+  const examplePlaceRoute = readFileSync(new URL("../app/en/components/example-places/[placeId]/page.tsx", import.meta.url), "utf8");
+  const placeRoute = readFileSync(new URL("../app/en/places/[dataVersion]/[geography]/[code]/page.tsx", import.meta.url), "utf8");
+  const placeMetadata = readFileSync(new URL("../components/places/RecordPlacePage.tsx", import.meta.url), "utf8");
   const locationRoute = readFileSync(new URL("../app/fr/emplacement/[locationId]/page.tsx", import.meta.url), "utf8");
   /*
    * Search left the global nav and became a control on the homepage, under
@@ -67,8 +69,10 @@ test("shared navigation exposes localized search and dynamic pages publish recor
   assert.doesNotMatch(header, /\["Recherche", "\/fr\/recherche"\]/);
   const nav = header.slice(header.indexOf("const NAV = {"), header.indexOf("} as const;"));
   assert.equal((nav.match(/\[".+?", ".+?"\]/g) ?? []).length, 12, "six items per locale, no more");
-  assert.match(placeRoute, /\/en\/places\/\$\{placeId\}/);
-  assert.match(placeRoute, /\/fr\/lieux\/\$\{placeId\}/);
+  assert.match(examplePlaceRoute, /examplePlacePath\("en", placeId\), fr: examplePlacePath\("fr", placeId\)/);
+  assert.match(placeRoute, /recordPlaceMetadata\("en", record\)/);
+  assert.match(placeMetadata, /en: placePagePath\("en", record\.geography, record\.code\)/);
+  assert.match(placeMetadata, /fr: placePagePath\("fr", record\.geography, record\.code\)/);
   assert.match(locationRoute, /\/en\/location\/\$\{locationId\}/);
   assert.match(locationRoute, /\/fr\/emplacement\/\$\{locationId\}/);
 });

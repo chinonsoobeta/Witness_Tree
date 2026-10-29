@@ -28,7 +28,10 @@ test("renders alias results with locale-correct links and keeps Explore in heade
   assert.match(english, /City/);
   assert.match(english, /href="\/en\/compare\?left=federal-/);
   assert.match(french, /Grand Sudbury/);
-  assert.doesNotMatch(english, /href="\/en\/places\//);
+  // Results open real place pages, never the illustrative gallery examples.
+  assert.match(english, /href="\/en\/places\/1984-2022-v1\/csd-2021\/5953023"/);
+  assert.match(french, /href="\/fr\/lieux\/1984-2022-v1\/csd-2021\/3553005"/);
+  assert.doesNotMatch(`${english}${french}`, /example-places|exemples-lieux/);
   const header = readFileSync(new URL("../components/site/SiteHeader.tsx", import.meta.url), "utf8");
   assert.match(header, /\["Explore", "\/en\/explore"\]/);
   assert.match(header, /\["Explorer", "\/fr\/explorer"\]/);
@@ -78,7 +81,7 @@ test("real place search handles suffixes, bilingual names, dash spelling, gaps, 
 test("a community result leads with the place's own figure, before its ridings", () => {
   // Prince George was fully mapped, so its own share and area read first.
   const en = renderToStaticMarkup(<SearchPage locale="en" query="Prince George" />);
-  const card = en.slice(en.indexOf("<h4>Prince George</h4>"));
+  const card = en.slice(en.indexOf(`<h4><a href="/en/places/1984-2022-v1/csd-2021/5953023">Prince George</a></h4>`));
   assert.match(card, /Fully mapped/);
   assert.ok(card.indexOf("Fully mapped") < card.indexOf("Federal ridings"));
   assert.match(card, /of this place\. Whole riding: /);
@@ -92,10 +95,13 @@ test("a federal riding result opens in Compare, and a provincial one names no li
   for (const locale of ["en", "fr"] as const) {
     const markup = renderToStaticMarkup(<SearchPage locale={locale} query="Prince George" />);
     const compare = locale === "en" ? "/en/compare" : "/fr/comparer";
-    // The riding's own result card links, as its suggestion and a community's
-    // list already did; Compare covers federal ridings only.
-    assert.match(markup, new RegExp(`<h4><a href="${compare}\\?left=federal-59026">Prince George—Peace River—Northern Rockies</a></h4>`));
-    assert.match(markup, /<h4>Prince George-Mackenzie<\/h4>/);
+    // Every riding result opens its own page; Compare covers federal ridings only,
+    // so only a federal card also links there.
+    const places = locale === "en" ? "/en/places" : "/fr/lieux";
+    assert.match(markup, new RegExp(`<h4><a href="${places}/1984-2022-v1/federal-2023/59026">Prince George—Peace River—Northern Rockies</a></h4>`));
+    assert.match(markup, new RegExp(`<a href="${compare}\\?left=federal-59026">`));
+    assert.match(markup, new RegExp(`<h4><a href="${places}/1984-2022-v1/bc-2023/\\d+">Prince George-Mackenzie</a></h4>`));
+    assert.doesNotMatch(markup, new RegExp(`${compare}\\?left=(?!federal-)`));
   }
 });
 
@@ -129,10 +135,11 @@ test("renders the bilingual place finder with a hidden label and compact submit 
   assert.match(en, /<input[^>]*aria-labelledby="search-label"/);
   assert.doesNotMatch(en, /<input[^>]*aria-label=/);
   assert.match(en, /<button[^>]*>Find<\/button>/);
-  assert.match(en, /href="\/en\/places\//);
+  // The illustrative finder links to the gallery examples, never among real places.
+  assert.match(en, /href="\/en\/components\/example-places\//);
   assert.match(fr, /Rechercher des lieux/);
   assert.match(fr, /<button[^>]*>Trouver<\/button>/);
-  assert.match(fr, /href="\/fr\/lieux\//);
+  assert.match(fr, /href="\/fr\/composants\/exemples-lieux\//);
 });
 
 test("search coverage precedes controls and a missing record is a result with a reason", () => {

@@ -100,7 +100,8 @@ test("robots and sitemap expose both locales without fixture routes", () => {
   assert.equal(robotsRecord.host, SITE_ORIGIN);
 
   const entries = sitemap();
-  assert.equal(entries.length, 1 + PUBLIC_LOCALE_ROUTE_PAIRS.length * 2);
+  // The gateway, each static pair, and 3,046 record-backed place pages in each language.
+  assert.equal(entries.length, 1 + PUBLIC_LOCALE_ROUTE_PAIRS.length * 2 + 3046 * 2);
   const urls = entries.map(({ url }) => url);
   assert.equal(urls[0], SITE_ORIGIN);
   for (const paths of PUBLIC_LOCALE_ROUTE_PAIRS) {
@@ -111,14 +112,20 @@ test("robots and sitemap expose both locales without fixture routes", () => {
   assert.ok(urls.includes(SITE_ORIGIN + "/fr/composants"));
   assert.ok(urls.includes(SITE_ORIGIN + "/en/explore/draw"));
   assert.ok(urls.includes(SITE_ORIGIN + "/fr/explorer/dessiner"));
-  assert.equal(urls.some((url) => /\/(?:places|lieux|location|emplacement)\//.test(url)), false);
+  // Real place pages are listed in both languages; the illustrative fixtures never are.
+  assert.ok(urls.includes(`${SITE_ORIGIN}/en/places/1984-2022-v1/csd-2021/5924034`));
+  assert.ok(urls.includes(`${SITE_ORIGIN}/fr/lieux/1984-2022-v1/csd-2021/5924034`));
+  assert.equal(urls.filter((url) => url.includes("/en/places/")).length, 3046);
+  assert.equal(urls.filter((url) => url.includes("/fr/lieux/")).length, 3046);
+  assert.equal(urls.some((url) => /\/(?:location|emplacement|example-places|exemples-lieux)\//.test(url)), false);
+  assert.equal(urls.some((url) => /\/(?:places|lieux)\/(?!1984-2022-v1\/)/.test(url)), false);
   assert.equal(entries[0]?.alternates?.languages?.["x-default"], SITE_ORIGIN);
 });
 
 test("fixture place and location routes are noindex", async () => {
   const sources = await Promise.all([
-    readFile(new URL("../app/en/places/[placeId]/page.tsx", import.meta.url), "utf8"),
-    readFile(new URL("../app/fr/lieux/[placeId]/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/en/components/example-places/[placeId]/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/fr/composants/exemples-lieux/[placeId]/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/en/location/[locationId]/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/fr/emplacement/[locationId]/page.tsx", import.meta.url), "utf8"),
   ]);

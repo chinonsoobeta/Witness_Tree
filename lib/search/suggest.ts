@@ -11,6 +11,7 @@
 
 import { formatHectares, formatPercent, semicolon, type Locale } from "@/lib/domain";
 import { formatUnknownSharePercent } from "@/lib/explore/map-style";
+import { communityPagePath, ridingPagePath } from "@/lib/place-pages/paths";
 import { placeFigure, type PlaceFigure } from "./place-figures";
 import {
   formatSearchShare,
@@ -31,6 +32,8 @@ export type SuggestionRiding = Readonly<{
   figure: string | null;
   detail: string;
   compareHref: string | null;
+  /** The riding's own page. */
+  href: string | null;
 }>;
 
 export type Suggestion = Readonly<{
@@ -43,6 +46,8 @@ export type Suggestion = Readonly<{
   /** One line under the figure: the hectares and coverage, or why there is no share. */
   detail: string;
   compareHref: string | null;
+  /** The community's or riding's own page; a province has none. */
+  href: string | null;
   /** For a place: what its riding figures cover, shown above them. */
   ridingsNote?: string;
   ridings: readonly SuggestionRiding[];
@@ -150,6 +155,7 @@ function suggestionRiding(reference: SearchRidingReference, level: "federal" | "
     figure: completeFigure(row, locale),
     detail: ridingDetail(row, locale),
     compareHref: level === "federal" ? ridingCompareHref(reference.id, locale) : null,
+    href: ridingPagePath(locale, reference.id),
   };
 }
 
@@ -173,6 +179,7 @@ function toSuggestion(result: SiteSearchResult, locale: Locale): Suggestion {
         ? `${hectares} · A minimum: ${unknown} of the province has no satellite data`
         : `${hectares} · Un minimum\u202F: ${unknown} de la province n’a pas de données satellitaires`,
       compareHref: null,
+      href: null,
       ridings: [],
     };
   }
@@ -186,6 +193,7 @@ function toSuggestion(result: SiteSearchResult, locale: Locale): Suggestion {
       figure: completeFigure(row, locale),
       detail: ridingDetail(row, locale),
       compareHref: ridingCompareHref(result.id, locale),
+      href: ridingPagePath(locale, result.id),
       ridings: [],
     };
   }
@@ -200,6 +208,7 @@ function toSuggestion(result: SiteSearchResult, locale: Locale): Suggestion {
     figure: completeFigure(figure, locale),
     detail: placeDetail(figure, locale),
     compareHref: null,
+    href: communityPagePath(locale, result.id),
     ridingsNote: locale === "en"
       ? `The ridings it’s in. Their figures are for the whole riding.`
       : `Les circonscriptions où il se trouve. Leurs chiffres portent sur toute la circonscription.`,

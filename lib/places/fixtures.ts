@@ -62,4 +62,7 @@ export const PLACES: readonly Place[] = specs.map(([id, type, province, name], i
 
 export const LOCATIONS: readonly Location[] = PLACES.map((place, index) => ({ status: "example", id: `location-${place.id}`, summary: local(`Illustrative location in ${place.name.en}.`, `Emplacement illustratif dans ${frenchArticle(place.type)} ${frenchType(place.type, place.province)}.`), latitude: 49 + index, longitude: -123 + index, accuracyMetres: 100, containingPlaceIds: [place.id], events: [...place.events].sort((a, b) => b.year - a.year) }));
 export const placeById = (id: string) => PLACES.find((place) => place.id === id);
+/** Where an illustrative place renders: in the component gallery, never among real places. */
+export const examplePlacePath = (locale: "en" | "fr", id: string) =>
+  locale === "en" ? `/en/components/example-places/${id}` : `/fr/composants/exemples-lieux/${id}`;
 export const locationById = (id: string) => LOCATIONS.find((location) => location.id === id);
