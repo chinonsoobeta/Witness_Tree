@@ -9,6 +9,8 @@ import { PlaceFinder }
 from "../components/search/PlaceFinder.tsx";
 // @ts-expect-error Node test runner needs extensions.
 import { formatSearchShare, searchSite } from "../lib/search/site-search.ts";
+// @ts-expect-error Node test runner needs extensions.
+import { ridingCompareHref } from "../lib/search/suggest.ts";
 test("normalizes aliases and diacritics", () => { assert.equal(normalizeSearch("Québec!") , "quebec"); assert.ok(searchPlaces("alias illustratif d’une municipalite quebecoise").length); });
 test("empty and missing results never become zero", () => { assert.deepEqual(searchPlaces(""), []); assert.deepEqual(searchPlaces("not-a-place"), []); });
 test("fixture names have bilingual parity", () => { const found = searchPlaces("illustrative"); assert.equal(found.filter((place) => place.name.en).length, found.filter((place) => place.name.fr).length); });
@@ -88,15 +90,19 @@ test("a community result leads with the place's own figure, before its ridings",
   assert.doesNotMatch(montreal, />0(?: ha)?</);
 });
 
-test("a federal riding result opens in Compare, and a provincial one names no link", () => {
+test("a federal or a provincial riding result opens in Compare", () => {
   for (const locale of ["en", "fr"] as const) {
     const markup = renderToStaticMarkup(<SearchPage locale={locale} query="Prince George" />);
     const compare = locale === "en" ? "/en/compare" : "/fr/comparer";
     // The riding's own result card links, as its suggestion and a community's
-    // list already did; Compare covers federal ridings only.
+    // list already did; Compare covers the four provinces' ridings at both levels.
     assert.match(markup, new RegExp(`<h4><a href="${compare}\\?left=federal-59026">Prince George—Peace River—Northern Rockies</a></h4>`));
-    assert.match(markup, /<h4>Prince George-Mackenzie<\/h4>/);
+    assert.match(markup, new RegExp(`<h4><a href="${compare}\\?left=provincial-BC-\\d+">Prince George-Mackenzie</a></h4>`));
   }
+  assert.equal(ridingCompareHref("CA-59001", "en"), "/en/compare?left=federal-59001");
+  assert.equal(ridingCompareHref("BC-258", "en"), "/en/compare?left=provincial-BC-258");
+  assert.equal(ridingCompareHref("QC-137", "fr"), "/fr/comparer?left=provincial-QC-137");
+  assert.equal(ridingCompareHref("NS-1", "en"), null, "no Compare page outside the four provinces");
 });
 
 test("a province can be written as its standard abbreviation", () => {

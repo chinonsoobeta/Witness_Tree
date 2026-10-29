@@ -294,6 +294,25 @@ test("renders localized search results and the Explore table without browser Jav
   assert.match(frenchFixtures, /Attribution de la source/);
 });
 
+test("Compare serves a federal riding beside a provincial one, and an unknown riding as an empty side with a notice", async () => {
+  const [mixed, unknown] = await Promise.all([
+    render("/en/compare?left=federal-59001&right=provincial-BC-258").then((response) => response.text()),
+    render("/fr/comparer?left=inexistante&right=provincial-QC-137").then((response) => response.text()),
+  ]);
+  assert.match(mixed, /<option value="federal-59001" selected="">/);
+  assert.match(mixed, /<option value="provincial-BC-258" selected="">Abbotsford-Mission<\/option>/);
+  assert.match(mixed, /Provincial riding · British Columbia/);
+  assert.match(mixed, /<h2 id="rankings-BC-heading">Provincial ridings in British Columbia<\/h2>/);
+  assert.match(mixed, /53 of British Columbia’s 93 provincial ridings are ranked\./);
+  assert.match(mixed, />Show all 280 federal ridings<\/a>/);
+  assert.match(unknown, /role="status"/);
+  assert.match(unknown, /Côté gauche\u202F: aucune circonscription ne porte l’identifiant «\u00A0inexistante\u00A0»\./);
+  assert.match(unknown, /<h2>Aucune circonscription choisie<\/h2>/);
+  assert.match(unknown, /<option value="provincial-QC-137" selected="">/);
+  assert.doesNotMatch(unknown, /<option value="federal-59001" selected/);
+  assert.match(unknown, /<h2 id="rankings-QC-heading">Circonscriptions provinciales du Québec<\/h2>/);
+});
+
 // The synthetic uptime probe decides a route is healthy when the response body contains a
 // marker string recorded in data/observability-deployment.json. Nothing tied that string to
 // the page it quotes, so a copy edit turned the probe red six hours later against a site that

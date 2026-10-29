@@ -6,9 +6,12 @@ from "./types.ts";
 export type RankedRidingsResult = Readonly<{ ranked: readonly RankedRiding[]; unranked: readonly RankedRiding[] }>;
 export type RankingSort = "share-desc" | "share-asc";
 export const RANKING_COPY = {
-  en: { metric: "Detected loss as a share of forested area", hectares: "Detected loss (ha)", forested: "Forested area (ha)", officialMatching: "Matching to official records hasn’t been done for ridings yet, so it is Unknown in every row.", unknown: "Unknown" },
-  fr: { metric: "Perte détectée en proportion de la superficie forestière", hectares: "Perte détectée (ha)", forested: "Superficie forestière (ha)", officialMatching: "L’appariement aux registres officiels n’a pas encore été fait pour les circonscriptions\u202F; il est donc inconnu dans chaque ligne.", unknown: "Inconnu" },
+  en: { metric: "Detected loss as a share of forested area", hectares: "Detected loss (ha)", forested: "Forested area (ha)", officialMatching: "Matching to official records hasn’t been done for ridings yet, so how much of each riding’s loss an official record accounts for is Unknown. The tables leave it out rather than show a column of Unknowns.", unknown: "Unknown" },
+  fr: { metric: "Perte détectée en proportion de la superficie forestière", hectares: "Perte détectée (ha)", forested: "Superficie forestière (ha)", officialMatching: "L’appariement aux registres officiels n’a pas encore été fait pour les circonscriptions\u202F; la part de la perte de chaque circonscription qu’explique un registre officiel est donc inconnue. Les tableaux l’omettent plutôt que d’afficher une colonne de valeurs inconnues.", unknown: "Inconnu" },
 } as const;
+
+/** Ranked rows Compare shows before the reader asks for the whole ranking. */
+export const RANKING_PREVIEW_ROWS = 20;
 
 export function parseRankingSort(value: string | undefined): RankingSort {
   return value === "share-asc" ? "share-asc" : "share-desc";
@@ -36,7 +39,9 @@ export function rankingContextLines(context: RankingContext, locale: Locale): re
 
 export function comparePlaces(places: readonly ComparisonPlace[]): readonly [ComparisonPlace, ComparisonPlace] {
   if (places.length !== 2) throw new Error("Side-by-side comparison requires exactly two places.");
-  if (places[0].placeType !== places[1].placeType) throw new Error("Side-by-side places must have the same type.");
+  // Any two ridings may sit side by side, federal or provincial; other places only with their own kind.
+  const ridings = places.every((place) => place.placeType === "federal-riding" || place.placeType === "provincial-riding");
+  if (!ridings && places[0].placeType !== places[1].placeType) throw new Error("Side-by-side places must have the same type.");
   return [places[0], places[1]];
 }
 

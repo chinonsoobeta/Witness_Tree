@@ -2,7 +2,10 @@ import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { THEME_STORAGE_KEY } from "../../lib/theme";
 
-const routes = ["/en", "/fr", "/en/explore", "/fr/explorer", "/en/compare", "/fr/comparer", "/en/explore?data=table", "/fr/explorer?data=table", "/en/compare?view=table", "/fr/comparer?view=table"];
+const routes = ["/en", "/fr", "/en/explore", "/fr/explorer", "/en/compare", "/fr/comparer", "/en/explore?data=table", "/fr/explorer?data=table", "/en/compare?view=table", "/fr/comparer?view=table",
+  // A federal riding beside a provincial one, and an unknown riding left as an empty side with a notice.
+  "/en/compare?left=federal-59001&right=provincial-BC-258", "/fr/comparer?left=inexistante&right=provincial-QC-137&view=table",
+  "/en/data/official-harvest-comparison", "/fr/donnees/comparaison-recolte-officielle?province=QC"];
 const wcag = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"];
 
 for (const route of routes) {
