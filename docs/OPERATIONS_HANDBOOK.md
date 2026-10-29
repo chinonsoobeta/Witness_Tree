@@ -197,9 +197,10 @@ Work these in order. Stop at the first one that answers.
 5. **Is it a reported figure, not an outage?** Then it is a correction, not an
    incident response: follow [CORRECTIONS_WORKFLOW.md](CORRECTIONS_WORKFLOW.md).
    Note that the workflow is policy and fixtures only. It does not submit
-   cases, send email, or provide a public intake route, so a correction report
-   currently arrives by whatever channel the reporter found and is tracked by
-   hand.
+   cases or send email. Its only public route is an optional `mailto:` link,
+   shown only when `CORRECTIONS_RECIPIENT_EMAIL` is set at build time, so a
+   correction report arrives either by that email or by whatever channel the
+   reporter found, and is tracked by hand.
 
 ### 3.4 The S1 first five minutes
 
@@ -225,7 +226,7 @@ For a data-integrity or credential S1, in this order:
 | Audience | Channel that exists | Channel that does not exist |
 | --- | --- | --- |
 | The public | The site itself, and the `/en/corrections` and `/fr/corrections` routes | There is no status page, no banner mechanism driven by an operator, and no mailing list. A public message requires a code change and a deploy |
-| A correction reporter | Whatever channel they used to reach the owner | There is no intake form and no monitored address in this repository |
+| A correction reporter | The address on the corrections page, only when `CORRECTIONS_RECIPIENT_EMAIL` is set; otherwise whatever channel they used to reach the owner | There is no intake form, and no address is stored in this repository |
 | The owner | See [Declared gaps](#declared-gaps), item G2: no contact route is recorded | |
 | The host | See section 5 | |
 
@@ -815,7 +816,7 @@ contradicts this list.
 | **G6** | **There is no operational kill switch.** The flag exists in pure policy code with no persisted store, no setter, and no deployed sender. No timed rehearsal has been performed | The account service cannot be activated. Phase 6 `killSwitchRehearsalUnderFiveMinutes` and `namedIncidentOwnerAndRunbook` remain open |
 | **G9** | **The data root has one copy.** No second copy, no replication, no provider durability evidence | Drive loss loses every derived byte. Phase 8 `backups` is `fail` |
 | **G10** | **No incident has ever been rehearsed.** No drill of a site outage, a rollback, a host degradation, or an escalation has been performed or timed | Every timing target in this document is a target, not an observed result |
-| **G11** | **No public communication channel exists.** No status page, no operator-driven banner, no monitored intake address; the corrections workflow is policy and fixtures only | Telling the public anything requires a code change and a deploy |
+| **G11** | **No public communication channel exists.** No status page, no operator-driven banner, no monitored intake address unless the owner sets `CORRECTIONS_RECIPIENT_EMAIL`; the corrections workflow is policy and fixtures only | Telling the public anything requires a code change and a deploy |
 
 ---
 
