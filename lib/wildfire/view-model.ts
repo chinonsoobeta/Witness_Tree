@@ -73,7 +73,7 @@ export const wildfireText = (locale: Locale) => locale === "en" ? {
   title: "Contexte des incendies",
   fixture: "Exemple illustratif\u202F; ces données sur les incendies ne sont pas en direct.",
   sourceUpdated: "Mise à jour de la source",
-  lastRefresh: `Dernière actualisation réussie de ${PRODUCT_NAME.fr}`,
+  lastRefresh: `Dernière actualisation réussie d’${PRODUCT_NAME.fr}`,
   agency: "Organisme source",
   nextRefresh: "Prochaine actualisation prévue",
   emergency: "Information officielle d’urgence",

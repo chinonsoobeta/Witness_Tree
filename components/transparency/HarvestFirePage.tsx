@@ -83,7 +83,7 @@ const COPY = {
     measureTitle: "Ce que montrent les barres",
     sumTitle: "Pourquoi les années peuvent être additionnées ici",
     sumBody: "Ailleurs sur ce site, les pertes annuelles ne sont jamais additionnées, car un lieu perdu au cours de deux années serait compté deux fois. Ces chiffres sont différents\u202F: le registre national donne à chaque carré de 30 m au plus une année de récolte et une année de feu. Additionner les années de récolte compte chaque carré une seule fois, tout comme additionner les années de feu.",
-    sumNever: "La récolte et le feu ne sont jamais additionnés, car un même carré peut porter les deux.",
+    sumNever: "La récolte et le feu ne sont jamais additionnés l’un à l’autre, car un même carré peut porter les deux.",
     builderTitle: "Créer un graphique",
     provinces: "Provinces",
     firstYear: "Première année",
