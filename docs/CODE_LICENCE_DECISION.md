@@ -58,7 +58,7 @@ cover everything here would claim more than the owner can grant.
 | BC Sans | npm `@bcgov/bc-sans` 2.1.0, imported once in root CSS | Province of British Columbia, SIL OFL 1.1 | Not vendored; ships in the built site |
 | Province flags | `public/flags/*.svg` | Public domain, per Wikimedia Commons | Stay public domain |
 | Gate photographs | `public/gate/*.jpg` | The owner (commit #156 records them as the owner's own) | Decoration; recommended excluded from any open licence |
-| Brand images | `public/og.png`, `public/favicon.svg`, `public/apple-touch-icon.png` | The project | Carry or stand for the name; recommended excluded |
+| Brand images | `public/og.png`, `public/favicon.svg` (and `public/favicon.ico`, a 32 px rendering of it), `public/apple-touch-icon.png` | The project | Carry or stand for the name; recommended excluded |
 | Template icons | `public/file.svg`, `public/globe.svg`, `public/window.svg` | Next.js starter template (MIT) | No reference found in `app/` or `components/`; candidates for deletion (R5) |
 | npm dependencies | `package-lock.json` only; `node_modules/` is not committed | Their authors | Production tree is permissive (MIT, Apache-2.0, ISC, BSD) except BC Sans (OFL), `caniuse-lite` (CC BY 4.0, data) and the optional `sharp`/libvips platform binaries (LGPL-3.0-or-later). None are copied into the repository, so none constrain the choice below. |
 
@@ -287,8 +287,9 @@ string does not bypass `PRODUCT_NAME`.
   ```
   Scope: this licence covers the code in this repository. It does not cover
   data (see DATA_LICENSES.md), the photographs in public/gate/, the images
-  public/og.png, public/favicon.svg and public/apple-touch-icon.png, or the
-  site's name, and grants no right to use the name.
+  public/og.png, public/favicon.svg, public/favicon.ico and
+  public/apple-touch-icon.png, or the site's name, and grants no right to
+  use the name.
   ```
 
 - `package.json`: `"license": "MIT"`. Keep `"private": true`.
@@ -374,7 +375,8 @@ string does not bypass `PRODUCT_NAME`.
    - Neither licence covers: data, which keeps each source's own licence and
      attribution requirements (DATA_LICENSES.md and the site's Terms page);
      the photographs in public/gate/; the images public/og.png,
-     public/favicon.svg and public/apple-touch-icon.png; or the site's name.
+     public/favicon.svg, public/favicon.ico and public/apple-touch-icon.png;
+     or the site's name.
      Neither licence grants any right to use the name.
 
    Figures

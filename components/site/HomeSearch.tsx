@@ -10,7 +10,9 @@ import { drawPagePath } from "@/lib/shapes/circle";
  *
  * It is still a plain GET form that submits straight to the search route, so
  * it works without JavaScript. With it, the field suggests matching places as
- * the reader types. The label is visible rather than hidden, because a bare
+ * the reader types, and an empty or blank field is not submitted: the reader
+ * stays here with a hint under the field, rather than landing on a page that
+ * only asks again. The label is visible rather than hidden, because a bare
  * field under a headline reads as decoration.
  */
 
@@ -22,6 +24,7 @@ const COPY = {
     submit: "Open the record",
     note: "Search provinces, ridings and communities. Figures cover 1984 to 2022.",
     nearby: "What happened within 10 km of me?",
+    empty: "Enter a place first: a province, riding or community.",
   },
   fr: {
     action: "/fr/recherche",
@@ -30,6 +33,7 @@ const COPY = {
     submit: "Ouvrir le registre",
     note: "Recherchez une province, une circonscription ou une collectivité. Les chiffres couvrent la période de 1984 à 2022.",
     nearby: "Qu’est-il arrivé dans un rayon de 10\u00a0km autour de moi\u202F?",
+    empty: "Entrez d’abord un lieu\u202F: une province, une circonscription ou une collectivité.",
   },
 } as const;
 
@@ -43,6 +47,7 @@ export function HomeSearch({ locale }: { locale: Locale }) {
       label={text.label}
       placeholder={text.placeholder}
       submitLabel={text.submit}
+      emptyHint={text.empty}
       note={
         <>
           <p className="home-search-note">{text.note}</p>

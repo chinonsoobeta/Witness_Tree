@@ -66,6 +66,12 @@ export type SearchSuggestProps = Readonly<{
   submitLabel: string;
   defaultValue?: string;
   note?: ReactNode;
+  /**
+   * When given, submitting an empty or blank field stays on the page: focus stays
+   * in the field and this hint shows under it, instead of opening a results page
+   * that only asks for a place. Without it the form submits as a plain GET.
+   */
+  emptyHint?: string;
   className: string;
 }>;
 
@@ -80,17 +86,20 @@ export function SearchSuggest({
   submitLabel,
   defaultValue = "",
   note,
+  emptyHint,
   className,
 }: SearchSuggestProps) {
   const text = COPY[locale];
   const id = useId();
   const inputId = `${id}-q`;
   const listId = `${id}-list`;
+  const hintId = `${id}-hint`;
   const [query, setQuery] = useState(defaultValue);
   const [answer, setAnswer] = useState<Answer | null>(null);
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
   const [chosen, setChosen] = useState<Suggestion | null>(null);
+  const [hinted, setHinted] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // One request per pause in typing, and a newer query cancels an older one,
@@ -159,7 +168,20 @@ export function SearchSuggest({
 
   return (
     <div className={`search-suggest ${className}`}>
-      <form className="search-suggest-form" method="get" action={action} role="search">
+      <form
+        className="search-suggest-form"
+        method="get"
+        action={action}
+        role="search"
+        onSubmit={(event) => {
+          // Not `required`, whose browser message is generic. Only an empty or blank
+          // field is held here; any other query submits exactly as before.
+          if (emptyHint === undefined || query.trim() !== "") return;
+          event.preventDefault();
+          setHinted(true);
+          inputRef.current?.focus();
+        }}
+      >
         <label className={labelHidden ? "field-label sr-only" : "search-suggest-label"} htmlFor={inputId}>{label}</label>
         <div className="search-suggest-row">
           <div className="search-suggest-field">
@@ -177,10 +199,12 @@ export function SearchSuggest({
               aria-expanded={showList}
               aria-controls={showList ? listId : undefined}
               aria-activedescendant={showList && active >= 0 ? `${listId}-${active}` : undefined}
+              aria-describedby={hinted ? hintId : undefined}
               onChange={(event) => {
                 setQuery(event.target.value);
                 setChosen(null);
                 setOpen(true);
+                setHinted(false);
               }}
               onFocus={() => setOpen(true)}
               onBlur={() => setOpen(false)}
@@ -238,6 +262,8 @@ export function SearchSuggest({
             ) : null}
             {showNone ? <p className="search-suggest-popup search-suggest-message" role="status">{text.none(query.trim())}</p> : null}
             {showFailed ? <p className="search-suggest-popup search-suggest-message" role="status">{text.failed}</p> : null}
+            {/* Always in the tree and empty until needed, so the live region exists before its words arrive. */}
+            {emptyHint !== undefined ? <p id={hintId} className="search-suggest-hint" aria-live="polite">{hinted ? emptyHint : ""}</p> : null}
           </div>
           <button className="btn btn--primary" type="submit">{submitLabel}</button>
         </div>

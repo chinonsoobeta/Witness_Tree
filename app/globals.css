@@ -2524,12 +2524,17 @@ h4 {
    Sombre) came to 882px against 770px of usable pill, and the page scrolled
    sideways. The breakpoint is now set from the widest locale rather than the
    narrowest: the French row and the wordmark measure 1048px together, and the
-   plate stops growing at 1180px, so 1180px is where the inline layout starts and
+   plate stops growing at 1180px, so 1180px is where the one-row layout starts and
    the 46px it leaves is the most this layout will ever have (English leaves
    144px; French is what has to fit). That margin is for
    the fallback face, which is wider than BC Sans. The row gap and the control's
    padding were tightened at the same time, for the same reason. French is the
    constraint here, and one breakpoint has to serve both.
+
+   From 800px to 1180px the links are still shown in full, on a second row (the
+   2026-10-28 audit found the Menu button at tablet widths with room for the six
+   links). The rule below that sets the second row explains how. Under 800px the
+   Menu disclosure stays.
 
    Forcing a closed <details> open takes two mechanisms because browsers
    changed how the hiding is done. Older engines hide the content through the
@@ -2538,7 +2543,7 @@ h4 {
    `::details-content { content-visibility: hidden }`, which only the
    pseudo-element rule can reach; browsers that do not recognise the pseudo
    simply drop that rule and are covered by the first mechanism. */
-@media (min-width: 1180px) {
+@media (min-width: 800px) {
   .nav-disclosure > summary {
     display: none;
   }
@@ -2614,6 +2619,29 @@ h4 {
     font-size: var(--text-compact);
     letter-spacing: 0.07em;
     text-transform: uppercase;
+  }
+}
+
+/* Between 800px and the one-row width the bar takes two rows: the wordmark and
+   the language switch on the first, the links and the colour-theme control on
+   the second. Measured with BC Sans, the French second row is 683px against 760px
+   of bar at 800px, and the English 585px. The language switch is lifted onto the
+   first row by position, not moved in the DOM, so the nav landmark, the one list
+   of links and the switch's place after them in the tab order are all unchanged.
+   The bar is 106px tall here; the sticky place heading below allows for it. */
+@media (min-width: 800px) and (max-width: 1179.98px) {
+  .site-header-inner {
+    position: relative;
+    flex-wrap: wrap;
+    row-gap: 4px;
+  }
+  .global-nav {
+    flex: 1 1 100%;
+  }
+  .global-nav > .locale-link {
+    position: absolute;
+    top: 8px;
+    right: 0;
   }
 }
 
@@ -3493,6 +3521,12 @@ dd > a:only-child {
   background: var(--ground);
   color: var(--ink);
   border-bottom: 1px solid var(--rule-strong);
+}
+/* Under the two-row bar between 800px and 1180px (see the site header). */
+@media (min-width: 800px) and (max-width: 1179.98px) {
+  .place-identity {
+    top: 106px;
+  }
 }
 .place-identity h1 {
   margin: 0;
@@ -4583,7 +4617,7 @@ dd > a:only-child {
   width: 10px;
   height: 10px;
 }
-@media (min-width: 1180px) {
+@media (min-width: 800px) {
   .nav-panel a, .theme-option > span {
     min-height: 40px;
   }
@@ -5297,19 +5331,60 @@ dd > a:only-child {
 @media (max-width: 760px) {
   .cumulative-pair { grid-template-columns: minmax(0, 1fr); }
 }
-/* The minimum, said inside the unit beside the number it bounds. */
+/* The minimum, said inside the unit beside the number it bounds. It was the
+   smallest text in the block (16px against claims of 17px to 20px) although it
+   is the sentence that governs both figures, so since 2026-10-28 it is set at
+   the claims' size, with a larger lead and a rule above it. */
 .cumulative-minimum {
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  margin: 14px 0 0;
-  max-width: var(--measure);
+  margin: 18px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--rule-strong);
   color: var(--ink);
-  font-size: 16px;
-  line-height: 1.55;
+  font-size: clamp(17px, 1.7vw, 20px);
+  line-height: 1.45;
+}
+.cumulative-minimum strong {
+  font-size: 1.15em;
 }
 .cumulative-minimum .mark-glyph {
-  margin-top: 6px;
+  margin-top: 8px;
+}
+/* Where the two measures stand side by side, the minimum is the first line under
+   the two figures, ruled above and below, and each figure's basis follows in its
+   own column. Only the drawing moves: the markup keeps each figure with its
+   basis, then the minimum, so a screen reader and a copied block read every
+   figure next to its denominator. The two wrappers dissolve into this grid; they
+   are plain divs, with no role to lose. Under 761px the column order is the
+   markup order, which keeps each figure with its basis on a phone. */
+@media (min-width: 761px) {
+  .cumulative-headline {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 32px;
+  }
+  .cumulative-headline > .eyebrow,
+  .cumulative-headline > h2,
+  .cumulative-minimum {
+    grid-column: 1 / -1;
+  }
+  .cumulative-pair,
+  .cumulative-measure {
+    display: contents;
+  }
+  .cumulative-measure:first-child > * { grid-column: 1; }
+  .cumulative-measure:last-child > * { grid-column: 2; }
+  .cumulative-label { grid-row: 3; margin-top: 16px; }
+  .cumulative-pair .cumulative-figure { grid-row: 4; }
+  .cumulative-minimum {
+    grid-row: 5;
+    margin-top: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--rule-strong);
+  }
+  .cumulative-claim { grid-row: 6; margin-top: 14px; }
 }
 /* Three bases as three short rows: a label and one line each. They are peers,
    so they share one column rather than one being set as a footnote. */
@@ -5428,6 +5503,15 @@ dd > a:only-child {
   min-width: 0;
 }
 .search-suggest .input { width: 100%; }
+/* The home field's empty-submit hint. Empty, it takes no room; it is in the
+   flow under the field rather than a popup, so nothing covers it. */
+.search-suggest-hint {
+  margin: 0;
+  color: var(--ink);
+  font-size: var(--text-small);
+  font-weight: 700;
+}
+.search-suggest-hint:not(:empty) { margin-top: 6px; }
 /* A long example such as "Prince George, Colombie-Britannique" ends in an
    ellipsis on a narrow phone instead of being cut mid-word. */
 .search-suggest .input:placeholder-shown { text-overflow: ellipsis; }

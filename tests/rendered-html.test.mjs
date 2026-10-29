@@ -408,3 +408,28 @@ test("Vercel routes preserve the existing API handlers and unavailable services"
   const html = await response.text();
   assert.match(html, /Area measurement is not available/);
 });
+
+// A near-miss address used to 404: the other language's slug, or capital letters.
+// The proxy now sends each one to its page, permanently and with its query, and
+// leaves a real page and a missing one alone. Browsers that ask for the legacy
+// icon path get the icon.
+test("near-miss addresses redirect to their page and the legacy icon path is served", async () => {
+  for (const [path, location] of [
+    ["/fr/explore", "/fr/explorer"],
+    ["/en/explorer", "/en/explore"],
+    ["/EN", "/en"],
+    ["/en/Explore", "/en/explore"],
+    ["/fr/explore?year=2010&from=1990", "/fr/explorer?year=2010&from=1990"],
+  ]) {
+    const response = await fetch(`${origin}${path}`, { redirect: "manual" });
+    assert.equal(response.status, 308, path);
+    const target = new URL(response.headers.get("location"), origin);
+    assert.equal(target.origin, origin, path);
+    assert.equal(`${target.pathname}${target.search}`, location, path);
+  }
+  assert.equal((await fetch(`${origin}/fr/explorer`, { redirect: "manual" })).status, 200);
+  assert.equal((await fetch(`${origin}/en/not-a-page`, { redirect: "manual" })).status, 404);
+  const icon = await fetch(`${origin}/favicon.ico`);
+  assert.equal(icon.status, 200);
+  assert.match(icon.headers.get("content-type"), /image\/(x-icon|vnd\.microsoft\.icon)/);
+});
