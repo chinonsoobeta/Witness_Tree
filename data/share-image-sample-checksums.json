@@ -1,0 +1,300 @@
+{
+  "schemaVersion": "share-image-sample-checksums/1",
+  "description": "SHA-256 of the share card (lib/share/receipt.tsx) for a fixed sample of places, one for each kind of area and coverage state, in both languages. Checked by npm run check:share-images; regenerate with node scripts/check-share-images.mjs --write only after reviewing the changed cards.",
+  "renderer": "lib/share/receipt.tsx",
+  "samples": [
+    {
+      "locale": "en",
+      "geography": "csd-2021",
+      "code": "2401042",
+      "state": "community, fully mapped",
+      "bytes": 72022,
+      "sha256": "9bd55b06a92c470fe29e25ea78dbeea763876585157e37fb6da430b734f4a747"
+    },
+    {
+      "locale": "fr",
+      "geography": "csd-2021",
+      "code": "2401042",
+      "state": "community, fully mapped",
+      "bytes": 77631,
+      "sha256": "c492dacedb5fbff7190544fe97a359079c22eeb8354ec10a0199ba494b148c91"
+    },
+    {
+      "locale": "en",
+      "geography": "csd-2021",
+      "code": "2401023",
+      "state": "community, partly mapped, a minimum and the share Unknown",
+      "bytes": 94902,
+      "sha256": "fca478c3f9e0a5e8bc663e5f91e8d9df66446e2eb6bce3b3297ca1497d6be337"
+    },
+    {
+      "locale": "fr",
+      "geography": "csd-2021",
+      "code": "2401023",
+      "state": "community, partly mapped, a minimum and the share Unknown",
+      "bytes": 104085,
+      "sha256": "fd58c4325908d89e112f25e4761c1358513b5d18490f3fb17a0fb65a495d319f"
+    },
+    {
+      "locale": "en",
+      "geography": "csd-2021",
+      "code": "2414055",
+      "state": "community, no satellite data, Unknown",
+      "bytes": 83978,
+      "sha256": "d429fa04ec8686274b8cafa7618e4dfe813aca6ba71d420ca60acf9ceed196ff"
+    },
+    {
+      "locale": "fr",
+      "geography": "csd-2021",
+      "code": "2414055",
+      "state": "community, no satellite data, Unknown",
+      "bytes": 90904,
+      "sha256": "fb8c0f86cf6505b296f63892bf4ff26b10a37f5eef244b09774111e6d07ee94a"
+    },
+    {
+      "locale": "en",
+      "geography": "csd-2021",
+      "code": "5907009",
+      "state": "community, no forest mapped in 1984, Unknown",
+      "bytes": 77105,
+      "sha256": "58cc80f5004d83f44f9998008279b183f6b9d6addf2124b01c9d13eac99b9a6a"
+    },
+    {
+      "locale": "fr",
+      "geography": "csd-2021",
+      "code": "5907009",
+      "state": "community, no forest mapped in 1984, Unknown",
+      "bytes": 83343,
+      "sha256": "43ce058a86d370a039b16e73800358c7659e6648bd424e4ef12cd46bd65a1c29"
+    },
+    {
+      "locale": "en",
+      "geography": "csd-2021",
+      "code": "5933008",
+      "state": "community, the longest name",
+      "bytes": 85513,
+      "sha256": "9f7cdbb9cc8413a244ef3491368f772034c8fb055601468a73e69871ed50509a"
+    },
+    {
+      "locale": "fr",
+      "geography": "csd-2021",
+      "code": "5933008",
+      "state": "community, the longest name",
+      "bytes": 91390,
+      "sha256": "d94be02191488527a826268313621d9dbccdb16d959e34d8b83f124b6aabaaa5"
+    },
+    {
+      "locale": "en",
+      "geography": "federal-2023",
+      "code": "24002",
+      "state": "federal riding, fully mapped",
+      "bytes": 79105,
+      "sha256": "998ba1acf45be644e2304dbfd398f672e9444ca7fe21fdc2c23d5b850b3b2869"
+    },
+    {
+      "locale": "fr",
+      "geography": "federal-2023",
+      "code": "24002",
+      "state": "federal riding, fully mapped",
+      "bytes": 85665,
+      "sha256": "cd293d3608276ba53b6d3658b8193aa9c0e350fd7193b0965efb95dc3582abbd"
+    },
+    {
+      "locale": "en",
+      "geography": "federal-2023",
+      "code": "24019",
+      "state": "federal riding, unknown share admitted under 1 percent",
+      "bytes": 83999,
+      "sha256": "1fe7976cdcc1162a6bb55d1493c1887f4c137ade1627defa2c260543ae5b47af"
+    },
+    {
+      "locale": "fr",
+      "geography": "federal-2023",
+      "code": "24019",
+      "state": "federal riding, unknown share admitted under 1 percent",
+      "bytes": 92389,
+      "sha256": "b7d95851183edf9926623fe472e9de9b343ee5d8a8828f81dcdd18847744f0a0"
+    },
+    {
+      "locale": "en",
+      "geography": "federal-2023",
+      "code": "24001",
+      "state": "federal riding, partly mapped, a minimum and the share Unknown",
+      "bytes": 99472,
+      "sha256": "3ca66ae354fd0e7338f8748c96af1b1646a3ed19927f81ada05d3170e7049c8c"
+    },
+    {
+      "locale": "fr",
+      "geography": "federal-2023",
+      "code": "24001",
+      "state": "federal riding, partly mapped, a minimum and the share Unknown",
+      "bytes": 109047,
+      "sha256": "9a82a6f111a34a844fc875dbd8dde9e0a34fa9ccba99618b85a8d0dfa5d41176"
+    },
+    {
+      "locale": "en",
+      "geography": "federal-2023",
+      "code": "24003",
+      "state": "federal riding, partly mapped, Unknown",
+      "bytes": 83062,
+      "sha256": "972f559f2e70990f648447b1a75d727190d47f62e1c4eae712193492927694d7"
+    },
+    {
+      "locale": "fr",
+      "geography": "federal-2023",
+      "code": "24003",
+      "state": "federal riding, partly mapped, Unknown",
+      "bytes": 91293,
+      "sha256": "77edd5232b58b39bceae3f54a042232c7aeccc5b4d8f5e723f2c9c38c67b3894"
+    },
+    {
+      "locale": "en",
+      "geography": "bc-2023",
+      "code": "258",
+      "state": "provincial riding, fully mapped",
+      "bytes": 76552,
+      "sha256": "316ceea3b3019512127433282cc301038a4d4d75705d421f3d2bf333b16ad117"
+    },
+    {
+      "locale": "fr",
+      "geography": "bc-2023",
+      "code": "258",
+      "state": "provincial riding, fully mapped",
+      "bytes": 83654,
+      "sha256": "879b6d9a4d79453d1ed5af816605fb572304be05c4a0134db20753b57c44f396"
+    },
+    {
+      "locale": "en",
+      "geography": "bc-2023",
+      "code": "262",
+      "state": "provincial riding, unknown share admitted under 1 percent",
+      "bytes": 85083,
+      "sha256": "4a5b6dd0e73262f2c50b6fec5ed0e86f2d808736645a5dc88a2d419207f34eb9"
+    },
+    {
+      "locale": "fr",
+      "geography": "bc-2023",
+      "code": "262",
+      "state": "provincial riding, unknown share admitted under 1 percent",
+      "bytes": 94274,
+      "sha256": "a7eb36d54cf5a5ccf8d1ac35f5912baf078610abfdbebbbca97a2975603b503d"
+    },
+    {
+      "locale": "en",
+      "geography": "bc-2023",
+      "code": "280",
+      "state": "provincial riding, partly mapped, a minimum and the share Unknown",
+      "bytes": 95933,
+      "sha256": "1c2caa400cc8608574685cac2fcaaabc2cbb4731d2f5740782dfd582d5c40eea"
+    },
+    {
+      "locale": "fr",
+      "geography": "bc-2023",
+      "code": "280",
+      "state": "provincial riding, partly mapped, a minimum and the share Unknown",
+      "bytes": 106360,
+      "sha256": "577d2655becc43e62e7d053b75e0ea30e109831229eef150567b44d804545dca"
+    },
+    {
+      "locale": "en",
+      "geography": "bc-2023",
+      "code": "318",
+      "state": "provincial riding, no forest mapped in 1984, Unknown",
+      "bytes": 81208,
+      "sha256": "e39ffff3f6940c8a370b05de24ebce905615e99e9ebd33400dec9f721a32d95a"
+    },
+    {
+      "locale": "fr",
+      "geography": "bc-2023",
+      "code": "318",
+      "state": "provincial riding, no forest mapped in 1984, Unknown",
+      "bytes": 88415,
+      "sha256": "7d8f4bfd0618d14ea2e02b92e71225d978b426852d50c99a7f3f646c726525ee"
+    },
+    {
+      "locale": "en",
+      "geography": "ab-2019",
+      "code": "1",
+      "state": "provincial riding, partly mapped, Unknown",
+      "bytes": 82471,
+      "sha256": "9be18b7d559fcca5531ea92906eb168ad5d756f7a6ca61cd01c5f6cad9a0c953"
+    },
+    {
+      "locale": "fr",
+      "geography": "ab-2019",
+      "code": "1",
+      "state": "provincial riding, partly mapped, Unknown",
+      "bytes": 90745,
+      "sha256": "7572feac92e6ce06d346174ff515951ae7cf7a7a7dcf6472631e3558118974d4"
+    },
+    {
+      "locale": "en",
+      "geography": "er-2021",
+      "code": "2465",
+      "state": "economic region, fully mapped",
+      "bytes": 79867,
+      "sha256": "15d89eb4eae4110dd01932df074e5855b17ba6f7d3f0acbb9a427c37ff7fc194"
+    },
+    {
+      "locale": "fr",
+      "geography": "er-2021",
+      "code": "2465",
+      "state": "economic region, fully mapped",
+      "bytes": 85687,
+      "sha256": "2f7f0fe830596dc5d1f4f0edab3fc8ec16b50a2031186cd6d4b2a68905ede22e"
+    },
+    {
+      "locale": "en",
+      "geography": "er-2021",
+      "code": "2410",
+      "state": "economic region, unknown share admitted under 1 percent",
+      "bytes": 85412,
+      "sha256": "16f49f634cf7accf4a7289740b61e4e53ac9b2cb157b84559fe9bdd46b6425a9"
+    },
+    {
+      "locale": "fr",
+      "geography": "er-2021",
+      "code": "2410",
+      "state": "economic region, unknown share admitted under 1 percent",
+      "bytes": 93577,
+      "sha256": "ab21f85435009bd4a3ce3460ced754e6d9f49d2530534b390f30659228622337"
+    },
+    {
+      "locale": "en",
+      "geography": "er-2021",
+      "code": "2415",
+      "state": "economic region, partly mapped, a minimum and the share Unknown",
+      "bytes": 93376,
+      "sha256": "78de74a4a0c36e7f66e322625779222ff092550316373628efa9a1b6958626c7"
+    },
+    {
+      "locale": "fr",
+      "geography": "er-2021",
+      "code": "2415",
+      "state": "economic region, partly mapped, a minimum and the share Unknown",
+      "bytes": 103221,
+      "sha256": "1acb15bc27b4241fea0688b2e82ee9805f991a3d1103537f76201c379b3644f5"
+    },
+    {
+      "locale": "en",
+      "geography": "er-2021",
+      "code": "2440",
+      "state": "economic region, partly mapped, Unknown",
+      "bytes": 79267,
+      "sha256": "96c6283bc33e85010601e16cf702306b8e0b034f722af95285829ac48674cc20"
+    },
+    {
+      "locale": "fr",
+      "geography": "er-2021",
+      "code": "2440",
+      "state": "economic region, partly mapped, Unknown",
+      "bytes": 86621,
+      "sha256": "47069ab13b5c2137b4c1082d42e838d4146125bc503426243dba6a6407d515b8"
+    }
+  ],
+  "nextVersion": "16.4.3",
+  "fonts": {
+    "node_modules/@bcgov/bc-sans/fonts/BCSans-Regular.woff": "fe8f6adad04aa444c4446255eec2ad20ea17f3b06dd56bd10367827187d477d3",
+    "node_modules/@bcgov/bc-sans/fonts/BCSans-Bold.woff": "c895f7047b012ed12a2b224600d95de226f294da332c411334c48cce3e53f802"
+  }
+}

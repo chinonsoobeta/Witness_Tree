@@ -262,6 +262,56 @@ template moved to `/en/components/example-places/<id>` and
 `/fr/composants/exemples-lieux/<id>` and stays noindex. These pages are not
 expert reviewed, not a formal release and not production eligible; the French
 strings are drafts awaiting bilingual review.
+### Place share cards
+
+On 2026-10-29 every place page (feature plan item 1, plan section 9.3) gained a
+1200 by 630 PNG share card, rendered by `lib/share/receipt.tsx` with next/og
+(no new dependency) in BC Sans from the package's WOFF files. The card carries
+the product name, the place's name, type and province, the 1984 to 2022
+hectares lost at least once or the page's Unknown statement with its reason
+(never 0 or blank), the share or its Unknown reason, a minimum note where the
+figure is one, the coverage grade, the unmapped share, the years, the boundary
+edition, the data version, the evidence class and the VLCE2 Open Government
+Licence – Canada line with the preview caveat. Every word comes from
+`lib/place-pages/summary.ts`, which the page now uses too. Its colours mirror
+the light palette, and `tests/share-receipt.test.tsx` fails if they drift.
+
+The card is the route's `opengraph-image`, at `<place path>/opengraph-image`
+in both languages, so each page's `og:image` is its own card. The X card names
+the same address rather than a `twitter-image` copy, which would have doubled
+the generated images for identical bytes. The route declares its own
+`generateStaticParams` (a route handler does not inherit the page's), so all
+6,092 cards (3,046 places in two languages) are generated at build time into
+`.next/server/app`, about 83 KB each, 505.5 MB in all. Unknown addresses
+return 404. The alt text is one sentence per language describing the card,
+because Next reads it once per route. Each page also has a "Download this
+card" link and a copy-the-citation button (`components/places/CopyCitation.tsx`,
+the only new client code).
+
+Measured on the owner's Mac with a clean `.next`: `npm run build` went from
+22.2 s and 1.04 GB of output (6,247 static items) to 52.9 s and 1.62 GB
+(12,339 items), with peak memory unchanged at about 1.4 GB. A build that also
+emitted a `twitter-image` per page took 83.4 s and 2.17 GB, so that variant
+was dropped. The shared JavaScript gate went from 130,238 to 135,846 gzip
+bytes (limit 139,264): the place page now has its own chunk of header client
+code plus the button, 188 bytes more than the chunk it shared before, and the
+gate counts that chunk whole. Whether 505 MB of prerendered images suits the
+Vercel deployment, or the cards should instead be generated on request and
+cached, is the owner's call; the switch is to drop `generateStaticParams` and
+`dynamicParams = false` from the two `opengraph-image.tsx` files.
+
+`npm run check:share-images` (in CI) renders 36 sample cards (18 places
+covering each kind of area and coverage state, in both languages) and compares
+their SHA-256 with `data/share-image-sample-checksums.json`. The record also
+binds the BC Sans files and the Next.js version, because the bytes depend on
+both. It renders every character any of the 6,092 cards can print, in both
+weights, with the network refused, so a glyph missing from BC Sans fails the
+check instead of making the build fetch a fallback font. Installing `sharp`
+would make next/og use it instead of resvg and change every digest; review the
+cards and rerun with `--write` after any such change or a Next.js upgrade. The
+French strings on the card, in its alt text and on the page controls are
+drafts awaiting bilingual review. The cards are not expert reviewed, not a
+formal release and not production eligible.
 ### BC timber processing facilities
 
 On 2026-10-28 the owner amended plan sections 1.3 and 14.2 to allow British

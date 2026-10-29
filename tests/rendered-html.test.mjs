@@ -344,6 +344,36 @@ test("renders a real community page in each language from its checked-in record"
   assert.match(french, /href="\/fr\/lieux\/1984-2022-v1\/er-2021\/\d{4}"/);
 });
 
+test("a place page's social image and download are its own share card, a 1200 by 630 PNG", async () => {
+  const pages = [
+    { pathname: "/en/places/1984-2022-v1/csd-2021/5924034", alt: /Share card for this place/ },
+    { pathname: "/fr/lieux/1984-2022-v1/csd-2021/5924034", alt: /Carte de partage de ce lieu/ },
+  ];
+  for (const { pathname, alt } of pages) {
+    const html = await (await render(pathname)).text();
+    const card = `${pathname}/opengraph-image`;
+    // Every regular-expression metacharacter, so the path reads literally.
+    const escaped = card.replace(/[.*+?^${}()|[\]\\/-]/g, "\\$&");
+    // Next appends a content hash to the generated image's address.
+    assert.match(html, new RegExp(`<meta property="og:image" content="https://www\\.witnesstree\\.ca${escaped}(\\?[0-9a-z]+)?"`), `${pathname} og:image`);
+    assert.match(html, /<meta property="og:image:width" content="1200"/);
+    assert.match(html, /<meta property="og:image:height" content="630"/);
+    assert.match(html.match(/<meta property="og:image:alt" content="([^"]*)"/)?.[1] ?? "", alt);
+    assert.match(html, /<meta name="twitter:card" content="summary_large_image"/);
+    assert.match(html, new RegExp(`<meta name="twitter:image" content="https://www\\.witnesstree\\.ca${escaped}"`), `${pathname} twitter:image`);
+    assert.match(html, new RegExp(`<a href="${escaped}" download="1984-2022-v1-csd-2021-5924034-(en|fr)\\.png"`), `${pathname} download link`);
+    assert.match(html, /<span role="status" class="place-share-status"><\/span>/);
+
+    const response = await fetch(`${origin}${card}`);
+    assert.equal(response.status, 200, card);
+    assert.equal(response.headers.get("content-type"), "image/png");
+    const bytes = Buffer.from(await response.arrayBuffer());
+    assert.equal(bytes.subarray(1, 4).toString("latin1"), "PNG");
+    assert.deepEqual([bytes.readUInt32BE(16), bytes.readUInt32BE(20)], [1200, 630]);
+  }
+  assert.equal((await fetch(`${origin}/en/places/1984-2022-v1/csd-2021/0000000/opengraph-image`)).status, 404);
+});
+
 test("renders localized search results and the Explore table without browser JavaScript, including from an old List address", async () => {
   const [englishSearch, frenchSearch, englishExplore, frenchExplore, englishFixtures, frenchFixtures] = await Promise.all([
     render("/en/search?q=British%20Columbia").then((response) => response.text()),
