@@ -6171,9 +6171,10 @@ dd > a:only-child {
   min-width: 600px;
 }
 @media print {
+  /* The paper itself is the ground: no page background is printed. */
   :root:has(.riding-sheet),
   :root:has(.riding-sheet) body {
-    background: #fff;
+    background: transparent;
   }
   /* The paper grain is fixed to the window, so it would print as a grey box. */
   :root:has(.riding-sheet) body::after {
@@ -6187,7 +6188,7 @@ dd > a:only-child {
     display: none;
   }
   .riding-sheet-page {
-    --ground: #fff;
+    background: transparent;
     max-width: none;
     padding: 0;
     border: 0;
