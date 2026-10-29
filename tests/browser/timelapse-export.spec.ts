@@ -34,6 +34,19 @@ async function pinRiding(page: Page) {
   await expect(open).toBeVisible();
   await open.click();
   await expect(page.getByRole("heading", { name: "Download the years as an animation" })).toBeFocused();
+  // Keyboard order: the years, the chosen format, then the actions.
+  const panel = page.locator(".explore-timelapse");
+  await page.keyboard.press("Tab");
+  await expect(panel.getByLabel("From")).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(panel.getByLabel("To", { exact: true })).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(panel.getByRole("radio", { name: /^Animated PNG/ })).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(panel.getByRole("button", { name: "Make the file" })).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(panel.getByRole("button", { name: "Close" })).toBeFocused();
+  await expect(panel.locator(".explore-timelapse-status")).toHaveAttribute("role", "status");
   await page.locator('select[name="timelapse-from"]').selectOption("2020");
   await page.locator('select[name="timelapse-to"]').selectOption("2022");
 }

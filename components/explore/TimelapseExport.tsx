@@ -440,9 +440,9 @@ export function TimelapseExport({ locale, getMap, boundary, cause, hooks, onClos
       <h3 id="explore-timelapse-heading" ref={headingRef} tabIndex={-1}>{words.heading}</h3>
       <p>{words.intro(boundary.name, formatYearRange(yearRange(fromYear, toYear), locale, "from"))}</p>
       <div className="explore-timelapse-years">
-        <label>
+        <label htmlFor="explore-timelapse-from">
           {words.from}
-          <select name="timelapse-from" value={fromYear} disabled={busy} onChange={(event) => {
+          <select id="explore-timelapse-from" name="timelapse-from" value={fromYear} disabled={busy} onChange={(event) => {
             const value = Number(event.target.value);
             setFromYear(value);
             if (toYear <= value) setToYear(value + 1);
@@ -450,9 +450,9 @@ export function TimelapseExport({ locale, getMap, boundary, cause, hooks, onClos
             {years(FIRST_START, LAST_END - 1).map((year) => <option key={year} value={year}>{year}</option>)}
           </select>
         </label>
-        <label>
+        <label htmlFor="explore-timelapse-to">
           {words.to}
-          <select name="timelapse-to" value={toYear} disabled={busy} onChange={(event) => {
+          <select id="explore-timelapse-to" name="timelapse-to" value={toYear} disabled={busy} onChange={(event) => {
             const value = Number(event.target.value);
             setToYear(value);
             if (fromYear >= value) setFromYear(value - 1);
@@ -463,23 +463,29 @@ export function TimelapseExport({ locale, getMap, boundary, cause, hooks, onClos
       </div>
       <fieldset className="explore-timelapse-formats" disabled={busy}>
         <legend>{words.format}</legend>
-        {formats.map((option) => (
-          <label key={option}>
-            <input type="radio" name="timelapse-format" value={option} checked={format === option} onChange={() => setFormat(option)} />
+        {formats.map((option) => {
+          const optionId = `explore-timelapse-format-${option}`;
+          return (
+          <label key={option} htmlFor={optionId}>
+            <input id={optionId} type="radio" name="timelapse-format" value={option} checked={format === option} onChange={() => setFormat(option)} />
             <span>{`${words[option]} (${words.about(formatBytes(expectedBytes(option, frameCount, width, height, stripHeight), locale))})`}</span>
           </label>
-        ))}
+          );
+        })}
       </fieldset>
       <p className="explore-timelapse-note">{words.frames(frameCount, width, height + stripHeight)}</p>
       <div className="explore-timelapse-actions">
-        {busy ? (
-          <button type="button" className="btn btn--outline" onClick={() => abortRef.current?.abort()}>{words.cancel}</button>
-        ) : (
-          <button type="button" className="btn btn--primary" onClick={() => void run()}>{words.make}</button>
-        )}
+        {/* One button that changes in place, so keyboard focus stays on it as an export starts and ends. */}
+        <button
+          type="button"
+          className={busy ? "btn btn--outline" : "btn btn--primary"}
+          onClick={() => (busy ? abortRef.current?.abort() : void run())}
+        >
+          {busy ? words.cancel : words.make}
+        </button>
         <button type="button" className="btn btn--outline" onClick={onClose}>{words.close}</button>
       </div>
-      {busy && phase.kind === "drawing" ? <progress max={phase.total} value={phase.index - 1} /> : null}
+      {busy && phase.kind === "drawing" ? <progress max={phase.total} value={phase.index - 1} aria-label={status} /> : null}
       <p className="explore-timelapse-status" role="status" aria-live="polite">
         {status}
         {busy ? ` ${words.working}` : ""}
