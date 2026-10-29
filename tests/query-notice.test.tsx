@@ -176,7 +176,8 @@ test("an Explore view or layer notice does not claim the years changed", () => {
 test("a value in the notice is escaped and bounded", () => {
   const html = notice(explore("en", { year: "<script>alert(1)</script>" }));
   assert.ok(html);
-  assert.doesNotMatch(html, /<script>/);
+  // Plain string tests rather than a tag pattern (CodeQL js/bad-tag-filter).
+  assert.ok(!html.toLowerCase().includes("<script"), "the value was not escaped");
   assert.match(html, /“&lt;script&gt;alert\(1\)…”/);
 });
 
