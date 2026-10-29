@@ -2961,6 +2961,56 @@ h4 {
   gap: 8px;
   padding: 8px 12px 0;
 }
+/* The circle: a place field, its centre as two numbers, and three radii. */
+.shape-finder {
+  margin-bottom: 12px;
+}
+.shape-finder-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.shape-finder-row input {
+  flex: 1 1 16rem;
+  min-width: 0;
+}
+.shape-finder-results {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+.shape-finder-results .btn {
+  text-align: start;
+}
+.shape-measure fieldset.shape-radius {
+  margin: 12px 0 0;
+}
+.shape-districts {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 4px 24px;
+  margin: 0 0 8px;
+}
+.shape-districts dt {
+  font-weight: 700;
+  margin-top: 8px;
+}
+.shape-districts dd {
+  margin: 0;
+}
+@media (min-width: 640px) {
+  .shape-districts {
+    grid-template-columns: minmax(0, 18ch) minmax(0, 1fr);
+  }
+  .shape-districts dt {
+    margin-top: 0;
+  }
+  .shape-districts dd + dd {
+    grid-column: 2;
+  }
+}
 @media (min-width: 640px) {
   .shape-readout {
     grid-template-columns: minmax(0, 18ch) minmax(0, 1fr);
@@ -5518,6 +5568,10 @@ dd > a:only-child {
   margin: 0;
   font-size: var(--text-small);
   color: var(--ink-2);
+}
+.home-search-nearby {
+  margin: 8px 0 0;
+  font-weight: 700;
 }
 .search-page-field { margin-bottom: 32px; }
 @media (max-width: 560px) {

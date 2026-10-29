@@ -17,6 +17,7 @@ import {
   type Corner,
   type Edges,
 } from "@/lib/shapes/draw";
+import { roundCentre } from "@/lib/shapes/circle";
 
 type MapState = "loading" | "ready" | "unavailable";
 
@@ -43,9 +44,13 @@ const copy = {
     mapTitle: "Map",
     caption:
       "Optional: click the map to place corners, or type them in the fields above.",
+    captionCircle:
+      "Optional: click the map to set the centre, or find a place or type its latitude and longitude above.",
     hintPolygon: "Click the map to add a corner.",
     hintRectangleStart: "Click one corner of the rectangle.",
     hintRectangleFinish: "Click the opposite corner.",
+    hintCircle: "Click the map to set the centre of the circle.",
+    centreSet: (latitude: string, longitude: string) => `Centre placed at ${latitude}, ${longitude}.`,
     undo: "Remove the last corner",
     reset: "Start over",
     added: (index: number, latitude: string, longitude: string) =>
@@ -60,9 +65,14 @@ const copy = {
     mapTitle: "Carte",
     caption:
       "Facultatif\u202F: cliquez sur la carte pour placer des coins, ou saisissez-les dans les champs ci-dessus.",
+    captionCircle:
+      "Facultatif\u202F: cliquez sur la carte pour placer le centre, ou trouvez un lieu ou saisissez sa latitude et sa longitude ci-dessus.",
     hintPolygon: "Cliquez sur la carte pour ajouter un coin.",
     hintRectangleStart: "Cliquez sur un coin du rectangle.",
     hintRectangleFinish: "Cliquez sur le coin opposé.",
+    hintCircle: "Cliquez sur la carte pour placer le centre du cercle.",
+    centreSet: (latitude: string, longitude: string) =>
+      `Centre placé à la latitude ${latitude.replace(".", ",")} et à la longitude ${longitude.replace(".", ",")}.`,
     undo: "Retirer le dernier coin",
     reset: "Recommencer",
     added: (index: number, latitude: string, longitude: string) =>
@@ -136,9 +146,11 @@ function drawStyle(): StyleSpecification {
 }
 
 // The drawn ring and its corners are one feature collection so a single source
-// update moves both together and they can never disagree about the shape.
-function drawnFeatures(corners: readonly Corner[]) {
-  const points = corners.map((corner) => ({
+// update moves both together and they can never disagree about the shape. A
+// circle marks only its centre: its 64 vertices are geometry, not corners a
+// reader placed.
+function drawnFeatures(corners: readonly Corner[], markers: readonly Corner[] = corners) {
+  const points = markers.map((corner) => ({
     type: "Feature" as const,
     properties: {},
     geometry: { type: "Point" as const, coordinates: [corner.longitude, corner.latitude] },
@@ -166,13 +178,18 @@ export function ShapeDrawMap({
   maxCorners,
   onPolygon,
   onRectangle,
+  centre = null,
+  onCentre,
 }: {
   locale: Locale;
-  kind: "rectangle" | "polygon";
+  kind: "rectangle" | "polygon" | "circle";
   corners: readonly Corner[];
   maxCorners: number;
   onPolygon: (corners: Corner[]) => void;
   onRectangle: (edges: Edges) => void;
+  /** The circle's centre, drawn as its one marker. */
+  centre?: Corner | null;
+  onCentre?: (centre: Corner | null) => void;
 }) {
   const words = copy[locale];
   const container = useRef<HTMLDivElement | null>(null);
@@ -187,9 +204,18 @@ export function ShapeDrawMap({
   // second corner of a rectangle would land as another first corner.
   const cornersRef = useRef<readonly Corner[]>(corners);
   const anchorRef = useRef<Corner | null>(null);
+  // The circle the map last framed, so typing in a field does not move the
+  // view on every render, only when the circle itself changes.
+  const framedRef = useRef("");
   const click = useRef<(corner: Corner) => void>(() => {});
 
   const handleClick = (corner: Corner) => {
+    if (kind === "circle") {
+      // Announced as the fields will show it: rounded as the circle's link rounds it.
+      onCentre?.(corner);
+      setAnnouncement(words.centreSet(roundCentre(corner.latitude).toString(), roundCentre(corner.longitude).toString()));
+      return;
+    }
     if (kind === "polygon") {
       const added = appendCorner(cornersRef.current, corner, maxCorners);
       if (!added) return;
@@ -280,12 +306,34 @@ export function ShapeDrawMap({
     if (!instance || state !== "ready") return;
     const source = instance.getSource<GeoJSONSource>(DRAWN_SOURCE);
     if (!source) return;
+    if (kind === "circle") {
+      source.setData(drawnFeatures(corners, centre ? [centre] : []));
+      const framed = corners.length > 0 ? `${corners[0].latitude},${corners[0].longitude},${corners.length}` : "";
+      if (framed && framed !== framedRef.current) {
+        let [west, south, east, north] = [Infinity, Infinity, -Infinity, -Infinity];
+        for (const corner of corners) {
+          west = Math.min(west, corner.longitude);
+          east = Math.max(east, corner.longitude);
+          south = Math.min(south, corner.latitude);
+          north = Math.max(north, corner.latitude);
+        }
+        instance.fitBounds([[west, south], [east, north]], { padding: 24, duration: 0 });
+      }
+      framedRef.current = framed;
+      return;
+    }
     const shown = kind === "rectangle" && anchor && corners.length === 0 ? [anchor] : corners;
     source.setData(drawnFeatures(shown));
-  }, [corners, anchor, kind, state]);
+  }, [corners, anchor, kind, state, centre]);
 
   const hint =
-    kind === "polygon" ? words.hintPolygon : anchor ? words.hintRectangleFinish : words.hintRectangleStart;
+    kind === "circle"
+      ? words.hintCircle
+      : kind === "polygon"
+        ? words.hintPolygon
+        : anchor
+          ? words.hintRectangleFinish
+          : words.hintRectangleStart;
 
   return (
     <figure className="shape-draw" role="group" aria-label={words.label}>
@@ -316,6 +364,7 @@ export function ShapeDrawMap({
           onClick={() => {
             anchorRef.current = null;
             setAnchor(null);
+            if (kind === "circle") onCentre?.(null);
             if (kind === "polygon") {
               cornersRef.current = [];
               onPolygon([]);
@@ -326,7 +375,7 @@ export function ShapeDrawMap({
           {words.reset}
         </button>
       </div>
-      <figcaption className="shape-draw-caption">{words.caption}</figcaption>
+      <figcaption className="shape-draw-caption">{kind === "circle" ? words.captionCircle : words.caption}</figcaption>
     </figure>
   );
 }
