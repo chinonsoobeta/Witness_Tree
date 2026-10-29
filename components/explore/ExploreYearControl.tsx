@@ -145,6 +145,7 @@ export function ExploreYearControl({
   onYearChange,
   onIntervalChange,
   wholeRecord = false,
+  correctAddress = false,
 }: {
   locale: Locale;
   state: ExploreQueryState;
@@ -156,9 +157,23 @@ export function ExploreYearControl({
    * own years stay in the URL for the other views.
    */
   wholeRecord?: boolean;
+  /**
+   * The route ignored part of its address and says so on the page. Once, on
+   * arrival, the address is replaced with the state actually shown, so a copied
+   * link names what the reader saw rather than the values that were ignored.
+   */
+  correctAddress?: boolean;
 }) {
   const text = TEXT[locale];
   const pathname = usePathname();
+
+  const arrivalHref = `${pathname}${exploreHref(state)}`;
+  const corrected = useRef(false);
+  useEffect(() => {
+    if (!correctAddress || corrected.current) return;
+    corrected.current = true;
+    writeHistory("replace", arrivalHref);
+  }, [correctAddress, arrivalHref]);
 
   const isPlaying = useSyncExternalStore(subscribePlaying, readPlaying, notPlaying);
   const ready = useSyncExternalStore(neverChanges, alwaysReady, neverReady);

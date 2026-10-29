@@ -294,6 +294,35 @@ test("renders localized search results and the Explore table without browser Jav
   assert.match(frenchFixtures, /Attribution de la source/);
 });
 
+// Audit 2026-10-28, B1 and B11: a link with years the page cannot show still
+// answers 200, opens at the default span, and says so in the served HTML.
+test("Explore and the chart builder name the values they ignore, in both languages", async () => {
+  const [englishExplore, frenchExplore, inverted, valid, englishChart, frenchChart, validChart] = await Promise.all([
+    render("/en/explore?year=abc"),
+    render("/fr/explorer?year=1900"),
+    render("/en/explore?from=2010&year=2002"),
+    render("/en/explore?from=1990&year=1998"),
+    render("/en/data/harvest-and-fire?from=2019&to=2010"),
+    render("/fr/donnees/recolte-et-incendies?to=2040&step=7"),
+    render("/en/data/harvest-and-fire?from=2000&to=2010"),
+  ]);
+  for (const response of [englishExplore, frenchExplore, inverted, valid, englishChart, frenchChart, validChart]) {
+    assert.equal(response.status, 200);
+  }
+  const [en, fr, backwards, ok, chartEn, chartFr, chartOk] = await Promise.all(
+    [englishExplore, frenchExplore, inverted, valid, englishChart, frenchChart, validChart].map((response) => response.text()),
+  );
+  assert.match(en, /class="notice query-notice" role="note">The last year in this link, “abc”, is not a four-digit year\. The page shows the default years, 2021–2022, instead\./);
+  assert.match(fr, /La dernière année de ce lien, 1900, ne peut pas être utilisée\u202F: une dernière année doit se situer entre 1985 et 2022\. La page affiche donc les années par défaut, 2021–2022\./);
+  assert.match(backwards, /The first year in this link, 2010, is not before its last year, 2002\./);
+  assert.doesNotMatch(ok, /query-notice/);
+  assert.match(chartEn, /The first year in this link, 2019, comes after its last year, 2010\. The chart shows the default years, 1985–2022, instead\./);
+  assert.match(chartFr, /La dernière année de ce lien, 2040, ne peut pas être utilisée/);
+  assert.match(chartFr, /«\u00A07\u00A0», dans ce lien, n’est pas un regroupement offert par ce graphique/);
+  assert.match(chartFr, /L’adresse dans votre navigateur montre toujours le lien d’origine/);
+  assert.doesNotMatch(chartOk, /query-notice/);
+});
+
 // The synthetic uptime probe decides a route is healthy when the response body contains a
 // marker string recorded in data/observability-deployment.json. Nothing tied that string to
 // the page it quotes, so a copy edit turned the probe red six hours later against a site that

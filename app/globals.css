@@ -3078,6 +3078,14 @@ h4 {
   margin-top: 0;
   color: var(--ink);
 }
+/* A link asked for something the page could not show: said once, above the
+   controls it concerns. A pasted value can be one long word, so it wraps. */
+.query-notice {
+  margin: 0 0 12px;
+  padding: 12px 16px;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
 .wildfire-emergency a {
   display: inline-flex;
   align-items: center;
