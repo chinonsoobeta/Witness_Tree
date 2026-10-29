@@ -463,7 +463,7 @@ test("map failures retain diagnostics, retry, and a reachable patch zoom", async
    * after the frame closes, so it cannot be drawn over anything.
    */
   assert.match(map, /className="explore-map-scale"[\s\S]*className="explore-map-control-cluster"/);
-  assert.match(map, /const layerPanel = state === "ready" \? \(/);
+  assert.match(map, /const layerPanel = state === "ready" \|\| state === "loading" \? \(/);
   assert.match(map, /className="explore-map-stack"/);
   // The time-lapse export panel, when open, follows the layer panel in the
   // same normal flow, outside the frame.

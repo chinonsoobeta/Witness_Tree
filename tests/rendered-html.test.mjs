@@ -202,6 +202,19 @@ test("emits application security headers with the map delivery allowances", asyn
   }
 });
 
+test("Explore sends its map legend and the tile connection in the first HTML", async () => {
+  for (const [pathname, heading] of [["/en/explore", "Detected forest loss, 2021–2022"], ["/fr/explorer", "Perte forestière détectée, 2021–2022"]]) {
+    const html = await (await render(pathname)).text();
+    const head = /<head>([\s\S]*?)<\/head>/.exec(html)?.[1] ?? "";
+    // Opened while the page loads, so the first archive range does not wait for a handshake.
+    for (const origin of browserFetchedOrigins()) assert.match(head, new RegExp(`<link rel="preconnect" href="${origin.replaceAll(".", "\\.")}" crossorigin="anonymous"/>`));
+    // The key is server-rendered beside the loading map, not added when the tiles arrive.
+    assert.match(html, /<div class="explore-map"[^>]*data-state="loading"/);
+    assert.match(html, /class="explore-map-layer-panel"/);
+    assert.ok(html.includes(heading), `${pathname} omits its legend heading`);
+  }
+});
+
 test("renders both localized public records with neutral non-claims", async () => {
   const [english, french] = await Promise.all([
     render("/en").then((response) => response.text()),
