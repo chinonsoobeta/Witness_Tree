@@ -78,6 +78,11 @@
       "reason": "This owner deferral decision is reviewed in the local gate set."
     },
     {
+      "check": "scripts/check-bc-timber-facilities-access.mjs",
+      "category": "suite-covered",
+      "reason": "tests/bc-timber-facilities-access.test.mjs imports this checker and runs in npm run test:suite."
+    },
+    {
       "check": "scripts/check-bc-vri-access.mjs",
       "category": "owner-invoked",
       "reason": "This source-access status gate is reviewed in the owner-run local gate set."

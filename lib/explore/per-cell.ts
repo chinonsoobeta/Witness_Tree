@@ -129,6 +129,7 @@ export function fourProvinceAnnualForYear(year: number): PerCellAnnualInterval |
 }
 
 type PerCellSpanRelease = Readonly<{
+  productId: string;
   schemaVersion: string;
   releaseId: string;
   url: string;

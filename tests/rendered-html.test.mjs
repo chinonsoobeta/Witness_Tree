@@ -215,6 +215,37 @@ test("Explore sends its map legend and the tile connection in the first HTML", a
   }
 });
 
+/*
+ * The 2026-10-28 adversarial audit's Explore items, as the server sends them:
+ * the rankings link names the span it ranks (B3), Play names where it starts
+ * and carries no pressed state beside a changing name (B4, B6), the map's
+ * status sits in the notice box that turns into the still-map notice (UX 3),
+ * and the one-line readout precedes the map while the controls still precede
+ * the map in the document (UX 1).
+ */
+test("Explore serves its span-honest rankings link, Play name, map notice and phone readout", async () => {
+  const cases = [
+    ["/en/explore", "Ridings with the largest share of forest lost over the whole record, 1984–2022, not the years you chose (2021–2022)", 'aria-label="Play year by year from 1984">Play<', "2021–2022 · 1,352,468.43 ha detected as lost, a minimum"],
+    ["/fr/explorer", "Circonscriptions ayant perdu la plus grande part de leur forêt sur l’ensemble du registre, 1984–2022, et non pendant les années choisies (2021–2022)", 'aria-label="Lecture année par année depuis 1984">Lecture<', "2021–2022 · "],
+    ["/en/explore?from=1990&year=2000", "not the years you chose (1990–2000)", 'aria-label="Play year by year from 1990">Play<', "1990–2000 · "],
+    ["/en/explore?from=1984&year=2022", "Ridings with the largest share of forest lost, 1984–2022<", 'aria-label="Play year by year from 1984">Play<', "1984–2022 · "],
+  ];
+  for (const [pathname, ranking, play, readout] of cases) {
+    const html = (await (await render(pathname)).text()).replaceAll("&#x27;", "'");
+    assert.ok(html.includes(ranking), `${pathname}: rankings link`);
+    assert.ok(html.includes(play), `${pathname}: play name`);
+    assert.doesNotMatch(html, /class="year-play"[^>]*aria-pressed/);
+    assert.match(html, /<div class="explore-map-notice"><p id="explore-map-status"/);
+    const line = /<p class="explore-map-readout">([^<]*)<\/p>/.exec(html)?.[1] ?? "";
+    assert.ok(line.startsWith(readout), `${pathname}: readout ${line}`);
+    const toolbar = html.indexOf('class="explore-toolbar"');
+    const readoutAt = html.indexOf('class="explore-map-readout"');
+    const map = html.indexOf('<div class="explore-map"');
+    const reading = html.indexOf('class="explore-annual explore-reading"');
+    assert.ok(toolbar > 0 && toolbar < readoutAt && readoutAt < map && map < reading, `${pathname}: document order`);
+  }
+});
+
 test("renders both localized public records with neutral non-claims", async () => {
   const [english, french] = await Promise.all([
     render("/en").then((response) => response.text()),
@@ -359,6 +390,54 @@ test("renders localized search results and the Explore table without browser Jav
   assert.match(frenchFixtures, /Attribution de la source/);
 });
 
+test("Compare serves a federal riding beside a provincial one, and an unknown riding as an empty side with a notice", async () => {
+  const [mixed, unknown] = await Promise.all([
+    render("/en/compare?left=federal-59001&right=provincial-BC-258").then((response) => response.text()),
+    render("/fr/comparer?left=inexistante&right=provincial-QC-137").then((response) => response.text()),
+  ]);
+  assert.match(mixed, /<option value="federal-59001" selected="">/);
+  assert.match(mixed, /<option value="provincial-BC-258" selected="">Abbotsford-Mission<\/option>/);
+  assert.match(mixed, /Provincial riding · British Columbia/);
+  assert.match(mixed, /<h2 id="rankings-BC-heading">Provincial ridings in British Columbia<\/h2>/);
+  assert.match(mixed, /53 of British Columbia’s 93 provincial ridings are ranked\./);
+  assert.match(mixed, />Show all 280 federal ridings<\/a>/);
+  assert.match(unknown, /role="status"/);
+  assert.match(unknown, /Côté gauche\u202F: aucune circonscription ne porte l’identifiant «\u00A0inexistante\u00A0»\./);
+  assert.match(unknown, /<h2>Aucune circonscription choisie<\/h2>/);
+  assert.match(unknown, /<option value="provincial-QC-137" selected="">/);
+  assert.doesNotMatch(unknown, /<option value="federal-59001" selected/);
+  assert.match(unknown, /<h2 id="rankings-QC-heading">Circonscriptions provinciales du Québec<\/h2>/);
+});
+
+// Audit 2026-10-28, B1 and B11: a link with years the page cannot show still
+// answers 200, opens at the default span, and says so in the served HTML.
+test("Explore and the chart builder name the values they ignore, in both languages", async () => {
+  const [englishExplore, frenchExplore, inverted, valid, englishChart, frenchChart, validChart] = await Promise.all([
+    render("/en/explore?year=abc"),
+    render("/fr/explorer?year=1900"),
+    render("/en/explore?from=2010&year=2002"),
+    render("/en/explore?from=1990&year=1998"),
+    render("/en/data/harvest-and-fire?from=2019&to=2010"),
+    render("/fr/donnees/recolte-et-incendies?to=2040&step=7"),
+    render("/en/data/harvest-and-fire?from=2000&to=2010"),
+  ]);
+  for (const response of [englishExplore, frenchExplore, inverted, valid, englishChart, frenchChart, validChart]) {
+    assert.equal(response.status, 200);
+  }
+  const [en, fr, backwards, ok, chartEn, chartFr, chartOk] = await Promise.all(
+    [englishExplore, frenchExplore, inverted, valid, englishChart, frenchChart, validChart].map((response) => response.text()),
+  );
+  assert.match(en, /class="notice query-notice" role="note">The last year in this link, “abc”, is not a four-digit year\. The page shows the default years, 2021–2022, instead\./);
+  assert.match(fr, /La dernière année de ce lien, 1900, ne peut pas être utilisée\u202F: une dernière année doit se situer entre 1985 et 2022\. La page affiche donc les années par défaut, 2021–2022\./);
+  assert.match(backwards, /The first year in this link, 2010, is not before its last year, 2002\./);
+  assert.doesNotMatch(ok, /query-notice/);
+  assert.match(chartEn, /The first year in this link, 2019, comes after its last year, 2010\. The chart shows the default years, 1985–2022, instead\./);
+  assert.match(chartFr, /La dernière année de ce lien, 2040, ne peut pas être utilisée/);
+  assert.match(chartFr, /«\u00A07\u00A0», dans ce lien, n’est pas un regroupement offert par ce graphique/);
+  assert.match(chartFr, /L’adresse dans votre navigateur montre toujours le lien d’origine/);
+  assert.doesNotMatch(chartOk, /query-notice/);
+});
+
 // The synthetic uptime probe decides a route is healthy when the response body contains a
 // marker string recorded in data/observability-deployment.json. Nothing tied that string to
 // the page it quotes, so a copy edit turned the probe red six hours later against a site that
@@ -407,4 +486,29 @@ test("Vercel routes preserve the existing API handlers and unavailable services"
   });
   const html = await response.text();
   assert.match(html, /Area measurement is not available/);
+});
+
+// A near-miss address used to 404: the other language's slug, or capital letters.
+// The proxy now sends each one to its page, permanently and with its query, and
+// leaves a real page and a missing one alone. Browsers that ask for the legacy
+// icon path get the icon.
+test("near-miss addresses redirect to their page and the legacy icon path is served", async () => {
+  for (const [path, location] of [
+    ["/fr/explore", "/fr/explorer"],
+    ["/en/explorer", "/en/explore"],
+    ["/EN", "/en"],
+    ["/en/Explore", "/en/explore"],
+    ["/fr/explore?year=2010&from=1990", "/fr/explorer?year=2010&from=1990"],
+  ]) {
+    const response = await fetch(`${origin}${path}`, { redirect: "manual" });
+    assert.equal(response.status, 308, path);
+    const target = new URL(response.headers.get("location"), origin);
+    assert.equal(target.origin, origin, path);
+    assert.equal(`${target.pathname}${target.search}`, location, path);
+  }
+  assert.equal((await fetch(`${origin}/fr/explorer`, { redirect: "manual" })).status, 200);
+  assert.equal((await fetch(`${origin}/en/not-a-page`, { redirect: "manual" })).status, 404);
+  const icon = await fetch(`${origin}/favicon.ico`);
+  assert.equal(icon.status, 200);
+  assert.match(icon.headers.get("content-type"), /image\/(x-icon|vnd\.microsoft\.icon)/);
 });

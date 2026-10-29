@@ -115,3 +115,133 @@ export function adaptFederalRidingComparison(input: RawComparison): RealFederalR
   const defaultPair: readonly [RankedRiding, RankedRiding] = [ranked[0]!, ranked[1]!];
   return { context, rows, places: rows, comparisonRows, defaultPair };
 }
+
+/*
+ * Provincial ridings.
+ *
+ * Their figures come from the riding interval release that Explore reads, for
+ * the same span as the federal comparison, under the rule Explore applies to
+ * them: a riding with less than 1% of its forest unmapped is measured over its
+ * mapped forest and the unmapped share travels with it (owner decision,
+ * 2026-10-03). Ranking keeps the federal floor of 500 forested hectares.
+ *
+ * Each province is ranked on its own. A provincial riding is never ranked
+ * against another province's ridings, nor against federal ones.
+ *
+ * Compare ids: a federal riding stays `federal-<district number>`, so old links
+ * keep working, and a provincial riding is `provincial-<province>-<district
+ * id>` (for example `provincial-BC-258`): the search id with a level prefix.
+ * The two prefixes cannot collide.
+ */
+
+export const COVERED_PROVINCES = ["BC", "AB", "ON", "QC"] as const;
+export type CoveredProvince = (typeof COVERED_PROVINCES)[number];
+
+/** One value per covered province, built by `make`. */
+export function byCoveredProvince<T>(make: (province: CoveredProvince) => T): Record<CoveredProvince, T> {
+  return { BC: make("BC"), AB: make("AB"), ON: make("ON"), QC: make("QC") };
+}
+
+/**
+ * Which ridings a ranking ranks. Federal ridings rank among the covered
+ * federal ridings; a province's provincial ridings rank only among themselves.
+ */
+export type RankingScope =
+  | Readonly<{ level: "federal"; /** Every federal riding in Canada, to reconcile with the covered count. */ nationalTotal?: number }>
+  | Readonly<{ level: "provincial"; province: CoveredProvince }>;
+
+/** Province names, with the French form a sentence needs after "de". */
+export const COVERED_PROVINCE_NAMES: Readonly<Record<CoveredProvince, Readonly<{ en: string; fr: string; frOf: string }>>> = {
+  BC: { en: "British Columbia", fr: "Colombie-Britannique", frOf: "de la Colombie-Britannique" },
+  AB: { en: "Alberta", fr: "Alberta", frOf: "de l’Alberta" },
+  ON: { en: "Ontario", fr: "Ontario", frOf: "de l’Ontario" },
+  QC: { en: "Québec", fr: "Québec", frOf: "du Québec" },
+};
+
+export type ProvincialRidingSource = Readonly<{
+  /** The release's tile form, such as `BC-258`. */
+  boundaryId: string;
+  jurisdiction: string;
+  name: Readonly<{ en: string; fr: string }>;
+  coverage: "complete" | "partial-with-unknown" | "none-mapped";
+  observedLossPercent: number | null;
+  observedLossHectares: number | null;
+  admittedUnknownPercent?: number;
+  knownForestedHectares: number;
+}>;
+
+export type RealProvincialRidingComparison = Readonly<{
+  rows: readonly RankedRiding[];
+  rowsByProvince: Readonly<Record<CoveredProvince, readonly RankedRiding[]>>;
+  contexts: Readonly<Record<CoveredProvince, RankingContext>>;
+}>;
+
+/** The province of a provincial Compare id, or null for a federal id or anything else. */
+export function provincialRidingProvince(id: string): CoveredProvince | null {
+  const code = /^provincial-([A-Z]{2})-./.exec(id)?.[1];
+  return COVERED_PROVINCES.find((province) => province === code) ?? null;
+}
+
+export function adaptProvincialRidingComparison(input: Readonly<{
+  interval: Readonly<{ fromYear: number; toYear: number }>;
+  dataVersion: string;
+  /** The representation order each province's boundaries follow. */
+  editions: Readonly<Record<CoveredProvince, number>>;
+  rows: readonly ProvincialRidingSource[];
+}>): RealProvincialRidingComparison {
+  const { interval } = input;
+  const ids = new Set<string>();
+  const rows = input.rows.map((source): RankedRiding => {
+    const province = COVERED_PROVINCES.find((code) => code === source.jurisdiction);
+    if (!province || !source.boundaryId.startsWith(`${province}-`)) {
+      throw new Error(`Provincial riding ${source.boundaryId} names no covered province.`);
+    }
+    const id = `provincial-${source.boundaryId}`;
+    if (ids.has(id)) throw new Error(`Duplicate provincial riding ${source.boundaryId}.`);
+    ids.add(id);
+    if (!source.name.en.trim() || !source.name.fr.trim()) throw new Error(`Provincial riding ${source.boundaryId} has no name.`);
+    const complete = source.coverage === "complete";
+    if (complete !== (source.observedLossPercent !== null && source.observedLossHectares !== null)) {
+      throw new Error(`Provincial riding ${source.boundaryId} reports figures that disagree with its coverage.`);
+    }
+    if (!Number.isFinite(source.knownForestedHectares) || source.knownForestedHectares < 0) {
+      throw new Error(`Provincial riding ${source.boundaryId} has an invalid forest area.`);
+    }
+    return {
+      id,
+      name: source.name,
+      placeType: "provincial-riding",
+      detectedChangePercent: source.observedLossPercent,
+      detectedChangeHectares: source.observedLossHectares,
+      forestedHectares: source.knownForestedHectares,
+      unmatchedSharePercent: null,
+      coverageGrade: complete ? "national-baseline" : "not-applicable",
+      measurementCoverage: source.coverage,
+      ...(source.admittedUnknownPercent === undefined ? {} : { admittedUnknownPercent: source.admittedUnknownPercent }),
+      evidence: "satellite-observation",
+      sufficientCoverage: complete && source.knownForestedHectares >= MINIMUM_RANKED_FOREST_HECTARES,
+    };
+  });
+  const rowsByProvince = byCoveredProvince((province): readonly RankedRiding[] =>
+    rows.filter((row) => provincialRidingProvince(row.id) === province));
+  const contexts = byCoveredProvince((province): RankingContext => {
+    const name = COVERED_PROVINCE_NAMES[province];
+    const edition = input.editions[province];
+    const context: RankingContext = {
+      timeRange: `${interval.fromYear}–${interval.toYear}`,
+      boundaryEdition: `${province} ${edition}`,
+      dataVersion: input.dataVersion,
+      evidence: "satellite-observation",
+      denominatorDefinition: {
+        en: `Share of the mapped forest as it stood in ${interval.fromYear}.`,
+        fr: `Part de la forêt cartographiée telle qu’elle était en ${interval.fromYear}.`,
+      },
+      method: {
+        en: `Provincial ridings in ${name.en} with at least ${MINIMUM_RANKED_FOREST_HECTARES} hectares of forest, mapped in full or with less than 1% unmapped, are ranked by the share of forest lost, against the other provincial ridings of ${name.en} only. Where a small part is unmapped, the share is of the mapped forest. Boundaries: ${name.en}’s ${edition} representation order.`,
+        fr: `Les circonscriptions provinciales ${name.frOf} comptant au moins ${MINIMUM_RANKED_FOREST_HECTARES} hectares de forêt, entièrement cartographiées ou dont moins de 1\u00A0% n’est pas cartographié, sont classées selon la part de forêt perdue, uniquement par rapport aux autres circonscriptions provinciales ${name.frOf}. Lorsqu’une petite partie n’est pas cartographiée, la part porte sur la forêt cartographiée. Limites\u202F: décret de représentation de ${edition} ${name.frOf}.`,
+      },
+    };
+    return context;
+  });
+  return { rows, rowsByProvince, contexts };
+}

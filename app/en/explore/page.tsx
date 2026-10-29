@@ -3,13 +3,7 @@ import Link from "next/link";
 import { provincialCauseByInterval } from "@/lib/phase4/provincial-cause";
 import { ExploreView } from "@/components/explore";
 import { SiteShell } from "@/components/site";
-import {
-  exploreFixtures,
-  EXPLORE_MODES,
-  parseBoundaryOverlays,
-  parseExploreInterval,
-  parseExploreYear,
-} from "@/lib/explore";
+import { exploreFixtures, readExploreQuery } from "@/lib/explore";
 // Imported by path rather than through the barrel: this module carries every
 // span for every district and must never be pulled into a browser bundle.
 // The same holds for the economic-region table.
@@ -23,27 +17,13 @@ export const metadata: Metadata = routeMetadata("en", { en: "/en/explore", fr: "
 export default async function Page({
   searchParams,
 }: {
-  searchParams: Promise<{
-    mode?: string;
-    presentation?: string;
-    data?: string;
-    year?: string;
-    from?: string;
-    overlays?: string;
-    district?: string;
-  }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const query = await searchParams;
-  const mode = EXPLORE_MODES.includes(
-    query.mode as (typeof EXPLORE_MODES)[number],
-  )
-    ? (query.mode as (typeof EXPLORE_MODES)[number])
-    : "forest-change";
-  const year = parseExploreYear(query.year);
   // The span, not just its closing year. A URL that names only `year` still
   // means the annual interval ending there, which is what it has always meant.
-  const interval = parseExploreInterval(query.from, String(year));
-  const overlays = parseBoundaryOverlays(query.overlays);
+  // Anything the page cannot use is listed in `ignored` and shown to the reader.
+  const { mode, interval, overlays, ignored } = readExploreQuery(query);
   return (
     <SiteShell locale="en">
       <main id="main" className="page-wrap">
@@ -59,6 +39,7 @@ export default async function Page({
           year={interval.toYear}
           fromYear={interval.fromYear}
           overlays={overlays}
+          ignored={ignored}
           ridingMeasurements={[...ridingIntervalMeasurements(interval), ...regionIntervalMeasurements(interval)]}
           forestRegions={forestRegionFigures(interval)}
           provincialCause={provincialCauseByInterval()}

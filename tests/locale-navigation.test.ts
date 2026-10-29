@@ -16,7 +16,43 @@ function readdirRoutes(dir: URL, prefix = ""): string[] {
   return out;
 }
 // @ts-expect-error Node test runner needs extensions.
-import { isCurrentNavTarget, localeCounterpart, localeHref } from "../lib/locale-navigation.ts";
+import { canonicalLocaleRedirect, isCurrentNavTarget, localeCounterpart, localeHref } from "../lib/locale-navigation.ts";
+
+test("a near-miss address names the page it meant, and a right or unknown address names nothing", () => {
+  // The other language's slug, in the language the address asked for.
+  assert.equal(canonicalLocaleRedirect("/fr/explore"), "/fr/explorer");
+  assert.equal(canonicalLocaleRedirect("/en/explorer"), "/en/explore");
+  assert.equal(canonicalLocaleRedirect("/fr/explore/draw"), "/fr/explorer/dessiner");
+  assert.equal(canonicalLocaleRedirect("/en/donnees/recolte-et-incendies"), "/en/data/harvest-and-fire");
+  assert.equal(canonicalLocaleRedirect("/fr/places/bc-province"), "/fr/lieux/bc-province");
+  assert.equal(canonicalLocaleRedirect("/en/emplacement/location-bc-province"), "/en/location/location-bc-province");
+  // Letter case, including both near misses at once.
+  assert.equal(canonicalLocaleRedirect("/EN"), "/en");
+  assert.equal(canonicalLocaleRedirect("/Fr"), "/fr");
+  assert.equal(canonicalLocaleRedirect("/en/Explore"), "/en/explore");
+  assert.equal(canonicalLocaleRedirect("/EN/Explore/Draw"), "/en/explore/draw");
+  assert.equal(canonicalLocaleRedirect("/FR/Explore"), "/fr/explorer");
+  assert.equal(canonicalLocaleRedirect("/EN/places/bc-province"), "/en/places/bc-province");
+  // Right addresses, dynamic records whatever their id, and addresses that are not pages stay put.
+  for (const path of ["/en", "/fr", "/en/explore", "/fr/explorer", "/fr/corrections", "/en/places/Any-Id", "/fr/lieux/x",
+    "/", "/api/search", "/english", "/en/", "/en/nothing-here", "/fr/explore/dessiner", "/en//evil.example", "/en/fr", "/env"]) {
+    assert.equal(canonicalLocaleRedirect(path), null, path);
+  }
+});
+
+test("every page answers its upper-case and other-language near misses", () => {
+  for (const route of readdirRoutes(new URL("../app/", import.meta.url))) {
+    if (route.includes("[")) continue;
+    const locale = route.startsWith("/fr") ? "fr" : "en";
+    assert.equal(canonicalLocaleRedirect(route), null, route);
+    assert.equal(canonicalLocaleRedirect(route.toUpperCase()), route, route.toUpperCase());
+    if (route === `/${locale}`) continue;
+    // This page's slug from the other language, under this page's language: /en/a-propos for /en/about.
+    const borrowed = `/${locale}${localeCounterpart(route, locale).slice(3)}`;
+    // Corrections keeps one slug in both languages, so it has no other-language near miss.
+    if (borrowed !== route) assert.equal(canonicalLocaleRedirect(borrowed), route, borrowed);
+  }
+});
 
 test("maps static and dynamic routes to their locale counterpart", () => {
   assert.equal(localeCounterpart("/en/search", "en"), "/fr/recherche");

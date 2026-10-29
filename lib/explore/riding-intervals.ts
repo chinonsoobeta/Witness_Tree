@@ -149,3 +149,15 @@ export function ridingIntervalMeasurements(
     ...intervalSpanFigures(district, interval, unknownTolerancePercent),
   }));
 }
+
+/**
+ * Each provincial riding's mapped forest at the start of a span, in hectares,
+ * keyed like the measurements above (`BC-258`). Compare shows it as the
+ * denominator beside the span's figures.
+ */
+export function provincialRidingKnownForestHectares(interval: ExploreInterval): ReadonlyMap<string, number> {
+  const start = interval.fromYear - EXPLORE_INTERVAL_FIRST_YEAR;
+  return new Map(districts
+    .filter((district) => district.jurisdiction !== "CA")
+    .map((district) => [district.boundaryId, Math.round(district.knownForestCellsByStartYear[start]! * 9) / 100]));
+}

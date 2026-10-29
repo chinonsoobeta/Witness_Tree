@@ -8,17 +8,17 @@ Three findings overlap with work already delegated today and are marked as such.
 
 | # | Finding | Severity | Status |
 |---|---------|----------|--------|
-| B1 | Explore silently discards bad `year`/`from` and shows 2021–2022 with no message | Medium | Open |
-| B2 | Compare silently substitutes default places when `left`=`right` or an id is unknown | Medium | Open (picker delegated) |
-| B3 | Explore rankings heading says "1984–2022" beside figures that follow the chosen span | Medium | Open |
-| B4 | Play ignores the chosen first year, steps the span down to one year, and keeps advancing while the map is on its still-image fallback | Medium | Open |
-| B5 | Explore map still "Loading the map layers" 10 s after load; falls to the still map at ~20 s with WebGL available; one console 404 | High | Delegated (`worktree-agent-a353931948505c9bd`) |
-| B6 | Play/Pause button's accessible name appears not to change when it shows "Pause" | Low | Open (needs confirmation) |
-| B7 | Search with a whitespace-only query shows "No released place… matches this query" instead of the empty-query prompt | Low | Open |
-| B8 | Search "montreal" prints dozens of identical "Whole riding: Loss unknown; 100% of the forest is unknown" rows | Medium (UX) | Open |
-| B9 | Compare rankings carry a column that is Unknown in every row, and say "36 of 280 federal ridings" without explaining 280 vs 343 | Low | Open |
-| B10 | No cross-locale, case-insensitive or `/favicon.ico` handling: `/fr/explore`, `/en/explorer`, `/EN`, `/en/Explore`, `/favicon.ico` all 404 | Low | Open |
-| B11 | Harvest-and-fire chart builder silently ignores invalid parameters | Low | Open |
+| B1 | Explore silently discards bad `year`/`from` and shows 2021–2022 with no message | Medium | Fixed 2026-10-29 (wave 3) |
+| B2 | Compare silently substitutes default places when `left`=`right` or an id is unknown | Medium | Fixed 2026-10-29 (wave 3) |
+| B3 | Explore rankings heading says "1984–2022" beside figures that follow the chosen span | Medium | Fixed 2026-10-29 (wave 3) |
+| B4 | Play ignores the chosen first year, steps the span down to one year, and keeps advancing while the map is on its still-image fallback | Medium | Fixed 2026-10-29 (wave 3) |
+| B5 | Explore map still "Loading the map layers" 10 s after load; falls to the still map at ~20 s with WebGL available; one console 404 | High | Fixed 2026-10-29 (wave 2, first paint) |
+| B6 | Play/Pause button's accessible name appears not to change when it shows "Pause" | Low | Fixed 2026-10-29 (wave 3) |
+| B7 | Search with a whitespace-only query shows "No released place… matches this query" instead of the empty-query prompt | Low | Fixed 2026-10-29 (wave 3) |
+| B8 | Search "montreal" prints dozens of identical "Whole riding: Loss unknown; 100% of the forest is unknown" rows | Medium (UX) | Fixed 2026-10-29 (wave 3) |
+| B9 | Compare rankings carry a column that is Unknown in every row, and say "36 of 280 federal ridings" without explaining 280 vs 343 | Low | Fixed 2026-10-29 (wave 3) |
+| B10 | No cross-locale, case-insensitive or `/favicon.ico` handling: `/fr/explore`, `/en/explorer`, `/EN`, `/en/Explore`, `/favicon.ico` all 404 | Low | Fixed 2026-10-29 (wave 3) |
+| B11 | Harvest-and-fire chart builder silently ignores invalid parameters | Low | Fixed 2026-10-29 (wave 3) |
 
 What worked under hostile input: `q` is HTML-escaped; accent-insensitive search; nonsense queries give a proper Unknown state; the language switch keeps query parameters; hreflang alternates are correct; every CloudFront and GitHub download link returns 200; the French 404 page is French; every API route rejects wrong methods and missing parameters with 405/400; the theme radios work and persist (`localStorage` key `witness-tree-theme`); a skip link is the first focusable element; every `<img>` has `alt`; heading order on Explore is h1 → h2 → h3; the limit-bound APIs (shape measure: 250 vertices, 40 tiles, 60,000 blocks, 2,000,000 ha) refuse oversize input.
 
@@ -100,6 +100,19 @@ Same as B1 for `/en/data/harvest-and-fire`: invalid province or year values fall
 8. **Home empty submit.** Submitting "Open the record" with an empty field navigates to the search page that then asks for a place. Keep the reader on the home page: focus the field and show the hint inline. Do not add `required`, which blocks screen-reader users with a generic browser message.
 9. **"Four provinces" card on home.** "Both are minimums" is the most important sentence on the page and is the smallest text. Move it to the first line under the two figures.
 10. **About page.** The rewrite on `worktree-agent-a390b4324f86b67a1` (audited today, passes) now lists what the record answers with links, which addresses the earlier "how many trees are left" promise.
+
+## Resolution, 2026-10-29
+
+Every bug above, and UX items 1 and 3 to 9, was fixed on its own audited agent branch and integrated in two waves (wave 2: Explore first paint, B5; wave 3: everything else). Each branch was audited by the primary session before it was accepted, as the owner asked.
+
+- B1 and B11: Explore and the chart builder read their address strictly, keep serving 200, name the ignored value in a notice on the page, and Explore replaces the address once with the state actually shown (UX1 was also covered by the same Explore branch: map first on narrow screens, Boundaries and the limitations copy behind disclosures).
+- B2 and B9, with UX4 and UX6: Compare names an unknown or outside riding in a notice instead of substituting a default, drops the all-Unknown column, explains "N of 280", renders 20 ranking rows before "Show all", and now covers provincial ridings in the four provinces with one ranking table per level and province (ids such as `provincial-BC-258`). The shared JavaScript budget was raised from 128 to 136 KiB for this; the owner's words are recorded in `docs/PERFORMANCE.md`.
+- B3, B4 and B6, with UX3: the rankings heading follows the chosen span; Play keeps the chosen first year, waits for each year's layer, pauses on the still-map fallback with a Resume control, and the button's accessible name follows its visible text; the fallback is an inline notice with Retry in the same box.
+- B7, B8 and UX5: whitespace queries get the empty-query prompt, rows that are wholly Unknown are grouped under one heading when there are three or more, and each result carries its place type.
+- B10, with UX7, UX8 and UX9: cross-locale and case-insensitive paths redirect (308) to the canonical address, `/favicon.ico` is served, the full navigation shows from 760 px, an empty home search keeps the reader on the page with an inline hint, and "Both are minimums" leads the four-provinces card.
+- UX10 landed with the About rewrite in the previous integration.
+
+Still open: UX2 (dual-handle range input) is held until the owner decides on it, and `security.txt` waits for an owner contact address.
 
 ## What this audit did not cover
 
