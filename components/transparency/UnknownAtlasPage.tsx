@@ -376,5 +376,4 @@ export function UnknownAtlasPage({ locale }: Readonly<{ locale: Locale }>) {
 }
 
 /** For metadata and links: the page's title in each language. */
-export const UNKNOWN_ATLAS_TITLE = { en: COPY.en.title, fr: COPY.fr.title } as const;
 export const UNKNOWN_ATLAS_ROUTES = { en: "/en/unknown", fr: "/fr/inconnu" } as const;

@@ -112,6 +112,13 @@ export const PUBLIC_ROUTE_TEXT: Readonly<Record<PublicRoutePair["en"], RouteText
       fr: "La forêt récoltée et la forêt brûlée chaque année de 1985 à 2022 dans les quatre provinces, en graphiques, en tableau et en téléchargements.",
     },
   },
+  "/en/unknown": {
+    title: { en: "What the record cannot see", fr: "Ce que le registre ne peut pas voir" },
+    description: {
+      en: "Land with no satellite data, figures the site withholds and sources it could not use, in one place, read from the same records as the rest of the site.",
+      fr: "Le territoire sans données satellitaires, les chiffres que le site ne présente pas et les sources qu’il n’a pas pu utiliser, au même endroit, tirés des mêmes registres que le reste du site.",
+    },
+  },
   "/en/wildfire": {
     title: { en: "Where to find current wildfire information", fr: "Où trouver l’information sur les feux actuels" },
     description: {

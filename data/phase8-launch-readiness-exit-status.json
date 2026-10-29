@@ -47,11 +47,11 @@
       "id": "load-testing",
       "title": "Load testing is complete",
       "status": "fail",
-      "reason": "Artifact budgets do not measure a deployed service or establish the required 50× load-test result. On 2026-10-02 the Vercel migration changed the artifact reader to Next.js and the owner approved a 128 KiB shared gzip limit; the 400 KiB Explore limit and this criterion status are unchanged. Bound evidence digests were refreshed. On 2026-10-28 docs/PERFORMANCE.md gained a dated note of local Explore first-paint measurements; they are not a load test, and this criterion status is unchanged.",
+      "reason": "Artifact budgets do not measure a deployed service or establish the required 50× load-test result. On 2026-10-02 the Vercel migration changed the artifact reader to Next.js and the owner approved a 128 KiB shared gzip limit; the 400 KiB Explore limit and this criterion status are unchanged. Bound evidence digests were refreshed. On 2026-10-28 docs/PERFORMANCE.md gained a dated note of local Explore first-paint measurements; they are not a load test, and this criterion status is unchanged. On 2026-10-28 the owner wrote \"The bundle limit can be raised as necessary.\" and the shared gzip limit became 136 KiB for the Compare riding typeahead (measured 133,352 bytes); this criterion status is unchanged.",
       "evidence": [
         {
           "path": "docs/PERFORMANCE.md",
-          "sha256": "a999626d83d3bf02a69a5f725d1c0ec8dbb9f5bd164cc76c158dd4f061f1418d"
+          "sha256": "725c1cfee5521131c01d43e7d40a7f65c7826e73145567de1a8140f5f090e58c"
         }
       ]
     },
