@@ -312,6 +312,59 @@ cards and rerun with `--write` after any such change or a Next.js upgrade. The
 French strings on the card, in its alt text and on the page controls are
 drafts awaiting bilingual review. The cards are not expert reviewed, not a
 formal release and not production eligible.
+
+### Riding print sheets
+
+On 2026-10-29 every riding (feature plan item 2) gained a one-page print
+sheet at `<riding page>/print` in both languages
+(`app/en/places/[dataVersion]/[geography]/[code]/print/page.tsx` and
+`app/fr/lieux/.../print/page.tsx`, rendered by
+`components/places/RidingSheet.tsx`). Federal and provincial ridings both get
+one: 711 ridings (280 federal, 431 provincial in BC, Alberta, Ontario and
+Quebec), so 1,422 static pages; communities and economic regions return 404.
+The riding page links its sheet beside "Download this card". There is no PDF
+library: the page is laid out for print, and a "Print or save as PDF" button
+(`components/places/PrintButton.tsx`, a client island that calls
+`window.print()`) opens the browser's own dialog; without script the browser's
+Print command prints the same sheet.
+
+The sheet prints the share card's facts in text (labels shared through
+`RECEIPT_COPY` in `lib/share/meta.ts`, which `lib/share/receipt.tsx` now
+imports, so the card's bytes are unchanged), the riding figure stated as
+"detected loss as a share of mapped forest" with its loss, mapped forest,
+unmapped share, coverage and confidence from `lib/place-pages/summary.ts`
+(an Unknown prints its reason, never 0), the province's harvest-and-fire
+series in five-year bins as a server-rendered SVG (the Data page's chart
+markup moved into `components/transparency/HarvestFireChartSvg.tsx` and both
+use it) with a note that the chart is the whole province and the riding figure
+counts every cause, the page's limitations, the sources with versions,
+retrieval date, URLs and licences, the citation, and the page address in plain
+text. It carries no ranking position, no colour scale, no representative names
+and no QR code. It is `noindex` (search should send readers to the riding
+page) and is not in the sitemap. It does not use the site shell, so it prints
+without header or footer.
+
+The print stylesheet (one block at the end of `app/globals.css`) uses a named
+`@page riding-sheet` with 12 mm margins and lays the sheet out for the area
+Letter and A4 share; the longest French sheet fills 901 of the 965 px of a
+Letter page. `tests/browser/riding-sheet.spec.ts` prints nine sheets (longest
+name, a minimum, an admitted unknown share, an Unknown loss, no forest mapped,
+both languages) to PDF in Chromium on Letter and on A4 and requires one page
+each; it also checks the button, the hidden toolbar and WCAG 2.2 AA at every
+project width. `tests/riding-sheet.test.tsx` renders all 1,422 sheets and
+`tests/rendered-html.test.mjs` serves a federal and a provincial sheet in each
+language. `scripts/check-bilingual.mjs` gained the route pair (21 pairs), so
+the Phase 3 exit-status digest for it was refreshed; no status changed.
+
+Measured with a clean `.next` while other agents' builds shared the machine,
+so the times are noisy: `npm run build` took 103 s before (66dc3b26: 1.62 GB,
+50,479 files, 12,339 static items) and 94 s after (1.85 GB, 59,050 files,
+13,761 items); each sheet is about 160 KB of HTML, RSC payload and segments.
+The shared JavaScript gate went from 135,846 to 136,323 gzip bytes (limit
+139,264) for the print button. The French strings on the sheet and the riding
+page's sheet link are drafts awaiting bilingual review. The sheets are not
+expert reviewed, not a formal release and not production eligible.
+
 ### BC timber processing facilities
 
 On 2026-10-28 the owner amended plan sections 1.3 and 14.2 to allow British

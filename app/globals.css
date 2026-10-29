@@ -6181,6 +6181,10 @@ dd > a:only-child {
   :root:has(.riding-sheet) body {
     background: #fff;
   }
+  /* The paper grain is fixed to the window, so it would print as a grey box. */
+  :root:has(.riding-sheet) body::after {
+    display: none;
+  }
   .riding-sheet {
     page: riding-sheet;
     padding: 0;
