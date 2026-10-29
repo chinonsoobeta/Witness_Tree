@@ -60,6 +60,11 @@ export const HARVEST_FIRE_PROVINCE_IDS: readonly HarvestFireProvinceId[] = ["59"
 
 export const HARVEST_FIRE_ROUTES = { en: "/en/data/harvest-and-fire", fr: "/fr/donnees/recolte-et-incendies" } as const;
 
+/** The published record: its page on GitHub, and the file itself for a download link. */
+const RECORD_PATH = "data/harvest-fire-province-annual-series.json";
+export const HARVEST_FIRE_RECORD_URL = `https://github.com/chinonsoobeta/Witness_Tree/blob/main/${RECORD_PATH}`;
+export const HARVEST_FIRE_RECORD_RAW_URL = `https://raw.githubusercontent.com/chinonsoobeta/Witness_Tree/main/${RECORD_PATH}`;
+
 const count = (n: unknown) => typeof n === "number" && Number.isInteger(n) && n >= 0;
 
 export function parseHarvestFireSeries(value: unknown): HarvestFireSeries | null {

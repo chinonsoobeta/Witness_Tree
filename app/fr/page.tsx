@@ -10,9 +10,9 @@ import { EvidenceMarks } from "@/components/policy/EvidenceMarks";
 import { PRODUCT_NAME } from "@/lib/domain";
 import { EXPLORE_PRODUCTION_LAYER, formatUnknownSharePercent, provinceSpanDisplayRows } from "@/lib/explore";
 import { provinceSpanReach } from "@/lib/explore/period";
-import { localizedAlternates } from "@/lib/site-metadata";
+import { routeMetadata } from "@/lib/site-metadata";
 
-export const metadata: Metadata = { title: "Registre public des pertes forestières", alternates: localizedAlternates("fr", { en: "/en", fr: "/fr" }) };
+export const metadata: Metadata = routeMetadata("fr", { en: "/en", fr: "/fr" });
 
 const SPAN_ROWS = provinceSpanDisplayRows({ fromYear: 1984, toYear: 2022 });
 

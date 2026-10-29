@@ -2,6 +2,7 @@ import { CoverageStatement } from "@/components/policy/CoverageStatement";
 import { colon, formatYearRangeKey, type Locale } from "@/lib/domain";
 import { HARVEST_FIRE_ROUTES } from "@/lib/harvest-fire";
 import { SourceCurrency } from "./SourceCurrency";
+import { provinceBulkDataset, provinceSpanDataset, StructuredData } from "@/lib/structured-data";
 import {
   PROVINCE_BULK_TIME_RANGE,
   PROVINCE_SPAN_TIME_RANGE,
@@ -120,6 +121,7 @@ export function DataPage({ locale }: Readonly<{ locale: Locale }>) {
   const [csv, geopackage] = provinceBulkRelease.artifacts;
   return (
     <main id="main" className="page-wrap data-page">
+      <StructuredData data={[provinceBulkDataset(locale), provinceSpanDataset(locale)]} />
       <header className="masthead">
         <h1>{copy.title}</h1>
       </header>

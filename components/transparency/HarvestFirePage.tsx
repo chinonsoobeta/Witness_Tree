@@ -4,6 +4,7 @@ import {
   binLabel,
   cellsToHectares,
   HARVEST_FIRE_PROVINCE_IDS,
+  HARVEST_FIRE_RECORD_URL,
   HARVEST_FIRE_SERIES,
   HARVEST_FIRE_STEPS,
   harvestFireCharts,
@@ -17,10 +18,10 @@ import {
 import { chartGeometry, SVG_SIZE } from "@/lib/harvest-fire/chart";
 import type { PngText } from "@/lib/harvest-fire/png";
 import { UNMAPPED_REASONS } from "@/lib/explore/unmapped-reasons";
+import { harvestFireDataset, StructuredData } from "@/lib/structured-data";
 import { HarvestFireCsvButton, HarvestFirePngButton } from "./HarvestFireDownloads";
 
 const FLAG_KEYS = { "59": "bc", "48": "ab", "35": "on", "24": "qc" } as const satisfies Record<HarvestFireProvinceId, string>;
-const RECORD_URL = "https://github.com/chinonsoobeta/Witness_Tree/blob/main/data/harvest-fire-province-annual-series.json";
 const DECISION_URL = "https://github.com/chinonsoobeta/Witness_Tree/blob/main/docs/HARVEST_FIRE_SERIES_DECISION.md";
 
 const COPY = {
@@ -288,6 +289,7 @@ export function HarvestFirePage({ locale, query }: Readonly<{ locale: Locale; qu
 
   return (
     <>
+      <StructuredData data={harvestFireDataset(series, locale)} />
       {header}
       <section className="content-section prose-measure">
         <h2>{text.measureTitle}</h2>
@@ -356,7 +358,7 @@ export function HarvestFirePage({ locale, query }: Readonly<{ locale: Locale; qu
           <p className="hf-note">{text.baseline}</p>
           <p className="hf-downloads">
             <HarvestFireCsvButton csv={csv} filename={`harvest-fire-${range}.csv`} label={text.csv} />{" "}
-            <a className="btn btn--outline" href={RECORD_URL}>{text.record}</a>{" "}
+            <a className="btn btn--outline" href={HARVEST_FIRE_RECORD_URL}>{text.record}</a>{" "}
             <a className="btn btn--outline" href={`/${locale}/${locale === "en" ? "explore" : "explorer"}?mode=recorded-harvest`}>{text.explore}</a>
           </p>
         </div>

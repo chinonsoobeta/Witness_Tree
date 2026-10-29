@@ -1,12 +1,9 @@
 import type { Metadata } from "next";
 import { SiteShell } from "@/components/site";
 import { PRODUCT_NAME } from "@/lib/domain";
-import { localizedAlternates } from "@/lib/site-metadata";
+import { routeMetadata } from "@/lib/site-metadata";
 
-export const metadata: Metadata = {
-  title: "About",
-  alternates: localizedAlternates("en", { en: "/en/about", fr: "/fr/a-propos" }),
-};
+export const metadata: Metadata = routeMetadata("en", { en: "/en/about", fr: "/fr/a-propos" });
 
 // The owner's own words, set exactly as written on 2026-10-03.
 export default function EnglishAboutPage() {
