@@ -97,7 +97,7 @@ export async function checkGlyphCoverage() {
       const record = pages.placePageRecord(dataVersion, geography, code);
       for (const locale of ["en", "fr"]) {
         const markup = renderToStaticMarkup(createElement(receipt.ReceiptCard, { record, locale }));
-        for (const character of decodeEntities(markup.replace(/<[^>]*>/g, ""))) characters.add(character);
+        for (const character of decodeEntities(textOutsideTags(markup))) characters.add(character);
         cards += 1;
       }
     }
@@ -112,6 +112,25 @@ export async function checkGlyphCoverage() {
     console.error = realError;
     process.chdir(previousCwd);
   }
+}
+
+/**
+ * The markup's text with every tag skipped, by position rather than a tag
+ * pattern (CodeQL js/incomplete-multi-character-sanitization). The markup is
+ * React's own, so every "<" opens a tag that its next ">" closes.
+ */
+function textOutsideTags(markup) {
+  let text = "";
+  let at = 0;
+  while (at < markup.length) {
+    const open = markup.indexOf("<", at);
+    if (open < 0) { text += markup.slice(at); break; }
+    text += markup.slice(at, open);
+    const close = markup.indexOf(">", open);
+    if (close < 0) break;
+    at = close + 1;
+  }
+  return text;
 }
 
 function decodeEntities(text) {

@@ -352,7 +352,8 @@ test("a place page's social image and download are its own share card, a 1200 by
   for (const { pathname, alt } of pages) {
     const html = await (await render(pathname)).text();
     const card = `${pathname}/opengraph-image`;
-    const escaped = card.replace(/[/.-]/g, "\\$&");
+    // Every regular-expression metacharacter, so the path reads literally.
+    const escaped = card.replace(/[.*+?^${}()|[\]\\/-]/g, "\\$&");
     // Next appends a content hash to the generated image's address.
     assert.match(html, new RegExp(`<meta property="og:image" content="https://www\\.witnesstree\\.ca${escaped}(\\?[0-9a-z]+)?"`), `${pathname} og:image`);
     assert.match(html, /<meta property="og:image:width" content="1200"/);
