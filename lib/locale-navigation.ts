@@ -55,3 +55,29 @@ export function isCurrentNavTarget(pathname: string, target: string): boolean {
   if (pathname === target) return true;
   return target !== "/en" && target !== "/fr" && pathname.startsWith(`${target}/`);
 }
+
+/** Whether a path in `locale` is one of the site's pages, by the same map the language switch uses. */
+function isLocalePage(pathname: string, locale: Locale): boolean {
+  return pathname === `/${locale}` || localeCounterpart(pathname, locale) !== `/${locale === "en" ? "fr" : "en"}`;
+}
+
+/**
+ * Where a near-miss page address belongs, or null when it is already right or is
+ * not a page of the site. Two near misses are corrected: a letter-case variant
+ * (`/EN`, `/en/Explore`) goes to the lowercase address, and a slug from the other
+ * language (`/fr/explore`, `/en/explorer`) goes to that page's address in the
+ * language the address asked for. A dynamic segment keeps its case when the route
+ * prefix is already right. The answer is always a path under `/en` or `/fr`.
+ */
+export function canonicalLocaleRedirect(pathname: string): string | null {
+  const [, first = "", ...rest] = pathname.split("/");
+  const locale = first.toLowerCase();
+  if (locale !== "en" && locale !== "fr") return null;
+  const tail = rest.length ? `/${rest.join("/")}` : "";
+  for (const candidate of [`/${locale}${tail}`, `/${locale}${tail.toLowerCase()}`]) {
+    if (isLocalePage(candidate, locale)) return candidate === pathname ? null : candidate;
+  }
+  const other = locale === "en" ? "fr" : "en";
+  const borrowed = `/${other}${tail.toLowerCase()}`;
+  return tail && isLocalePage(borrowed, other) ? localeCounterpart(borrowed, other) : null;
+}
