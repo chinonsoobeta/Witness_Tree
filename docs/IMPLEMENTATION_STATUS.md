@@ -202,6 +202,21 @@ example data, with a link to the page. The series is not expert reviewed, not a
 formal release and not production eligible; the French strings are drafts
 awaiting bilingual review.
 
+### BC timber processing facilities
+
+On 2026-10-28 the owner amended plan sections 1.3 and 14.2 to allow British
+Columbia timber processing facilities to be listed from the provincial Major
+Primary Timber Processing Facilities survey under the Open Government Licence –
+British Columbia, with the dispute route live first and legal review of the
+wording still external. See [the decision](PLAN_SCOPE_DECISION_2026-10-28_BC_FACILITIES.md).
+The rights check the same day found the survey's facility data Access Only in
+the BC Data Catalogue and all rights reserved on gov.bc.ca; only 2023 is a
+spreadsheet, and it has no status column. The source is recorded as blocked in
+[the access block](../data/bc-timber-facilities-access-block.json), checked by
+`npm run check:bc-timber-facilities-access`, which also fails if a facilities
+record is built while the block stands. Nothing was built: no record, page
+panel or table. The permission request is drafted and unsent.
+
 ## Other formal phase counts
 
 Version 2.1 does not assign Phase 3 a cumulative percentage. Its five literal published exit criteria are nonetheless gated and counted, at 4/5 with moderated bilingual usability testing owner-blocked; that count is not a maturity score and does not mean the phase is four fifths complete. Its historical checkpoint records four completed technical-foundation evidence groups and one execution-ready, empty external-checkpoint envelope; that shorthand is not a Phase 3 exit result or a production-readiness measure.
