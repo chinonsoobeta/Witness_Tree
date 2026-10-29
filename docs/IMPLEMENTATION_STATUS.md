@@ -262,6 +262,24 @@ template moved to `/en/components/example-places/<id>` and
 `/fr/composants/exemples-lieux/<id>` and stays noindex. These pages are not
 expert reviewed, not a formal release and not production eligible; the French
 strings are drafts awaiting bilingual review.
+### BC timber processing facilities
+
+On 2026-10-28 the owner amended plan sections 1.3 and 14.2 to allow British
+Columbia timber processing facilities to be listed from the provincial Major
+Primary Timber Processing Facilities survey under the Open Government Licence –
+British Columbia, with the dispute route live first and legal review of the
+wording still external. See [the decision](PLAN_SCOPE_DECISION_2026-10-28_BC_FACILITIES.md).
+The owner's message approved "the plan amendment for #9"; #9 needed none and was
+held, so the lead session applied it to this feature (#10). The owner confirmed
+that reading the same day: "I did mean plan amendment for #9 should actually be
+for #10."
+The rights check the same day found the survey's facility data Access Only in
+the BC Data Catalogue and all rights reserved on gov.bc.ca; only 2023 is a
+spreadsheet, and it has no status column. The source is recorded as blocked in
+[the access block](../data/bc-timber-facilities-access-block.json), checked by
+`npm run check:bc-timber-facilities-access`, which also fails if a facilities
+record is built while the block stands. Nothing was built: no record, page
+panel or table. The permission request is drafted and unsent.
 
 ## Other formal phase counts
 

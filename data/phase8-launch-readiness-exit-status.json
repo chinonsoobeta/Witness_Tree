@@ -11,11 +11,11 @@
       "id": "professional-bilingual-review",
       "title": "Professional bilingual review is complete",
       "status": "fail",
-      "reason": "English/French route parity and draft copy are automated, but no professional, subject-matter bilingual review record exists. On 2026-10-28 docs/EXTERNAL_GATES.md added a note that the optional correction email route leaves the public-beta correction gate open; this criterion's gate text is unchanged, the digest was refreshed, and this reason still holds.",
+      "reason": "English/French route parity and draft copy are automated, but no professional, subject-matter bilingual review record exists. On 2026-10-28 docs/EXTERNAL_GATES.md added a note that the optional correction email route leaves the public-beta correction gate open; this criterion's gate text is unchanged, the digest was refreshed, and this reason still holds. On 2026-10-28 the merge with integrate/audited-2026-10-28 combined two docs/EXTERNAL_GATES.md changes: the BC timber processing facilities row and the correction email route note on the public-beta row. The digest covers both; this criterion's gate text is unchanged and this reason still holds. On 2026-10-28 docs/EXTERNAL_GATES.md recorded the owner's confirmation that the plan amendment approved for #9 was meant for the BC timber processing facilities feature; the digest was refreshed, this criterion's gate text is unchanged and this reason still holds.",
       "evidence": [
         {
           "path": "docs/EXTERNAL_GATES.md",
-          "sha256": "96336c59d5aad465b6998638474f17650547f05d911e05bfee74b09e8b600c66"
+          "sha256": "fc4358f94c675efb4ab999ad497d3b3ba72a0a6111c670ddb149fc4193610b0f"
         }
       ]
     },
@@ -79,11 +79,11 @@
       "id": "legal-licence-attribution-review",
       "title": "Legal, licence, and attribution review is complete",
       "status": "fail",
-      "reason": "The owner-recorded Phase 0 legal sign-off covers the current licensing and attribution rules, but it explicitly does not grant missing source rights. A complete production-release source-rights, licence, and attribution review therefore does not yet exist. On 2026-10-28 docs/EXTERNAL_GATES.md added a note that the optional correction email route leaves the public-beta correction gate open; this criterion's gate text is unchanged, the digest was refreshed, and this reason still holds.",
+      "reason": "The owner-recorded Phase 0 legal sign-off covers the current licensing and attribution rules, but it explicitly does not grant missing source rights. A complete production-release source-rights, licence, and attribution review therefore does not yet exist. On 2026-10-28 docs/EXTERNAL_GATES.md added a note that the optional correction email route leaves the public-beta correction gate open; this criterion's gate text is unchanged, the digest was refreshed, and this reason still holds. On 2026-10-28 the merge with integrate/audited-2026-10-28 combined two docs/EXTERNAL_GATES.md changes: the BC timber processing facilities row and the correction email route note on the public-beta row. The digest covers both; this criterion's gate text is unchanged and this reason still holds. On 2026-10-28 docs/EXTERNAL_GATES.md recorded the owner's confirmation that the plan amendment approved for #9 was meant for the BC timber processing facilities feature; the digest was refreshed, this criterion's gate text is unchanged and this reason still holds.",
       "evidence": [
         {
           "path": "docs/EXTERNAL_GATES.md",
-          "sha256": "96336c59d5aad465b6998638474f17650547f05d911e05bfee74b09e8b600c66"
+          "sha256": "fc4358f94c675efb4ab999ad497d3b3ba72a0a6111c670ddb149fc4193610b0f"
         }
       ]
     },
