@@ -6006,6 +6006,13 @@ dd > a:only-child {
 .place-related li { display: flex; flex-direction: column; min-width: 0; }
 .place-related-share { color: var(--muted); font-size: 0.85rem; }
 .place-related-links { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 8px 0 0; }
+/* "Embed this figure" on a place page: the iframe code in a read-only box, and its terms. */
+.place-embed { display: flex; flex-direction: column; gap: 8px; }
+.place-embed .eyebrow, .place-embed p { margin: 0; }
+.place-embed label { font-weight: 700; font-size: 0.9rem; }
+.place-embed-code { width: 100%; min-width: 0; resize: vertical; padding: 8px; border: 1px solid var(--muted); border-radius: 4px; background: var(--surface-2); color: var(--ink); font: 0.8rem/1.4 var(--mono); overflow-wrap: anywhere; }
+.place-embed-terms { color: var(--muted); font-size: 0.85rem; }
+.place-embed-links { display: flex; flex-wrap: wrap; gap: 8px 20px; }
 
 @media (max-width: 1000px) {
   .place-hero { grid-template-columns: minmax(0, 1fr); }

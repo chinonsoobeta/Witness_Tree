@@ -4,9 +4,11 @@ import { ImageResponse } from "next/og";
 import { colon, EVIDENCE_DEFINITIONS, PRODUCT_NAME, type Locale } from "@/lib/domain";
 import { PLACE_DATA_VERSION, placePageParams, placePageRecord, type PlacePageRecord } from "@/lib/place-pages";
 import { placeSummary } from "@/lib/place-pages/summary";
-import { RECEIPT_COPY, RECEIPT_SIZE } from "./meta";
+import { CARD_TEXT as COPY, RECEIPT_TOKENS } from "./card-parts";
+import { RECEIPT_SIZE } from "./meta";
 
-export { RECEIPT_CONTENT_TYPE, RECEIPT_COPY, RECEIPT_SIZE, receiptAlt, receiptPath } from "./meta";
+export { RECEIPT_TOKENS } from "./card-parts";
+export { RECEIPT_CONTENT_TYPE, RECEIPT_SIZE, receiptAlt, receiptPath } from "./meta";
 
 /**
  * A place's share card: one 1200 by 630 image that carries its own caveats, so
@@ -22,25 +24,6 @@ export { RECEIPT_CONTENT_TYPE, RECEIPT_COPY, RECEIPT_SIZE, receiptAlt, receiptPa
  * checked-in SHA-256 digests.
  */
 
-/**
- * The light palette's tokens from app/globals.css, which an image cannot read
- * as CSS variables. tests/share-receipt.test.tsx fails if they drift.
- */
-export const RECEIPT_TOKENS = {
-  ground: "#fdfcf8",
-  surface2: "#f0ebe5",
-  ink: "#2c2c24",
-  ink2: "#4a4a40",
-  muted: "#615f54",
-  rule: "#ded8cf",
-  accent: "#47593f",
-  heroFill: "#47593f",
-  heroInk: "#fdfcf8",
-  tintSatellite: "#dbe6f4",
-  edgeSatellite: "#3f6ea8",
-  tintUnknown: "#e4e8e5",
-  edgeUnknown: "#6b7670",
-} as const;
 
 let fonts: { name: string; data: Buffer; weight: 400 | 700; style: "normal" }[] | undefined;
 
@@ -73,7 +56,7 @@ function Fact({ label, value, locale }: Readonly<{ label: string; value: string;
 
 /** The card's layout, for ImageResponse. */
 export function ReceiptCard({ record, locale }: Readonly<{ record: PlacePageRecord; locale: Locale }>) {
-  const text = RECEIPT_COPY[locale];
+  const text = COPY[locale];
   const summary = placeSummary(record, locale);
   const { figures } = summary;
   const unknown = figures.lost.kind === "unknown";

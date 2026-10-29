@@ -3,6 +3,7 @@ import { ConfidenceBadge, ProvenanceBlock, ReportedValue } from "@/components/po
 import { CoverageStatement } from "@/components/policy/CoverageStatement";
 import { EvidenceKey } from "@/components/policy/EvidenceKey";
 import { CopyCitation } from "./CopyCitation";
+import { EmbedSnippet } from "./EmbedSnippet";
 import { colon, formatHectares, formatPercent, type Locale } from "@/lib/domain";
 import {
   PLACE_DATA_VERSION,
@@ -18,6 +19,7 @@ import { PLACE_METHOD_VERSION } from "@/lib/place-pages/paths";
 import { placeSummary } from "@/lib/place-pages/summary";
 import { RECEIPT_SIZE, receiptAlt, receiptPath } from "@/lib/share/meta";
 import { localizedAlternates } from "@/lib/site-metadata";
+import { embedTitle, oembedDiscoveryPath } from "@/lib/embed/paths";
 
 /**
  * A real place's page: one census subdivision, riding or economic region, and
@@ -271,6 +273,8 @@ export function RecordPlacePage({ locale, record }: Readonly<{ locale: Locale; r
                 <CopyCitation targetId="place-citation" label={text.copy} copied={text.copied} failed={text.copyFailed} />
               </p>
             </section>
+
+            <EmbedSnippet locale={locale} place={{ geography: record.geography, code: record.code, name }} />
           </aside>
 
           <section className="place-observed" aria-labelledby="place-related-heading">
@@ -313,10 +317,14 @@ export function recordPlaceMetadata(locale: Locale, record: PlacePageRecord): Me
   return {
     title,
     description,
-    alternates: localizedAlternates(locale, {
-      en: placePagePath("en", record.geography, record.code),
-      fr: placePagePath("fr", record.geography, record.code),
-    }),
+    alternates: {
+      ...localizedAlternates(locale, {
+        en: placePagePath("en", record.geography, record.code),
+        fr: placePagePath("fr", record.geography, record.code),
+      }),
+      // oEmbed discovery, so a CMS given this page's address frames its figure.
+      types: { "application/json+oembed": [{ url: oembedDiscoveryPath(locale, record.geography, record.code), title: embedTitle(locale, name) }] },
+    },
     // og:image comes from the route's opengraph-image file. The X card names
     // the same image rather than a twitter-image copy of it, which would
     // double the build's 6,092 generated cards for identical bytes.
