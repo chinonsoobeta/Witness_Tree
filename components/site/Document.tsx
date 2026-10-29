@@ -35,7 +35,14 @@ export function Document({ lang, children }: { lang: Locale; children: ReactNode
         */}
         <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
         {children}
-        <Analytics />
+        {/*
+          The analytics script is served by Vercel's edge at /_vercel/insights,
+          and nowhere else. Rendered under `next start` (the smoke tests, a
+          local production check, any other host) it requested a path that
+          does not exist: a 404 and a refused script on every page. Vercel sets
+          VERCEL=1 for its builds and functions, so the deployed Site is unchanged.
+        */}
+        {process.env.VERCEL ? <Analytics /> : null}
       </body>
     </html>
   );
