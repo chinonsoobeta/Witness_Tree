@@ -292,9 +292,9 @@ Measured on the owner's Mac with a clean `.next`: `npm run build` went from
 22.2 s and 1.04 GB of output (6,247 static items) to 52.9 s and 1.62 GB
 (12,339 items), with peak memory unchanged at about 1.4 GB. A build that also
 emitted a `twitter-image` per page took 83.4 s and 2.17 GB, so that variant
-was dropped. The shared JavaScript gate went from 130,238 to 135,835 gzip
+was dropped. The shared JavaScript gate went from 130,238 to 135,846 gzip
 bytes (limit 139,264): the place page now has its own chunk of header client
-code plus the button, 177 bytes more than the chunk it shared before, and the
+code plus the button, 188 bytes more than the chunk it shared before, and the
 gate counts that chunk whole. Whether 505 MB of prerendered images suits the
 Vercel deployment, or the cards should instead be generated on request and
 cached, is the owner's call; the switch is to drop `generateStaticParams` and
