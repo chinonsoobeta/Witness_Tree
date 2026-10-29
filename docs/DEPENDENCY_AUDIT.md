@@ -64,3 +64,15 @@ only automated remediation as a breaking change that would replace it with
 0.18.1. That database-tooling change requires separate migration validation
 and is outside this non-major dependency remediation. This moderate exception
 does not lower the high-severity CI threshold or hide any audit output.
+
+## 2026-10-28: Next.js 16.3.8 to 16.4.3
+
+On 2026-10-28 the production audit began failing on three advisories against
+`next` 16.0.0 through 16.4.0 (GHSA-2464-fhr4-w9xw, GHSA-p3m5-59mp-jv5r and
+GHSA-673q-mjm6-r5xr: two unauthenticated remote code execution paths and one
+denial of service). No 16.3.x patch exists; the first patched release is
+16.4.1 and the one npm offers is 16.4.3. The pin moved from 16.3.8 to 16.4.3
+on the integration branch of that day, a minor-version step within Next 16.
+After the move `npm audit --omit=dev --audit-level=high` reports zero
+advisories. `@next/eslint-plugin-next` stays at 16.2.6; it is lint tooling and
+carries no advisory.
