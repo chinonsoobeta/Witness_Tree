@@ -75,6 +75,41 @@ test("a riding under 1% unmapped reads the same in search as in the rankings, wi
   assert.match(ridingFigure(row, "fr") ?? "", /de la forêt cartographiée détectée comme perdue · (<\s?0,01|0,\d+)\s?% non cartographié$/);
 });
 
+test("a whitespace-only query gets no suggestions, from the function and from the route", async () => {
+  for (const query of [" ", "   ", "\u00a0\u00a0", " \u00a0\t ", "\u200b\u200b", "\u202f\u2003"]) {
+    for (const locale of ["en", "fr"] as const) {
+      assert.deepEqual(suggestSearch(query, locale), { query: "", suggestions: [], more: 0 }, JSON.stringify(query));
+      const response = ask(`?locale=${locale}&q=${encodeURIComponent(query)}`);
+      assert.equal(response.status, 200);
+      assert.deepEqual(await response.json(), { query: "", suggestions: [], more: 0 });
+    }
+  }
+  // Padding around a real name is read as the name.
+  assert.deepEqual(suggestSearch("\u00a0 Prince George \u00a0", "en"), suggestSearch("Prince George", "en"));
+});
+
+test("suggestions name what each row is and where, and mark an Unknown as Unknown with its reason", () => {
+  const en = suggestSearch("Prince George", "en").suggestions;
+  assert.equal(en.find((entry) => entry.kind === "community" && entry.name === "Prince George")?.meta, "Community · City · British Columbia");
+  assert.ok(en.some((entry) => entry.kind === "riding" && entry.meta === "Federal riding · British Columbia"));
+  assert.ok(en.some((entry) => entry.kind === "riding" && entry.meta === "Provincial riding · British Columbia"));
+  const fr = suggestSearch("Prince George", "fr").suggestions;
+  assert.equal(fr.find((entry) => entry.kind === "community" && entry.name === "Prince George")?.meta, "Collectivité · City · Colombie-Britannique");
+  assert.ok(fr.some((entry) => entry.kind === "riding" && entry.meta === "Circonscription fédérale · Colombie-Britannique"));
+  const montreal = suggestSearch("montreal", "en").suggestions.find((entry) => entry.name === "Montréal")!;
+  assert.equal(montreal.unknownReason, "no-satellite-data");
+  assert.equal(montreal.figure, null);
+  // Each riding carries its reason so the field can gather them; none reads as 100% unknown.
+  assert.ok(montreal.ridings.length > 40);
+  for (const riding of montreal.ridings) {
+    assert.equal(riding.unknownReason, "no-satellite-data");
+    assert.equal(riding.detail, "Loss unknown; no satellite data here");
+  }
+  for (const entry of suggestSearch("Prince George", "en").suggestions) {
+    assert.equal(entry.unknownReason === null, entry.figure !== null || /^At least /.test(entry.detail), entry.name);
+  }
+});
+
 test("Escape closes the suggestions without wiping what the reader typed", () => {
   // The field is type="search", which a browser clears on Escape. While anything
   // shows under the field, the handler must cancel that default and only close it.

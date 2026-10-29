@@ -18,7 +18,8 @@
 import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { EVIDENCE_DEFINITIONS } from "@/lib/domain/evidence";
 import type { Locale } from "@/lib/domain/localized";
-import type { Suggestion, SuggestionPage } from "@/lib/search/suggest";
+import { cleanSearchQuery, splitUnknownRows, unknownGroupHeading } from "@/lib/search/shared";
+import type { Suggestion, SuggestionPage, SuggestionRiding } from "@/lib/search/suggest";
 
 const COPY = {
   en: {
@@ -36,6 +37,7 @@ const COPY = {
     page: "Open this place’s page",
     compare: "Compare with another riding",
     key: "Key",
+    unknown: "Unknown",
   },
   fr: {
     groups: { community: "Collectivités", riding: "Circonscriptions", province: "Provinces" },
@@ -52,6 +54,7 @@ const COPY = {
     page: "Ouvrir la page de ce lieu",
     compare: "Comparer avec une autre circonscription",
     key: "Légende",
+    unknown: "Inconnu",
   },
 } as const;
 
@@ -96,7 +99,7 @@ export function SearchSuggest({
   // One request per pause in typing, and a newer query cancels an older one,
   // so a slow answer for "pr" can never replace the answer for "prince".
   useEffect(() => {
-    const trimmed = query.trim();
+    const trimmed = cleanSearchQuery(query);
     if (trimmed.length < 2 || chosen?.name === query) return;
     const controller = new AbortController();
     const timer = window.setTimeout(() => {
@@ -119,7 +122,7 @@ export function SearchSuggest({
 
   // An answer counts only for the query now in the field, and not once a
   // suggestion has been chosen, so a stale list can never be shown.
-  const trimmed = query.trim();
+  const trimmed = cleanSearchQuery(query);
   const current = answer && answer.query === trimmed && trimmed.length >= 2 && chosen?.name !== query ? answer : null;
   const suggestions = current?.page?.suggestions ?? [];
   const ready = current !== null && !current.failed;
@@ -219,6 +222,11 @@ export function SearchSuggest({
                                 <span className="mark-glyph mark-glyph--satellite" aria-hidden="true" />
                                 {suggestion.figure}
                               </span>
+                            ) : suggestion.unknownReason ? (
+                              <span className="search-suggest-figure search-suggest-figure--unknown">
+                                <span className="mark-glyph mark-glyph--unknown" aria-hidden="true" />
+                                {text.unknown}
+                              </span>
                             ) : null}
                           </li>
                         );
@@ -236,7 +244,7 @@ export function SearchSuggest({
                 </div>
               </div>
             ) : null}
-            {showNone ? <p className="search-suggest-popup search-suggest-message" role="status">{text.none(query.trim())}</p> : null}
+            {showNone ? <p className="search-suggest-popup search-suggest-message" role="status">{text.none(trimmed)}</p> : null}
             {showFailed ? <p className="search-suggest-popup search-suggest-message" role="status">{text.failed}</p> : null}
           </div>
           <button className="btn btn--primary" type="submit">{submitLabel}</button>
@@ -280,26 +288,40 @@ export function SearchSuggest({
               {(["federal", "provincial"] as const).map((level) => {
                 const rows = chosen.ridings.filter((riding) => riding.level === level);
                 if (rows.length === 0) return null;
+                // Many ridings with the same Unknown read as one line with their count.
+                const { listed, groups } = splitUnknownRows(rows, (riding) => riding.unknownReason);
+                const list = (members: readonly SuggestionRiding[]) => (
+                  <ul>
+                    {members.map((riding) => (
+                      <li key={riding.name}>
+                        <span className="search-chosen-riding-name">
+                          {riding.href ? <a href={riding.href}>{riding.name}</a> : riding.name}
+                        </span>
+                        {riding.figure ? (
+                          <span className="search-chosen-riding-figure">
+                            <span className="mark-glyph mark-glyph--satellite" aria-hidden="true" />
+                            {riding.figure}
+                          </span>
+                        ) : null}
+                        <span className="search-chosen-riding-share">{riding.share}</span>
+                        <span className="search-chosen-riding-detail">{riding.detail}</span>
+                      </li>
+                    ))}
+                  </ul>
+                );
                 return (
                   <div key={level}>
                     <h3 className="eyebrow">{level === "federal" ? text.federal : text.provincial}</h3>
-                    <ul>
-                      {rows.map((riding) => (
-                        <li key={riding.name}>
-                          <span className="search-chosen-riding-name">
-                            {riding.href ? <a href={riding.href}>{riding.name}</a> : riding.name}
-                          </span>
-                          {riding.figure ? (
-                            <span className="search-chosen-riding-figure">
-                              <span className="mark-glyph mark-glyph--satellite" aria-hidden="true" />
-                              {riding.figure}
-                            </span>
-                          ) : null}
-                          <span className="search-chosen-riding-share">{riding.share}</span>
-                          <span className="search-chosen-riding-detail">{riding.detail}</span>
-                        </li>
-                      ))}
-                    </ul>
+                    {listed.length ? list(listed) : null}
+                    {groups.map((group) => (
+                      <details key={group.reason} className="search-unknown-group">
+                        <summary>
+                          <span className="mark-glyph mark-glyph--unknown" aria-hidden="true" />
+                          <span>{unknownGroupHeading(group.reason, group.rows.length, level === "federal" ? "federal-ridings" : "provincial-ridings", locale)}</span>
+                        </summary>
+                        {list(group.rows)}
+                      </details>
+                    ))}
                   </div>
                 );
               })}
