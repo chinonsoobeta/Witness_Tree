@@ -11,6 +11,7 @@ export const REQUIRED_ROUTE_PAIRS = [
   { en: '/en/data/bc-harvest-volume', fr: '/fr/donnees/volume-recolte-bc' },
   { en: '/en/data/provincial-harvest-volume', fr: '/fr/donnees/volume-recolte-provinces' },
   { en: '/en/data/harvest-and-fire', fr: '/fr/donnees/recolte-et-incendies' },
+  { en: '/en/unknown', fr: '/fr/inconnu' },
   { en: '/en/compare', fr: '/fr/comparer' },
   { en: '/en/wildfire', fr: '/fr/incendies' },
   { en: '/en/account', fr: '/fr/compte' },

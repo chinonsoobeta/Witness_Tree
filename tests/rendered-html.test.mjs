@@ -219,6 +219,27 @@ test("renders both localized public records with neutral non-claims", async () =
   assert.doesNotMatch(`${english}\n${french}`, /the truth|real-time|complete record/i);
 });
 
+test("renders the Unknown Atlas in both languages with its four sections", async () => {
+  const [englishResponse, frenchResponse] = await Promise.all([render("/en/unknown"), render("/fr/inconnu")]);
+  assert.equal(englishResponse.status, 200);
+  assert.equal(frenchResponse.status, 200);
+  const [english, french] = await Promise.all([englishResponse.text(), frenchResponse.text()]);
+  assert.match(english, /<html lang="en">/);
+  assert.match(french, /<html lang="fr">/);
+  assert.match(english, /<h1>What the record cannot see<\/h1>/);
+  assert.match(french, /<h1>Ce que le registre ne peut pas voir<\/h1>/);
+  assert.match(english, /<link rel="alternate" hrefLang="fr" href="[^"]*\/fr\/inconnu"/i);
+  for (const html of [english, french]) {
+    assert.match(html, /<main id="main"/);
+    for (const id of ["no-data", "withheld", "blocked-sources", "settle"]) assert.match(html, new RegExp(`<section[^>]*id="${id}"`));
+    assert.equal((html.match(/<table>/g) ?? []).length, (html.match(/<caption/g) ?? []).length);
+    assert.doesNotMatch(html, /@[a-z0-9-]+\.[a-z]{2,}/i);
+    assert.doesNotMatch(html, /\bFOI\b|freedom of information|accès à l’information/i);
+  }
+  assert.match(english, /Missing data never means no loss\./);
+  assert.match(french, /Des données manquantes ne signifient jamais une absence de perte\./);
+});
+
 test("renders localized place and location records with semantic content and provenance", async () => {
   const [englishPlace, frenchPlace, englishLocation, frenchLocation] = await Promise.all([
     render("/en/places/bc-province?view=table").then((response) => response.text()),

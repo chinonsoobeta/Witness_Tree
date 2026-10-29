@@ -14,6 +14,7 @@ const COUNTERPARTS: Record<string, string> = {
   "/en/data/bc-harvest-volume": "/fr/donnees/volume-recolte-bc", "/fr/donnees/volume-recolte-bc": "/en/data/bc-harvest-volume",
   "/en/data/provincial-harvest-volume": "/fr/donnees/volume-recolte-provinces", "/fr/donnees/volume-recolte-provinces": "/en/data/provincial-harvest-volume",
   "/en/data/harvest-and-fire": "/fr/donnees/recolte-et-incendies", "/fr/donnees/recolte-et-incendies": "/en/data/harvest-and-fire",
+  "/en/unknown": "/fr/inconnu", "/fr/inconnu": "/en/unknown",
   "/en/terms": "/fr/conditions", "/fr/conditions": "/en/terms",
   "/en/corrections": "/fr/corrections", "/fr/corrections": "/en/corrections",
   "/en/components": "/fr/composants", "/fr/composants": "/en/components",

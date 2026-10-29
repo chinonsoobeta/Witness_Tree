@@ -35,6 +35,7 @@ const COPY = {
     accuracyText:
       "The data publisher cites a study of the earlier 2005 version of this land-cover map: it was 70.3% accurate overall (±2.5 percentage points, 95% confidence). That study does not measure how accurate our forest-loss detections are, for any district or year. So the accuracy of detected loss is Unknown.",
     accuracyLink: "Read the accuracy study",
+    atlasLink: "Everything the record cannot see, in one place",
     matching: "Matching to official records",
     matchingText:
       "A detected loss matches an official record when they overlap by at least 50% of the smaller area and their dates are within ±2 years (±3 years before 1995). When events overlap in the same place and year, the one shown is picked in this order: fire; recorded harvest; recorded insect or disease disturbance; other recorded intervention; then detected loss with no matching record. The other evidence is kept.",
@@ -70,6 +71,7 @@ const COPY = {
     accuracyText:
       "L’éditeur des données cite une étude de la version antérieure de 2005 de cette carte de couverture terrestre\u202F: elle était exacte à 70,3\u00A0% dans l’ensemble (±2,5 points de pourcentage, confiance de 95\u00A0%). Cette étude ne mesure pas l’exactitude de nos détections de perte forestière, pour aucune circonscription ni aucune année. L’exactitude de la perte détectée est donc inconnue.",
     accuracyLink: "Lire l’étude d’exactitude",
+    atlasLink: "Tout ce que le registre ne peut pas voir, au même endroit",
     matching: "Appariement aux registres officiels",
     matchingText:
       "Une perte détectée correspond à un registre officiel lorsqu’ils se chevauchent sur au moins 50\u00A0% de la plus petite superficie et que leurs dates sont à ±2 ans l’une de l’autre (±3 ans avant 1995). Lorsque des événements se chevauchent au même endroit la même année, celui qui est affiché est choisi dans cet ordre\u202F: incendie\u202F; récolte consignée\u202F; perturbation consignée due aux insectes ou aux maladies\u202F; autre intervention consignée\u202F; puis perte détectée sans registre correspondant. Les autres preuves sont conservées.",
@@ -80,6 +82,9 @@ const COPY = {
       "Nous ne qualifions jamais une perte détectée d’exploitation, de déforestation, d’infraction ou de faute d’une organisation désignée. Lorsqu’aucun registre officiel n’existe, nous le disons au lieu d’inscrire un chiffre.",
   },
 } as const;
+
+/** The Methods wording, read by the Unknown Atlas so the two pages never drift apart. */
+export const METHODOLOGY_COPY = COPY;
 
 const CONFIDENCE_RULES: readonly Readonly<{
   id: ConfidenceResult["ruleId"];
@@ -151,6 +156,11 @@ export function MethodologyPage({ locale }: Readonly<{ locale: Locale }>) {
                   ))}
                 </tbody>
               </table>
+            ) : null}
+            {heading === copy.unmapped ? (
+              <p>
+                <a href={locale === "en" ? "/en/unknown" : "/fr/inconnu"}>{copy.atlasLink}</a>
+              </p>
             ) : null}
             {heading === copy.accuracy ? (
               <p>

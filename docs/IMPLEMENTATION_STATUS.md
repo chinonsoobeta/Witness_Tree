@@ -202,6 +202,23 @@ example data, with a link to the page. The series is not expert reviewed, not a
 formal release and not production eligible; the French strings are drafts
 awaiting bilingual review.
 
+### Unknown Atlas
+
+On 2026-10-28 the page "What the record cannot see" (`/en/unknown`,
+`/fr/inconnu`) was added, linked from the Data page and from the Methods
+section on land with no data. It gathers four things, each generated from the
+records the other views read: land with no data per province (from the
+coverage-gap receipt Methods uses, drawn as hatched bars with a table), the
+figures each view withholds and why (`lib/unknown/atlas.ts`), the sources the
+record could not use (`lib/sources/blocked.ts`, which reads each field from its
+record and fails the build if one is missing), and what would settle each
+Unknown, in the Methods wording. Following the owner's 2026-10-28 condition, the
+sources section names agencies and licences but never a person, an address or
+any freedom-of-information request. `tests/unknown-atlas.test.tsx` checks the
+withheld list against the official comparison and Compare, and checks the
+sources section against every address and name the records hold. The French
+strings on this page are drafts for the owner's review (2026-10-28).
+
 ## Other formal phase counts
 
 Version 2.1 does not assign Phase 3 a cumulative percentage. Its five literal published exit criteria are nonetheless gated and counted, at 4/5 with moderated bilingual usability testing owner-blocked; that count is not a maturity score and does not mean the phase is four fifths complete. Its historical checkpoint records four completed technical-foundation evidence groups and one execution-ready, empty external-checkpoint envelope; that shorthand is not a Phase 3 exit result or a production-readiness measure.

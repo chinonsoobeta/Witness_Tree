@@ -2154,8 +2154,10 @@ h4 {
   font-style: normal;
   line-height: 1;
 }
-/* Matches the map's hatching of partly mapped regions. */
-.loss-swatch--hatch {
+/* Matches the map's hatching of partly mapped regions. The Unknown Atlas
+   draws land with no data in the same hatch. */
+.loss-swatch--hatch,
+.unknown-atlas-chart .explore-bar--unmapped {
   background: repeating-linear-gradient(45deg, rgba(20, 32, 26, 0.8) 0 2px, rgba(238, 239, 233, 0.8) 2px 3px, transparent 3px 6px), var(--map-ground);
 }
 .loss-0 {
@@ -4310,6 +4312,30 @@ dd > a:only-child {
 .explore-bar--fire {
   border-color: var(--fire);
   background: var(--fire);
+}
+/* The Unknown Atlas: each track is the whole province, so the hatched bar is
+   the share with no data. Its text label carries the value. */
+.unknown-atlas-chart .explore-bar-track {
+  border: 1px solid var(--rule-strong);
+  background: var(--ground);
+}
+.unknown-atlas-chart .explore-bar--unmapped {
+  min-width: 1px;
+  border-color: var(--ink);
+  border-radius: 0;
+}
+.unknown-atlas-chart {
+  margin-bottom: 24px;
+}
+/* The Atlas's withheld and source tables are prose, so they read left to right. */
+.unknown-atlas-table th,
+.unknown-atlas-table td {
+  text-align: left;
+}
+.unknown-atlas-source-title {
+  display: block;
+  font-weight: 400;
+  color: var(--muted);
 }
 /* Condition and recovery wears the map's recovery colour, which is a fixed
    printed-map colour on its own light ground in both themes. */
