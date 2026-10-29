@@ -37,7 +37,7 @@
       "evidence": [
         {
           "path": "scripts/check-bilingual.mjs",
-          "sha256": "0a88080b14fc3c5468e2cb281de51fdb4b634dce4c1c3afe013abcc251f47c1b"
+          "sha256": "9ca17dfe9afdc4b363472e0d1821967329b44fbfc785ba6a9672ecbf7cccbba2"
         },
         {
           "path": ".github/workflows/ci.yml",

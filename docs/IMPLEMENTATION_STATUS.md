@@ -329,8 +329,9 @@ library: the page is laid out for print, and a "Print or save as PDF" button
 Print command prints the same sheet.
 
 The sheet prints the share card's facts in text (labels shared through
-`RECEIPT_COPY` in `lib/share/meta.ts`, which `lib/share/receipt.tsx` now
-imports, so the card's bytes are unchanged), the riding figure stated as
+`CARD_TEXT` in `lib/share/card-parts.ts`, which `lib/share/receipt.tsx` and
+the embedded figure also read, so the card's bytes are unchanged), the riding
+figure stated as
 "detected loss as a share of mapped forest" with its loss, mapped forest,
 unmapped share, coverage and confidence from `lib/place-pages/summary.ts`
 (an Unknown prints its reason, never 0), the province's harvest-and-fire

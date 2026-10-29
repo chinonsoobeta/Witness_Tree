@@ -7,7 +7,7 @@ import { SVG_SIZE } from "@/lib/harvest-fire/chart";
 import { landCoverProvenance, PLACE_DATA_VERSION, ridingSheetPath, type PlacePageRecord } from "@/lib/place-pages";
 import { PLACE_METHOD_VERSION } from "@/lib/place-pages/paths";
 import { placeSummary } from "@/lib/place-pages/summary";
-import { RECEIPT_COPY } from "@/lib/share/meta";
+import { CARD_TEXT } from "@/lib/share/card-parts";
 import { localizedAlternates, SITE_ORIGIN } from "@/lib/site-metadata";
 import { PrintButton } from "./PrintButton";
 import { COPY as PAGE_COPY } from "./RecordPlacePage";
@@ -107,7 +107,7 @@ function Fact({ label, value, locale }: Readonly<{ label: string; value: string;
 export function RidingSheet({ locale, record }: Readonly<{ locale: Locale; record: PlacePageRecord }>) {
   const text = COPY[locale];
   const page = PAGE_COPY[locale];
-  const card = RECEIPT_COPY[locale];
+  const card = CARD_TEXT[locale];
   const summary = placeSummary(record, locale);
   const { figures } = summary;
   const provenance = landCoverProvenance(locale);
