@@ -1,10 +1,15 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { renderToStaticMarkup } from "react-dom/server";
+// @ts-expect-error -- Node's TypeScript runner requires explicit local extensions.
 import { RecordPlacePage } from "../components/places/RecordPlacePage.tsx";
+// @ts-expect-error -- Node's TypeScript runner requires explicit local extensions.
 import { RidingSheet, ridingSheetMetadata } from "../components/places/RidingSheet.tsx";
+// @ts-expect-error -- Node's TypeScript runner requires explicit local extensions.
 import { isRidingGeography, PLACE_DATA_VERSION, placePageParams, placePageRecord, ridingSheetPath } from "../lib/place-pages/index.ts";
+// @ts-expect-error -- Node's TypeScript runner requires explicit local extensions.
 import { placeSummary } from "../lib/place-pages/summary.ts";
+// @ts-expect-error -- Node's TypeScript runner requires explicit local extensions.
 import { SITE_ORIGIN } from "../lib/site-metadata.ts";
 
 /*
