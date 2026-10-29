@@ -117,7 +117,7 @@
       "id": "no-persistent-identifier-contains-the-product-name",
       "title": "no persistent identifier contains the product name",
       "status": "pass",
-      "reason": "A gate reads the product name from the brand token and rejects any route segment or path literal that carries it in any joined, accent-stripped spelling. Its tests prove it rejects a violating route and a violating path, and that renaming the brand token changes what it rejects. On 2026-09-26 .github/workflows/ci.yml gained one step, npm run check:phase4-provincial-cause-crosstab; no existing step changed, the digest was refreshed, and this reason still holds. On 2026-09-27 .github/workflows/ci.yml gained one step, npm run check:census-subdivision-overlay; no existing step changed, the digest was refreshed, and this reason still holds. Later on 2026-09-27 a site-crawl pass changed the English PRODUCT_PURPOSE sentence in lib/domain/brand.ts to spell Québec, per the owner's 2026-09-27 decision; PRODUCT_NAME, the single brand token and every identifier are unchanged, the digest was refreshed, and this reason still holds. On 2026-10-03 .github/workflows/ci.yml gained one step, npm run check:phase4-condition-recovery-v3; no existing step changed, the digest was refreshed, and this reason still holds.",
+      "reason": "A gate reads the product name from the brand token and rejects any route segment or path literal that carries it in any joined, accent-stripped spelling. Its tests prove it rejects a violating route and a violating path, and that renaming the brand token changes what it rejects. On 2026-09-26 .github/workflows/ci.yml gained one step, npm run check:phase4-provincial-cause-crosstab; no existing step changed, the digest was refreshed, and this reason still holds. On 2026-09-27 .github/workflows/ci.yml gained one step, npm run check:census-subdivision-overlay; no existing step changed, the digest was refreshed, and this reason still holds. Later on 2026-09-27 a site-crawl pass changed the English PRODUCT_PURPOSE sentence in lib/domain/brand.ts to spell Québec, per the owner's 2026-09-27 decision; PRODUCT_NAME, the single brand token and every identifier are unchanged, the digest was refreshed, and this reason still holds. On 2026-10-03 .github/workflows/ci.yml gained one step, npm run check:phase4-condition-recovery-v3; no existing step changed, the digest was refreshed, and this reason still holds. On 2026-10-29 .github/workflows/ci.yml gained one step, npm run check:share-images; no existing step changed, the digest was refreshed, and this reason still holds.",
       "evidence": [
         {
           "path": "scripts/check-persistent-identifiers.mjs",
@@ -133,7 +133,7 @@
         },
         {
           "path": ".github/workflows/ci.yml",
-          "sha256": "5480c481538530c09a73fc83eac1366bad5620198cea4d845dd70b2aa5a6b8ff"
+          "sha256": "9dc260ead93499be70b7caa367af938c3aaa1ae5ef6a1634cad629e048f9b44a"
         }
       ]
     }

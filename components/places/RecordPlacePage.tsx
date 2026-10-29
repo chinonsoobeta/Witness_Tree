@@ -2,19 +2,20 @@ import type { Metadata } from "next";
 import { ConfidenceBadge, ProvenanceBlock, ReportedValue } from "@/components/policy";
 import { CoverageStatement } from "@/components/policy/CoverageStatement";
 import { EvidenceKey } from "@/components/policy/EvidenceKey";
-import { colon, formatHectares, formatPercent, UNION_TERM, type Locale } from "@/lib/domain";
-import { formatUnknownSharePercent } from "@/lib/explore/map-style";
+import { CopyCitation } from "./CopyCitation";
+import { colon, formatHectares, formatPercent, type Locale } from "@/lib/domain";
 import {
   PLACE_DATA_VERSION,
   placePagePath,
   placeProvinceName,
-  wholeRecordFigures,
   landCoverProvenance,
   type PlacePageRecord,
   type PlaceReference,
 } from "@/lib/place-pages";
 import { PLACE_METHOD_VERSION } from "@/lib/place-pages/paths";
-import { localizedAlternates, SITE_ORIGIN } from "@/lib/site-metadata";
+import { placeSummary } from "@/lib/place-pages/summary";
+import { RECEIPT_SIZE, receiptAlt, receiptPath } from "@/lib/share/meta";
+import { localizedAlternates } from "@/lib/site-metadata";
 
 /**
  * A real place's page: one census subdivision, riding or economic region, and
@@ -30,16 +31,10 @@ const COPY = {
   en: {
     panel: "What this page can tell you",
     coverage: "Coverage",
-    complete: "Fully mapped",
-    admitted: (share: string) => `Almost fully mapped: ${share} of the forest has no satellite data, under the 1% this record admits`,
-    partial: (share: string) => `Partly mapped: ${share} of the forest has no satellite data`,
-    none: "No forest was mapped here in 1984",
     unmapped: "Unmapped share",
-    noneUnmapped: "None",
     mappedForest: "Forest mapped in 1984",
     note: "Every figure shows its evidence, confidence and source. Unknown is shown as –, never as zero.",
     lead: "Forest lost at least once from 1984 to 2022, as satellites observed it, inside this boundary.",
-    lost: `${UNION_TERM.en}, 1984–2022`,
     minimum: "A minimum: it counts only the part of the forest with satellite data.",
     share: "Share of the forest mapped in 1984",
     evidence: "Evidence",
@@ -61,6 +56,10 @@ const COPY = {
     ],
     readMethod: "Read the method",
     citation: "Cite this page",
+    download: "Download this card (PNG, 1200 × 630)",
+    copy: "Copy the citation",
+    copied: "Citation copied.",
+    copyFailed: "The citation could not be copied. Select it above instead.",
     related: "Related places",
     region: "Economic region",
     federal: "Federal ridings",
@@ -80,16 +79,10 @@ const COPY = {
   fr: {
     panel: "Ce que cette page permet de savoir",
     coverage: "Couverture",
-    complete: "Entièrement cartographiée",
-    admitted: (share: string) => `Presque entièrement cartographiée\u202F: ${share} de la forêt n’a aucune donnée satellitaire, sous le seuil de 1\u00a0% admis pour ce registre`,
-    partial: (share: string) => `Partiellement cartographiée\u202F: ${share} de la forêt n’a aucune donnée satellitaire`,
-    none: "Aucune forêt n’était cartographiée ici en 1984",
     unmapped: "Part non cartographiée",
-    noneUnmapped: "Aucune",
     mappedForest: "Forêt cartographiée en 1984",
     note: "Chaque chiffre indique sa preuve, son niveau de confiance et sa source. L’inconnu est indiqué par –, jamais par zéro.",
     lead: "La forêt perdue au moins une fois de 1984 à 2022, telle que les satellites l’ont observée, à l’intérieur de cette limite.",
-    lost: `${UNION_TERM.fr}, 1984–2022`,
     minimum: "Un minimum : seule la partie de la forêt couverte par des données satellitaires est comptée.",
     share: "Part de la forêt cartographiée en 1984",
     evidence: "Preuve",
@@ -111,6 +104,11 @@ const COPY = {
     ],
     readMethod: "Lire la méthode",
     citation: "Citer cette page",
+    // Draft French for the owner's review (2026-10-29).
+    download: "Télécharger cette carte (PNG, 1200 × 630)",
+    copy: "Copier la citation",
+    copied: "Citation copiée.",
+    copyFailed: "La citation n’a pas pu être copiée. Sélectionnez-la ci-dessus.",
     related: "Lieux liés",
     region: "Région économique",
     federal: "Circonscriptions fédérales",
@@ -166,32 +164,11 @@ function ReferenceList({ items, locale, empty, note }: Readonly<{
 
 export function RecordPlacePage({ locale, record }: Readonly<{ locale: Locale; record: PlacePageRecord }>) {
   const text = COPY[locale];
-  const figures = wholeRecordFigures(record.cells, { locale, unknownTolerancePercent: record.unknownTolerancePercent });
-  const name = record.name[locale];
-  const province = placeProvinceName(record.province)[locale];
-  const path = placePagePath(locale, record.geography, record.code);
-  const coverage = figures.coverage === "complete"
-    ? figures.admittedUnknownPercent === undefined
-      ? text.complete
-      : text.admitted(formatUnknownSharePercent(figures.admittedUnknownPercent, locale))
-    : figures.coverage === "partial-with-unknown"
-      ? text.partial(formatUnknownSharePercent(figures.unknownSharePercent!, locale))
-      : text.none;
-  const unmapped = figures.unknownSharePercent === null
-    ? text.noneUnmapped
-    : figures.unknownSharePercent === 0
-      ? text.noneUnmapped
-      : formatUnknownSharePercent(figures.unknownSharePercent, locale);
+  const summary = placeSummary(record, locale);
+  const { figures, name, province, coverage, unmapped, citation } = summary;
   const provenance = landCoverProvenance(locale);
   const exploreHref = `${locale === "en" ? "/en/explore" : "/fr/explorer"}?overlays=${record.exploreOverlay}&from=1984&year=2022`;
   const compareHref = record.compareId ? `${locale === "en" ? "/en/compare" : "/fr/comparer"}?left=${encodeURIComponent(record.compareId)}` : null;
-  const lost = figures.lost.kind === "figure"
-    ? `${figures.lostIsMinimum ? (locale === "en" ? "at least " : "au moins ") : ""}${formatHectares(figures.lost.value, locale)}`
-    : (locale === "en" ? "Unknown" : "Inconnu");
-  const share = figures.share.kind === "figure" ? formatPercent(figures.share.value, locale) : (locale === "en" ? "share Unknown" : "part inconnue");
-  const citation = locale === "en"
-    ? `${name}, ${record.typeLabel.en.toLowerCase()}, ${province} (${record.boundary.edition}, ${record.code}). ${text.lost}: ${lost}; ${share}. Satellite observation from ${provenance.dataset}. Data version ${PLACE_DATA_VERSION}, method ${PLACE_METHOD_VERSION}. ${SITE_ORIGIN}${path}`
-    : `${name}, ${record.typeLabel.fr.toLowerCase()}, ${province} (${record.boundary.edition}, ${record.code}). ${text.lost}\u202F: ${lost}\u202F; ${share}. Observation satellitaire tirée de ${provenance.dataset}. Version des données ${PLACE_DATA_VERSION}, méthode ${PLACE_METHOD_VERSION}. ${SITE_ORIGIN}${path}`;
 
   return (
     <main id="main" className="page-wrap place-record">
@@ -229,7 +206,7 @@ export function RecordPlacePage({ locale, record }: Readonly<{ locale: Locale; r
       <div className="place-body">
         <div className="place-stat-cards">
           <section className={`place-stat-card place-stat-card--${figures.lost.kind}`}>
-            <h2 className="eyebrow">{text.lost}</h2>
+            <h2 className="eyebrow">{summary.lostLabel}</h2>
             <ReportedValue reported={figures.lost} coverageGrade="national-baseline" locale={locale} />
             {figures.lostIsMinimum ? <p className="place-stat-minimum">{text.minimum}</p> : null}
           </section>
@@ -282,7 +259,11 @@ export function RecordPlacePage({ locale, record }: Readonly<{ locale: Locale; r
 
             <section className="record-citation">
               <h2 className="eyebrow">{text.citation}</h2>
-              <p>{citation}</p>
+              <p id="place-citation">{citation}</p>
+              <p className="place-share">
+                <a href={receiptPath(locale, record)} download={`${PLACE_DATA_VERSION}-${record.geography}-${record.code}-${locale}.png`}>{text.download}</a>
+                <CopyCitation targetId="place-citation" label={text.copy} copied={text.copied} failed={text.copyFailed} />
+              </p>
             </section>
           </aside>
 
@@ -322,12 +303,22 @@ export function recordPlaceMetadata(locale: Locale, record: PlacePageRecord): Me
   const description = locale === "en"
     ? `Forest lost at least once from 1984 to 2022 in ${name}, ${type}, ${province}, as satellites observed it, with its coverage, confidence, source and limitations.`
     : `Forêt perdue au moins une fois de 1984 à 2022 dans ${name}, ${type}, ${province}, selon l’observation satellitaire, avec sa couverture, sa confiance, sa source et ses limites.`;
+  const title = `${name} (${record.typeLabel[locale]})`;
   return {
-    title: `${name} (${record.typeLabel[locale]})`,
+    title,
     description,
     alternates: localizedAlternates(locale, {
       en: placePagePath("en", record.geography, record.code),
       fr: placePagePath("fr", record.geography, record.code),
     }),
+    // og:image comes from the route's opengraph-image file. The X card names
+    // the same image rather than a twitter-image copy of it, which would
+    // double the build's 6,092 generated cards for identical bytes.
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [{ url: receiptPath(locale, record), alt: receiptAlt(locale), ...RECEIPT_SIZE }],
+    },
   };
 }
