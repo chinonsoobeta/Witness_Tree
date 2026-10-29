@@ -60,7 +60,7 @@ const COPY = {
     coverageText:
       "Le registre couvre la Colombie-Britannique, l’Alberta, l’Ontario et le Québec, à partir de données nationales. Au Québec, au nord du 52e parallèle, il n’y a que des données nationales, sans registres locaux supplémentaires. La couverture est établie à partir de la zone réellement cartographiée, et non du seul nom de la province.",
     unmapped: "Là où la source n’a pas de données",
-    unmappedText: "La source satellitaire de couverture terrestre (NTEMS VLCE2) ne couvre que les régions forestières du Canada\u202F: elle n’a donc pas de données pour 46 424 717,91 hectares de ces quatre provinces, soit 22 204 952,19 au Québec, 15 372 023,76 en Alberta, 8 843 646,69 en Ontario et 4 095,27 en Colombie-Britannique. Elle laisse de côté la plupart des Prairies et du sud habité, ainsi que le Grand Nord québécois au-delà de la forêt dense\u202F; en Colombie-Britannique, la petite lacune se situe surtout le long du littoral. L’absence de données ne veut pas dire l’absence de forêt, et nous ne la traitons jamais ainsi.",
+    unmappedText: "La source satellitaire de couverture terrestre (NTEMS VLCE2) ne couvre que les régions forestières du Canada\u202F: elle n’a donc pas de données pour 46\u00A0424\u00A0717,91 hectares de ces quatre provinces, soit 22\u00A0204\u00A0952,19 au Québec, 15\u00A0372\u00A0023,76 en Alberta, 8\u00A0843\u00A0646,69 en Ontario et 4\u00A0095,27 en Colombie-Britannique. Elle laisse de côté la plupart des Prairies et du sud habité, ainsi que le Grand Nord québécois au-delà de la forêt dense\u202F; en Colombie-Britannique, la petite lacune se situe surtout le long du littoral. L’absence de données ne veut pas dire l’absence de forêt, et nous ne la traitons jamais ainsi.",
     unmappedKnowledge: "Ce que nous savons de la zone sans données",
     unmappedKnowledgeText:
       "Nous ne supposons pas que ce territoire est sans forêt, et nous détenons des documents datés sur les travaux forestiers qui y ont été faits, mais leur usage public n’est pas encore autorisé. Nous avons tenté d’estimer la perte à partir d’images satellites remontant à 1984, mais les images ne montrent pas si le territoire répondait à la définition de la forêt (cimes couvrant au moins 10\u00A0% du sol, arbres pouvant atteindre 5 mètres) en 1984, et une année de départ plus récente n’a pas aidé. Pour trancher, il faudrait des placettes de terrain, des photos aériennes ou des données lidar.",
@@ -77,7 +77,7 @@ const COPY = {
     provincialMatchingText: "",
     limits: "Ce que ce registre n’affirme pas",
     limitsText:
-      "Nous ne qualifions jamais une perte détectée d’exploitation, de déforestation, d’infraction ou de faute d’une organisation désignée. Lorsqu’aucun registre officiel n’existe, nous le disons au lieu d’inscrire un chiffre.",
+      "Nous ne qualifions jamais une perte détectée d’exploitation forestière, de déforestation, d’infraction ou de faute d’une organisation désignée. Lorsqu’aucun registre officiel n’existe, nous le disons au lieu d’inscrire un chiffre.",
   },
 } as const;
 
