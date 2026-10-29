@@ -37,9 +37,9 @@ async function pinRiding(page: Page) {
   // Keyboard order: the years, the chosen format, then the actions.
   const panel = page.locator(".explore-timelapse");
   await page.keyboard.press("Tab");
-  await expect(panel.getByLabel("From")).toBeFocused();
+  await expect(panel.locator("#explore-timelapse-from")).toBeFocused();
   await page.keyboard.press("Tab");
-  await expect(panel.getByLabel("To", { exact: true })).toBeFocused();
+  await expect(panel.locator("#explore-timelapse-to")).toBeFocused();
   await page.keyboard.press("Tab");
   await expect(panel.getByRole("radio", { name: /^Animated PNG/ })).toBeFocused();
   await page.keyboard.press("Tab");
