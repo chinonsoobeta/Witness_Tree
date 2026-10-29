@@ -344,6 +344,39 @@ test("renders a real community page in each language from its checked-in record"
   assert.match(french, /href="\/fr\/lieux\/1984-2022-v1\/er-2021\/\d{4}"/);
 });
 
+test("a federal and a provincial riding each serve a one-page print sheet in both languages, and a community does not", async () => {
+  const sheets = [
+    { pathname: "/en/places/1984-2022-v1/federal-2023/24002/print", lang: "en", button: "Print or save as PDF", measure: "Detected loss as a share of mapped forest" },
+    { pathname: "/fr/lieux/1984-2022-v1/federal-2023/24002/print", lang: "fr", button: "Imprimer ou enregistrer en PDF", measure: "Perte détectée en part de la forêt cartographiée" },
+    { pathname: "/en/places/1984-2022-v1/bc-2023/258/print", lang: "en", button: "Print or save as PDF", measure: "Detected loss as a share of mapped forest" },
+    { pathname: "/fr/lieux/1984-2022-v1/bc-2023/258/print", lang: "fr", button: "Imprimer ou enregistrer en PDF", measure: "Perte détectée en part de la forêt cartographiée" },
+  ];
+  for (const { pathname, lang, button, measure } of sheets) {
+    const response = await render(pathname);
+    assert.equal(response.status, 200, pathname);
+    const html = await response.text();
+    const page = pathname.slice(0, -"/print".length);
+    assert.match(html, new RegExp(`<html lang="${lang}">`), pathname);
+    assert.match(html, /<main\b[^>]*id="main"/, pathname);
+    assert.match(html, /<h1>[^<]+<\/h1>/, pathname);
+    assert.match(html, new RegExp(`<button type="button" class="btn btn--primary">${button}</button>`), pathname);
+    assert.match(html, /<meta name="robots" content="noindex, follow"/, pathname);
+    assert.match(html, new RegExp(measure), pathname);
+    assert.match(html, /<svg[^>]*class="hf-chart-svg"[^>]*role="img"/, pathname);
+    assert.match(html, /dataset\/2785c103-9c2d-429b-9f3d-89f5cd9ea94d/, pathname);
+    // The page address prints in plain text, and the back link goes to the riding's page.
+    assert.ok(html.includes(`https://www.witnesstree.ca${pathname}`), pathname);
+    assert.ok(html.includes(`<a href="${page}">`), pathname);
+    // No navigation shell, ranking position or colour scale on the sheet.
+    assert.doesNotMatch(html, /class="site-shell"/, pathname);
+    assert.doesNotMatch(html, /\b(rank|ranked|classement|rang)\b/i, pathname);
+  }
+  assert.match(await (await render("/en/places/1984-2022-v1/federal-2023/24002/print")).text(), /<h1>Abitibi—Témiscamingue<\/h1>/);
+  assert.equal((await render("/en/places/1984-2022-v1/csd-2021/5924034/print")).status, 404);
+  assert.equal((await render("/fr/lieux/1984-2022-v1/er-2021/5910/print")).status, 404);
+  assert.equal((await render("/en/places/1984-2022-v1/federal-2023/00000/print")).status, 404);
+});
+
 test("a place page's social image and download are its own share card, a 1200 by 630 PNG", async () => {
   const pages = [
     { pathname: "/en/places/1984-2022-v1/csd-2021/5924034", alt: /Share card for this place/ },
@@ -372,6 +405,106 @@ test("a place page's social image and download are its own share card, a 1200 by
     assert.deepEqual([bytes.readUInt32BE(16), bytes.readUInt32BE(20)], [1200, 630]);
   }
   assert.equal((await fetch(`${origin}/en/places/1984-2022-v1/csd-2021/0000000/opengraph-image`)).status, 404);
+});
+
+/*
+ * Feature plan item 3. A place's embed is the one route another site may frame:
+ * it drops X-Frame-Options, allows any ancestor and runs no script. Every other
+ * route, the place page and the oEmbed answer included, keeps DENY and
+ * frame-ancestors 'none' (the header test above pins the full policy on /en).
+ */
+test("an embed may be framed by any site, and every other route refuses to be framed", async () => {
+  for (const pathname of ["/en/embed/1984-2022-v1/csd-2021/5924034", "/fr/integrer/1984-2022-v1/csd-2021/5924034"]) {
+    const response = await fetch(`${origin}${pathname}`);
+    assert.equal(response.status, 200, pathname);
+    assert.equal(response.headers.get("x-frame-options"), null, pathname);
+    const policy = response.headers.get("content-security-policy") ?? "";
+    assert.match(policy, /(?:^|; )frame-ancestors \*(?:;|$)/, pathname);
+    assert.match(policy, /(?:^|; )script-src 'none'(?:;|$)/, pathname);
+    assert.equal(response.headers.get("x-content-type-options"), "nosniff", pathname);
+    assert.equal(response.headers.get("strict-transport-security"), "max-age=31536000", pathname);
+  }
+  for (const pathname of ["/en", "/en/places/1984-2022-v1/csd-2021/5924034", "/fr/lieux/1984-2022-v1/csd-2021/5924034", `/api/oembed?url=${encodeURIComponent("https://www.witnesstree.ca/en/places/1984-2022-v1/csd-2021/5924034")}`, "/en/embed"]) {
+    const response = await fetch(`${origin}${pathname}`);
+    assert.equal(response.headers.get("x-frame-options"), "DENY", pathname);
+    assert.match(response.headers.get("content-security-policy") ?? "", /(?:^|; )frame-ancestors 'none'(?:;|$)/, pathname);
+  }
+});
+
+test("renders a place's embed in each language: the card alone, versioned, with its caveats and a named link back", async () => {
+  const cases = [
+    { pathname: "/en/embed/1984-2022-v1/csd-2021/5924034", locale: "en", page: "/en/places/1984-2022-v1/csd-2021/5924034", text: [/Forest lost at least once|lost at least once/i, /Open Government Licence – Canada/, /Preview figures/, /Coverage:/, /Data version/] },
+    { pathname: "/fr/integrer/1984-2022-v1/csd-2021/5924034", locale: "fr", page: "/fr/lieux/1984-2022-v1/csd-2021/5924034", text: [/Licence du gouvernement ouvert – Canada/, /Chiffres préliminaires/, /Couverture\u202F:/, /Version des données/] },
+  ];
+  for (const { pathname, locale, page, text } of cases) {
+    const response = await fetch(`${origin}${pathname}`);
+    assert.equal(response.status, 200, pathname);
+    assert.match(response.headers.get("content-type"), /^text\/html/);
+    const html = await response.text();
+    assert.match(html, new RegExp(`<html lang="${locale}">`));
+    assert.match(html, /<title>[^<]*Campbell River[^<]*<\/title>/);
+    assert.match(html, /<meta name="robots" content="noindex">/);
+    assert.match(html, /<article class="embed" aria-labelledby="embed-name" data-version="1984-2022-v1"/);
+    assert.match(html, /<h1 id="embed-name">Campbell River<\/h1>/);
+    assert.match(html, /4,518\.63 ha|4[\u00a0\u202f]518,63 ha/);
+    assert.match(html, /<dd>1984-2022-v1<\/dd>/);
+    assert.match(html, /<dd>statcan-2021-census-subdivisions-cbf<\/dd>/);
+    for (const pattern of text) assert.match(html, pattern, `${pathname} ${pattern}`);
+    const links = [...html.matchAll(/<a\b([^>]*)>([^<]+)<\/a>/g)];
+    assert.equal(links.length, 1, `${pathname} has one control, its link back`);
+    assert.ok(links[0][1].includes(`href="https://www.witnesstree.ca${page}" target="_blank" rel="noopener"`), `${pathname} links back to its place page in a new tab`);
+    assert.match(links[0][2], /Campbell River/);
+    // No Next.js runtime, navigation, analytics or any other script.
+    assert.doesNotMatch(html, /<script\b|<nav\b|_next\/static|_vercel/);
+  }
+  assert.equal((await fetch(`${origin}/en/embed/1984-2022-v1/csd-2021/0000000`)).status, 404);
+  assert.equal((await fetch(`${origin}/fr/integrer/1984-2022-v0/csd-2021/5924034`)).status, 404);
+});
+
+test("the oEmbed endpoint answers for a place page in either language, refuses anything else, and the place page announces it", async () => {
+  for (const [locale, page, embed] of [
+    ["en", "/en/places/1984-2022-v1/csd-2021/5924034", "/en/embed/1984-2022-v1/csd-2021/5924034"],
+    ["fr", "/fr/lieux/1984-2022-v1/csd-2021/5924034", "/fr/integrer/1984-2022-v1/csd-2021/5924034"],
+  ]) {
+    const placeUrl = `https://www.witnesstree.ca${page}`;
+    const response = await fetch(`${origin}/api/oembed?url=${encodeURIComponent(placeUrl)}&format=json`);
+    assert.equal(response.status, 200, locale);
+    assert.match(response.headers.get("content-type"), /^application\/json/);
+    const body = await response.json();
+    assert.equal(body.version, "1.0");
+    assert.equal(body.type, "rich");
+    assert.equal(body.provider_url, "https://www.witnesstree.ca");
+    assert.match(body.title, /Campbell River/);
+    assert.ok(body.html.startsWith(`<iframe src="https://www.witnesstree.ca${embed}" title="`), body.html);
+    assert.deepEqual([body.width, body.height], [560, 560]);
+
+    // The place page names the endpoint in its head and offers the same code.
+    const html = await (await render(page)).text();
+    const discovery = `/api/oembed?url=${encodeURIComponent(placeUrl)}&amp;format=json`;
+    assert.ok(html.includes(`<link rel="alternate" type="application/json+oembed" href="https://www.witnesstree.ca${discovery}"`), `${page} oEmbed discovery`);
+    const snippet = /<textarea id="place-embed-code"[^>]*readOnly=""[^>]*>([^<]*)<\/textarea>|<textarea[^>]*id="place-embed-code"[^>]*>([^<]*)<\/textarea>/i.exec(html);
+    assert.ok(snippet, `${page} embed code`);
+    const code = (snippet[1] ?? snippet[2]).replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&amp;/g, "&");
+    assert.equal(code, body.html, `${page} offers the code oEmbed returns`);
+    assert.match(html, /<label for="place-embed-code">/);
+    assert.match(html, locale === "en" ? /href="\/en\/terms#embedding"/ : /href="\/fr\/conditions#embedding"/);
+  }
+  for (const [query, status] of [
+    ["", 400],
+    [`url=${encodeURIComponent("https://www.witnesstree.ca/en/explore")}`, 404],
+    [`url=${encodeURIComponent("https://example.com/en/places/1984-2022-v1/csd-2021/5924034")}`, 404],
+    [`url=${encodeURIComponent("https://www.witnesstree.ca/en/places/1984-2022-v1/csd-2021/0000000")}`, 404],
+  ]) {
+    const response = await fetch(`${origin}/api/oembed?${query}`);
+    assert.equal(response.status, status, query);
+    assert.match(response.headers.get("content-type"), /application\/json/);
+  }
+  const posted = await fetch(`${origin}/api/oembed?url=${encodeURIComponent("https://www.witnesstree.ca/en/places/1984-2022-v1/csd-2021/5924034")}`, { method: "POST", body: "{}" });
+  assert.equal(posted.status, 405);
+
+  const terms = await Promise.all([render("/en/terms"), render("/fr/conditions")].map(async (response) => (await response).text()));
+  assert.match(terms[0], /<h2 id="embedding">Embedding a figure \(draft for the owner’s approval\)/);
+  assert.match(terms[1], /<h2 id="embedding">Intégration d’un chiffre \(ébauche/);
 });
 
 test("renders localized search results and the Explore table without browser JavaScript, including from an old List address", async () => {

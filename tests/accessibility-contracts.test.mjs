@@ -32,6 +32,18 @@ test("unlabelled input fails", () => rejects({ "components/Input.tsx": "<input t
 test("image without alt fails", () => rejects({ "components/Image.tsx": "<img src=\"tree.png\" />" }, /img requires alt/));
 test("button without type fails", () => rejects({ "components/Button.tsx": "<button>Open</button>" }, /button requires an explicit type/));
 
+// The embedded figure is a .ts module that writes its own HTML document.
+const embed = (body) => `const page = \`<!DOCTYPE html><html lang="en"><head><title>Forest lost in X</title></head><body>${body}</body></html>\`;`;
+const card = '<article aria-labelledby="embed-name"><h1 id="embed-name">X</h1><a href="https://example.test/">Full record for X</a></article>';
+test("an embedded document with a title, a labelled card and a named link passes, and a plain module is not audited", async () => {
+  const root = await fixture({ "lib/embed/card.ts": embed(card), "lib/embed/paths.ts": "export const a = '<a></a>';" });
+  try { assert.deepEqual(await checkAccessibilityContracts([root]), { files: 1 }); } finally { await rm(root, { recursive: true }); }
+});
+test("an embedded document without a title fails", () => rejects({ "lib/embed/card.ts": embed(card).replace("<title>Forest lost in X</title>", "<title></title>") }, /non-empty title/));
+test("an embedded card not labelled by its heading fails", () => rejects({ "lib/embed/card.ts": embed(card.replace('id="embed-name"', 'id="other"')) }, /article labelled by its heading/));
+test("an embedded link without a name fails", () => rejects({ "lib/embed/card.ts": embed(card.replace("Full record for X", " ")) }, /link requires a name/));
+test("an embedded document with a script fails", () => rejects({ "lib/embed/card.ts": embed(`${card}<script>1</script>`) }, /no script and no control/));
+
 // A hidden input carries no accessible name and cannot be focused, so requiring one would
 // force meaningless aria-label noise onto form state. The exemption must stay narrow: it keys
 // on type="hidden" alone, and every other input still fails without a name.

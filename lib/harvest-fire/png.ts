@@ -143,7 +143,7 @@ export function drawHarvestFirePng(
         ctx.font = `12px ${FONT}`;
         ctx.textAlign = "center";
         ctx.textBaseline = "alphabetic";
-        ctx.fillText(bar.text, bar.x + bar.width / 2, bar.y - 6);
+        ctx.fillText(bar.text, bar.x + bar.width / 2, bar.labelY - 1);
       }
     }
     if (bin.showLabel) {

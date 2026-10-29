@@ -18,30 +18,40 @@ export const REQUIRED_ROUTE_PAIRS = [
   { en: '/en/explore', fr: '/fr/explorer' },
   { en: '/en/search', fr: '/fr/recherche' },
   { en: '/en/places/[dataVersion]/[geography]/[code]', fr: '/fr/lieux/[dataVersion]/[geography]/[code]' },
+  { en: '/en/places/[dataVersion]/[geography]/[code]/print', fr: '/fr/lieux/[dataVersion]/[geography]/[code]/print' },
   { en: '/en/components/example-places/[placeId]', fr: '/fr/composants/exemples-lieux/[placeId]' },
   { en: '/en/location/[locationId]', fr: '/fr/emplacement/[locationId]' },
   { en: '/en/glossary', fr: '/fr/glossaire' },
   { en: '/en/corrections', fr: '/fr/corrections' },
   { en: '/en/terms', fr: '/fr/conditions' },
+  { en: '/en/embed/[dataVersion]/[geography]/[code]', fr: '/fr/integrer/[dataVersion]/[geography]/[code]' },
 ];
 
 const sourceExtensions = ['.tsx', '.ts', '.jsx', '.js'];
 
+// A route is a page, or a route handler that serves a whole document itself
+// (the embedded figure, which carries no Next.js runtime).
 async function routeFile(routesRoot, route) {
   const directory = path.join(routesRoot, route.replace(/^\//, ''));
-  for (const extension of sourceExtensions) {
-    const candidate = path.join(directory, `page${extension}`);
-    try {
-      await access(candidate);
-      return candidate;
-    } catch (error) {
-      if (error.code !== 'ENOENT') throw error;
+  for (const name of ['page', 'route']) {
+    for (const extension of sourceExtensions) {
+      const candidate = path.join(directory, `${name}${extension}`);
+      try {
+        await access(candidate);
+        return candidate;
+      } catch (error) {
+        if (error.code !== 'ENOENT') throw error;
+      }
     }
   }
   return null;
 }
 
-function hasLocaleContent(source, locale) {
+// A page renders its locale's shell; a route handler's GET passes its locale to the renderer.
+function hasLocaleContent(source, locale, file) {
+  if (path.basename(file).startsWith('route.')) {
+    return /export\s+(?:async\s+)?function\s+GET\b/.test(source) && new RegExp(`\\(\\s*"${locale}"`).test(source);
+  }
   return source.includes(`locale="${locale}"`) && /export\s+default\s+(?:async\s+)?function/.test(source);
 }
 
@@ -56,8 +66,8 @@ export async function checkBilingual({ routesRoot, pairs = REQUIRED_ROUTE_PAIRS 
       continue;
     }
     const [english, french] = await Promise.all([readFile(englishFile, 'utf8'), readFile(frenchFile, 'utf8')]);
-    if (!hasLocaleContent(english, 'en')) failures.push(`${pair.en}: missing required English translation token or content`);
-    if (!hasLocaleContent(french, 'fr')) failures.push(`${pair.fr}: missing required French translation token or content`);
+    if (!hasLocaleContent(english, 'en', englishFile)) failures.push(`${pair.en}: missing required English translation token or content`);
+    if (!hasLocaleContent(french, 'fr', frenchFile)) failures.push(`${pair.fr}: missing required French translation token or content`);
   }
 
   if (failures.length) throw new Error(`Bilingual parity check failed:\n- ${failures.join('\n- ')}`);

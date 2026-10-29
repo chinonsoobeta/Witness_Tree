@@ -129,6 +129,25 @@ test("the chart labels every fifth single year and writes values only when there
   for (const bin of fives.bins) assert.ok(bin.harvest.x + bin.harvest.width < bin.fire.x, "a gap separates the pair");
 });
 
+test("a pair of bars of nearly the same height keeps its two values on separate lines", () => {
+  const quebec = harvestFireCharts(series, parseHarvestFireQuery({ provinces: "24" }))[0];
+  const geometry = chartGeometry(quebec, "fr", SVG_SIZE);
+  const close = geometry.bins.filter((b) => Math.abs(b.harvest.y - b.fire.y) < 13);
+  const apart = geometry.bins.filter((b) => Math.abs(b.harvest.y - b.fire.y) >= 13);
+  assert.ok(close.length > 0 && apart.length > 0, "Quebec's five-year bins hold both kinds of pair");
+  for (const bin of close) {
+    assert.ok(Math.abs(bin.harvest.labelY - bin.fire.labelY) >= 13, `${bin.label}: the two values share a line`);
+    const taller = bin.harvest.y <= bin.fire.y ? bin.harvest : bin.fire;
+    const shorter = taller === bin.harvest ? bin.fire : bin.harvest;
+    assert.equal(shorter.labelY, shorter.y - 5, "the shorter bar keeps its value at its top");
+    assert.ok(taller.labelY < taller.y - 5, "the taller bar's value is the one lifted");
+  }
+  for (const bin of apart) {
+    assert.equal(bin.harvest.labelY, bin.harvest.y - 5);
+    assert.equal(bin.fire.labelY, bin.fire.y - 5);
+  }
+});
+
 test("the downloaded image uses the light palette the site defines", () => {
   const css = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
   const root = css.slice(css.indexOf(":root {"), css.indexOf("@media (prefers-color-scheme: dark)"));

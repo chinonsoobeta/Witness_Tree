@@ -7,7 +7,31 @@ async function tsxFiles(root) {
   const entries = await readdir(root, { withFileTypes: true });
   return (await Promise.all(entries.map((entry) => entry.isDirectory()
     ? tsxFiles(path.join(root, entry.name))
-    : entry.isFile() && entry.name.endsWith(".tsx") ? [path.join(root, entry.name)] : []))).flat();
+    : entry.isFile() && /\.tsx?$/.test(entry.name) ? [path.join(root, entry.name)] : []))).flat();
+}
+
+/** A module that writes a whole HTML document itself, such as the embedded figure, rather than rendering JSX. */
+const isHtmlDocument = (file, source) => file.endsWith(".ts") && /<!DOCTYPE html>/i.test(source);
+
+/*
+ * The embedded figure (lib/embed/card.ts) is framed by other sites, so it is
+ * read inside someone else's page. It must name itself (a document language and
+ * title, and a card labelled by its heading), its one control must be a link
+ * with a name, and it may carry no script or other control, which is also its
+ * clickjacking mitigation (docs/THREAT_MODEL.md).
+ */
+function auditHtmlDocument(file, source) {
+  const failures = [];
+  if (!/<html\b[^>]*\blang="/.test(source)) failures.push(`${file}: an HTML document requires html lang.`);
+  if (!/<title>[^<]+<\/title>/.test(source)) failures.push(`${file}: an HTML document requires a non-empty title.`);
+  const labelled = /<article\b[^>]*\baria-labelledby="([^"]+)"/.exec(source)?.[1];
+  if (!labelled || !new RegExp(`<h[1-6]\\b[^>]*\\bid="${labelled}"`).test(source)) failures.push(`${file}: the card requires an article labelled by its heading.`);
+  for (const link of source.matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a>/g)) {
+    if (!/\bhref="/.test(link[1])) failures.push(`${file}: a link requires an href.`);
+    if (!link[2].trim()) failures.push(`${file}: a link requires a name.`);
+  }
+  if (/<(?:script|button|input|select|textarea|form|iframe)\b/i.test(source)) failures.push(`${file}: an embedded document may carry no script and no control but its links.`);
+  return failures;
 }
 
 function tags(source, tag) {
@@ -60,14 +84,16 @@ function auditFile(file, source) {
   return failures;
 }
 
-export async function checkAccessibilityContracts(roots = [path.resolve("app"), path.resolve("components")]) {
-  const files = (await Promise.all(roots.map(tsxFiles))).flat();
-  const failures = (await Promise.all(files.map(async (file) => auditFile(file, await readFile(file, "utf8"))))).flat();
+export async function checkAccessibilityContracts(roots = [path.resolve("app"), path.resolve("components"), path.resolve("lib/embed")]) {
+  const sources = await Promise.all((await Promise.all(roots.map(tsxFiles))).flat().map(async (file) => [file, await readFile(file, "utf8")]));
+  // A plain .ts module is audited only when it writes an HTML document.
+  const audited = sources.filter(([file, source]) => file.endsWith(".tsx") || isHtmlDocument(file, source));
+  const failures = audited.flatMap(([file, source]) => [...auditFile(file, source), ...(isHtmlDocument(file, source) ? auditHtmlDocument(file, source) : [])]);
   if (failures.length) throw new Error(`Accessibility contract check failed:\n- ${failures.join("\n- ")}`);
-  return { files: files.length };
+  return { files: audited.length };
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   const result = await checkAccessibilityContracts();
-  console.log(`Accessibility contracts passed for ${result.files} TSX files.`);
+  console.log(`Accessibility contracts passed for ${result.files} TSX files and HTML documents.`);
 }

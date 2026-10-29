@@ -50,3 +50,13 @@ export function ridingPagePath(locale: Locale, ridingId: string): string | null 
 export function communityPagePath(locale: Locale, csdCode: string): string {
   return placePagePath(locale, "csd-2021", csdCode);
 }
+
+/** The federal and provincial riding layers, the geographies that have a print sheet. */
+export const RIDING_GEOGRAPHIES: readonly PlaceGeography[] = ["federal-2023", "bc-2023", "ab-2019", "on-2022", "qc-2026"];
+
+export const isRidingGeography = (geography: string): boolean => (RIDING_GEOGRAPHIES as readonly string[]).includes(geography);
+
+/** A riding's one-page print sheet, under its place page in the same language. */
+export function ridingSheetPath(locale: Locale, geography: PlaceGeography, code: string): string {
+  return `${placePagePath(locale, geography, code)}/print`;
+}

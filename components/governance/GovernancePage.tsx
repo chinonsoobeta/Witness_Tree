@@ -11,6 +11,8 @@ type Section = Readonly<{
   items?: readonly string[];
   /** A link with a format is a file download and is drawn as a file tile, as on the Data page. */
   links?: readonly Readonly<{ label: string; href: string; format?: string }>[];
+  /** The heading's anchor, for a link from another page. */
+  id?: string;
 }>;
 type PageCopy = Readonly<{
   title: string;
@@ -248,6 +250,16 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
           ],
           items: TERMS_LICENCES.en,
         },
+        {
+          // A draft for the owner's approval (2026-10-29); place pages link here from "Embed this figure".
+          id: "embedding",
+          heading: "Embedding a figure (draft for the owner’s approval)",
+          paragraphs: [
+            "Another site may show a place’s figure in a frame, using the code on the place’s page. The frame must show the whole card: don’t crop, cover or restyle it to hide the attribution, the licence line, the data version or an Unknown statement, and don’t present the figure as your own finding or as an official record.",
+            "The embed carries the licence line of its sources, and each source keeps its own licence, as listed above. It names the data version it shows, so a copy or a screenshot says which data it comes from.",
+            "This clause is a draft. It has no effect until the owner approves it.",
+          ],
+        },
       ],
     },
     fr: {
@@ -271,6 +283,16 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
             "Chaque source de données garde sa propre licence, et aucun des éditeurs ci-dessous n’approuve ce site. Le site utilise ces sources selon ces licences et mentions\u202F:",
           ],
           items: TERMS_LICENCES.fr,
+        },
+        {
+          // Draft clause and draft French, both for the owner's review (2026-10-29).
+          id: "embedding",
+          heading: "Intégration d’un chiffre (ébauche soumise à l’approbation du propriétaire)",
+          paragraphs: [
+            "Un autre site peut afficher le chiffre d’un lieu dans un cadre, au moyen du code fourni sur la page de ce lieu. Le cadre doit montrer la carte entière\u202F: ne la recadrez pas, ne la masquez pas et n’en modifiez pas l’apparence pour cacher l’attribution, la ligne de licence, la version des données ou une mention Inconnu, et ne présentez pas le chiffre comme votre propre constat ni comme un registre officiel.",
+            "L’intégration porte la ligne de licence de ses sources, et chaque source garde sa propre licence, comme l’indique la liste ci-dessus. Elle nomme la version des données qu’elle montre, de sorte qu’une copie ou une capture d’écran indique de quelles données elle provient.",
+            "Cette clause est une ébauche. Elle n’a aucun effet tant que le propriétaire ne l’a pas approuvée.",
+          ],
         },
       ],
     },
@@ -370,7 +392,7 @@ export function GovernancePage({
             <p className="governance-index" aria-hidden="true">
               {String(index + 1).padStart(2, "0")}
             </p>
-            <h2>{section.heading}</h2>
+            <h2 id={section.id}>{section.heading}</h2>
             {section.paragraphs.map((paragraph) => (
               <p key={paragraph}>{paragraph}</p>
             ))}

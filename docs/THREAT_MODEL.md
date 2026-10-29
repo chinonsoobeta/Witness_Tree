@@ -62,6 +62,33 @@ their limits. Local browser checks do not prove the deployed CDN or map. An
 independent assessment should exercise hostile payloads, resource exhaustion,
 cache behavior, supply-chain compromise and the live deployment boundary.
 
+## Embedded figures and clickjacking
+
+Since 2026-10-29 a place's figure can be framed by any other site, at
+`/en/embed/<data version>/<geography>/<code>` and
+`/fr/integrer/<data version>/<geography>/<code>` (feature plan item 3). These
+paths, and only these, send `frame-ancestors *` and no `X-Frame-Options`; every
+other path keeps `frame-ancestors 'none'` and `X-Frame-Options: DENY`
+(`next.config.ts`, checked by `tests/security-headers.test.ts`,
+`tests/rendered-html.test.mjs` and `tests/browser/embed-framing.spec.ts`).
+
+Framing a page lets the framing site lay its own content over it and trick a
+reader into clicking something they cannot see. The mitigation is that the
+embed has nothing to click except one link back to the place page, which opens
+in a new tab: it has no form, button, account, setting or script, its policy is
+`script-src 'none'`, and `npm run check:accessibility` fails if a script or any
+other control is added to it. The worst a hostile frame can do is send a reader
+to the place page, or show the figure without its caveats by cropping or
+covering the frame. The draft embed terms forbid that cropping; nothing
+technical can prevent it, and the place page remains the authority. The
+oEmbed endpoint (`/api/oembed`) returns only an iframe for an existing place
+page on this site and keeps `DENY`. On 2026-10-29 the owner decided to keep
+`*` rather than an allow-list. The frame has no control, form, script or
+session, so there is nothing in it to hijack; a list would make every embedder
+ask first and would not stop a screenshot, which drops the caveats the frame
+keeps attached. Narrowing it later changes `EMBED_FRAME_ANCESTORS` in
+`next.config.ts`.
+
 ## SSD data root
 
 The root `/Volumes/Extended_SSD/Witness_Tree-data` crosses from external publishers
