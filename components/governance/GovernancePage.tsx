@@ -1,4 +1,5 @@
-import { PRODUCT_NAME, type Locale } from "@/lib/domain";
+import { correctionMailtoHref, type CorrectionsRecipient } from "@/lib/corrections/contact";
+import { colon, PRODUCT_NAME, type Locale } from "@/lib/domain";
 import { TERMS_LICENCES } from "./terms-licences";
 
 export type GovernancePageKind = "glossary" | "corrections" | "terms";
@@ -277,6 +278,55 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
 };
 
 /**
+ * The corrections page once the owner has named an accountable recipient. The
+ * interim instructions stop saying there is no way to send a correction, and a
+ * "Send a correction" section gives the recipient and a prefilled email link.
+ * Without a recipient the page is exactly the copy above.
+ */
+const SEND_CORRECTION: Record<
+  Locale,
+  Readonly<{ instructions: string; heading: string; paragraphs: (recipient: CorrectionsRecipient) => readonly string[]; linkLabel: string }>
+> = {
+  en: {
+    instructions: `If the mistake is in a source’s own record, follow the source link and use that publisher’s correction process. If it’s on ${enBrand}, note the page link, the exact words or number, the date and time, the language, why it looks wrong and any official source, then send them as described below.`,
+    heading: "Send a correction",
+    paragraphs: (recipient) => [
+      `Corrections go by email to the person accountable for them. Recipient${colon("en")} ${recipient.role.en}, ${recipient.email}.`,
+      "The link below opens your own email program with those headings filled in. Nothing is sent until you send it, and the site itself doesn’t receive or keep your message.",
+      "Include only your reply address and the details above. Don’t add any other personal information, and don’t include anything about other people.",
+      "Sending an email doesn’t open a production correction case or start the response clock: no final data has been published, so the response times above don’t apply yet.",
+    ],
+    linkLabel: "Write a correction email",
+  },
+  fr: {
+    instructions: `Si l’erreur se trouve dans le registre d’une source, suivez le lien source et utilisez le processus de correction de cet éditeur. Si elle se trouve sur ${frBrand}, notez le lien de la page, les mots ou le chiffre exacts, la date et l’heure, la langue, pourquoi l’information semble erronée et toute source officielle, puis envoyez-les comme il est indiqué ci-dessous.`,
+    heading: "Envoyer une correction",
+    paragraphs: (recipient) => [
+      `Les corrections sont envoyées par courriel à la personne qui en est responsable. Destinataire${colon("fr")} ${recipient.role.fr}, ${recipient.email}.`,
+      "Le lien ci-dessous ouvre votre propre logiciel de courriel avec ces rubriques déjà inscrites. Rien n’est envoyé tant que vous ne l’envoyez pas, et le site lui-même ne reçoit ni ne conserve votre message.",
+      "N’indiquez que votre adresse de réponse et les renseignements ci-dessus. N’ajoutez aucun autre renseignement personnel et rien qui concerne d’autres personnes.",
+      "L’envoi d’un courriel n’ouvre pas de dossier de correction de production et ne déclenche aucun délai de réponse\u202F: aucune donnée définitive n’a été publiée, donc les délais ci-dessus ne s’appliquent pas encore.",
+    ],
+    linkLabel: "Rédiger un courriel de correction",
+  },
+};
+
+function correctionsWithRecipient(locale: Locale, recipient: CorrectionsRecipient): PageCopy {
+  const base = PAGES.corrections[locale];
+  const copy = SEND_CORRECTION[locale];
+  const [serviceLevels, publicRecord, interim] = base.sections;
+  return {
+    ...base,
+    sections: [
+      serviceLevels!,
+      publicRecord!,
+      { ...interim!, paragraphs: [copy.instructions] },
+      { heading: copy.heading, paragraphs: copy.paragraphs(recipient), links: [{ label: copy.linkLabel, href: correctionMailtoHref(recipient, locale) }] },
+    ],
+  };
+}
+
+/**
  * The single source of truth for a governance route's document title. Fourteen
  * route files shipped without a `metadata` export and therefore without a
  * title; they now read it from the same copy the page renders, so a title and
@@ -292,8 +342,14 @@ export function governancePageTitle(
 export function GovernancePage({
   kind,
   locale,
-}: Readonly<{ kind: GovernancePageKind; locale: Locale }>) {
-  const page = PAGES[kind][locale];
+  correctionsRecipient = null,
+}: Readonly<{
+  kind: GovernancePageKind;
+  locale: Locale;
+  /** Only the corrections page reads this; null keeps the no-route wording. */
+  correctionsRecipient?: CorrectionsRecipient | null;
+}>) {
+  const page = kind === "corrections" && correctionsRecipient ? correctionsWithRecipient(locale, correctionsRecipient) : PAGES[kind][locale];
   return (
     <main id="main" className="page-wrap governance-page">
       <header className="masthead">
