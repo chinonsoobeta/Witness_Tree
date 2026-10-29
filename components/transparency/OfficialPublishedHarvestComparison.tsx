@@ -45,6 +45,8 @@ const COPY = {
     nfd: "NFD, Table 5.2; edition undeclared",
     all: "All provinces",
     province: "Province",
+    filter: "Show one province",
+    shown: (shown: number, total: number) => shown === total ? `All ${total} rows are shown.` : `${shown} of ${total} rows are shown.`,
     interval: "Years",
     witness: "Detected forest loss (ha)",
     reference: "Reported harvest (ha)",
@@ -85,6 +87,8 @@ const COPY = {
     nfd: "BDNF, tableau 5.2\u202F; édition non déclarée",
     all: "Toutes les provinces",
     province: "Province",
+    filter: "Afficher une province",
+    shown: (shown: number, total: number) => shown === total ? `Les ${total} lignes sont affichées.` : `${shown} des ${total} lignes sont affichées.`,
     interval: "Années",
     witness: "Perte de forêt détectée (ha)",
     reference: "Récolte déclarée (ha)",
@@ -130,8 +134,11 @@ export function OfficialPublishedHarvestComparison({ rows, locale, province }: R
     <header className="masthead prose-measure"><p className="eyebrow">{text.eyebrow}</p><h1>{text.title}</h1><p className="dek">{text.lead}</p></header>
     <section className="content-section prose-measure"><h2>{text.scopeTitle}</h2><p>{text.scope}</p><p>{text.entitlement}</p><p>{text.rounding}</p><p>{text.withheld}</p>{hasNfd && <p>{text.nfdScope}</p>}<p><strong>{text.gate}</strong></p></section>
     <section className="content-section">
-      <nav aria-label={text.province} className="comparison-filters"><a href={base} aria-current={selectedProvince === null ? "page" : undefined}>{text.all}</a>{PROVINCES.map((item) => <a key={item} href={`${base}?province=${item}`} aria-current={selectedProvince === item ? "page" : undefined}>{item}</a>)}</nav>
-      <div className="table-scroll" tabIndex={0} role="region" aria-label={text.caption}><table><caption>{text.caption}{selectedProvince ? `${colon(locale)} ${selectedProvince}` : ""}</caption><thead><tr><th scope="col">{text.province}</th><th scope="col">{text.interval}</th><th scope="col">{text.witness}</th><th scope="col">{text.reference}</th><th scope="col">{text.difference}</th><th scope="col">{text.status}</th><th scope="col">{text.coverage}</th><th scope="col">{text.rowSource}</th></tr></thead><tbody>{visible.map((row) => {
+      <p className="comparison-filters-label" id="harvest-province-filter">{text.filter}</p>
+      <nav aria-labelledby="harvest-province-filter" className="comparison-filters"><a href={base} aria-current={selectedProvince === null ? "page" : undefined}>{text.all}</a>{PROVINCES.map((item) => <a key={item} href={`${base}?province=${item}`} aria-current={selectedProvince === item ? "page" : undefined}>{item}</a>)}</nav>
+      <p className="comparison-filters-count">{text.shown(visible.length, rows.length)}</p>
+      {/* The table scrolls inside its own box so its column headings stay in view over 132 rows. */}
+      <div className="table-scroll table-scroll--sticky" tabIndex={0} role="region" aria-label={text.caption}><table><caption>{text.caption}{selectedProvince ? `${colon(locale)} ${selectedProvince}` : ""}</caption><thead><tr><th scope="col">{text.province}</th><th scope="col">{text.interval}</th><th scope="col">{text.witness}</th><th scope="col">{text.reference}</th><th scope="col">{text.difference}</th><th scope="col">{text.status}</th><th scope="col">{text.coverage}</th><th scope="col">{text.rowSource}</th></tr></thead><tbody>{visible.map((row) => {
         const computed = row.comparisonStatus === "computed-rounded-reference";
         const nfd = row.referenceSourceId === "nfd-5.2-undeclared";
         const reference = nfd && row.referenceHectaresExact != null

@@ -104,10 +104,18 @@ export function ridingMeta(result: SiteSearchResult, locale: Locale): string {
   return `${levelName} · ${provinceCode(result)}`;
 }
 
-/** The Compare page for a federal riding, or null for a provincial one, which Compare does not cover. */
+/**
+ * The Compare page with a riding on the left. Search ids map onto Compare ids
+ * (see lib/comparison/real-adapter.ts): `CA-59001` is `federal-59001`, and a
+ * provincial `BC-258` is `provincial-BC-258`. Compare covers provincial
+ * ridings in British Columbia, Alberta, Ontario and Québec only; any other id
+ * has no Compare page.
+ */
 export function ridingCompareHref(ridingId: string, locale: Locale) {
-  if (!ridingId.startsWith("CA-")) return null;
-  return `${locale === "en" ? "/en/compare" : "/fr/comparer"}?left=${encodeURIComponent(`federal-${ridingId.slice(3)}`)}`;
+  const base = locale === "en" ? "/en/compare" : "/fr/comparer";
+  if (ridingId.startsWith("CA-")) return `${base}?left=${encodeURIComponent(`federal-${ridingId.slice(3)}`)}`;
+  if (/^(BC|AB|ON|QC)-./.test(ridingId)) return `${base}?left=${encodeURIComponent(`provincial-${ridingId}`)}`;
+  return null;
 }
 
 function completeFigure(row: RidingRow | undefined, locale: Locale) {

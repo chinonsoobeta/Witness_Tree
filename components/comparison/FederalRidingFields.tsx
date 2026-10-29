@@ -30,6 +30,9 @@ const COPY = {
     count: (total: number) => (total === 1 ? "1 riding matches." : `${total} ridings match.`),
     more: (shown: number, total: number) => `Showing ${shown} of ${total}. Keep typing to narrow the list.`,
     required: "Choose a riding from the list.",
+    level: { federal: "Federal", provincial: "Provincial" },
+    group: { federal: "Federal ridings", provincial: "Provincial ridings" },
+    choose: "Choose a riding",
   },
   fr: {
     placeholder: "Tapez une circonscription ou une province",
@@ -41,6 +44,9 @@ const COPY = {
     count: (total: number) => (total === 1 ? "1 circonscription correspond." : `${total} circonscriptions correspondent.`),
     more: (shown: number, total: number) => `${shown} sur ${total} affichées. Continuez à taper pour réduire la liste.`,
     required: "Choisissez une circonscription dans la liste.",
+    level: { federal: "Fédérale", provincial: "Provinciale" },
+    group: { federal: "Circonscriptions fédérales", provincial: "Circonscriptions provinciales" },
+    choose: "Choisissez une circonscription",
   },
 } as const;
 
@@ -48,21 +54,34 @@ const neverChanges = () => () => {};
 const hydrated = () => true;
 const notHydrated = () => false;
 
-/** The no-JavaScript list: grouped by province when every riding has one, as the select always was. */
-function RidingOptions({ choices }: { choices: readonly RidingChoice[] }) {
+/** "Provincial · British Columbia": a riding's level and province, which tell apart ridings of the same name. */
+function choiceMeta(choice: RidingChoice, locale: Locale) {
+  const level = COPY[locale].level[choice.level];
+  return choice.province ? `${level} · ${choice.province}` : level;
+}
+
+/**
+ * The no-JavaScript list: grouped by level and province when every riding has
+ * a province. A side with nothing chosen opens on an empty option, so the
+ * select never shows a riding the reader did not pick.
+ */
+function RidingOptions({ choices, locale, empty }: { choices: readonly RidingChoice[]; locale: Locale; empty: boolean }) {
+  const placeholder = empty ? <option value="">{COPY[locale].choose}</option> : null;
   if (choices.some((choice) => choice.province === null)) {
-    return <>{choices.map((choice) => <option key={choice.id} value={choice.id}>{choice.name}</option>)}</>;
+    return <>{placeholder}{choices.map((choice) => <option key={choice.id} value={choice.id}>{choice.name}</option>)}</>;
   }
-  const groups: { province: string; choices: RidingChoice[] }[] = [];
+  const groups: { label: string; choices: RidingChoice[] }[] = [];
   for (const choice of choices) {
+    const label = `${COPY[locale].group[choice.level]} · ${choice.province}`;
     const last = groups.at(-1);
-    if (last && last.province === choice.province) last.choices.push(choice);
-    else groups.push({ province: choice.province!, choices: [choice] });
+    if (last && last.label === label) last.choices.push(choice);
+    else groups.push({ label, choices: [choice] });
   }
   return (
     <>
+      {placeholder}
       {groups.map((group) => (
-        <optgroup key={group.province} label={group.province}>
+        <optgroup key={group.label} label={group.label}>
           {group.choices.map((choice) => <option key={choice.id} value={choice.id}>{choice.name}</option>)}
         </optgroup>
       ))}
@@ -147,7 +166,7 @@ function RidingTypeahead({ name, label, locale, choices, chosenId, exclude, onCh
           <span className="riding-chip-text" id={chipId}>
             <span className="sr-only">{text.chosen} </span>
             <span className="riding-chip-name">{chosen.name}</span>
-            {chosen.province ? <span className="riding-chip-meta">{chosen.province}</span> : null}
+            <span className="riding-chip-meta">{choiceMeta(chosen, locale)}</span>
           </span>
           <button
             type="button"
@@ -209,7 +228,7 @@ function RidingTypeahead({ name, label, locale, choices, chosenId, exclude, onCh
                   onMouseEnter={() => setActive(index)}
                 >
                   <span className="riding-typeahead-name">{choice.name}</span>
-                  {choice.province ? <span className="riding-typeahead-meta">{choice.province}</span> : null}
+                  <span className="riding-typeahead-meta">{choiceMeta(choice, locale)}</span>
                 </li>
               ))}
             </ul>
@@ -233,8 +252,8 @@ export function FederalRidingFields({
 }: Readonly<{
   locale: Locale;
   choices: readonly RidingChoice[];
-  leftId: string;
-  rightId: string;
+  leftId: string | null;
+  rightId: string | null;
   leftLabel: string;
   rightLabel: string;
 }>) {
@@ -247,14 +266,14 @@ export function FederalRidingFields({
       <>
         <label>
           {leftLabel}
-          <select name="left" defaultValue={leftId}>
-            <RidingOptions choices={choices} />
+          <select name="left" defaultValue={leftId ?? ""}>
+            <RidingOptions choices={choices} locale={locale} empty={leftId === null} />
           </select>
         </label>
         <label>
           {rightLabel}
-          <select name="right" defaultValue={rightId}>
-            <RidingOptions choices={choices} />
+          <select name="right" defaultValue={rightId ?? ""}>
+            <RidingOptions choices={choices} locale={locale} empty={rightId === null} />
           </select>
         </label>
       </>

@@ -19,6 +19,8 @@ export type RankedRiding = Readonly<{
   unmatchedSharePercent?: number | null;
   coverageGrade: CoverageGrade;
   measurementCoverage: "complete" | "partial-with-unknown" | "none-mapped";
+  /** An unmapped share below 1% that the owner admitted as complete (2026-10-03); the share is then of the mapped forest. */
+  admittedUnknownPercent?: number;
   evidence: EvidenceClass;
   sufficientCoverage: boolean;
 }>;
@@ -39,5 +41,6 @@ export type ComparisonPlace = Readonly<{
   forestedHectares: number;
   coverageGrade: CoverageGrade;
   measurementCoverage?: "complete" | "partial-with-unknown" | "none-mapped";
+  admittedUnknownPercent?: number;
   evidence: EvidenceClass;
 }>;

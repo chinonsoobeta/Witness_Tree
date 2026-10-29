@@ -3505,6 +3505,59 @@ dd > a:only-child {
   font-variant-numeric: tabular-nums lining-nums;
   font-size: 1rem;
 }
+/* Compare names a riding's level and province under its name, and an empty
+   side keeps its place in the pair with a prompt instead of another riding. */
+.comparison-level {
+  margin: 4px 0 0;
+  color: var(--ink-2);
+  font-family: var(--ui);
+  font-size: 13px;
+  font-weight: 400;
+}
+.comparison-card--empty {
+  border-style: dashed;
+  background: transparent;
+}
+.comparison-card--empty p,
+.comparison-empty {
+  color: var(--ink-2);
+}
+.comparison-selection-notice {
+  margin-bottom: 20px;
+}
+.comparison-selection-notice p:last-child {
+  margin-bottom: 0;
+}
+.comparison-ranking-summary,
+.comparison-ranking-more {
+  max-width: var(--measure);
+}
+.comparison-ranking-more {
+  margin-top: 16px;
+}
+/* The official-source table: a visible label for its filter, and headings
+   that stay in view while its rows scroll inside the box. The heading cells
+   are opaque because a sticky cell paints over the rows beneath it. */
+.comparison-filters-label {
+  margin: 0 0 8px;
+  font-family: var(--ui);
+  font-weight: 700;
+}
+.comparison-filters-count {
+  margin: -10px 0 12px;
+  color: var(--ink-2);
+}
+.table-scroll--sticky {
+  max-height: 75vh;
+  overflow: auto;
+}
+.table-scroll--sticky thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--ground);
+  box-shadow: inset 0 -1px 0 var(--rule-strong);
+}
 /* ==========================================================================
    Phase 5: record pages (place records and location results)
    ========================================================================== */
