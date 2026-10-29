@@ -280,6 +280,33 @@ spreadsheet, and it has no status column. The source is recorded as blocked in
 `npm run check:bc-timber-facilities-access`, which also fails if a facilities
 record is built while the block stands. Nothing was built: no record, page
 panel or table. The permission request is drafted and unsent.
+### Explore time-lapse export
+
+On 2026-10-28 Explore gained a time-lapse export. When a measured boundary (a
+federal or provincial riding, an economic region or a census subdivision) is
+pinned in the forest change, recorded harvest or wildfire mode, the boundary
+readout offers "Download the years as an animation". The reader picks a span and
+a format, each shown with its expected size: an animated PNG, a PNG contact
+sheet, or a WebM video where the browser can record a canvas. The export draws
+one frame per annual interval of the current view, at most 1280 px across, on a
+temporary hidden map copied from the live one, so the live map's figures, modes
+and year contract are unchanged. Every frame carries a strip with the place, the
+interval, the boundary set and its source, the evidence class (Satellite
+observation) and data version, the caveats (patches are simplified and not for
+counting; a boundary does not identify who is responsible), the licence line and
+the product name once. No frame shows hectare figures. The file is named for the
+place, the boundary set and the span.
+
+The pure parts (APNG writer, strip layout, contact sheet layout, sizes, file
+names, WebM feature detection) are in `lib/explore/timelapse.ts` and tested by
+`tests/explore-timelapse.test.ts`; the lazily loaded island is
+`components/explore/TimelapseExport.tsx`; `tests/browser/timelapse-export.spec.ts`
+exports two years in each format from a production build. It was tested only in
+headless Chromium; Firefox and Safari (including WebM support there) are
+unverified, and the size estimates are approximate. The French strings are
+Claude's drafts awaiting the owner's review. Because
+`components/explore/ExploreMapClient.tsx` changed, the deployed map render gate
+is stale until a redeploy and a fresh observation.
 
 ## Other formal phase counts
 

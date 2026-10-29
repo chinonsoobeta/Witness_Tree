@@ -1794,6 +1794,62 @@ h4 {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
+/* The time-lapse export panel, opened from a pinned boundary's readout. */
+.explore-timelapse {
+  display: grid;
+  gap: 10px;
+  padding: 12px 14px 14px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 13px;
+  line-height: 1.45;
+}
+.explore-timelapse h3 {
+  margin: 0;
+  font-size: 16px;
+}
+.explore-timelapse h3:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.explore-timelapse p {
+  margin: 0;
+}
+.explore-timelapse-years,
+.explore-timelapse-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+.explore-timelapse-years label {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
+.explore-timelapse-formats {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 8px 10px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+}
+.explore-timelapse-formats label {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.explore-timelapse progress {
+  width: 100%;
+  accent-color: var(--accent);
+}
+.explore-timelapse-note,
+.explore-timelapse-status {
+  color: var(--muted);
+}
 .explore-map-key {
   display: flex;
   flex: 1 1 100%;
