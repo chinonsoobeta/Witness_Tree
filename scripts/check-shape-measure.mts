@@ -60,8 +60,25 @@ if (!route.includes("request.json()")) fail("worker/shape.ts must read the shape
 if (/url\.searchParams|new URLSearchParams/.test(route)) {
   fail("worker/shape.ts must not put any part of the shape in a query string.");
 }
-for (const forbidden of ["history.pushState", "history.replaceState", "router.push", "router.replace"]) {
+for (const forbidden of ["history.pushState", "router.push", "router.replace"]) {
   if (client.includes(forbidden)) fail(`the drawing control must not write the shape into history with ${forbidden}.`);
+}
+// The one exception is a measured circle: its centre, rounded to about 100 m,
+// and its radius go into the address so the result can be shared. Every
+// history write must go through the builder that refuses anything else, or
+// clear the address back to the bare page.
+const historyWrites = [...client.matchAll(/history\.replaceState\(([^;]*)\);/g)].map((match) => match[1]);
+for (const write of historyWrites) {
+  if (!/,\s*(?:circleResultHref|drawPagePath)\(locale\b/.test(write)) {
+    fail("the drawing control may write only a circle's rounded centre and radius into history, through circleResultHref.");
+  }
+}
+if (client.split("history.replaceState(").length - 1 !== historyWrites.length) {
+  fail("every history write in the drawing control must be a single checked statement.");
+}
+const circle = read("lib/shapes/circle.ts");
+if (!circle.includes("A circle link carries only a latitude, a longitude and a radius.") || !circle.includes("toFixed(CIRCLE_CENTRE_DECIMALS)")) {
+  fail("lib/shapes/circle.ts must refuse anything but a rounded centre and a radius in a circle link.");
 }
 if (/<form[^>]*action=/.test(client)) fail("the drawing form must not navigate with the shape in the query.");
 if (!client.includes('method: "POST"')) fail("the drawing control must POST the shape.");
