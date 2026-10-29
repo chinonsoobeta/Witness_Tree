@@ -6057,7 +6057,7 @@ dd > a:only-child {
    (216 by 279 mm) and A4 (210 by 297 mm) share, inside 12 mm margins, so
    either paper takes it on one page (tests/browser/riding-sheet.spec.ts
    prints the longest wording on both). The paper keeps the light palette in
-   every theme, restated here because the dark theme redefines the tokens.
+   every theme through its own data-theme="light" subtree.
    The named page keeps these margins off every other page's printout.
    ========================================================================== */
 @page riding-sheet {
@@ -6081,14 +6081,8 @@ dd > a:only-child {
   font-size: var(--text-small);
 }
 .riding-sheet-page {
-  --ground: #fdfcf8;
-  --ink: #2c2c24;
-  --ink-2: #4a4a40;
-  --rule: #ded8cf;
-  --rule-strong: #948b7a;
-  --accent: #47593f;
-  --harvest: #2a78d6;
-  --fire: #eb6834;
+  /* The paper carries data-theme="light", so the light palette block applies
+     to it in every theme; no colour is restated here (check:hex-literals). */
   color-scheme: light;
   max-width: 794px;
   margin: 0 auto;

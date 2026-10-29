@@ -125,7 +125,7 @@ export function RidingSheet({ locale, record }: Readonly<{ locale: Locale; recor
         <p>{text.hint}</p>
       </div>
 
-      <article className="riding-sheet-page">
+      <article className="riding-sheet-page" data-theme="light">
         <header className="riding-sheet-head">
           <p className="riding-sheet-brand">{PRODUCT_NAME[locale]} · {record.typeLabel[locale]} · {summary.province}</p>
           <h1>{summary.name}</h1>
