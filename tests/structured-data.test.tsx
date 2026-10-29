@@ -110,7 +110,8 @@ for (const locale of ["en", "fr"] as const) {
     assert.equal(series.url, `https://www.witnesstree.ca${locale === "en" ? "/en/data/harvest-and-fire" : "/fr/donnees/recolte-et-incendies"}`);
     assert.equal(series.temporalCoverage, `${harvestFire.firstYear}/${harvestFire.lastYear}`);
     assert.equal(series.temporalCoverage, "1985/2022");
-    assert.equal(series.license, harvestFire.sources.licenceUrl);
+    // The record's own licence, plus the boundary file's, because the boundary file is a source.
+    assert.deepEqual(series.license, [harvestFire.sources.licenceUrl, "https://www.statcan.gc.ca/en/reference/licence"]);
     assert.deepEqual(series.isBasedOn.map((source) => source.url), [harvestFire.sources.harvest.url, harvestFire.sources.fire.url, boundaryCatalogue]);
     // The download is the same record the page links, served as the file itself.
     assert.ok(markup.includes(HARVEST_FIRE_RECORD_URL));

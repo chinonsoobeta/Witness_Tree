@@ -138,6 +138,9 @@ export function harvestFireDataset(series: HarvestFireSeries, locale: Locale): J
   const copy = COPY[locale];
   const key = `${series.firstYear}-${series.lastYear}`;
   const { harvest, fire } = series.sources;
+  // The same 2021 province boundary file the province releases use, under its own licence.
+  const boundaries = bulkManifest.sources.filter((source) => series.sources.boundary.includes(source.datasetTitle));
+  const boundaryLicences = bulkManifest.licences.filter((licence) => licence.id === "statcan-open-licence" && boundaries.length > 0);
   return {
     "@context": "https://schema.org",
     "@type": "Dataset",
@@ -145,14 +148,13 @@ export function harvestFireDataset(series: HarvestFireSeries, locale: Locale): J
     description: copy.harvestDescription(formatYearRangeKey(key, locale, "from")),
     url: `${SITE_ORIGIN}${HARVEST_FIRE_ROUTES[locale]}`,
     isAccessibleForFree: true,
-    license: series.sources.licenceUrl,
+    license: [series.sources.licenceUrl, ...boundaryLicences.map((licence) => licence.url)],
     creator: creator(locale),
     spatialCoverage: places(locale),
     temporalCoverage: temporalCoverage(key),
     isBasedOn: [
       ...[harvest, fire].map((source) => ({ "@type": "Dataset", name: source.title, url: source.url })),
-      // The same 2021 province boundary file the province releases use.
-      ...bulkManifest.sources.filter((source) => series.sources.boundary.includes(source.datasetTitle)).map(sourceRecord),
+      ...boundaries.map(sourceRecord),
     ],
     distribution: [{ "@type": "DataDownload", encodingFormat: "application/json", contentUrl: HARVEST_FIRE_RECORD_RAW_URL }],
   };

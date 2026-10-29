@@ -121,8 +121,8 @@ export const PUBLIC_ROUTE_TEXT: Readonly<Record<PublicRoutePair["en"], RouteText
   "/en/about": {
     title: { en: "Who made this site and why", fr: "Qui a créé ce site et pourquoi" },
     description: {
-      en: "Why this public record of forest loss was started, and the two questions behind it: how many trees are left, and where are they?",
-      fr: "Pourquoi ce registre public des pertes forestières a été lancé, et les deux questions à son origine\u202F: combien d’arbres reste-t-il, et où sont-ils\u202F?",
+      en: "Why this public record of forest loss was started, what it answers, and what it does not estimate.",
+      fr: "Pourquoi ce registre public des pertes forestières a été lancé, ce à quoi il répond et ce qu’il n’estime pas.",
     },
   },
   "/en/account": {
