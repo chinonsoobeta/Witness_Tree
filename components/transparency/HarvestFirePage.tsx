@@ -1,8 +1,11 @@
 import { ProvinceFlag } from "@/components/site/ProvinceBar";
 import { colon, formatNumber, formatYearRange, PRODUCT_NAME, yearRange, type Locale } from "@/lib/domain";
+import { quotedQueryValue, type IgnoredQueryValue } from "@/lib/explore/href";
 import {
   binLabel,
   cellsToHectares,
+  HARVEST_FIRE_FIRST_YEAR,
+  HARVEST_FIRE_LAST_YEAR,
   HARVEST_FIRE_PROVINCE_IDS,
   HARVEST_FIRE_RECORD_URL,
   HARVEST_FIRE_SERIES,
@@ -75,6 +78,20 @@ const COPY = {
     boundary: (recorded: string) => recorded,
     tabulation: `Tabulation: ${PRODUCT_NAME.en}, technical preview, not expert reviewed.`,
     explore: "See harvest and fire on the map",
+    ignored: (item: IgnoredQueryValue, stepLabel: string) => {
+      const value = quotedQueryValue(item.value);
+      const which = item.parameter === "from" ? "first" : "last";
+      if (item.reason === "inverted") return `The first year in this link, ${value}, comes after its last year, ${item.lastYear}.`;
+      if (item.parameter === "provinces") return `“${value}” in this link is not one of the four provinces in this chart, so it is left out.`;
+      if (item.parameter === "step") return `“${value}” in this link is not a grouping this chart offers, so it uses “${stepLabel}”.`;
+      if (item.parameter === "scale") return `“${value}” in this link is not a scale this chart offers, so it uses “Same scale in every chart”.`;
+      if (item.parameter === "view") return `“${value}” in this link is not a view this page offers, so it shows “Charts”.`;
+      return item.reason === "malformed"
+        ? `The ${which} year in this link, “${value}”, is not a four-digit year.`
+        : `The ${which} year in this link, ${value}, can’t be used: the chart covers ${HARVEST_FIRE_FIRST_YEAR} to ${HARVEST_FIRE_LAST_YEAR}.`;
+    },
+    ignoredSpan: (range: string) => `The chart shows the default years, ${range}, instead.`,
+    ignoredAddress: "Your browser’s address still shows the link as it was; the choices in the form are the ones in use.",
   },
   fr: {
     eyebrow: "Récolte et feu",
@@ -126,6 +143,20 @@ const COPY = {
     boundary: () => "Statistique Canada, Fichier des limites cartographiques des provinces et territoires, Recensement de 2021, date de référence\u202F: 1er janvier 2021.",
     tabulation: `Compilation\u202F: ${PRODUCT_NAME.fr}, aperçu technique, non examiné par des spécialistes.`,
     explore: "Voir la récolte et le feu sur la carte",
+    ignored: (item: IgnoredQueryValue, stepLabel: string) => {
+      const value = quotedQueryValue(item.value);
+      const which = item.parameter === "from" ? "première" : "dernière";
+      if (item.reason === "inverted") return `La première année de ce lien, ${value}, vient après sa dernière année, ${item.lastYear}.`;
+      if (item.parameter === "provinces") return `«\u00A0${value}\u00A0», dans ce lien, n’est pas l’une des quatre provinces de ce graphique\u202F; elle est donc laissée de côté.`;
+      if (item.parameter === "step") return `«\u00A0${value}\u00A0», dans ce lien, n’est pas un regroupement offert par ce graphique\u202F; il utilise donc «\u00A0${stepLabel}\u00A0».`;
+      if (item.parameter === "scale") return `«\u00A0${value}\u00A0», dans ce lien, n’est pas une échelle offerte par ce graphique\u202F; il utilise donc «\u00A0Même échelle pour chaque graphique\u00A0».`;
+      if (item.parameter === "view") return `«\u00A0${value}\u00A0», dans ce lien, n’est pas un affichage offert par cette page\u202F; elle affiche donc «\u00A0Graphiques\u00A0».`;
+      return item.reason === "malformed"
+        ? `La ${which} année de ce lien, «\u00A0${value}\u00A0», n’est pas une année à quatre chiffres.`
+        : `La ${which} année de ce lien, ${value}, ne peut pas être utilisée\u202F: le graphique couvre la période de ${HARVEST_FIRE_FIRST_YEAR} à ${HARVEST_FIRE_LAST_YEAR}.`;
+    },
+    ignoredSpan: (range: string) => `Le graphique affiche donc les années par défaut, ${range}.`,
+    ignoredAddress: "L’adresse dans votre navigateur montre toujours le lien d’origine\u202F; les choix du formulaire sont ceux qui sont utilisés.",
   },
 } as const;
 
@@ -264,7 +295,16 @@ function Builder({ query, locale, text }: Readonly<{ query: HarvestFireQuery; lo
   );
 }
 
-export function HarvestFirePage({ locale, query }: Readonly<{ locale: Locale; query: HarvestFireQuery }>) {
+export function HarvestFirePage({
+  locale,
+  query,
+  ignored = [],
+}: Readonly<{
+  locale: Locale;
+  query: HarvestFireQuery;
+  /** Values in the address the route could not use; the page names each and what it uses instead. */
+  ignored?: readonly IgnoredQueryValue[];
+}>) {
   const text = COPY[locale];
   const series = HARVEST_FIRE_SERIES;
   const header = (
@@ -302,6 +342,22 @@ export function HarvestFirePage({ locale, query }: Readonly<{ locale: Locale; qu
       <section className="content-section hf-workspace">
         <Builder query={query} locale={locale} text={text} />
         <div className="hf-output" aria-live="polite">
+          {/*
+            The page is a plain GET form with no script to rewrite the address,
+            so the notice says the address and the chart differ rather than
+            leaving the reader to assume they agree.
+          */}
+          {ignored.length > 0 ? (
+            <p className="notice query-notice" role="note">
+              {[
+                ...ignored.map((item) => text.ignored(item, text.steps[stepKey(query.step)])),
+                ...(ignored.some((item) => item.parameter === "from" || item.parameter === "to")
+                  ? [text.ignoredSpan(formatYearRange(yearRange(query.firstYear, query.lastYear), locale, "compact"))]
+                  : []),
+                text.ignoredAddress,
+              ].join(" ")}
+            </p>
+          ) : null}
           {query.view === "chart" ? charts.map((chart) => {
             const flagId = `hf-flag-${chart.province.code.toLowerCase()}`;
             const png = pngText(chart, series, query, locale, text);

@@ -17,8 +17,11 @@ import {
   BOUNDARY_OVERLAY_IDS,
   BOUNDARY_OVERLAYS,
   EXPLORE_DEFAULT_YEAR,
+  EXPLORE_INTERVAL_FIRST_YEAR,
+  EXPLORE_INTERVAL_LAST_YEAR,
   EXPLORE_MODES,
   EXPLORE_PRODUCTION_LAYER,
+  EXPLORE_YEAR_MIN,
   exploreHref,
   fixturesForYear,
   formatUnknownSharePercent,
@@ -28,6 +31,7 @@ import {
   fourProvinceSpanMeasurement,
   provinceSpanDisplayRows,
   provinceSpanReach,
+  quotedQueryValue,
   serializeBoundaryOverlays,
   toggleBoundaryOverlay,
   type BoundaryOverlayId,
@@ -35,6 +39,7 @@ import {
   type ExploreEvent,
   type ExploreMode,
   type ExplorePresentation,
+  type IgnoredQueryValue,
   type RidingBoundaryMeasurement,
 } from "@/lib/explore";
 import { harvestFireHref, harvestFireSpanTotals } from "@/lib/harvest-fire";
@@ -122,6 +127,17 @@ const copy = {
     partial: "Some of this area has no data, so this is a minimum",
     unknownArea: "ha unknown",
     source: "Source attribution",
+    ignored: (item: IgnoredQueryValue) => {
+      const value = quotedQueryValue(item.value);
+      const which = item.parameter === "from" ? "first" : "last";
+      if (item.reason === "inverted") return `The first year in this link, ${value}, is not before its last year, ${item.lastYear}.`;
+      if (item.parameter === "mode") return `“${value}” in this link is not one of this page’s views, so it shows “Forest loss”.`;
+      if (item.parameter === "overlays") return `“${value}” in this link is not a boundary layer this map has, so nothing is drawn for it.`;
+      return item.reason === "malformed"
+        ? `The ${which} year in this link, “${value}”, is not a four-digit year.`
+        : `The ${which} year in this link, ${value}, can’t be used: a ${which} year must be from ${which === "first" ? `${EXPLORE_INTERVAL_FIRST_YEAR} to ${EXPLORE_INTERVAL_LAST_YEAR - 1}` : `${EXPLORE_YEAR_MIN} to ${EXPLORE_INTERVAL_LAST_YEAR}`}.`;
+    },
+    ignoredSpan: (period: string) => `The page shows the default years, ${period}, instead.`,
     modes: {
       "forest-change": "Forest loss",
       "recorded-harvest": "Recorded harvest",
@@ -217,6 +233,17 @@ const copy = {
     partial: "Une partie de cette zone n’a pas de données\u202F: il s’agit donc d’un minimum",
     unknownArea: "ha inconnus",
     source: "Attribution de la source",
+    ignored: (item: IgnoredQueryValue) => {
+      const value = quotedQueryValue(item.value);
+      const which = item.parameter === "from" ? "première" : "dernière";
+      if (item.reason === "inverted") return `La première année de ce lien, ${value}, ne précède pas sa dernière année, ${item.lastYear}.`;
+      if (item.parameter === "mode") return `«\u00A0${value}\u00A0», dans ce lien, n’est pas l’une des vues de cette page\u202F; elle affiche donc «\u00A0Perte forestière\u00A0».`;
+      if (item.parameter === "overlays") return `«\u00A0${value}\u00A0», dans ce lien, n’est pas une couche de limites de cette carte\u202F; rien n’est donc tracé pour elle.`;
+      return item.reason === "malformed"
+        ? `La ${which} année de ce lien, «\u00A0${value}\u00A0», n’est pas une année à quatre chiffres.`
+        : `La ${which} année de ce lien, ${value}, ne peut pas être utilisée\u202F: une ${which} année doit se situer entre ${item.parameter === "from" ? `${EXPLORE_INTERVAL_FIRST_YEAR} et ${EXPLORE_INTERVAL_LAST_YEAR - 1}` : `${EXPLORE_YEAR_MIN} et ${EXPLORE_INTERVAL_LAST_YEAR}`}.`;
+    },
+    ignoredSpan: (period: string) => `La page affiche donc les années par défaut, ${period}.`,
     modes: {
       "forest-change": "Perte forestière",
       "recorded-harvest": "Récolte consignée",
@@ -287,6 +314,7 @@ export function ExploreView({
   year = EXPLORE_DEFAULT_YEAR,
   fromYear,
   overlays = [],
+  ignored = [],
   ridingMeasurements = [],
   forestRegions = [],
   provincialCause = {},
@@ -306,6 +334,11 @@ export function ExploreView({
    */
   fromYear?: number;
   overlays?: readonly BoundaryOverlayId[];
+  /**
+   * Values in the address the route could not use. The page says what it
+   * ignored and what it shows instead, and rewrites the address to match.
+   */
+  ignored?: readonly IgnoredQueryValue[];
   /**
    * District numbers for the route's span, resolved on the server.
    *
@@ -528,6 +561,21 @@ export function ExploreView({
         </div>
         <section className="explore-window" aria-labelledby="explore-year-heading">
           <h2 id="explore-year-heading" className="sr-only">{text.yearHeading}</h2>
+          {/*
+            What the link asked for and could not have. Shown only while the
+            page still shows the span it opened at: once the reader picks other
+            years, the sentence about the link no longer describes the view.
+          */}
+          {ignored.length > 0 && spanIsServed ? (
+            <p className="notice query-notice" role="note">
+              {[
+                ...ignored.map((item) => text.ignored(item)),
+                ...(ignored.some((item) => item.parameter === "year" || item.parameter === "from")
+                  ? [text.ignoredSpan(spanPeriod)]
+                  : []),
+              ].join(" ")}
+            </p>
+          ) : null}
           <form className="explore-year" method="get">
             <input type="hidden" name="mode" value={mode} />
             <input type="hidden" name="presentation" value={presentation} />
@@ -548,6 +596,7 @@ export function ExploreView({
                 setActiveYear(span.toYear);
               }}
               wholeRecord={mode === "condition-recovery"}
+              correctAddress={ignored.length > 0}
             />
           </form>
         </section>
