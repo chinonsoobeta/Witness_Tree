@@ -344,6 +344,39 @@ test("renders a real community page in each language from its checked-in record"
   assert.match(french, /href="\/fr\/lieux\/1984-2022-v1\/er-2021\/\d{4}"/);
 });
 
+test("a federal and a provincial riding each serve a one-page print sheet in both languages, and a community does not", async () => {
+  const sheets = [
+    { pathname: "/en/places/1984-2022-v1/federal-2023/24002/print", lang: "en", button: "Print or save as PDF", measure: "Detected loss as a share of mapped forest" },
+    { pathname: "/fr/lieux/1984-2022-v1/federal-2023/24002/print", lang: "fr", button: "Imprimer ou enregistrer en PDF", measure: "Perte détectée en part de la forêt cartographiée" },
+    { pathname: "/en/places/1984-2022-v1/bc-2023/258/print", lang: "en", button: "Print or save as PDF", measure: "Detected loss as a share of mapped forest" },
+    { pathname: "/fr/lieux/1984-2022-v1/bc-2023/258/print", lang: "fr", button: "Imprimer ou enregistrer en PDF", measure: "Perte détectée en part de la forêt cartographiée" },
+  ];
+  for (const { pathname, lang, button, measure } of sheets) {
+    const response = await render(pathname);
+    assert.equal(response.status, 200, pathname);
+    const html = await response.text();
+    const page = pathname.slice(0, -"/print".length);
+    assert.match(html, new RegExp(`<html lang="${lang}">`), pathname);
+    assert.match(html, /<main\b[^>]*id="main"/, pathname);
+    assert.match(html, /<h1>[^<]+<\/h1>/, pathname);
+    assert.match(html, new RegExp(`<button type="button" class="btn btn--primary">${button}</button>`), pathname);
+    assert.match(html, /<meta name="robots" content="noindex, follow"/, pathname);
+    assert.match(html, new RegExp(measure), pathname);
+    assert.match(html, /<svg[^>]*class="hf-chart-svg"[^>]*role="img"/, pathname);
+    assert.match(html, /dataset\/2785c103-9c2d-429b-9f3d-89f5cd9ea94d/, pathname);
+    // The page address prints in plain text, and the back link goes to the riding's page.
+    assert.match(html, new RegExp(`https://www\\.witnesstree\\.ca${pathname.replace(/[/.-]/g, "\\$&")}`), pathname);
+    assert.match(html, new RegExp(`<a href="${page.replace(/[/.-]/g, "\\$&")}">`), pathname);
+    // No navigation shell, ranking position or colour scale on the sheet.
+    assert.doesNotMatch(html, /class="site-shell"/, pathname);
+    assert.doesNotMatch(html, /\b(rank|ranked|classement|rang)\b/i, pathname);
+  }
+  assert.match(await (await render("/en/places/1984-2022-v1/federal-2023/24002/print")).text(), /<h1>Abitibi—Témiscamingue<\/h1>/);
+  assert.equal((await render("/en/places/1984-2022-v1/csd-2021/5924034/print")).status, 404);
+  assert.equal((await render("/fr/lieux/1984-2022-v1/er-2021/5910/print")).status, 404);
+  assert.equal((await render("/en/places/1984-2022-v1/federal-2023/00000/print")).status, 404);
+});
+
 test("a place page's social image and download are its own share card, a 1200 by 630 PNG", async () => {
   const pages = [
     { pathname: "/en/places/1984-2022-v1/csd-2021/5924034", alt: /Share card for this place/ },

@@ -38,7 +38,7 @@ const COPY = {
     shareOf: "of the forest mapped in 1984 was detected as lost at least once from 1984 to 2022.",
     shareUnknown: "Unknown",
     provinceTitle: (province: string) => `Harvest and fire in ${province}, 1985–2022`,
-    provinceNote: "This chart is for the whole province, not this riding. It shows forest change the national satellite record dates to a year and attributes to harvest or to fire. The riding figure above counts all detected loss, whatever its cause.",
+    provinceNote: "This chart is for the whole province, not this riding. The riding figure above counts all detected loss, whatever its cause.",
     subtitle: "Hectares per five-year interval",
     harvest: "Harvest",
     fire: "Fire",
@@ -66,7 +66,7 @@ const COPY = {
     shareOf: "de la forêt cartographiée en 1984 a été détectée comme perdue au moins une fois de 1984 à 2022.",
     shareUnknown: "Inconnu",
     provinceTitle: (province: string) => `Récolte et feu, ${province}, 1985–2022`,
-    provinceNote: "Ce graphique porte sur toute la province, et non sur cette circonscription. Il montre le changement forestier que le registre satellitaire national date d’une année et attribue à la récolte ou au feu. Le chiffre de la circonscription, plus haut, compte toute perte détectée, quelle qu’en soit la cause.",
+    provinceNote: "Ce graphique porte sur toute la province, et non sur cette circonscription. Le chiffre de la circonscription, plus haut, compte toute perte détectée, quelle qu’en soit la cause.",
     subtitle: "Hectares par période de cinq ans",
     harvest: "Récolte",
     fire: "Feu",
@@ -89,9 +89,9 @@ const COPY = {
 
 /**
  * The print chart's frame: the page chart's margins on a shorter plot, so it
- * takes a third of the sheet rather than half.
+ * fits a sheet that also carries the figure, limits and sources.
  */
-const PRINT_SIZE = { ...SVG_SIZE, height: 250 } as const;
+const PRINT_SIZE = { ...SVG_SIZE, height: 200 } as const;
 
 /** The province's chart in five-year steps, the Data page's default grouping, on its own scale. */
 function provinceChart(series: HarvestFireSeries, record: PlacePageRecord): HarvestFireChartModel | null {
@@ -135,6 +135,7 @@ export function RidingSheet({ locale, record }: Readonly<{ locale: Locale; recor
             <Fact label={card.edition} value={record.boundary.edition} locale={locale} />
             <Fact label={card.dataVersion} value={PLACE_DATA_VERSION} locale={locale} />
             <Fact label={card.evidence} value={EVIDENCE_DEFINITIONS[figures.lost.evidence].label[locale]} locale={locale} />
+            <Fact label={text.online} value={pageUrl} locale={locale} />
           </dl>
         </header>
 
@@ -151,9 +152,9 @@ export function RidingSheet({ locale, record }: Readonly<{ locale: Locale; recor
               value={figures.lost.kind === "figure" ? summary.lost : `– ${summary.lost}. ${figures.lost.reason[locale]}`}
               locale={locale}
             />
-            <Fact label={page.coverage} value={summary.coverage} locale={locale} />
-            <Fact label={page.unmapped} value={summary.unmapped} locale={locale} />
             <Fact label={page.mappedForest} value={formatHectares(figures.knownForestHectares, locale)} locale={locale} />
+            <Fact label={page.unmapped} value={summary.unmapped} locale={locale} />
+            <Fact label={page.coverage} value={summary.coverage} locale={locale} />
             <Fact label={page.confidence} value={figures.confidence.reason[locale]} locale={locale} />
           </dl>
           {figures.lostIsMinimum ? <p className="riding-sheet-note">{card.minimum}</p> : null}
@@ -207,7 +208,6 @@ export function RidingSheet({ locale, record }: Readonly<{ locale: Locale; recor
         <footer className="riding-sheet-cite">
           <h2>{page.citation}</h2>
           <p>{summary.citation}</p>
-          <p><strong>{text.online}{colon(locale)}</strong> {pageUrl}</p>
           <p className="riding-sheet-note">{card.preview}</p>
         </footer>
       </article>
