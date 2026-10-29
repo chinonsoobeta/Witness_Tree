@@ -92,3 +92,19 @@ test("the served artifact preserves the historical publication and displays the 
     assert.match(html, /2021–2022/);
   }
 });
+
+test("the table has a visible province filter, a row count and headings that stay in view", () => {
+  const english = renderToStaticMarkup(<OfficialPublishedHarvestComparison rows={comparison.rows} locale="en" province="BC" />);
+  const french = renderToStaticMarkup(<OfficialPublishedHarvestComparison rows={comparison.rows} locale="fr" />);
+  const bc = comparison.rows.filter((row) => row.province === "BC").length;
+  assert.match(english, /<p class="comparison-filters-label" id="harvest-province-filter">Show one province<\/p><nav aria-labelledby="harvest-province-filter" class="comparison-filters">/);
+  assert.match(french, /<p class="comparison-filters-label" id="harvest-province-filter">Afficher une province<\/p>/);
+  assert.match(english, /<a href="\/en\/data\/official-harvest-comparison\?province=BC" aria-current="page">BC<\/a>/);
+  assert.match(english, new RegExp(`${bc} of ${comparison.rows.length} rows are shown\\.`));
+  assert.match(french, new RegExp(`Les ${comparison.rows.length} lignes sont affichées\\.`));
+  assert.equal((english.match(/<tr>|<tr /g) ?? []).length - 1, bc, "only the chosen province's rows");
+  for (const html of [english, french]) assert.match(html, /<div class="table-scroll table-scroll--sticky" tabindex="0" role="region"/);
+  const css = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
+  assert.match(css, /\.table-scroll--sticky \{\s+max-height: 75vh;\s+overflow: auto;\s+\}/);
+  assert.match(css, /\.table-scroll--sticky thead th \{\s+position: sticky;\s+top: 0;/);
+});

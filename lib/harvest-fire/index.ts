@@ -2,6 +2,7 @@ import seriesRecord from "@/data/harvest-fire-province-annual-series.json";
 import { COVERAGE_GRADES, type CoverageGrade } from "../domain/coverage";
 import { formatYearRange, yearRange } from "../domain/year-range";
 import type { Locale } from "../domain";
+import { queryText, queryYearProblem, type IgnoredQueryValue } from "../explore/href";
 
 /*
  * Harvest and fire by province and year, 1985 to 2022, from the national
@@ -168,39 +169,74 @@ export type HarvestFireQuery = Readonly<{
   view: HarvestFireView;
 }>;
 
-const FIRST = 1985;
-const LAST = 2022;
-
-function year(raw: string | undefined, fallback: number) {
-  const value = Number(raw);
-  return Number.isInteger(value) && value >= FIRST && value <= LAST ? value : fallback;
-}
+export const HARVEST_FIRE_FIRST_YEAR = 1985;
+export const HARVEST_FIRE_LAST_YEAR = 2022;
 
 /**
- * The page's state, from its address. Anything unreadable falls back to the
- * default view: all four provinces, 1985 to 2022, five-year steps on one scale.
- * A span shorter than ten years defaults to single years, because five-year
- * steps over a short span would be one or two bars.
+ * The page's state, from its address, and every value in the address it could
+ * not use. Nothing is guessed: a year that is not four ASCII digits, falls
+ * outside 1985 to 2022, or a first year after the last puts both years back to
+ * the default span; an unknown province, grouping, scale or view is dropped for
+ * its default. Each is listed so the page can say what it ignored and what it
+ * shows instead. With nothing named, the default view is all four provinces,
+ * 1985 to 2022, five-year steps on one scale. A span shorter than ten years
+ * defaults to single years, because five-year steps over a short span would be
+ * one or two bars.
  */
-export function parseHarvestFireQuery(query: Readonly<Record<string, string | undefined>>): HarvestFireQuery {
-  const requested = (query.provinces ?? "").split(",").filter((id): id is HarvestFireProvinceId =>
-    (HARVEST_FIRE_PROVINCE_IDS as readonly string[]).includes(id));
+export function readHarvestFireQuery(query: Readonly<Record<string, string | undefined>>): Readonly<{
+  query: HarvestFireQuery;
+  ignored: readonly IgnoredQueryValue[];
+}> {
+  const ignored: IgnoredQueryValue[] = [];
+  const requested: string[] = [];
+  for (const part of queryText(query.provinces)?.split(",") ?? []) {
+    if ((HARVEST_FIRE_PROVINCE_IDS as readonly string[]).includes(part)) requested.push(part);
+    else if (part !== "") ignored.push({ parameter: "provinces", value: part, reason: "unknown" });
+  }
   const provinces = HARVEST_FIRE_PROVINCE_IDS.filter((id) => requested.includes(id));
-  let firstYear = year(query.from, FIRST);
-  let lastYear = year(query.to, LAST);
-  if (firstYear > lastYear) [firstYear, lastYear] = [lastYear, firstYear];
-  const stepRaw = query.step === "span" ? "span" : Number(query.step);
-  const step = HARVEST_FIRE_STEPS.includes(stepRaw as HarvestFireStep)
-    ? (stepRaw as HarvestFireStep)
-    : lastYear - firstYear + 1 < 10 ? 1 : 5;
-  return {
-    provinces: provinces.length > 0 ? provinces : HARVEST_FIRE_PROVINCE_IDS,
-    firstYear,
-    lastYear,
-    step,
-    scale: query.scale === "own" ? "own" : "shared",
-    view: query.view === "table" ? "table" : "chart",
+
+  const fromText = queryText(query.from);
+  const toText = queryText(query.to);
+  const yearProblems = [
+    fromText === undefined ? null : queryYearProblem("from", fromText, HARVEST_FIRE_FIRST_YEAR, HARVEST_FIRE_LAST_YEAR),
+    toText === undefined ? null : queryYearProblem("to", toText, HARVEST_FIRE_FIRST_YEAR, HARVEST_FIRE_LAST_YEAR),
+  ].filter((problem) => problem !== null);
+  let firstYear = HARVEST_FIRE_FIRST_YEAR;
+  let lastYear = HARVEST_FIRE_LAST_YEAR;
+  if (yearProblems.length > 0) {
+    ignored.push(...yearProblems);
+  } else {
+    const from = fromText === undefined ? firstYear : Number(fromText);
+    const to = toText === undefined ? lastYear : Number(toText);
+    if (from <= to) [firstYear, lastYear] = [from, to];
+    else ignored.push({ parameter: "from", value: String(from), reason: "inverted", lastYear: String(to) });
+  }
+
+  const choice = <T extends string>(parameter: string, allowed: readonly T[], fallback: T): T => {
+    const text = queryText(query[parameter]);
+    const found = allowed.find((value) => value === text);
+    if (text !== undefined && found === undefined) ignored.push({ parameter, value: text, reason: "unknown" });
+    return found ?? fallback;
   };
+  const defaultStep = lastYear - firstYear + 1 < 10 ? "1" : "5";
+  const step = choice("step", HARVEST_FIRE_STEPS.map(String), defaultStep);
+
+  return {
+    query: {
+      provinces: provinces.length > 0 ? provinces : HARVEST_FIRE_PROVINCE_IDS,
+      firstYear,
+      lastYear,
+      step: step === "span" ? "span" : (Number(step) as HarvestFireStep),
+      scale: choice<HarvestFireScale>("scale", ["shared", "own"], "shared"),
+      view: choice<HarvestFireView>("view", ["chart", "table"], "chart"),
+    },
+    ignored,
+  };
+}
+
+/** The page's state alone, for callers that build a chart rather than a page. */
+export function parseHarvestFireQuery(query: Readonly<Record<string, string | undefined>>): HarvestFireQuery {
+  return readHarvestFireQuery(query).query;
 }
 
 export function harvestFireHref(locale: Locale, query: Partial<HarvestFireQuery>): string {

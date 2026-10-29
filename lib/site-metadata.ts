@@ -57,10 +57,10 @@ export const PUBLIC_ROUTE_TEXT: Readonly<Record<PublicRoutePair["en"], RouteText
     },
   },
   "/en/compare": {
-    title: { en: "Compare forest loss by federal riding", fr: "Comparer les circonscriptions fédérales" },
+    title: { en: "Compare forest loss by riding", fr: "Comparer les circonscriptions" },
     description: {
-      en: "Set two federal ridings side by side, or rank them by the share of mapped forest detected as lost from 2021 to 2022.",
-      fr: "Comparez deux circonscriptions fédérales ou classez-les selon la part de forêt cartographiée détectée comme perdue de 2021 à 2022.",
+      en: "Set two federal or provincial ridings side by side, or rank them by the share of mapped forest detected as lost from 2021 to 2022.",
+      fr: "Comparez deux circonscriptions fédérales ou provinciales, ou classez-les selon la part de forêt cartographiée détectée comme perdue de 2021 à 2022.",
     },
   },
   "/en/search": {

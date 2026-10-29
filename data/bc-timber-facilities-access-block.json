@@ -1,0 +1,104 @@
+{
+  "schemaVersion": "witness-tree/bc-timber-facilities-access-block/1",
+  "status": "blocked",
+  "verificationDate": "2026-10-28",
+  "decision": "data/plan-scope-decision-2026-10-28-bc-facilities.json",
+  "nonClaimNotice": "This is a rights and access verification record. It is not an acquisition, staging, transformation, ingestion, publication or production authorization. No facility, company or community from the survey is published by Witness Tree.",
+  "ledgerEntry": {
+    "id": "bc-major-timber-processing-facilities-2023",
+    "status": "access-blocked",
+    "evidenceClass": "official-record",
+    "datasetNameOriginal": "List of Mills Appendix 2023 (Major Primary Timber Processing Facilities in British Columbia, 2023)",
+    "explanation": {
+      "en": "The Province of British Columbia's annual mill survey lists the primary timber processing facilities it counted as open or presumed open in 2023, with estimated capacity. It is not published under an open licence.",
+      "fr": "L’enquête annuelle de la Colombie-Britannique sur les usines énumère les installations de transformation primaire du bois qu’elle a comptées comme ouvertes ou présumées ouvertes en 2023, avec leur capacité estimée. Elle n’est pas publiée sous une licence ouverte."
+    },
+    "publisher": "Province of British Columbia, Ministry of Forests",
+    "custodian": "Economics and Trade Branch, Ministry of Forests",
+    "catalogueUrl": "https://catalogue.data.gov.bc.ca/dataset/british-columbia-major-timber-processing-facilities",
+    "surveyPageUrl": "https://www2.gov.bc.ca/gov/content/industry/forestry/competitive-forest-industry/forest-industry-economics/major-timber-processing-facilities-survey",
+    "resourceUrl": "https://www2.gov.bc.ca/assets/gov/farming-natural-resources-and-industry/forestry/fibre-mills/appendix_for_2023_mill_list_report-share.xlsx",
+    "licenceId": "access-only-bc",
+    "licenceUrl": "https://www2.gov.bc.ca/gov/content/home/copyright",
+    "attribution": "Province of British Columbia, Ministry of Forests, Major Primary Timber Processing Facilities in British Columbia, 2023, List of Mills Appendix.",
+    "sourceVersion": "2023 survey; HTTP Last-Modified Wed, 19 Aug 2026 20:29:08 GMT",
+    "effectiveDate": "2023",
+    "retrievedAt": "2026-10-29T02:40:11Z",
+    "byteLength": 51820,
+    "rawChecksumSha256": "ca52dbd6cef6275fd1f1b04de50235fb5e981be2a462fc81390bcfd645d916cc",
+    "updateCadence": "Survey annual since 1991; the report and appendix are issued every one or two years.",
+    "nextExpectedRefresh": "Unknown. The publisher states no date.",
+    "redistributionTerms": "None granted. The file carries no licence and falls under the gov.bc.ca copyright terms: all rights reserved, no reproduction or redistribution without prior written permission.",
+    "coverageLimits": "Open and presumed-open facilities only. Facilities that did not operate during the year or closed permanently are not listed. Most secondary manufacturing is excluded. Capacity is estimated on standard operating assumptions and is not production.",
+    "temporalCoverage": "Survey year 2023 only.",
+    "spatialCoverage": "British Columbia",
+    "methodTransformVersion": null,
+    "correctionsContact": "Mill.Survey@gov.bc.ca"
+  },
+  "observedContents": {
+    "inspectedAt": "2026-10-29T02:42:04Z",
+    "method": "XML of the workbook read as data in a scratch directory; no workbook code was run and the file was not retained in the repository or the data root.",
+    "sheets": ["README", "Lumber Mills >40", "Lumber Mills <40", "OSB, Plywood, Veneer, and Panel", "Pulp and Paper", "Chip", "Pellet", "Pole, Utility Pole, and Post", "Shake and Shingle", "Log Home", "ConsistentHeaders"],
+    "listingRows": 255,
+    "listingRowsNote": "Rows with a numeric mill number across the nine product sheets. A facility making more than one product is listed once per product, so this is not a facility count.",
+    "capacityBlankOrNA": 5,
+    "columns": ["Mill Number", "Company", "Location of Mill", "Product (some sheets)", "Administrative Area", "Natural Resource District", "Estimated Annual Capacity (unit varies by sheet; none on Log Home)"],
+    "statusColumn": false,
+    "statusNote": "The survey sorts mills into four categories: open with a response, presumed open without a response, did not operate during the year, and permanently closed. The appendix lists only the first two and has no status column. A mill that announced a permanent closure during 2023 is listed as open for 2023.",
+    "ownershipNote": "The README says company ownership in the file was compiled from company websites, historical records and other sources, and may not reflect all ownership interests or recent changes.",
+    "licenceTextInFile": false
+  },
+  "yearsOffered": {
+    "facilityLevelSpreadsheet": [2023],
+    "facilityLevelPdfReportsLinked": [2020, 2021, 2022, 2023],
+    "before2014": "On request to Mill.Survey@gov.bc.ca; not published.",
+    "catalogueDataset": "Latest survey only, as a spatial layer of open and presumed-open mills (BCGW WHSE_IMAGERY_AND_BASE_MAPS.GSR_TMBR_PRCSSING_FAC_SV), through BCGW custom download, WMS and KML. No year series."
+  },
+  "relatedEvidence": [
+    {
+      "title": "Major Primary Timber Processing Facilities in B.C. 2023 (report)",
+      "url": "https://www2.gov.bc.ca/assets/gov/farming-natural-resources-and-industry/forestry/fibre-mills/2023_mill_list_report.pdf",
+      "retrievedAt": "2026-10-29, between 02:40 and 02:42 UTC",
+      "byteLength": 2656717,
+      "sha256": "580bb024a6632e849a7c55fadb9423c4dc2a755c97808a09ef29ce74567460ec",
+      "licenceTextInFile": false,
+      "note": "Text extracted and searched for licence, copyright, reproduction and permission wording; none found. Not retained."
+    }
+  ],
+  "rights": {
+    "catalogueLicence": "Access Only",
+    "catalogueLicenceId": "22",
+    "catalogueLicenceUrl": "https://www2.gov.bc.ca/gov/content?id=1AAACC9C65754E4D89A118B875E0FBDA",
+    "catalogueMetadataModified": "2026-06-19T12:41:47",
+    "officialTermsUrl": "https://www2.gov.bc.ca/gov/content/home/copyright",
+    "officialRestriction": "Access Only catalogue material may not be reproduced or redistributed without written permission; other gov.bc.ca material is all rights reserved.",
+    "openLicence": false
+  },
+  "admission": {
+    "staged": false,
+    "immutable": false,
+    "transformed": false,
+    "ingested": false,
+    "published": false,
+    "productionEligible": false
+  },
+  "blockers": [
+    "The BC Data Catalogue record for the survey's facility data is Access Only, which does not permit reproduction without written permission.",
+    "The facility-level spreadsheet and reports on gov.bc.ca carry no licence, so the gov.bc.ca copyright terms apply: all rights reserved.",
+    "Only survey year 2023 is published as a spreadsheet; 2020 to 2022 are in PDF reports and years before 2014 are available only on request.",
+    "The spreadsheet lists open and presumed-open mills only and has no status column, so the approved field 'status' and year-to-year changes cannot be read from it."
+  ],
+  "requestDraft": {
+    "status": "unsent",
+    "permissionFormUrl": "https://forms.gov.bc.ca/copyright-permission-request/",
+    "publisherContact": "Mill.Survey@gov.bc.ca",
+    "requestedPermissions": [
+      "Reproduce, for 2014 onward, the facility name, community, product type and survey year from the List of Mills appendices",
+      "Reproduce each year's operating-facility counts and estimated capacity totals",
+      "Receive, or reproduce, the survey's open, presumed-open, did-not-operate and closed category for each listed facility and year",
+      "Keep an internal archival copy of each file and transform it for publication",
+      "Use the publisher's required attribution and receive correction guidance",
+      "Alternatively, publish the appendices under the Open Government Licence - British Columbia"
+    ]
+  }
+}

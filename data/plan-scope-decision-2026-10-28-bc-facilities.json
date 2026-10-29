@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "witness-tree/plan-scope-decision/1",
+  "status": "owner-scope-decision",
+  "id": "bc-timber-processing-facilities",
+  "decidedAt": "2026-10-28",
+  "decidedBy": "owner",
+  "owner": "Chinonso Obeta",
+  "ownerWords": "I approve all except for Feature #9: Reproduce it yourself. I approve the plan amendment for #9. For #5, I agree: We must not name individuals, but licenses and agencies are okay. Does this one require an FOI request? If so, hold it for now. Assign Opus 5.5 subagents on high reasoning to complete the implementation of these features.",
+  "source": "owner, in the lead Claude Code session of 2026-10-28, replying to the feature plan; the full message is quoted above",
+  "interpretation": "The owner's sentence approving a plan amendment names #9. Feature #9 (reproducibility) needed no plan amendment and was held by the same message. Feature #10 (BC mill facilities) was the only feature whose plan required amending sections 1.3 and 14.2, so the lead session applied the approval to #10 and told the owner so in its reply. This amendment rests on that interpretation until the owner confirms it.",
+  "ownerConfirmedInterpretation": true,
+  "ownerConfirmation": {
+    "words": "I did mean plan amendment for #9 should actually be for #10.",
+    "date": "2026-10-28",
+    "source": "owner, in the 2026-10-28 working session, after the interpretation was recorded; relayed verbatim by the lead session"
+  },
+  "record": "docs/PLAN_SCOPE_DECISION_2026-10-28_BC_FACILITIES.md",
+  "planSectionsAmended": [
+    {
+      "section": "1.3",
+      "title": "Non-goals",
+      "excluded": "No corporate ownership histories.",
+      "amendment": "Facilities may be listed from the Government of British Columbia's Major Primary Timber Processing Facilities survey within the scope below. This is not a corporate ownership history and authorizes none."
+    },
+    {
+      "section": "14.2",
+      "title": "Organisation attribution rules",
+      "amendment": "A facility named by the survey may be listed within the scope below. Every other 14.2 rule still applies, including the named dispute route with a 10 business day resolution commitment, which must be live before the facilities table is published."
+    }
+  ],
+  "scope": {
+    "source": "Government of British Columbia, Ministry of Forests, Major Primary Timber Processing Facilities survey",
+    "licenceRequired": "Open Government Licence - British Columbia",
+    "fields": ["facility name", "community", "product type", "year", "status"],
+    "fieldRule": "Each field exactly as the survey records it.",
+    "noCause": "No cause is stated or implied for any change in status.",
+    "noLossLink": "No link is drawn between a facility and any loss figure.",
+    "disputeRouteGate": "The organisation dispute route required by plan section 14.2 must be live before the facilities table is published, so the table is gated behind that route being configured.",
+    "provinces": ["BC"],
+    "outOfScope": {
+      "provinces": ["AB", "ON", "QC"],
+      "reason": "No equivalent open annual survey has been verified for Alberta, Ontario or Québec."
+    },
+    "externalGate": "Legal review of the attribution wording remains an external gate."
+  },
+  "doesNotGrant": {
+    "legalSignOff": false,
+    "productionRelease": false,
+    "sourceRights": false,
+    "corporateOwnershipHistory": false,
+    "causalAttribution": false,
+    "lossAttribution": false,
+    "otherProvinces": false
+  },
+  "premiseCheck": {
+    "checkedAt": "2026-10-28",
+    "result": "licence-premise-not-met",
+    "record": "data/bc-timber-facilities-access-block.json",
+    "summary": "The scope requires the survey under the Open Government Licence - British Columbia. On 2026-10-28 the facility-level survey data was found only as Access Only in the BC Data Catalogue and as all-rights-reserved files on gov.bc.ca. Nothing is built under this decision until written permission or an open-licence publication is recorded."
+  },
+  "gateEffect": {
+    "marksGatePassed": false,
+    "recordsAdmission": false,
+    "recordsRelease": false
+  }
+}

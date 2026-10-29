@@ -1,12 +1,15 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { matchRidingChoices, normalizeRidingQuery, ridingProvincePrefix } from "../lib/comparison/riding-typeahead";
-import { federalRidingComparison } from "../lib/comparison/real";
-import { federalRidingChoices } from "../components/comparison/FederalRidingPicker";
+import { matchRidingChoices, normalizeRidingQuery, ridingLevel, ridingProvinceCode, ridingProvincePrefix } from "../lib/comparison/riding-typeahead";
+import { comparableRidings, federalRidingComparison } from "../lib/comparison/real";
+import { ridingChoices } from "../components/comparison/FederalRidingPicker";
 
-const english = federalRidingChoices(federalRidingComparison.comparisonRows, "en");
-const french = federalRidingChoices(federalRidingComparison.comparisonRows, "fr");
+// The federal list alone keeps these expectations about names and provinces exact.
+const english = ridingChoices(federalRidingComparison.comparisonRows, "en");
+const french = ridingChoices(federalRidingComparison.comparisonRows, "fr");
+const everyEnglish = ridingChoices(comparableRidings, "en");
+const everyFrench = ridingChoices(comparableRidings, "fr");
 const ids = (query: string, choices = english, options = {}) => matchRidingChoices(query, choices, options).matches.map((choice) => choice.id);
 const inProvince = (prefix: string) => english.filter((choice) => ridingProvincePrefix(choice.id) === prefix).length;
 
@@ -90,4 +93,32 @@ test("a name match outranks a province match, and the list is capped with its fu
 
 test("the riding chosen on the other side is not offered again", () => {
   assert.deepEqual(ids("richmond bc", english, { exclude: "federal-59027" }), ["federal-59028"]);
+});
+
+test("the field also offers every provincial riding, labelled by level and province", () => {
+  assert.equal(everyEnglish.length, 711);
+  assert.equal(new Set(everyEnglish.map((choice) => choice.id)).size, 711);
+  assert.equal(everyEnglish.filter((choice) => choice.level === "provincial").length, 431);
+  assert.ok(everyEnglish.every((choice) => choice.province !== null));
+  assert.deepEqual(everyEnglish.find((choice) => choice.id === "provincial-BC-258"),
+    { id: "provincial-BC-258", name: "Abbotsford-Mission", province: "British Columbia", level: "provincial" });
+  assert.equal(everyFrench.find((choice) => choice.id === "provincial-BC-258")?.province, "Colombie-Britannique");
+  assert.equal(everyEnglish.findIndex((choice) => choice.level === "provincial"), 280, "federal ridings come first");
+  assert.equal(ridingProvincePrefix("provincial-QC-137"), "24");
+  assert.equal(ridingProvinceCode("federal-59021"), "BC");
+  assert.equal(ridingProvinceCode("provincial-ON-89"), "ON");
+  assert.equal(ridingProvinceCode("provincial-NS-1"), null);
+  assert.equal(ridingLevel("provincial-BC-258"), "provincial");
+  assert.equal(ridingLevel("federal-59021"), "federal");
+});
+
+test("a query finds both levels, and a level word narrows it in either language", () => {
+  const all = (query: string, choices = everyEnglish) => matchRidingChoices(query, choices, { limit: 50 }).matches;
+  const richmonds = all("richmond bc");
+  assert.deepEqual(new Set(richmonds.map((choice) => choice.level)), new Set(["federal", "provincial"]));
+  assert.deepEqual(all("richmond bc provincial").map((choice) => choice.id).sort(),
+    ["provincial-BC-315", "provincial-BC-316", "provincial-BC-317", "provincial-BC-318"]);
+  assert.deepEqual(all("richmond bc federal").map((choice) => choice.id).sort(), ["federal-59027", "federal-59028"]);
+  assert.deepEqual(all("richmond c.-b. fédérale", everyFrench).map((choice) => choice.id).sort(), ["federal-59027", "federal-59028"]);
+  assert.ok(all("levis").some((choice) => choice.id === "provincial-QC-791"));
 });

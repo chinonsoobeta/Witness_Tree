@@ -5,6 +5,8 @@ import { ridingIntervalMeasurements, type RidingIntervalMeasurement } from "@/li
 import { formatPercent, type Locale } from "@/lib/domain";
 import release from "@/data/phase3-riding-interval-measurements.json";
 import { placeFigure } from "./place-figures";
+import { cleanSearchQuery } from "./query";
+import { figureUnknownReason, type UnknownReason } from "./unknown-groups";
 import {
   PLACE_NAME_INDEX,
   displayPlaceName,
@@ -76,6 +78,8 @@ export type SearchRidingReference = Readonly<{
   name: string;
   nameFr: string;
   share: number;
+  /** Null when the whole riding has a detected figure; otherwise why its loss is Unknown. */
+  unknownReason: UnknownReason | null;
 }>;
 
 export type SiteSearchResult = Readonly<{
@@ -97,6 +101,13 @@ export type SiteSearchResult = Readonly<{
   observedLossHectares?: number | null;
   observedLossPercent?: number | null;
   knownObservedSubtotalHectares?: number | null;
+  /** Null when the result states a detected figure; otherwise why its loss is Unknown. */
+  unknownReason: UnknownReason | null;
+  /**
+   * For a community that shares its name, type and province with another
+   * match: the federal riding holding most of it, so the two read apart.
+   */
+  distinguishedBy?: Readonly<{ en: string; fr: string }>;
   score: number;
 }>;
 
@@ -137,7 +148,7 @@ function ridingName(id: string) {
 
 function ridingReference(id: string, share: number): SearchRidingReference {
   const name = ridingName(id);
-  return { id, name: name.en, nameFr: name.fr, share };
+  return { id, name: name.en, nameFr: name.fr, share, unknownReason: figureUnknownReason(ridingById.get(id)) };
 }
 
 const provinceRows = provinceSpanMeasurements(INTERVAL);
@@ -178,8 +189,24 @@ function resultKindOrder(kind: SiteSearchResult["kind"]) {
   return kind === "province" ? 0 : kind === "riding" ? 1 : 2;
 }
 
+/**
+ * The place the reader named exactly comes first, measured or not; then places
+ * with a detected figure; then the Unknowns. Within each, the closer match.
+ */
+function compareResults(left: SiteSearchResult, right: SiteSearchResult) {
+  return Number(left.score !== 0) - Number(right.score !== 0)
+    || Number(left.unknownReason !== null) - Number(right.unknownReason !== null)
+    || left.score - right.score;
+}
+
+/** A province's name, such as "Colombie-Britannique", from its two-letter code. */
+export function searchProvinceName(code: string, locale: Locale): string {
+  const province = PROVINCES.find((entry) => entry.code === code);
+  return province ? province[locale] : code;
+}
+
 export function searchSite(query: string): SiteSearchPage {
-  const { name, code } = splitQuery(query);
+  const { name, code } = splitQuery(cleanSearchQuery(query));
   if (!name && !code) return { results: [], more: { province: 0, riding: 0, community: 0 } };
   const results: SiteSearchResult[] = [];
 
@@ -199,6 +226,7 @@ export function searchSite(query: string): SiteSearchPage {
         unknownHectares: row.unknownHectares,
         unknownSharePercent: row.unknownSharePercent,
         unmappedCharacter: row.unmappedCharacter,
+        unknownReason: row.unionLossHectares === null ? "no-figure" : null,
         score,
       });
     }
@@ -223,6 +251,7 @@ export function searchSite(query: string): SiteSearchPage {
         knownForestedHectares: row.knownForestedHectares,
         unknownHectares: row.unknownHectares,
         unknownSharePercent: row.unknownSharePercent,
+        unknownReason: figureUnknownReason(row),
         score,
       });
     }
@@ -241,17 +270,30 @@ export function searchSite(query: string): SiteSearchPage {
         type: place.type,
         federal: placeRidingReferences(place, "federal"),
         provincial: placeRidingReferences(place, "provincial"),
+        unknownReason: figureUnknownReason(placeFigure(place.id)),
         score,
       });
     }
   }
 
+  // Two communities can share a name, type and province; each then names the
+  // federal riding holding most of it.
+  const sameName = new Map<string, number>();
+  const sameNameKey = (result: SiteSearchResult) => `${result.name}|${result.type}|${result.province}`;
+  for (const result of results) {
+    if (result.kind === "community") sameName.set(sameNameKey(result), (sameName.get(sameNameKey(result)) ?? 0) + 1);
+  }
+  for (const [index, result] of results.entries()) {
+    const riding = result.kind === "community" && (sameName.get(sameNameKey(result)) ?? 0) > 1 ? result.federal?.[0] : undefined;
+    if (riding) results[index] = { ...result, distinguishedBy: { en: riding.name, fr: riding.nameFr } };
+  }
+
   const groups = (Object.keys({ province: 0, riding: 0, community: 0 }) as SiteSearchResult["kind"][])
     .map((kind) => [kind, results.filter((result) => result.kind === kind)
-      .sort((left, right) => left.score - right.score || left.name.localeCompare(right.name))] as const);
+      .sort((left, right) => compareResults(left, right) || left.name.localeCompare(right.name))] as const);
   const more = Object.fromEntries(groups.map(([kind, group]) => [kind, Math.max(0, group.length - RESULT_LIMIT)])) as Record<SiteSearchResult["kind"], number>;
   const limited = groups.flatMap(([, group]) => group.slice(0, RESULT_LIMIT));
-  limited.sort((left, right) => left.score - right.score || resultKindOrder(left.kind) - resultKindOrder(right.kind) || left.name.localeCompare(right.name));
+  limited.sort((left, right) => compareResults(left, right) || resultKindOrder(left.kind) - resultKindOrder(right.kind) || left.name.localeCompare(right.name));
   return { results: limited, more };
 }
 

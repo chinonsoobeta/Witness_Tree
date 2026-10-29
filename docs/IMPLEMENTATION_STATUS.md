@@ -262,6 +262,51 @@ template moved to `/en/components/example-places/<id>` and
 `/fr/composants/exemples-lieux/<id>` and stays noindex. These pages are not
 expert reviewed, not a formal release and not production eligible; the French
 strings are drafts awaiting bilingual review.
+### BC timber processing facilities
+
+On 2026-10-28 the owner amended plan sections 1.3 and 14.2 to allow British
+Columbia timber processing facilities to be listed from the provincial Major
+Primary Timber Processing Facilities survey under the Open Government Licence –
+British Columbia, with the dispute route live first and legal review of the
+wording still external. See [the decision](PLAN_SCOPE_DECISION_2026-10-28_BC_FACILITIES.md).
+The owner's message approved "the plan amendment for #9"; #9 needed none and was
+held, so the lead session applied it to this feature (#10). The owner confirmed
+that reading the same day: "I did mean plan amendment for #9 should actually be
+for #10."
+The rights check the same day found the survey's facility data Access Only in
+the BC Data Catalogue and all rights reserved on gov.bc.ca; only 2023 is a
+spreadsheet, and it has no status column. The source is recorded as blocked in
+[the access block](../data/bc-timber-facilities-access-block.json), checked by
+`npm run check:bc-timber-facilities-access`, which also fails if a facilities
+record is built while the block stands. Nothing was built: no record, page
+panel or table. The permission request is drafted and unsent.
+### Explore time-lapse export
+
+On 2026-10-28 Explore gained a time-lapse export. When a measured boundary (a
+federal or provincial riding, an economic region or a census subdivision) is
+pinned in the forest change, recorded harvest or wildfire mode, the boundary
+readout offers "Download the years as an animation". The reader picks a span and
+a format, each shown with its expected size: an animated PNG, a PNG contact
+sheet, or a WebM video where the browser can record a canvas. The export draws
+one frame per annual interval of the current view, at most 1280 px across, on a
+temporary hidden map copied from the live one, so the live map's figures, modes
+and year contract are unchanged. Every frame carries a strip with the place, the
+interval, the boundary set and its source, the evidence class (Satellite
+observation) and data version, the caveats (patches are simplified and not for
+counting; a boundary does not identify who is responsible), the licence line and
+the product name once. No frame shows hectare figures. The file is named for the
+place, the boundary set and the span.
+
+The pure parts (APNG writer, strip layout, contact sheet layout, sizes, file
+names, WebM feature detection) are in `lib/explore/timelapse.ts` and tested by
+`tests/explore-timelapse.test.ts`; the lazily loaded island is
+`components/explore/TimelapseExport.tsx`; `tests/browser/timelapse-export.spec.ts`
+exports two years in each format from a production build. It was tested only in
+headless Chromium; Firefox and Safari (including WebM support there) are
+unverified, and the size estimates are approximate. The French strings are
+Claude's drafts awaiting the owner's review. Because
+`components/explore/ExploreMapClient.tsx` changed, the deployed map render gate
+is stale until a redeploy and a fresh observation.
 
 ## Other formal phase counts
 

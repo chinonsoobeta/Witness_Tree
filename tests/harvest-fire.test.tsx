@@ -77,8 +77,10 @@ test("hectares are exact arithmetic on whole cells", () => {
 
 test("the address parses to a safe default and round-trips", () => {
   assert.deepEqual(parseHarvestFireQuery({}), { provinces: ["59", "48", "35", "24"], firstYear: 1985, lastYear: 2022, step: 5, scale: "shared", view: "chart" });
+  // An inverted span is not reordered behind the reader's back: it falls back to
+  // the default years, and the page says so (tests/query-notice.test.tsx).
   assert.deepEqual(parseHarvestFireQuery({ provinces: "24,59,99", from: "2019", to: "2010", step: "10", scale: "own", view: "table" }),
-    { provinces: ["59", "24"], firstYear: 2010, lastYear: 2019, step: 10, scale: "own", view: "table" });
+    { provinces: ["59", "24"], firstYear: 1985, lastYear: 2022, step: 10, scale: "own", view: "table" });
   assert.equal(parseHarvestFireQuery({ from: "1970", to: "2040", step: "7" }).step, 5);
   assert.equal(parseHarvestFireQuery({ from: "2018", to: "2022" }).step, 1, "a short span defaults to single years");
   const query = parseHarvestFireQuery({ provinces: "48", from: "2000", to: "2020", step: "span", scale: "own" });

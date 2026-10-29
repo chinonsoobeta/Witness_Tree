@@ -9,6 +9,8 @@ import { PlaceFinder }
 from "../components/search/PlaceFinder.tsx";
 // @ts-expect-error Node test runner needs extensions.
 import { formatSearchShare, searchSite } from "../lib/search/site-search.ts";
+// @ts-expect-error Node test runner needs extensions.
+import { ridingCompareHref } from "../lib/search/suggest.ts";
 test("normalizes aliases and diacritics", () => { assert.equal(normalizeSearch("Québec!") , "quebec"); assert.ok(searchPlaces("alias illustratif d’une municipalite quebecoise").length); });
 test("empty and missing results never become zero", () => { assert.deepEqual(searchPlaces(""), []); assert.deepEqual(searchPlaces("not-a-place"), []); });
 test("fixture names have bilingual parity", () => { const found = searchPlaces("illustrative"); assert.equal(found.filter((place) => place.name.en).length, found.filter((place) => place.name.fr).length); });
@@ -91,18 +93,22 @@ test("a community result leads with the place's own figure, before its ridings",
   assert.doesNotMatch(montreal, />0(?: ha)?</);
 });
 
-test("a federal riding result opens in Compare, and a provincial one names no link", () => {
+test("a federal or a provincial riding result opens in Compare", () => {
   for (const locale of ["en", "fr"] as const) {
     const markup = renderToStaticMarkup(<SearchPage locale={locale} query="Prince George" />);
     const compare = locale === "en" ? "/en/compare" : "/fr/comparer";
-    // Every riding result opens its own page; Compare covers federal ridings only,
-    // so only a federal card also links there.
+    // Every riding result opens its own page and also links to Compare, which
+    // covers the four provinces' ridings at both levels.
     const places = locale === "en" ? "/en/places" : "/fr/lieux";
     assert.match(markup, new RegExp(`<h4><a href="${places}/1984-2022-v1/federal-2023/59026">Prince George—Peace River—Northern Rockies</a></h4>`));
     assert.match(markup, new RegExp(`<a href="${compare}\\?left=federal-59026">`));
     assert.match(markup, new RegExp(`<h4><a href="${places}/1984-2022-v1/bc-2023/\\d+">Prince George-Mackenzie</a></h4>`));
-    assert.doesNotMatch(markup, new RegExp(`${compare}\\?left=(?!federal-)`));
+    assert.match(markup, new RegExp(`<a href="${compare}\\?left=provincial-BC-\\d+">`));
   }
+  assert.equal(ridingCompareHref("CA-59001", "en"), "/en/compare?left=federal-59001");
+  assert.equal(ridingCompareHref("BC-258", "en"), "/en/compare?left=provincial-BC-258");
+  assert.equal(ridingCompareHref("QC-137", "fr"), "/fr/comparer?left=provincial-QC-137");
+  assert.equal(ridingCompareHref("NS-1", "en"), null, "no Compare page outside the four provinces");
 });
 
 test("a province can be written as its standard abbreviation", () => {
@@ -190,4 +196,121 @@ test("address results distinguish a missing boundary from a found boundary witho
     assert.match(measured, /compare\?left=federal-59001|comparer\?left=federal-59001/);
     assert.doesNotMatch(measured, /class="no-record-result"/);
   }
+});
+
+import { cleanSearchQuery } from "../lib/search/query";
+import { splitUnknownRows, UNKNOWN_GROUP_MIN } from "../lib/search/unknown-groups";
+
+const WHITESPACE_QUERIES = [" ", "   ", "\u00a0", " \u00a0\t\n ", "\u202f\u2003", "\u200b", "\ufeff "];
+
+test("a query of nothing but whitespace is no query, in both languages", () => {
+  for (const query of WHITESPACE_QUERIES) {
+    assert.equal(cleanSearchQuery(query), "", JSON.stringify(query));
+    assert.deepEqual(searchSite(query).results, [], JSON.stringify(query));
+    for (const locale of ["en", "fr"] as const) {
+      const markup = renderToStaticMarkup(<SearchPage locale={locale} query={query} />);
+      assert.match(markup, locale === "en" ? /Enter a province, riding, or community\./ : /Entrez une province, une circonscription ou une collectivité\./);
+      assert.doesNotMatch(markup, /class="no-record-result"|class="search-results"/);
+      // The field shows the query as search read it: empty, not a run of spaces.
+      assert.match(markup, /<input[^>]*name="q"[^>]*value=""/);
+    }
+  }
+  // Inner runs of any whitespace read as one space; the words are untouched.
+  assert.equal(cleanSearchQuery("\u00a0Prince\u00a0\u00a0George "), "Prince George");
+  assert.equal(cleanSearchQuery(undefined), "");
+  assert.equal(cleanSearchQuery(["Prince George"]), "");
+});
+
+test("results rank the exact name first, then measured places, then Unknowns", () => {
+  for (const query of ["saint", "lac", "mont", "river", "toronto", "saint jean", "montreal"]) {
+    const { results } = searchSite(query);
+    for (const kind of ["community", "riding", "province"] as const) {
+      const rows = results.filter((result: { kind: string }) => result.kind === kind);
+      const exact = rows.filter((row: { score: number }) => row.score === 0).length;
+      assert.ok(rows.slice(0, exact).every((row: { score: number }) => row.score === 0), `${query}: exact names lead ${kind}`);
+      const rest = rows.slice(exact);
+      const firstUnknown = rest.findIndex((row: { unknownReason: string | null }) => row.unknownReason !== null);
+      if (firstUnknown >= 0) {
+        assert.ok(rest.slice(firstUnknown).every((row: { unknownReason: string | null }) => row.unknownReason !== null), `${query}: no measured ${kind} after an Unknown`);
+      }
+    }
+  }
+  // The riding the reader named stays first even though its loss is Unknown.
+  const saintJean = searchSite("Saint-Jean").results.filter((result: { kind: string }) => result.kind === "riding");
+  assert.equal(saintJean[0]?.name, "Saint-Jean");
+  assert.equal(saintJean[0]?.unknownReason, "no-satellite-data");
+});
+
+test("many same-reason Unknowns are one counted line that opens to them, never a wall and never 0", () => {
+  const cases = [
+    { locale: "en", federal: /<summary><span class="mark-glyph mark-glyph--unknown" aria-hidden="true"><\/span><span>18 federal ridings have no satellite data, so their loss is Unknown<\/span><\/summary>/, provincial: /<span>26 provincial ridings have no satellite data, so their loss is Unknown<\/span>/, row: "Loss unknown; no satellite data here" },
+    { locale: "fr", federal: /<span>18 circonscriptions fédérales n’ont pas de données satellitaires, donc leur perte est inconnue<\/span>/, provincial: /<span>26 circonscriptions provinciales n’ont pas de données satellitaires, donc leur perte est inconnue<\/span>/, row: "Perte inconnue\u202f; aucune donnée satellitaire ici" },
+  ] as const;
+  for (const { locale, federal, provincial, row } of cases) {
+    const markup = renderToStaticMarkup(<SearchPage locale={locale} query="montreal" />);
+    assert.match(markup, federal);
+    assert.match(markup, provincial);
+    // Each group holds exactly the rows its line counts, and each row keeps its own Unknown.
+    const groups = [...markup.matchAll(/<details class="search-unknown-group"><summary>.*?<span>(\d+) [^<]*<\/span><\/summary>(.*?)<\/details>/g)];
+    assert.ok(groups.length >= 2);
+    for (const [, count, body] of groups) {
+      assert.equal((body!.match(/<li>/g) ?? []).length, Number(count));
+      assert.equal(body!.split(row).length - 1, Number(count));
+    }
+    assert.doesNotMatch(markup, /100\s?% of the forest is unknown|100\s?% de la forêt est inconnue/);
+    assert.doesNotMatch(markup, />0(?: ha)?</);
+    // The city itself is still listed, with its own reason.
+    assert.match(markup, locale === "en" ? /No satellite data here\./ : /Aucune donnée satellitaire ici\./);
+  }
+  // Results, not only a place's ridings, are gathered the same way.
+  const saint = renderToStaticMarkup(<SearchPage locale="en" query="saint" />);
+  assert.match(saint, /<span>\d+ ridings have no satellite data, so their loss is Unknown<\/span>/);
+  assert.match(saint, /\d+ more ridings? (match and aren’t|matches and isn’t) listed here\./);
+});
+
+test("Unknowns gather only from the threshold up, and kept rows are never gathered", () => {
+  const rows = [
+    { id: "a", reason: null }, { id: "b", reason: "no-satellite-data" }, { id: "c", reason: "partly-mapped" },
+    { id: "d", reason: "no-satellite-data" }, { id: "e", reason: "partly-mapped" }, { id: "f", reason: "no-satellite-data" },
+  ] as const;
+  assert.equal(UNKNOWN_GROUP_MIN, 3);
+  const split = splitUnknownRows(rows, (row) => row.reason);
+  assert.deepEqual(split.listed.map((row) => row.id), ["a", "c", "e"]);
+  assert.deepEqual(split.groups.map((group) => [group.reason, group.rows.map((row) => row.id)]), [["no-satellite-data", ["b", "d", "f"]]]);
+  const kept = splitUnknownRows(rows, (row) => row.reason, (row) => row.id === "b");
+  assert.deepEqual(kept.listed.map((row) => row.id), ["a", "b", "c", "d", "e", "f"]);
+  assert.deepEqual(kept.groups, []);
+});
+
+test("each result says what it is, where, which figure it shows and over what span", () => {
+  const en = renderToStaticMarkup(<SearchPage locale="en" query="Prince George" />);
+  const fr = renderToStaticMarkup(<SearchPage locale="fr" query="Prince George" />);
+  assert.match(en, /<p class="eyebrow search-result-kind">Community · City · British Columbia<\/p>/);
+  assert.match(en, /<p class="eyebrow search-result-kind">Federal riding · British Columbia<\/p>/);
+  assert.match(en, /<p class="eyebrow search-result-kind">Provincial riding · British Columbia<\/p>/);
+  assert.match(en, /<span class="search-result-figure-label">This community, 1984–2022:<\/span>/);
+  assert.match(en, /<span class="search-result-figure-label">Whole riding, 1984–2022:<\/span>/);
+  assert.match(en, /Federal ridings it lies in \(figures for 1984–2022\)/);
+  assert.match(fr, /<p class="eyebrow search-result-kind">Collectivité · City · Colombie-Britannique<\/p>/);
+  assert.match(fr, /<p class="eyebrow search-result-kind">Circonscription fédérale · Colombie-Britannique<\/p>/);
+  assert.match(fr, /<p class="eyebrow search-result-kind">Circonscription provinciale · Colombie-Britannique<\/p>/);
+  assert.match(fr, /<span class="search-result-figure-label">Cette collectivité, 1984–2022\u202f:<\/span>/);
+  assert.match(fr, /<span class="search-result-figure-label">Toute la circonscription, 1984–2022\u202f:<\/span>/);
+  const province = renderToStaticMarkup(<SearchPage locale="fr" query="Alberta" />);
+  assert.match(province, /<p class="eyebrow search-result-kind">Province<\/p>/);
+  assert.match(province, /Toute la province, 1984–2022\u202f:/);
+  // The label follows the name in reading order, so heading navigation lands on the name.
+  assert.ok(en.indexOf(">Prince George</a></h4>") < en.indexOf("Community · City · British Columbia"));
+});
+
+test("same-name places read apart by the federal riding holding most of them", () => {
+  for (const locale of ["en", "fr"] as const) {
+    const markup = renderToStaticMarkup(<SearchPage locale={locale} query="Saint-Elzéar" />);
+    const label = locale === "en" ? "Community · Municipalité · Québec · Federal riding: " : "Collectivité · Municipalité · Québec · Circonscription fédérale\u202f: ";
+    const metas = [...markup.matchAll(/<p class="eyebrow search-result-kind">([^<]*)<\/p>/g)].map(([, meta]) => meta!).filter((meta) => meta.startsWith(label));
+    assert.equal(metas.length, 2, locale);
+    assert.notEqual(metas[0], metas[1]);
+  }
+  // A unique name carries no riding in its label.
+  assert.doesNotMatch(renderToStaticMarkup(<SearchPage locale="en" query="Prince George" />), /Community · City · British Columbia · Federal riding/);
 });
