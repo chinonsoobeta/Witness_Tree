@@ -128,7 +128,16 @@ const explore = (locale: "en" | "fr", query: ExploreRouteQuery) => {
     />,
   );
 };
-const notice = (html: string) => html.match(/<p class="notice query-notice" role="note">(.*?)<\/p>/)?.[1] ?? null;
+// The notice's inner text, found by plain string positions rather than a tag
+// pattern (CodeQL js/bad-tag-filter); the markup under test is React's own.
+const NOTICE_OPEN = '<p class="notice query-notice" role="note">';
+const notice = (html: string): string | null => {
+  const start = html.indexOf(NOTICE_OPEN);
+  if (start < 0) return null;
+  const from = start + NOTICE_OPEN.length;
+  const end = html.indexOf("</p>", from);
+  return end < 0 ? null : html.slice(from, end);
+};
 
 test("a valid Explore link shows no notice", () => {
   assert.equal(notice(explore("en", { from: "1990", year: "1998" })), null);
