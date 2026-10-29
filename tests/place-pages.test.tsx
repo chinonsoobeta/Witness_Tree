@@ -27,7 +27,7 @@ test("annual summaries retain event identifiers and locations are newest first",
 
 test("unknown reported values remain non-numeric and routes implement table views", () => {
   assert.ok(PLACES.every((place) => place.stats.some((stat) => stat.kind === "unknown" && !("value" in stat))));
-  const route = readFileSync(new URL("../app/en/places/[placeId]/page.tsx", import.meta.url), "utf8");
+  const route = readFileSync(new URL("../app/en/components/example-places/[placeId]/page.tsx", import.meta.url), "utf8");
   assert.match(route, /generateStaticParams\(\)/);
   assert.match(route, /query\.view === "table" \? "table" : "chart"/);
 });
@@ -60,7 +60,7 @@ test("place coverage uses reader labels and confidence reasons are labelled hone
 });
 
 test("localized routes use the shared shell and consistent main landmark", () => {
-  const routePaths = ["../app/en/places/[placeId]/page.tsx", "../app/fr/lieux/[placeId]/page.tsx", "../app/en/location/[locationId]/page.tsx", "../app/fr/emplacement/[locationId]/page.tsx"];
+  const routePaths = ["../app/en/components/example-places/[placeId]/page.tsx", "../app/fr/composants/exemples-lieux/[placeId]/page.tsx","../app/en/location/[locationId]/page.tsx", "../app/fr/emplacement/[locationId]/page.tsx"];
   for (const path of routePaths) {
     const route = readFileSync(new URL(path, import.meta.url), "utf8");
     assert.match(route, /SiteShell/);

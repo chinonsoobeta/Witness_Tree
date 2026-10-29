@@ -5501,7 +5501,15 @@ dd > a:only-child {
 .place-caution p { margin: 0; }
 .place-download { text-align: center; }
 .place-provenance .source-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
-.record-citation p { margin: 0; }
+.record-citation p { margin: 0; overflow-wrap: anywhere; }
+/* A real place's page: the minimum note, its limitations and the places it links to. */
+.place-stat-minimum { margin: 0; color: var(--muted); font-size: 0.85rem; }
+.place-limitations { margin: 0; padding-inline-start: 1.1rem; display: flex; flex-direction: column; gap: 6px; }
+.place-observed h3 { margin: 6px 0 0; font-size: 0.95rem; }
+.place-related { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr)); gap: 8px 20px; }
+.place-related li { display: flex; flex-direction: column; min-width: 0; }
+.place-related-share { color: var(--muted); font-size: 0.85rem; }
+.place-related-links { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 8px 0 0; }
 
 @media (max-width: 1000px) {
   .place-hero { grid-template-columns: minmax(0, 1fr); }

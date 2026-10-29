@@ -1,4 +1,4 @@
-import type { Reported, CoverageGrade, Locale } from "@/lib/domain";
+import { formatHectares, formatPercent, type Reported, type CoverageGrade, type Locale } from "@/lib/domain";
 import { ConfidenceBadge } from "./ConfidenceBadge";
 import { CoverageBand } from "./CoverageBand";
 import { EvidenceChip } from "./EvidenceChip";
@@ -15,6 +15,13 @@ export type ReportedValueProps = Readonly<{
   locale: Locale;
 }>;
 
+// Areas and shares read in the reader's number format; a count or a year is shown as recorded.
+function figureText(reported: Extract<Reported, { kind: "figure" }>, locale: Locale) {
+  if (reported.unit === "ha") return formatHectares(reported.value, locale);
+  if (reported.unit === "%") return formatPercent(reported.value, locale);
+  return `${reported.value} ${reported.unit}`;
+}
+
 export function ReportedValue({ reported, coverageGrade, locale }: ReportedValueProps) {
   if (reported.kind === "unknown") {
     const reason = reported.reason[locale];
@@ -29,7 +36,7 @@ export function ReportedValue({ reported, coverageGrade, locale }: ReportedValue
 
   return (
     <section className={`reported reported--${reported.evidence}`}>
-      <output className="reported-figure">{reported.value} {reported.unit}</output>
+      <output className="reported-figure">{figureText(reported, locale)}</output>
       <EvidenceChip evidence={reported.evidence} locale={locale} />
       <ConfidenceBadge confidence={reported.confidence} locale={locale} />
       <CoverageBand coverageGrade={coverageGrade} locale={locale} />
