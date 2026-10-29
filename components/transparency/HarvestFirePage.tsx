@@ -18,10 +18,10 @@ import {
   type HarvestFireSeries,
   type HarvestFireStep,
 } from "@/lib/harvest-fire";
-import { chartGeometry, SVG_SIZE } from "@/lib/harvest-fire/chart";
 import type { PngText } from "@/lib/harvest-fire/png";
 import { UNMAPPED_REASONS } from "@/lib/explore/unmapped-reasons";
 import { harvestFireDataset, StructuredData } from "@/lib/structured-data";
+import { HarvestFireChartSvg } from "./HarvestFireChartSvg";
 import { HarvestFireCsvButton, HarvestFirePngButton } from "./HarvestFireDownloads";
 
 const FLAG_KEYS = { "59": "bc", "48": "ab", "35": "on", "24": "qc" } as const satisfies Record<HarvestFireProvinceId, string>;
@@ -199,38 +199,16 @@ function pngText(chart: HarvestFireChartModel, series: HarvestFireSeries, query:
 }
 
 function Chart({ chart, locale, text, query }: Readonly<{ chart: HarvestFireChartModel; locale: Locale; text: Copy; query: HarvestFireQuery }>) {
-  const geometry = chartGeometry(chart, locale, SVG_SIZE);
   const name = chart.province.name[locale];
-  const { plot } = geometry;
   const label = text.chartTitle(name, formatYearRange(yearRange(query.firstYear, query.lastYear), locale, "compact"));
   return (
     <div className="hf-chart-scroll" tabIndex={0} role="region" aria-label={label}>
-      <svg className="hf-chart-svg" role="img" aria-label={label} viewBox={`0 0 ${geometry.width} ${geometry.height}`} width="100%">
-        <title>{label}</title>
-        {geometry.ticks.map((tick) => (
-          <g key={tick.value}>
-            <line className={tick.value === 0 ? "hf-axis" : "hf-grid"} x1={plot.left} x2={plot.right} y1={tick.y} y2={tick.y} />
-            <text className="hf-tick" x={plot.left - 8} y={tick.y} textAnchor="end" dominantBaseline="middle">{tick.label}</text>
-          </g>
-        ))}
-        {geometry.bins.map((bin) => (
-          <g key={bin.label}>
-            {([["harvest", bin.harvest, text.harvest], ["fire", bin.fire, text.fire]] as const).map(([kind, bar, kindLabel]) => (
-              <g key={kind}>
-                <rect className={`hf-bar hf-bar--${kind}`} x={bar.x} y={bar.y} width={bar.width} height={bar.height} rx={Math.min(4, bar.width / 2)}>
-                  <title>{text.tooltip(name, bin.label, kindLabel, formatNumber(bar.value, locale, 0))}</title>
-                </rect>
-                {geometry.showValues ? (
-                  <text className="hf-value" x={bar.x + bar.width / 2} y={bar.y - 5} textAnchor="middle">{bar.text}</text>
-                ) : null}
-              </g>
-            ))}
-            {bin.showLabel ? <text className="hf-label" x={bin.centre} y={plot.bottom + 20} textAnchor="middle">{bin.label}</text> : null}
-          </g>
-        ))}
-        <text className="hf-axis-title" x={(plot.left + plot.right) / 2} y={geometry.height - 6} textAnchor="middle">{text.xAxis[stepKey(query.step)]}</text>
-        <text className="hf-axis-title" transform={`translate(14 ${(plot.top + plot.bottom) / 2}) rotate(-90)`} textAnchor="middle">{text.yAxis}</text>
-      </svg>
+      <HarvestFireChartSvg
+        chart={chart}
+        locale={locale}
+        label={label}
+        words={{ harvest: text.harvest, fire: text.fire, xAxis: text.xAxis[stepKey(query.step)], yAxis: text.yAxis, tooltip: text.tooltip }}
+      />
     </div>
   );
 }

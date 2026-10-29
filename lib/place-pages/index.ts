@@ -29,7 +29,7 @@ import { PLACE_DATA_VERSION, PLACE_METHOD_VERSION, type PlaceGeography } from ".
  */
 
 export { PLACE_DATA_VERSION, PLACE_GEOGRAPHIES, type PlaceGeography } from "./paths";
-export { placePagePath, ridingPagePath, communityPagePath } from "./paths";
+export { placePagePath, ridingPagePath, communityPagePath, isRidingGeography, ridingSheetPath, RIDING_GEOGRAPHIES } from "./paths";
 export { wholeRecordFigures, landCoverProvenance, type WholeRecordCells, type WholeRecordFigures } from "./figures";
 
 export type PlacePageKind = "community" | "federal-riding" | "provincial-riding" | "economic-region";

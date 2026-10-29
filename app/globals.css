@@ -6050,3 +6050,146 @@ dd > a:only-child {
 .recovery-answer .eyebrow {
   margin-top: 1.25rem;
 }
+
+/* ==========================================================================
+   Riding print sheet (components/places/RidingSheet.tsx).
+   On screen the sheet is a sheet of paper under a toolbar. In print the
+   toolbar goes, and the sheet is laid out on the part of the page that Letter
+   (216 by 279 mm) and A4 (210 by 297 mm) share, inside 12 mm margins, so
+   either paper takes it on one page. The paper keeps the light palette in
+   every theme, restated here because the dark theme redefines the tokens.
+   The named page keeps these margins off every other page's printout.
+   ========================================================================== */
+@page riding-sheet {
+  margin: 12mm;
+}
+.riding-sheet {
+  padding: 16px 16px 48px;
+}
+.riding-sheet-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+  max-width: 794px;
+  margin: 0 auto 16px;
+}
+.riding-sheet-toolbar p {
+  flex-basis: 100%;
+  margin: 0;
+  color: var(--ink-2);
+  font-size: var(--text-small);
+}
+.riding-sheet-page {
+  --ground: #fdfcf8;
+  --ink: #2c2c24;
+  --ink-2: #4a4a40;
+  --rule: #ded8cf;
+  --rule-strong: #948b7a;
+  --accent: #47593f;
+  --harvest: #2a78d6;
+  --fire: #eb6834;
+  color-scheme: light;
+  max-width: 794px;
+  margin: 0 auto;
+  padding: 40px 44px;
+  border: 1px solid var(--rule);
+  background: var(--ground);
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.riding-sheet-page h1 {
+  margin: 0.15em 0 0.3em;
+  font-size: 1.9em;
+  line-height: 1.15;
+}
+.riding-sheet-page h2 {
+  margin: 0 0 0.35em;
+  font-size: 1.05em;
+  line-height: 1.3;
+}
+.riding-sheet-page p,
+.riding-sheet-page ul {
+  margin: 0 0 0.4em;
+}
+.riding-sheet-page ul {
+  padding-left: 1.2em;
+}
+.riding-sheet-page section,
+.riding-sheet-cite {
+  padding-top: 0.7em;
+  margin-top: 0.7em;
+  border-top: 1px solid var(--rule);
+}
+.riding-sheet-brand {
+  color: var(--ink-2);
+  font-weight: 700;
+}
+.riding-sheet-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2em 1.4em;
+  margin: 0;
+}
+.riding-sheet-facts--figure {
+  display: block;
+  margin-top: 0.4em;
+}
+.riding-sheet-fact dt {
+  display: inline;
+  color: var(--ink-2);
+}
+.riding-sheet-fact dd {
+  display: inline;
+  margin: 0 0 0 0.3em;
+  font-weight: 700;
+}
+.riding-sheet-facts--figure .riding-sheet-fact dd {
+  font-weight: 400;
+}
+.riding-sheet-value strong {
+  font-size: 1.9em;
+  line-height: 1.1;
+}
+.riding-sheet-note {
+  color: var(--ink-2);
+  font-size: 0.93em;
+}
+.riding-sheet-key {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  margin-right: 1em;
+}
+.riding-sheet-chart .hf-chart-svg {
+  min-width: 600px;
+}
+@media print {
+  .riding-sheet {
+    page: riding-sheet;
+    padding: 0;
+  }
+  .riding-sheet-toolbar {
+    display: none;
+  }
+  .riding-sheet-page {
+    max-width: none;
+    padding: 0;
+    border: 0;
+    font-size: 8.4pt;
+    line-height: 1.32;
+  }
+  .riding-sheet-chart {
+    overflow: visible;
+  }
+  .riding-sheet-chart .hf-chart-svg {
+    min-width: 0;
+  }
+  .riding-sheet-page .hf-bar,
+  .riding-sheet-page .hf-swatch {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}

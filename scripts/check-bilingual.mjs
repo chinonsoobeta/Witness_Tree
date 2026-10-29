@@ -18,6 +18,7 @@ export const REQUIRED_ROUTE_PAIRS = [
   { en: '/en/explore', fr: '/fr/explorer' },
   { en: '/en/search', fr: '/fr/recherche' },
   { en: '/en/places/[dataVersion]/[geography]/[code]', fr: '/fr/lieux/[dataVersion]/[geography]/[code]' },
+  { en: '/en/places/[dataVersion]/[geography]/[code]/print', fr: '/fr/lieux/[dataVersion]/[geography]/[code]/print' },
   { en: '/en/components/example-places/[placeId]', fr: '/fr/composants/exemples-lieux/[placeId]' },
   { en: '/en/location/[locationId]', fr: '/fr/emplacement/[locationId]' },
   { en: '/en/glossary', fr: '/fr/glossaire' },

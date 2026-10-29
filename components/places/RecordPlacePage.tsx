@@ -7,6 +7,8 @@ import { colon, formatHectares, formatPercent, type Locale } from "@/lib/domain"
 import {
   PLACE_DATA_VERSION,
   placePagePath,
+  isRidingGeography,
+  ridingSheetPath,
   placeProvinceName,
   landCoverProvenance,
   type PlacePageRecord,
@@ -27,7 +29,7 @@ import { localizedAlternates } from "@/lib/site-metadata";
  * a share the record cannot support is shown as Unknown with its reason.
  */
 
-const COPY = {
+export const COPY = {
   en: {
     panel: "What this page can tell you",
     coverage: "Coverage",
@@ -57,6 +59,7 @@ const COPY = {
     readMethod: "Read the method",
     citation: "Cite this page",
     download: "Download this card (PNG, 1200 × 630)",
+    sheet: "Print a one-page sheet for this riding",
     copy: "Copy the citation",
     copied: "Citation copied.",
     copyFailed: "The citation could not be copied. Select it above instead.",
@@ -106,6 +109,8 @@ const COPY = {
     citation: "Citer cette page",
     // Draft French for the owner's review (2026-10-29).
     download: "Télécharger cette carte (PNG, 1200 × 630)",
+    // Draft French for the owner's review (2026-10-29).
+    sheet: "Imprimer une fiche d’une page pour cette circonscription",
     copy: "Copier la citation",
     copied: "Citation copiée.",
     copyFailed: "La citation n’a pas pu être copiée. Sélectionnez-la ci-dessus.",
@@ -262,6 +267,7 @@ export function RecordPlacePage({ locale, record }: Readonly<{ locale: Locale; r
               <p id="place-citation">{citation}</p>
               <p className="place-share">
                 <a href={receiptPath(locale, record)} download={`${PLACE_DATA_VERSION}-${record.geography}-${record.code}-${locale}.png`}>{text.download}</a>
+                {isRidingGeography(record.geography) ? <a href={ridingSheetPath(locale, record.geography, record.code)}>{text.sheet}</a> : null}
                 <CopyCitation targetId="place-citation" label={text.copy} copied={text.copied} failed={text.copyFailed} />
               </p>
             </section>
