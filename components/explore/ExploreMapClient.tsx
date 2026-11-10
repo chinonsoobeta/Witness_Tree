@@ -1,6 +1,6 @@
 "use client";
 
-import { lazy, Suspense, useEffect, useRef, useState, type RefObject } from "react";
+import { lazy, Suspense, useEffect, useRef, useState, useSyncExternalStore, type RefObject } from "react";
 import type {
   ExpressionSpecification,
   FilterSpecification,
@@ -463,9 +463,54 @@ const CANADA_LAND_LAYER_ID = "canada-land-fill";
 const CANADA_LAND_COLOUR = "#dcdfd5";
 // Yukon, the Northwest Territories and Nunavut: one riding each.
 const TERRITORIAL_RIDING_IDS = ["CA-60001", "CA-61001", "CA-62001"];
+
+/*
+ * D8: the ground the data sits on follows the site theme. Only what lies
+ * outside the figures changes: the sea, the other land and the provinces
+ * painted out around a chosen one. The classes, the hatching, the fill for a
+ * region with no figure and the outlines keep their printed colours, and in
+ * dark theme the province outlines get the same light track as the boundary
+ * outlines (F2), so a dark class still has an edge against a dark ground.
+ * An exported image always uses the light ground, to match its light caption.
+ */
+type MapTheme = "light" | "dark";
+const MAP_GROUND: Readonly<Record<MapTheme, Readonly<{ ground: string; land: string }>>> = {
+  light: { ground: EXPLORE_MAP_COLOURS.ground, land: CANADA_LAND_COLOUR },
+  dark: { ground: "#211e19", land: "#36322b" },
+};
+const PREFERS_DARK = "(prefers-color-scheme: dark)";
+const readMapTheme = (): MapTheme => {
+  const chosen = document.documentElement.getAttribute("data-theme");
+  if (chosen === "light" || chosen === "dark") return chosen;
+  return window.matchMedia(PREFERS_DARK).matches ? "dark" : "light";
+};
+const readServerMapTheme = (): MapTheme => "light";
+const subscribeMapTheme = (onChange: () => void) => {
+  const query = window.matchMedia(PREFERS_DARK);
+  query.addEventListener("change", onChange);
+  const observer = new MutationObserver(onChange);
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+  return () => {
+    query.removeEventListener("change", onChange);
+    observer.disconnect();
+  };
+};
+function applyMapGround(map: MapLibreMap, theme: MapTheme) {
+  const { ground, land } = MAP_GROUND[theme];
+  if (map.getLayer("ground")) map.setPaintProperty("ground", "background-color", ground);
+  for (const id of [CANADA_LAND_LAYER_ID, PROVINCE_MASK_LAYER_ID]) {
+    if (!map.getLayer(id)) continue;
+    map.setPaintProperty(id, "fill-color", land);
+    map.setPaintProperty(id, "fill-outline-color", land);
+  }
+  if (map.getLayer(PROVINCE_CASING_LAYER_ID)) {
+    map.setLayoutProperty(PROVINCE_CASING_LAYER_ID, "visibility", theme === "dark" ? "visible" : "none");
+  }
+}
 const REGION_HATCH_LAYER_ID = "forest-regions-hatch";
 const REGION_HATCH_IMAGE = "forest-region-hatch";
 const PROVINCE_MASK_LAYER_ID = "province-mask";
+const PROVINCE_CASING_LAYER_ID = "province-casing";
 const PROVINCE_FOCUS_LAYER_ID = "province-focus-outline";
 const TRANSPARENT = "rgba(0, 0, 0, 0)";
 const REGION_OVERLAY = BOUNDARY_OVERLAYS["economic-regions"];
@@ -610,7 +655,8 @@ const provinceMaskLayers = (view: ExploreMapView | null): StyleSpecification["la
     "source-layer": EXPLORE_PRODUCTION_LAYER.sourceLayer,
     filter: provinceMaskFilter(view),
     layout: { visibility: view ? "visible" : "none" },
-    paint: { "fill-color": EXPLORE_MAP_COLOURS.ground, "fill-opacity": 1, "fill-outline-color": EXPLORE_MAP_COLOURS.ground },
+    // Painted as the other land (D7), so a province set aside is not a hole in Canada.
+    paint: { "fill-color": CANADA_LAND_COLOUR, "fill-opacity": 1, "fill-outline-color": CANADA_LAND_COLOUR },
   },
   {
     id: PROVINCE_FOCUS_LAYER_ID,
@@ -684,6 +730,20 @@ const provinceLayers = (fromYear: number, toYear: number, shading: ProvinceShadi
     },
   },
 ];
+
+/**
+ * The light track round the four provinces, shown in dark theme only (D8).
+ * Drawn under the shading, so only its outer half shows: an edge where a
+ * province meets the dark ground, and under the bare outlines of the patch modes.
+ */
+const provinceCasingLayer = (): StyleSpecification["layers"][number] => ({
+  id: PROVINCE_CASING_LAYER_ID,
+  type: "line",
+  source: EXPLORE_PRODUCTION_LAYER.sourceLayer,
+  "source-layer": EXPLORE_PRODUCTION_LAYER.sourceLayer,
+  layout: { visibility: "none" },
+  paint: { "line-color": BOUNDARY_CASING_COLOUR, "line-width": 3.25 },
+});
 
 /*
  * The province outlines alone, for the modes that shade nothing. Without them
@@ -957,6 +1017,8 @@ const buildStyle = (
     url: `pmtiles://${EXPLORE_PRODUCTION_LAYER.url}`,
     bounds: [-141, 41, -52, 70],
   };
+  // Under the shading, so it shows where a province meets the ground (D8).
+  layers.push(provinceCasingLayer());
   if (province) {
     // The shading fades under the loss patches as they appear (D6).
     const [fill, outline] = provinceLayers(span.fromYear, span.toYear, province, breaks, years !== null);
@@ -1204,6 +1266,7 @@ export function ExploreMapClient({
   const [failed, setFailed] = useState(false);
   const [failureKind, setFailureKind] = useState<MapFailureKind | null>(null);
   const [mapReady, setMapReady] = useState(false);
+  const mapTheme = useSyncExternalStore(subscribeMapTheme, readMapTheme, readServerMapTheme);
   const [retryNonce, setRetryNonce] = useState(0);
   const [hoveredBoundary, setHoveredBoundary] = useState<BoundarySelection | null>(null);
   const [pinnedBoundary, setPinnedBoundary] = useState<BoundarySelection | null>(null);
@@ -1248,6 +1311,12 @@ export function ExploreMapClient({
     // stageRef is a ref object, fixed for the life of the page.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // D8: the map ground follows the site theme, at load and on every change.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (mapReady && map) applyMapGround(map, mapTheme);
+  }, [mapReady, mapTheme]);
 
   // Full screen leaves nothing to scroll, so the map takes the wheel and one finger again.
   useEffect(() => {
@@ -1760,7 +1829,11 @@ export function ExploreMapClient({
           target.setMissingStyleImageResolver((id) => {
             if (id === REGION_HATCH_IMAGE && !target.hasImage(REGION_HATCH_IMAGE)) target.addImage(REGION_HATCH_IMAGE, hatchImage());
           }),
-        apply: (target, span, regions) => showTimelapseSpan(target, { shading, cause, overlays, boundary: timelapseBoundary }, span, regions),
+        apply: (target, span, regions) => {
+          // An exported image keeps the light ground under its light caption (D8).
+          applyMapGround(target, "light");
+          showTimelapseSpan(target, { shading, cause, overlays, boundary: timelapseBoundary }, span, regions);
+        },
         needsRegions: shading === "loss",
         boundarySet: BOUNDARY_OVERLAYS[timelapseBoundary.overlay].label[locale],
         boundarySource: BOUNDARY_OVERLAYS[timelapseBoundary.overlay].attribution?.[locale] ?? "",
@@ -2046,7 +2119,7 @@ export function ExploreMapClient({
             role="img"
             aria-label={text[locale].label}
           >
-            <rect width="1000" height="500" fill={EXPLORE_MAP_COLOURS.ground} />
+            <rect className="explore-map-fallback-ground" width="1000" height="500" fill={EXPLORE_MAP_COLOURS.ground} />
             {features.map((feature) => (
               <path
                 key={feature.id}

@@ -1739,6 +1739,22 @@ h4 {
   height: auto;
   min-height: var(--explore-map-height, 430px);
 }
+/* D8: the still map's ground follows the theme, as the live map's does, and
+   its outlines turn light so a dark class keeps an edge against it. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .explore-map-fallback-ground {
+    fill: #211e19;
+  }
+  :root:not([data-theme="light"]) .explore-map-fallback path {
+    stroke: #f6f7f2;
+  }
+}
+:root[data-theme="dark"] .explore-map-fallback-ground {
+  fill: #211e19;
+}
+:root[data-theme="dark"] .explore-map-fallback path {
+  stroke: #f6f7f2;
+}
 /* In flow above the map. It used to float on the frame, which is how the
    layer panel came to cover it when the legend grew. */
 .explore-map-stack {
