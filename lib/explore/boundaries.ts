@@ -35,6 +35,8 @@ export type BoundaryOverlay = Readonly<{
   sourceLayer?: string;
   colour?: string;
   dash?: readonly number[];
+  /** How much heavier than the other outlines the line is drawn (F5); 1 when absent. */
+  weight?: number;
   /** What this layer covers, and just as importantly what it does not. */
   note: Bilingual;
   attribution?: Bilingual;
@@ -120,7 +122,10 @@ export const BOUNDARY_OVERLAYS: Readonly<Record<BoundaryOverlayId, BoundaryOverl
       url: url("watersheds-v4.pmtiles"),
       sourceLayer: "watersheds",
       colour: EXPLORE_MAP_COLOURS.ink,
-      dash: [2, 2],
+      // A heavier dash and dot, so a watershed is never read as a region or
+      // riding border, whose lines are fine dashes or solid (F5).
+      dash: [5, 2, 1, 2],
+      weight: 1.8,
       note: {
         en: "The 105 watersheds that touch the four provinces, cut off at the provincial borders.",
         fr: "Les 105 bassins versants qui touchent les quatre provinces, coupés aux frontières provinciales.",

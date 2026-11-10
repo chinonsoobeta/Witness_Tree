@@ -991,7 +991,7 @@ const boundaryStyle = (overlays: readonly BoundaryOverlayId[]) => {
         // At a national view the southern districts are only a few pixels
         // across, so a constant-width line turns them into a solid mass that
         // reads as the subject of the map rather than the frame around it.
-        "line-width": ["interpolate", ["linear"], ["zoom"], 0, 0.4, 5, 0.7, 10, 1.4],
+        "line-width": boundaryLineWidth(overlay.weight ?? 1),
         "line-opacity": ["interpolate", ["linear"], ["zoom"], 0, 0.45, 5, 0.6, 10, 0.8],
         ...(overlay.dash ? { "line-dasharray": [...overlay.dash] } : {}),
       },
@@ -1015,6 +1015,14 @@ const boundaryStyle = (overlays: readonly BoundaryOverlayId[]) => {
   }
   return { sources, layers };
 };
+
+/**
+ * The outline's width by zoom, times its weight: a watershed is drawn heavier
+ * than the region and riding borders it would otherwise be mistaken for (F5).
+ */
+function boundaryLineWidth(weight: number): ExpressionSpecification {
+  return ["interpolate", ["linear"], ["zoom"], 0, 0.4 * weight, 5, 0.7 * weight, 10, 1.4 * weight];
+}
 
 /** Every layer id the outlines can use, switched on or not. */
 const ALL_BOUNDARY_LAYER_IDS = BOUNDARY_OVERLAY_IDS.flatMap((id) =>
@@ -2136,10 +2144,33 @@ export function ExploreMapClient({
         </div>
       ) : null}
       {overlays.length > 0 ? (
-        <p className="explore-map-key-boundaries">
-          {text[locale].boundariesShown}{colon(locale)}{" "}
-          {overlays.map((id) => BOUNDARY_OVERLAYS[id].label[locale]).join(" · ")}
-        </p>
+        <div className="explore-map-key-boundaries">
+          <p>{text[locale].boundariesShown}{colon(locale)}</p>
+          {/* F5: a short key, one sample line for each outline that is on. */}
+          <ul>
+            {overlays.map((id) => {
+              const overlay = BOUNDARY_OVERLAYS[id];
+              const width = 1.5 * (overlay.weight ?? 1);
+              return (
+                <li key={id}>
+                  <svg width="30" height="10" viewBox="0 0 30 10" aria-hidden="true" focusable="false">
+                    <line x1="1" y1="5" x2="29" y2="5" stroke={BOUNDARY_CASING_COLOUR} strokeWidth={width + 2} strokeLinecap="butt" />
+                    <line
+                      x1="1"
+                      y1="5"
+                      x2="29"
+                      y2="5"
+                      stroke={overlay.colour ?? EXPLORE_MAP_COLOURS.ink}
+                      strokeWidth={width}
+                      strokeDasharray={overlay.dash ? overlay.dash.map((part) => part * width).join(" ") : undefined}
+                    />
+                  </svg>
+                  {overlay.label[locale]}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
       ) : null}
     </div>
   ) : null;

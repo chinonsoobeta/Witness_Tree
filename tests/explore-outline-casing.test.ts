@@ -32,7 +32,12 @@ test("each outline gets a casing layer, drawn after the fills and before the lin
   assert.ok(fill < casing && casing < line, "fills, then casings, then lines");
   // The casing is wider than the line at every zoom stop.
   assert.match(map, /"line-color": BOUNDARY_CASING_COLOUR,\n\s*"line-width": \["interpolate", \["linear"\], \["zoom"\], 0, 1\.6, 5, 2\.2, 10, 3\.6\]/);
-  assert.match(map, /"line-width": \["interpolate", \["linear"\], \["zoom"\], 0, 0\.4, 5, 0\.7, 10, 1\.4\]/);
+  // F5: the line's width is the same ramp times the outline's weight, and the
+  // casing stays wider than the heaviest line at every stop.
+  assert.match(map, /return \["interpolate", \["linear"\], \["zoom"\], 0, 0\.4 \* weight, 5, 0\.7 \* weight, 10, 1\.4 \* weight\];/);
+  assert.match(map, /"line-width": boundaryLineWidth\(overlay\.weight \?\? 1\),/);
+  const heaviest = Math.max(...Object.values(BOUNDARY_OVERLAYS).map((overlay) => overlay.weight ?? 1));
+  for (const [casingWidth, lineWidth] of [[1.6, 0.4], [2.2, 0.7], [3.6, 1.4]] as const) assert.ok(casingWidth > lineWidth * heaviest);
 });
 
 test("the casing is light against the darkest class, and every outline colour reads on it", () => {

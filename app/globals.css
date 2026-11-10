@@ -1955,11 +1955,37 @@ h4 {
 }
 .explore-map-key-boundaries {
   flex: 1 1 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 14px;
   margin: 0;
   padding-top: 10px;
   border-top: 1px solid var(--rule);
   color: var(--muted);
   font-size: 12.5px;
+}
+.explore-map-key-boundaries p {
+  margin: 0;
+}
+.explore-map-key-boundaries ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.explore-map-key-boundaries li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+/* The sample lines sit on the map's own light ground, so they read in both themes. */
+.explore-map-key-boundaries svg {
+  flex: none;
+  border-radius: 2px;
+  background: #eeefe9;
 }
 /*
  * F4: the readout is kept compact (tight lines, its actions on one wrapping
