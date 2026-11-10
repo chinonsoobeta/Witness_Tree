@@ -334,3 +334,11 @@ test("same-name places read apart by the federal riding holding most of them", (
   // A unique name carries no riding in its label.
   assert.doesNotMatch(renderToStaticMarkup(<SearchPage locale="en" query="Prince George" />), /Community · City · British Columbia · Federal riding/);
 });
+
+test("the riding finder still finds a federal riding outside the four provinces, and links it to Compare without a figure", () => {
+  // Compare holds figures for 280 ridings; the finder names all 343, as it did before Compare moved to 1984–2022.
+  const html = renderToStaticMarkup(<SearchPage locale="en" scope="districts" query="Charlottetown" />);
+  assert.match(html, /<a href="\/en\/compare\?left=federal-11\d{3}">Charlottetown<\/a>/);
+  assert.doesNotMatch(html, /No federal riding measurement matches this query/);
+  assert.doesNotMatch(html.slice(html.indexOf("federal-district-finder")), /\d\s?%|\bha\b/, "a riding with no figures shows none");
+});
