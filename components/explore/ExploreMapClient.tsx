@@ -22,10 +22,12 @@ import {
   EXPLORE_PER_CELL_SPAN_LAYER,
   EXPLORE_PRODUCTION_LAYER,
   EXPLORE_YEAR_MAX,
+  formatMapHash,
   perCellCauseForMode,
   perCellSpanYears,
   provinceSpanMeasurements,
   provinceSpanReach,
+  readMapHash,
   spanShareBreaks,
   spanShareClassOn,
   type BoundaryOverlayId,
@@ -1373,8 +1375,22 @@ export function ExploreMapClient({
           const container = map.getContainer();
           map.setMaxBounds(panLimitFor(COMBINED_PROVINCE_BOUNDS, container.clientWidth, container.clientHeight, FRAME_PADDING));
         });
-        // A province named in the address is framed from the start (C6).
-        if (focusRef.current) map.fitBounds(MAP_VIEW_BOUNDS[focusRef.current], { padding: FRAME_PADDING, maxZoom: 6, duration: 0 });
+        // A position in the address wins (D5); it counts as the reader's own,
+        // so full screen does not refit it away. Otherwise a province named in
+        // the address is framed from the start (C6).
+        const hashCamera = readMapHash(window.location.hash);
+        if (hashCamera) {
+          map.jumpTo({ center: [hashCamera.lng, hashCamera.lat], zoom: hashCamera.zoom });
+          readerMovedRef.current = true;
+        } else if (focusRef.current) map.fitBounds(MAP_VIEW_BOUNDS[focusRef.current], { padding: FRAME_PADDING, maxZoom: 6, duration: 0 });
+        // Once the map settles, its position goes into the address, with the
+        // browser's own replaceState so no navigation starts (D5).
+        map.on("moveend", () => {
+          if (!active || !map) return;
+          const centre = map.getCenter();
+          const { pathname, search } = window.location;
+          History.prototype.replaceState.call(window.history, window.history.state, "", `${pathname}${search}${formatMapHash({ zoom: map.getZoom(), lat: centre.lat, lng: centre.lng })}`);
+        });
         map.once("load", () => {
           if (!active) return;
           if (pmtilesTimeout) clearTimeout(pmtilesTimeout);
