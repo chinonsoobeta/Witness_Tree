@@ -47,7 +47,7 @@ import { harvestFireHref, harvestFireSpanTotals } from "@/lib/harvest-fire";
 import type { ForestRegionFigure } from "@/lib/explore/forest-regions";
 import type { ProvincialCauseBreakdown } from "@/lib/phase4/provincial-cause";
 import { ExploreMapClient } from "./ExploreMapClient";
-import { ExploreYearControl, type ExploreMapPlayback } from "./ExploreYearControl";
+import { ExploreYearControl, usePlayRunActive, type ExploreMapPlayback } from "./ExploreYearControl";
 
 const copy = {
   en: {
@@ -373,6 +373,8 @@ export function ExploreView({
   const [lastRouteFrom, setLastRouteFrom] = useState(routeFrom);
   // Whether the map can follow playback, reported by the map itself.
   const [mapPlayback, setMapPlayback] = useState<ExploreMapPlayback>("loading");
+  // During a Play run the map's colour classes are those of the whole record.
+  const playRun = usePlayRunActive();
   if (lastRouteYear !== year) {
     setLastRouteYear(year);
     setActiveYear(year);
@@ -642,6 +644,7 @@ export function ExploreView({
           ridingMeasurements={servedMeasurements}
           forestRegions={recovery ? [] : servedForestRegions}
           recoveryRegions={recovery ? recovery.rows.filter((row) => row.kind === "region") : []}
+          classSpan={playRun ? EXPLORE_COVERAGE_SPAN : undefined}
           onPlaybackChange={setMapPlayback}
         />
         {activeYear > activeFrom + 1 && !recovery ? (

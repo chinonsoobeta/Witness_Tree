@@ -127,6 +127,29 @@ function subscribePlaying(listener: () => void) {
 const readPlaying = () => playing;
 const notPlaying = () => false;
 
+/*
+ * A Play run: from pressing Play until the reader picks years by hand. Pausing
+ * and resuming stay inside the run, and so does the end of the record. While a
+ * run lasts, the map holds the colour classes of the whole record, so that
+ * every frame is coloured on the same edges and frames can be compared. Held
+ * in the module for the same reason as the play flag, and announced through
+ * the same listeners.
+ */
+let playRun = false;
+
+function setPlayRun(next: boolean) {
+  if (playRun === next) return;
+  playRun = next;
+  for (const listener of playListeners) listener();
+}
+
+const readPlayRun = () => playRun;
+
+/** Whether a Play run is under way, for the map's colour classes. */
+export function usePlayRunActive() {
+  return useSyncExternalStore(subscribePlaying, readPlayRun, notPlaying);
+}
+
 /* Hydration state, read through the same primitive as the play flag: the control
    is server-rendered inert so that the no-JavaScript form keeps its Update
    button, and the button disappears the moment the island can do the work. */
@@ -253,6 +276,7 @@ export function ExploreYearControl({
 
   const selectYear = (name: "from" | "to", value: number, timestamp: number) => {
     setPlaying(false);
+    setPlayRun(false);
     setPlayStatus("idle");
     const now = timestamp;
     const group = changeGroup.current;
@@ -323,6 +347,7 @@ export function ExploreYearControl({
       return;
     }
     setPlayStatus("playing");
+    if (!resumable) setPlayRun(true);
     setPlaying(true);
     // Resume carries on from the span on display; Play starts the walk again.
     if (!resumable) commit({ fromYear: playStart, toYear: playStart + 1 }, "replace");

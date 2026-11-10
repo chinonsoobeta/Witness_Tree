@@ -381,7 +381,8 @@ test("Explore uses the exact PMTiles release with a GeoJSON/SVG fallback on map 
   assert.match(map, /const provinceAvailable = mode === "forest-change";/);
   assert.match(map, /unavailableYear/);
   assert.match(map, /spanRows\.find\(\(row\) => row\.id === feature\.properties\.province_id\)/);
-  assert.match(map, /setPaintProperty\(PROVINCE_FILL_LAYER_ID, "fill-color", provinceFillColour\(fromYear, year, shading\)\)/);
+  // The span moves the fill in place; a Play run classes it on the held edges.
+  assert.match(map, /const fill = classSpan \? provinceFillColour\(fromYear, year, shading, classBreaks\) : provinceFillColour\(fromYear, year, shading\);\n\s*map\.setPaintProperty\(PROVINCE_FILL_LAYER_ID, "fill-color", fill\)/);
   assert.match(view, /Detected loss \(%\)/);
   assert.match(style, /phase2_province_loss_2020_2022/);
   assert.match(style, /\.pmtiles/);

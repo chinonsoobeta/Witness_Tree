@@ -24,8 +24,8 @@ import {
   perCellSpanYears,
   provinceSpanMeasurements,
   provinceSpanReach,
-  SPAN_SHARE_BREAKS,
-  spanShareClass,
+  spanShareBreaks,
+  spanShareClassOn,
   type BoundaryOverlayId,
   type ExploreMapView,
   type ExploreMode,
@@ -368,15 +368,18 @@ const SPAN_CLASS_COLOURS = [
   EXPLORE_MAP_COLOURS.loss4,
 ] as const;
 
+/** The class edges in use: the span's own, or those held for a Play run. */
+type ShareBreaks = readonly number[];
+
 /*
  * One colour per province for the span on display. A province whose share
  * cannot be computed gets the ground colour, not the lightest band: the
- * lightest band says "under 1 percent", and nobody measured that.
+ * lightest band says "under" the first edge, and nobody measured that.
  */
-const provinceSpanColours = (fromYear: number, toYear: number): Readonly<Record<string, string>> =>
+const provinceSpanColours = (fromYear: number, toYear: number, breaks: ShareBreaks): Readonly<Record<string, string>> =>
   Object.fromEntries(
     provinceSpanMeasurements({ fromYear, toYear }).map((row) => {
-      const band = spanShareClass(row.unionLossPercent);
+      const band = spanShareClassOn(row.unionLossPercent, breaks);
       return [row.id, band === null ? EXPLORE_MAP_COLOURS.ground : SPAN_CLASS_COLOURS[band]];
     }),
   );
@@ -384,8 +387,14 @@ const provinceSpanColours = (fromYear: number, toYear: number): Readonly<Record<
 /** What the province fill shows: detected loss, or recorded harvest or fire. */
 type ProvinceShading = "loss" | ProvinceCause;
 
-const provinceFillColour = (fromYear: number, toYear: number, shading: ProvinceShading = "loss") => {
-  const colours = shading === "loss" ? provinceSpanColours(fromYear, toYear) : provinceCauseColours(shading, fromYear, toYear);
+// Classed on the span's own edges unless other edges are given (a Play run).
+const provinceFillColour = (
+  fromYear: number,
+  toYear: number,
+  shading: ProvinceShading = "loss",
+  breaks: ShareBreaks = spanShareBreaks({ fromYear, toYear }),
+) => {
+  const colours = shading === "loss" ? provinceSpanColours(fromYear, toYear, breaks) : provinceCauseColours(shading, fromYear, toYear);
   return [
     "match",
     ["get", "province_id"],
@@ -417,18 +426,18 @@ const regionForTile = new Map(
   FOREST_REGIONS.flatMap((region) => region.economicRegions.map((code) => [economicRegionTileId(code), region] as const)),
 );
 
-const regionColour = (figure: ForestRegionFigure) => {
+const regionColour = (figure: ForestRegionFigure, breaks: ShareBreaks) => {
   if (figure.mappedSharePercent === null) return NO_FOREST_COLOUR;
-  const band = spanShareClass(figure.mappedSharePercent);
+  const band = spanShareClassOn(figure.mappedSharePercent, breaks);
   return band === null ? NO_FOREST_COLOUR : SPAN_CLASS_COLOURS[band];
 };
 
 /** Every economic region in the colour of its owner region; transparent where no figure is current. */
-const regionFillColour = (figures: readonly ForestRegionFigure[]) => {
+const regionFillColour = (figures: readonly ForestRegionFigure[], breaks: ShareBreaks) => {
   const byId = new Map(figures.map((figure) => [figure.id, figure]));
   const pairs = [...regionForTile].flatMap(([tileId, region]) => {
     const figure = byId.get(region.id);
-    return figure ? [tileId, regionColour(figure)] : [];
+    return figure ? [tileId, regionColour(figure, breaks)] : [];
   });
   return (pairs.length === 0 ? TRANSPARENT : ["match", ["get", "id"], ...pairs, TRANSPARENT]) as unknown as string;
 };
@@ -456,14 +465,14 @@ const hatchImage = () => {
   return { width: size, height: size, data };
 };
 
-const regionLayers = (figures: readonly ForestRegionFigure[]): StyleSpecification["layers"] => [
+const regionLayers = (figures: readonly ForestRegionFigure[], breaks: ShareBreaks): StyleSpecification["layers"] => [
   {
     id: REGION_FILL_LAYER_ID,
     type: "fill",
     source: REGION_SOURCE_ID,
     "source-layer": REGION_OVERLAY.sourceLayer!,
     paint: {
-      "fill-color": regionFillColour(figures),
+      "fill-color": regionFillColour(figures, breaks),
       "fill-opacity": 1,
       // The economic regions inside one region share a colour and no edge.
       "fill-outline-color": TRANSPARENT,
@@ -581,14 +590,14 @@ const boundaryJurisdiction = (locale: Locale, jurisdiction: string) =>
 // The tiles carry only the province geometry and its id that matter here; the
 // 2020-2022 figures baked into them are not read. The colour comes from the
 // span release, so it follows the year control without a new tile request.
-const provinceLayers = (fromYear: number, toYear: number, shading: ProvinceShading = "loss"): StyleSpecification["layers"] => [
+const provinceLayers = (fromYear: number, toYear: number, shading: ProvinceShading, breaks: ShareBreaks): StyleSpecification["layers"] => [
   {
     id: PROVINCE_FILL_LAYER_ID,
     type: "fill",
     source: EXPLORE_PRODUCTION_LAYER.sourceLayer,
     "source-layer": EXPLORE_PRODUCTION_LAYER.sourceLayer,
     paint: {
-      "fill-color": provinceFillColour(fromYear, toYear, shading),
+      "fill-color": provinceFillColour(fromYear, toYear, shading, breaks),
       "fill-opacity": 0.88,
     },
   },
@@ -609,7 +618,8 @@ const provinceLayers = (fromYear: number, toYear: number, shading: ProvinceShadi
  * a patch mode opened on an empty ground: the patches only draw from zoom 8,
  * so at the four-province view there was nothing to see or steer by.
  */
-const provinceOutlineLayer = (): StyleSpecification["layers"][number] => provinceLayers(EXPLORE_YEAR_MAX - 1, EXPLORE_YEAR_MAX)[1]!;
+const provinceOutlineLayer = (): StyleSpecification["layers"][number] =>
+  provinceLayers(EXPLORE_YEAR_MAX - 1, EXPLORE_YEAR_MAX, "loss", spanShareBreaks({ fromYear: EXPLORE_YEAR_MAX - 1, toYear: EXPLORE_YEAR_MAX }))[1]!;
 
 const PER_CELL_LAYER_ID = `${EXPLORE_PER_CELL_LAYER.sourceId}-fill`;
 
@@ -685,6 +695,8 @@ function swapPerCellLayer(
  * One span on a map built from this map's style, for the time-lapse export:
  * the same colours, region figures and patch filter the year control would
  * give it, and the selected boundary outlined. The live map is not touched.
+ * Every frame is one year, so every frame is classed on the same one-year
+ * edges and the frames can be compared.
  */
 function showTimelapseSpan(
   map: MapLibreMap,
@@ -693,9 +705,9 @@ function showTimelapseSpan(
   regions: readonly ForestRegionFigure[],
 ) {
   if (options.shading && map.getLayer(PROVINCE_FILL_LAYER_ID))
-    map.setPaintProperty(PROVINCE_FILL_LAYER_ID, "fill-color", provinceFillColour(span.fromYear, span.toYear, options.shading));
+    map.setPaintProperty(PROVINCE_FILL_LAYER_ID, "fill-color", provinceFillColour(span.fromYear, span.toYear, options.shading, spanShareBreaks(span)));
   if (map.getLayer(REGION_HATCH_LAYER_ID)) {
-    map.setPaintProperty(REGION_FILL_LAYER_ID, "fill-color", regionFillColour(regions));
+    map.setPaintProperty(REGION_FILL_LAYER_ID, "fill-color", regionFillColour(regions, spanShareBreaks(span)));
     map.setFilter(REGION_HATCH_LAYER_ID, regionHatchFilter(regions));
   }
   swapPerCellLayer(map, perCellSpanYears(span.fromYear, span.toYear), options.cause, boundaryLayerIds(options.overlays)[0]);
@@ -715,6 +727,7 @@ const buildStyle = (
   regions: readonly ForestRegionFigure[] = [],
   focus: ExploreMapView | null = null,
   recovery: readonly RecoveryRegionShade[] = [],
+  breaks: ShareBreaks = spanShareBreaks(span),
 ): StyleSpecification => {
   const sources: StyleSpecification["sources"] = {};
   const layers: StyleSpecification["layers"] = [
@@ -734,13 +747,13 @@ const buildStyle = (
     bounds: [-141, 41, -52, 70],
   };
   if (province) {
-    const [fill, outline] = provinceLayers(span.fromYear, span.toYear, province);
+    const [fill, outline] = provinceLayers(span.fromYear, span.toYear, province, breaks);
     layers.push(fill);
     // Forest loss is shaded by region over the province fill, which still
     // answers wherever the region figures for the span are not yet in.
     if (province === "loss") {
       sources[REGION_SOURCE_ID] = { type: "vector", url: `pmtiles://${REGION_OVERLAY.url}`, bounds: [-141, 41, -52, 84] };
-      layers.push(...regionLayers(regions));
+      layers.push(...regionLayers(regions, breaks));
     }
     layers.push(outline);
   } else if (recovery.length > 0) {
@@ -858,15 +871,16 @@ const symbol = (className: string) => (
 );
 
 // Worded rather than written as "5–<10%", which a screen reader reads as
-// symbols, and built from the breaks so the legend cannot drift from the fill.
-const spanLegend = (locale: Locale) => {
+// symbols, and built from the edges in use so the legend cannot drift from the
+// fill.
+const spanLegend = (locale: Locale, breaks: ShareBreaks) => {
   const pct = (value: number) => formatPercent(value, locale);
-  const [first] = SPAN_SHARE_BREAKS;
-  const last = SPAN_SHARE_BREAKS[SPAN_SHARE_BREAKS.length - 1];
+  const first = breaks[0]!;
+  const last = breaks[breaks.length - 1]!;
   return [
     locale === "fr" ? `Moins de ${pct(first)}` : `Under ${pct(first)}`,
-    ...SPAN_SHARE_BREAKS.slice(1).map((edge, i) =>
-      locale === "fr" ? `${pct(SPAN_SHARE_BREAKS[i])} à moins de ${pct(edge)}` : `${pct(SPAN_SHARE_BREAKS[i])} to under ${pct(edge)}`),
+    ...breaks.slice(1).map((edge, i) =>
+      locale === "fr" ? `${pct(breaks[i]!)} à moins de ${pct(edge)}` : `${pct(breaks[i]!)} to under ${pct(edge)}`),
     locale === "fr" ? `${pct(last)} ou plus` : `${pct(last)} or more`,
   ].map((label, band) => [`loss-${band}`, label] as const);
 };
@@ -893,6 +907,7 @@ export function ExploreMapClient({
   ridingMeasurements = [],
   forestRegions = [],
   recoveryRegions = [],
+  classSpan,
   onPlaybackChange,
 }: Readonly<{
   locale: Locale;
@@ -914,6 +929,12 @@ export function ExploreMapClient({
   forestRegions?: readonly ForestRegionFigure[];
   /** Condition and recovery by economic region, in that mode only. */
   recoveryRegions?: readonly RecoveryRegionShade[];
+  /**
+   * The span whose class edges the loss shading uses. Left out, it is the span
+   * on display; during a Play run it is the whole record, so the edges hold
+   * still from frame to frame.
+   */
+  classSpan?: Readonly<{ fromYear: number; toYear: number }>;
   /** Told whether the map can follow playback, so Play waits or pauses rather than stepping a map that isn't drawing. */
   onPlaybackChange?: (playback: ExploreMapPlayback) => void;
 }>) {
@@ -942,6 +963,13 @@ export function ExploreMapClient({
     recoveryRef.current = recoveryRegions;
   });
   const regionKey = forestRegions.map((figure) => `${figure.id}:${figure.fromYear}-${figure.toYear}`).join(",");
+  const classBreaks = spanShareBreaks(classSpan ?? { fromYear, toYear: year });
+  // A primitive for effect dependencies.
+  const breaksKey = classBreaks.join(",");
+  const breaksRef = useRef(classBreaks);
+  useEffect(() => {
+    breaksRef.current = classBreaks;
+  });
   const [hoveredRegion, setHoveredRegion] = useState<string | null>(null);
   const [fullscreenAvailable, setFullscreenAvailable] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -1098,7 +1126,7 @@ export function ExploreMapClient({
 
     const initializePmtiles = async () => {
       try {
-        const style = buildStyle(shading, null, overlays, "all", { fromYear, toYear: year }, regionsRef.current, focusRef.current, recoveryRef.current);
+        const style = buildStyle(shading, null, overlays, "all", { fromYear, toYear: year }, regionsRef.current, focusRef.current, recoveryRef.current, breaksRef.current);
         const [maplibreModule, protocol] = await Promise.all([
           import("maplibre-gl"),
           import("pmtiles").then((pmtiles) => openStyleArchives(pmtiles, style)),
@@ -1309,11 +1337,11 @@ export function ExploreMapClient({
   useEffect(() => {
     const map = mapRef.current;
     if (!mapReady || !map || !map.getLayer(REGION_HATCH_LAYER_ID)) return;
-    map.setPaintProperty(REGION_FILL_LAYER_ID, "fill-color", regionFillColour(forestRegions));
+    map.setPaintProperty(REGION_FILL_LAYER_ID, "fill-color", regionFillColour(forestRegions, classBreaks));
     map.setFilter(REGION_HATCH_LAYER_ID, regionHatchFilter(forestRegions));
-    // regionKey stands in for the fresh forestRegions array.
+    // regionKey and breaksKey stand in for the fresh arrays.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mapReady, regionKey]);
+  }, [mapReady, regionKey, breaksKey]);
 
   // A chosen province is shown alone; "All" shows the four together.
   useEffect(() => {
@@ -1331,10 +1359,13 @@ export function ExploreMapClient({
   useEffect(() => {
     const map = mapRef.current;
     if (!mapReady || !map || !shading || !map.getLayer(PROVINCE_FILL_LAYER_ID)) return;
-    map.setPaintProperty(PROVINCE_FILL_LAYER_ID, "fill-color", provinceFillColour(fromYear, year, shading));
-  }, [mapReady, shading, fromYear, year]);
+    const fill = classSpan ? provinceFillColour(fromYear, year, shading, classBreaks) : provinceFillColour(fromYear, year, shading);
+    map.setPaintProperty(PROVINCE_FILL_LAYER_ID, "fill-color", fill);
+    // breaksKey stands in for the fresh edges array and the class span.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mapReady, shading, fromYear, year, breaksKey]);
   const spanRows = provinceAvailable ? provinceSpanMeasurements({ fromYear, toYear: year }) : [];
-  const fallbackColours = provinceSpanColours(fromYear, year);
+  const fallbackColours = provinceSpanColours(fromYear, year, classBreaks);
   const spanLabel = formatYearRange(yearRange(fromYear, year), locale);
   const readyKey = recoveryAvailable
     ? "readyRecovery"
@@ -1523,7 +1554,7 @@ export function ExploreMapClient({
             <span>{text[locale].legendCaption}</span>
           </p>
           <ol className="explore-map-legend explore-map-legend--scale" aria-label={text[locale].legend}>
-            {spanLegend(locale).map(([band, label]) => <li key={band}>{symbol(band)}<span>{label}</span></li>)}
+            {spanLegend(locale, classBreaks).map(([band, label]) => <li key={band}>{symbol(band)}<span>{label}</span></li>)}
             {forestRegions.length > 0 ? (
               <>
                 <li>
