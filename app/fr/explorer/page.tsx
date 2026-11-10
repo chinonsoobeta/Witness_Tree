@@ -28,7 +28,7 @@ export default async function Page({
   return (
     <SiteShell locale="fr">
       <main id="main" className="page-wrap">
-        <header className="masthead">
+        <header className="masthead explore-masthead">
           <h1>Explorer les pertes forestières</h1>
           <p className="masthead-note">Les téléchargements, les sources et les limites se trouvent sur la page <Link href="/fr/donnees">Données</Link>.</p>
         </header>

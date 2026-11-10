@@ -1681,9 +1681,12 @@ h4 {
   text-decoration: underline;
 }
 
+/* C5: the map takes most of a laptop screen once it is in view, never less
+   than it used to (430px) and never more than 640px. */
 .explore-map {
+  --explore-map-height: clamp(430px, calc(100svh - 320px), 640px);
   position: relative;
-  min-height: 430px;
+  min-height: var(--explore-map-height);
   border: 1px solid var(--rule);
   border-radius: var(--radius);
   overflow: hidden;
@@ -1718,7 +1721,7 @@ h4 {
 }
 .explore-map-canvas {
   width: 100%;
-  height: 430px;
+  height: var(--explore-map-height);
 }
 .explore-map[data-map-source="geojson-fallback"] .explore-map-canvas,
 .explore-map[data-state="error"] .explore-map-canvas {
@@ -1734,7 +1737,7 @@ h4 {
    */
   max-width: 100%;
   height: auto;
-  min-height: 430px;
+  min-height: var(--explore-map-height, 430px);
 }
 /* In flow above the map. It used to float on the frame, which is how the
    layer panel came to cover it when the legend grew. */
@@ -4202,6 +4205,13 @@ dd > a:only-child {
     grid-row: 3;
   }
 }
+/* C5: a shorter masthead on Explore, so the map comes up the first screen. */
+.explore-masthead {
+  padding-block: 32px 16px;
+}
+.explore-masthead h1 {
+  margin-block: 0 8px;
+}
 .explore-data-lead { max-width: 70ch; color: var(--ink-2); }
 .explore-unknown { margin-top: 20px; max-width: 70ch; }
 .explore-unknown h3 { margin: 0 0 8px; font-size: 17px; }
@@ -4209,8 +4219,8 @@ dd > a:only-child {
 .explore-toolbar {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 14px 0 12px;
+  gap: 8px;
+  padding: 10px 0 8px;
   border-block: 1px solid var(--rule);
 }
 .explore-toolbar-row {
