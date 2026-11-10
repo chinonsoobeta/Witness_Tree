@@ -1,4 +1,6 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
 import test from "node:test";
 import { renderToStaticMarkup } from "react-dom/server";
 // @ts-expect-error -- Node's TypeScript runner requires explicit local extensions.
@@ -10,6 +12,10 @@ import { PLACE_DATA_VERSION, placePageParams, placePageRecord } from "../lib/pla
 // @ts-expect-error -- Node's TypeScript runner requires explicit local extensions.
 import { yearlyRows, YEARLY_STEP_COUNT } from "../lib/place-pages/yearly.ts";
 
+const read = (path: string) => readFileSync(new URL(`../${path}`, import.meta.url));
+const sha256 = (bytes: Buffer) => createHash("sha256").update(bytes).digest("hex");
+const yearlyRecord = JSON.parse(read("data/place-yearly-measurements.json").toString("utf8"));
+const wholeRecord = JSON.parse(read("data/place-whole-record-measurements.json").toString("utf8"));
 const series = (fill: number, overrides: Record<number, number> = {}) =>
   Array.from({ length: YEARLY_STEP_COUNT }, (_, step) => overrides[step] ?? fill);
 
@@ -67,10 +73,10 @@ test("the chart states its unit, draws gaps as gaps, offers a table and never su
   assert.match(larger, /at least one year is larger than the 1984–2022 figure above/);
 });
 
-test("riding and economic-region pages carry the yearly chart; community pages do not yet", () => {
+test("riding, economic-region and community pages all carry the yearly chart", () => {
   const params = placePageParams();
   const pick = (geography: string) => params.find((param) => param.geography === geography)!;
-  for (const geography of ["federal-2023", "er-2021"]) {
+  for (const geography of ["federal-2023", "er-2021", "csd-2021"]) {
     const { code } = pick(geography);
     const record = placePageRecord(PLACE_DATA_VERSION, geography, code)!;
     assert.ok(record.yearly, `${geography}/${code} has a yearly series`);
@@ -79,9 +85,33 @@ test("riding and economic-region pages carry the yearly chart; community pages d
     const html = renderToStaticMarkup(<RecordPlacePage record={record} locale="en" />);
     assert.match(html, /id="place-yearly-heading"/);
   }
-  const community = placePageRecord(PLACE_DATA_VERSION, "csd-2021", "5924034")!;
-  assert.equal(community.yearly, null);
-  assert.doesNotMatch(renderToStaticMarkup(<RecordPlacePage record={community} locale="en" />), /place-yearly-heading/);
+});
+
+test("the community series is the checked-in aggregate's, unchanged, and every gap in it stays a gap", () => {
+  assert.equal(yearlyRecord.schema, "witness-tree/place-yearly-measurements/1");
+  assert.equal(yearlyRecord.builtBy.path, "scripts/build-place-yearly-measurements.mjs");
+  assert.equal(yearlyRecord.builtBy.sha256, sha256(read("scripts/build-place-yearly-measurements.mjs")), "built by this builder as checked in");
+  assert.match(yearlyRecord.builtOn, /^\d{4}-\d{2}-\d{2}$/);
+  assert.equal(yearlyRecord.builtFrom.sha256, wholeRecord.builtFrom.sha256, "the same aggregate as the whole-record figures");
+  assert.deepEqual(yearlyRecord.claims, { admitted: false, released: false, productionEligible: false, externalAction: false });
+  const communities = placePageParams().filter((param) => param.geography === "csd-2021");
+  assert.equal(Object.keys(yearlyRecord.places).length, communities.length);
+  const seen = { figure: 0, minimum: 0, unknown: 0 };
+  for (const { code } of communities) {
+    const [loss, known, unknown] = yearlyRecord.places[code] as number[][];
+    const [, , , summed, unmapped] = wholeRecord.places[code] as number[];
+    assert.equal(loss!.reduce((total, cells) => total + cells, 0), summed, `${code}: the years add up to the record's summed figure`);
+    const record = placePageRecord(PLACE_DATA_VERSION, "csd-2021", code)!;
+    assert.deepEqual(record.yearly, { loss, known, unknown: unknown!.map((cells) => Math.max(cells, unmapped!)) });
+    for (const row of yearlyRows(record.yearly!, record.unknownTolerancePercent)) {
+      seen[row.kind] += 1;
+      const step = row.year - 1985;
+      if (row.kind === "figure") assert.equal(record.yearly!.unknown[step], 0, `${code} ${row.year}: a community figure has no gap`);
+      else if (row.kind === "minimum") assert.ok(record.yearly!.unknown[step]! > 0 && loss![step]! > 0);
+      else assert.ok(known![step] === 0 || loss![step] === 0, `${code} ${row.year}: an Unknown year is never drawn as 0`);
+    }
+  }
+  assert.ok(seen.figure > 0 && seen.minimum > 0 && seen.unknown > 0, JSON.stringify(seen));
 });
 
 test("the scale never prints a rounded or empty tick: small maxima keep their decimals, all-gap years get no scale", () => {

@@ -4,6 +4,7 @@ import regionRecord from "@/data/phase3-economic-region-interval-measurements.js
 import ridingRecord from "@/data/phase3-riding-interval-measurements.json";
 import ledgerFacts from "@/data/phase1-ledger-facts-2026-09-26.json";
 import extentRecord from "@/data/place-extents.json";
+import placeYearlyRecord from "@/data/place-yearly-measurements.json";
 import { localized, type Locale, type LocalizedString } from "@/lib/domain/localized";
 import type { BoundaryOverlayId } from "@/lib/explore/boundaries";
 import { intervalWindowIndex } from "@/lib/explore/interval";
@@ -180,6 +181,19 @@ const communityName = (place: (typeof PLACE_NAME_INDEX.places)[number]) =>
 
 // Communities.
 const placeCells = placeRecord.places as unknown as Readonly<Record<string, readonly number[]>>;
+// Each community's annual steps, built by scripts/build-place-yearly-measurements.mjs
+// from the same aggregate as its whole-record row.
+assertMethod(placeYearlyRecord.methodVersion, "The place yearly record");
+if (placeYearlyRecord.schema !== "witness-tree/place-yearly-measurements/1" || placeYearlyRecord.builtFrom.sha256 !== placeRecord.builtFrom.sha256) {
+  throw new Error("The place yearly record has an invalid envelope or was built from a different aggregate than the place record.");
+}
+const placeYearly = placeYearlyRecord.places as unknown as Readonly<Record<string, readonly [readonly number[], readonly number[], readonly number[]]>>;
+function communityYearly(id: string, unmapped: number): YearlyCells {
+  const row = placeYearly[id];
+  if (!row) throw new Error(`Place ${id} has no yearly series.`);
+  const [loss, known, unknown] = row;
+  return { loss, known, unknown: unknown.map((cells) => Math.max(cells, unmapped)) };
+}
 const regionOfPlace = new Map<string, string>();
 for (const [code, ids] of Object.entries(placeRegionRecord.regions as Readonly<Record<string, readonly string[]>>)) {
   for (const id of ids) {
@@ -265,7 +279,7 @@ function buildRecords(): ReadonlyMap<string, PlacePageRecord> {
       boundary: BOUNDARIES["csd-2021"],
       record: RECORD_PATHS.community,
       cells: { union, known, unknown: Math.max(unknownCells, unmapped) },
-      yearly: null,
+      yearly: communityYearly(place.id, unmapped),
       unknownTolerancePercent: 0,
       region: regionReference(regionOfPlace.get(place.id)!),
       federal: place.federal.map(({ id, share }) => ridingReference(id, share)),
