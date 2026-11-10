@@ -553,6 +553,9 @@ const provinceMaskLayers = (view: ExploreMapView | null): StyleSpecification["la
   },
 ];
 
+/** The light track drawn under each outline (F2); fixed, so it reads in both themes. */
+const BOUNDARY_CASING_COLOUR = "#f6f7f2";
+
 const boundaryLayerIds = (overlays: readonly BoundaryOverlayId[]) =>
   overlays.flatMap((id) => {
     const overlay = BOUNDARY_OVERLAYS[id];
@@ -797,6 +800,23 @@ const buildStyle = (
       paint: {
         "fill-color": EXPLORE_MAP_COLOURS.ink,
         "fill-opacity": 0,
+      },
+    });
+  }
+  // A light casing under every outline, so a dark line still reads on the
+  // darkest loss classes; on the light ground it all but disappears.
+  for (const id of availableOverlays) {
+    const overlay = BOUNDARY_OVERLAYS[id];
+    const sourceId = `boundary-${id}`;
+    layers.push({
+      id: `${sourceId}-casing`,
+      type: "line",
+      source: sourceId,
+      "source-layer": overlay.sourceLayer,
+      paint: {
+        "line-color": BOUNDARY_CASING_COLOUR,
+        "line-width": ["interpolate", ["linear"], ["zoom"], 0, 1.6, 5, 2.2, 10, 3.6],
+        "line-opacity": ["interpolate", ["linear"], ["zoom"], 0, 0.5, 5, 0.65, 10, 0.75],
       },
     });
   }
