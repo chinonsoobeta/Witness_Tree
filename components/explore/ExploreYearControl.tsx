@@ -9,6 +9,7 @@ import {
   EXPLORE_YEAR_MIN,
   exploreHref,
   isAnnualInterval,
+  keepAddressState,
   parseExploreInterval,
   type ExploreQueryState,
 } from "@/lib/explore";
@@ -102,7 +103,8 @@ function writeHistory(method: "push" | "replace", url: string) {
   // the browser's native prototype method keeps this client-owned control
   // shareable without remounting the map for every annual source swap.
   const write = method === "push" ? History.prototype.pushState : History.prototype.replaceState;
-  write.call(window.history, null, "", url);
+  // The province and the map position stay in the address (C6, D5).
+  write.call(window.history, null, "", keepAddressState(url, window.location));
 }
 
 /*

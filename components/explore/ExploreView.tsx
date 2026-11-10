@@ -48,6 +48,8 @@ import type { ForestRegionFigure } from "@/lib/explore/forest-regions";
 import type { ProvincialCauseBreakdown } from "@/lib/phase4/provincial-cause";
 import { ExploreMapClient, type ExploreMapExpanded } from "./ExploreMapClient";
 import { boundarySelectionKey } from "@/lib/explore/place-links";
+import { addressWithProvince, keepAddressState } from "@/lib/explore/province-address";
+import type { ExploreMapView } from "@/lib/explore/types";
 import { ExploreYearControl, usePlayRunActive, type ExploreMapPlayback } from "./ExploreYearControl";
 
 const copy = {
@@ -65,6 +67,8 @@ const copy = {
     ridingsMostLostOther: (ranked: string, chosen: string) =>
       `Ridings with the largest share of forest lost over the whole record, ${ranked}, not the years you chose (${chosen})`,
     mapReadoutLost: (hectares: string) => `${hectares} detected as lost, a minimum`,
+    unknownFigure: "Unknown",
+    unknownFigureWhy: "The record has no figure for this province for these years.",
     provinceUnknown: (share: string) => `${share} unknown`,
     figuresFor: (period: string) => `Detected forest loss by province, ${period}`,
     figuresLead: (fromYear: number, toYear: number) =>
@@ -178,6 +182,8 @@ const copy = {
     ridingsMostLostOther: (ranked: string, chosen: string) =>
       `Circonscriptions ayant perdu la plus grande part de leur forêt sur l’ensemble du registre, ${ranked}, et non pendant les années choisies (${chosen})`,
     mapReadoutLost: (hectares: string) => `${hectares} détectés comme perdus, un minimum`,
+    unknownFigure: "Inconnu",
+    unknownFigureWhy: "Le registre n’a pas de chiffre pour cette province pour ces années.",
     provinceUnknown: (share: string) => `${share} inconnu`,
     figuresFor: (period: string) => `Perte forestière détectée par province, ${period}`,
     figuresLead: (fromYear: number, toYear: number) =>
@@ -310,7 +316,8 @@ function symbol(mode: ExploreMode, x: number) {
 
 /** Rewrites the address without a navigation, as the year control does. */
 function replaceAddress(url: string) {
-  History.prototype.replaceState.call(window.history, window.history.state, "", url);
+  // The province and the map position stay in the address (C6, D5).
+  History.prototype.replaceState.call(window.history, window.history.state, "", keepAddressState(url, window.location));
 }
 
 function href(
@@ -331,6 +338,7 @@ export function ExploreView({
   data = "chart",
   year = EXPLORE_DEFAULT_YEAR,
   fromYear,
+  province = null,
   overlays: routeOverlays = [],
   ignored = [],
   ridingMeasurements = [],
@@ -351,6 +359,8 @@ export function ExploreView({
    * a caller that names 1995 and no opening year means 1994, not 2021.
    */
   fromYear?: number;
+  /** The province the address names (`province=bc`), or null for all four (C6). */
+  province?: ExploreMapView | null;
   overlays?: readonly BoundaryOverlayId[];
   /**
    * Values in the address the route could not use. The page says what it
@@ -453,6 +463,22 @@ export function ExploreView({
   // The map goes full screen with the controls that change it: this section,
   // laid out as the map and its controls alone while it is enlarged.
   const stageRef = useRef<HTMLElement>(null);
+  /*
+   * C6: the province chosen on the map. It is in the address, so a link opens
+   * on it, and the headline gives that province's own figures, a minimum or
+   * Unknown as the record has it. Every link and the year form carry it.
+   */
+  const [mapProvince, setMapProvince] = useState<ExploreMapView | null>(province);
+  const chooseProvince = (next: ExploreMapView | null) => {
+    setMapProvince(next);
+    History.prototype.replaceState.call(
+      window.history,
+      window.history.state,
+      "",
+      addressWithProvince(`${window.location.pathname}${window.location.search}${window.location.hash}`, next),
+    );
+  };
+  const withProvince = (link: string) => (mapProvince ? `${link}&province=${mapProvince}` : link);
   const [expanded, setExpanded] = useState<ExploreMapExpanded>(null);
   const measuredBoundaryKeys = useMemo(() => new Set(ridingMeasurements.map(boundarySelectionKey)), [ridingMeasurements]);
   const servedMeasurements = spanIsServed
@@ -473,6 +499,9 @@ export function ExploreView({
   const activeSpan = { fromYear: activeFrom, toYear: activeYear };
   const provinceRows = mode === "forest-change" ? provinceSpanDisplayRows(activeSpan) : [];
   const fourProvinces = provinceRows.length === 4 ? fourProvinceSpanMeasurement(activeSpan) : null;
+  const chosenProvince = mapProvince ? provinceRows.find((row) => row.code.toLowerCase() === mapProvince) ?? null : null;
+  // The headline: the chosen province, or the four together.
+  const headline = chosenProvince ?? fourProvinces;
   const productionAvailable = provinceRows.length === 4;
   // Harvest and fire modes read the national harvest and fire series, where the
   // owner decision lets years be added: docs/HARVEST_FIRE_SERIES_DECISION.md.
@@ -530,9 +559,11 @@ export function ExploreView({
   // One line over the map on a phone, where the reading panel falls below it.
   const mapReadout = recovery
     ? `${text.modes[mode]} · ${formatYearRange(EXPLORE_COVERAGE_SPAN, locale)}`
-    : fourProvinces && fourProvinces.unionLossHectares !== null
-      ? `${spanPeriod} · ${text.mapReadoutLost(formatHectares(fourProvinces.unionLossHectares, locale))}`
-      : `${text.modes[mode]} · ${spanPeriod}`;
+    : chosenProvince
+      ? `${chosenProvince.name[locale]} · ${spanPeriod} · ${chosenProvince.unionLossHectares === null ? text.unknownFigure : text.mapReadoutLost(formatHectares(chosenProvince.unionLossHectares, locale))}`
+      : fourProvinces && fourProvinces.unionLossHectares !== null
+        ? `${spanPeriod} · ${text.mapReadoutLost(formatHectares(fourProvinces.unionLossHectares, locale))}`
+        : `${text.modes[mode]} · ${spanPeriod}`;
 
   return (
     <section
@@ -560,7 +591,7 @@ export function ExploreView({
               <a
                 key={item}
                 className="segment-option"
-                href={href(item, presentation, data, activeYear, overlays, activeFrom)}
+                href={withProvince(href(item, presentation, data, activeYear, overlays, activeFrom))}
                 aria-current={item === mode ? "page" : undefined}
               >
                 {text.modes[item]}
@@ -584,14 +615,14 @@ export function ExploreView({
                       {overlay.available ? (
                         <a
                           className="segment-option overlay-toggle"
-                          href={href(
+                          href={withProvince(href(
                             mode,
                             presentation,
                             data,
                             activeYear,
                             toggleBoundaryOverlay(overlays, id),
                             activeFrom,
-                          )}
+                          ))}
                           aria-label={labelled(
                             locale,
                             active ? text.hide : text.show,
@@ -658,6 +689,7 @@ export function ExploreView({
                 value={serializeBoundaryOverlays(overlays)}
               />
             ) : null}
+            {mapProvince ? <input type="hidden" name="province" value={mapProvince} /> : null}
             <ExploreYearControl
               locale={locale}
               state={{ mode, presentation, data, year: activeYear, fromYear: activeFrom, overlays }}
@@ -692,6 +724,8 @@ export function ExploreView({
           measuredBoundaryKeys={measuredBoundaryKeys}
           stageRef={stageRef}
           onExpandedChange={setExpanded}
+          initialProvince={mapProvince}
+          onProvinceChange={chooseProvince}
           onPlaybackChange={setMapPlayback}
         />
         {activeYear > activeFrom + 1 && !recovery ? (
@@ -708,21 +742,28 @@ export function ExploreView({
         explain the view the reader is looking at.
       */}
       <aside className="explore-annual explore-reading" aria-labelledby="explore-reading-heading">
-          <p className="eyebrow" id="explore-reading-heading">{`${text.readingHeading} · ${recovery ? formatYearRange(yearRange(1984, 2022), locale) : spanPeriod}`}</p>
-          {fourProvinces && fourProvinces.unionLossHectares !== null ? (
+          <p className="eyebrow" id="explore-reading-heading">{`${chosenProvince ? chosenProvince.name[locale] : text.readingHeading} · ${recovery ? formatYearRange(yearRange(1984, 2022), locale) : spanPeriod}`}</p>
+          {headline && (headline.unionLossHectares !== null || chosenProvince) ? (
             <div className="explore-reading-total">
               <p className="explore-reading-label">
                 <span className="mark-glyph mark-glyph--satellite" aria-hidden="true" />
                 {text.detectedAsLost}
               </p>
-              <p className="explore-reading-figure">{formatHectares(fourProvinces.unionLossHectares, locale)}</p>
-              {fourProvinces.unionLossPercent !== null ? (
-                <p className="explore-reading-share">{text.shareOfMapped(formatPercent(fourProvinces.unionLossPercent, locale))}</p>
+              {headline.unionLossHectares === null ? (
+                <>
+                  <p className="explore-reading-figure">{text.unknownFigure}</p>
+                  <p className="explore-reading-share">{text.unknownFigureWhy}</p>
+                </>
+              ) : (
+                <p className="explore-reading-figure">{formatHectares(headline.unionLossHectares, locale)}</p>
+              )}
+              {headline.unionLossPercent !== null ? (
+                <p className="explore-reading-share">{text.shareOfMapped(formatPercent(headline.unionLossPercent, locale))}</p>
               ) : null}
-              {fourProvinces.unknownHectares !== null ? (
+              {headline.unknownHectares !== null ? (
                 <p className="explore-reading-minimum">
                   <span className="mark-glyph mark-glyph--unknown" aria-hidden="true" />
-                  <span><strong>{text.minimum}</strong> {text.neverMapped(formatHectares(fourProvinces.unknownHectares, locale))}</span>
+                  <span><strong>{text.minimum}</strong> {text.neverMapped(formatHectares(headline.unknownHectares, locale))}</span>
                 </p>
               ) : null}
             </div>
@@ -833,14 +874,14 @@ export function ExploreView({
           <legend>{text.data}</legend>
           <a
             className="segment-option"
-            href={href(mode, presentation, "chart", activeYear, overlays, activeFrom)}
+            href={withProvince(href(mode, presentation, "chart", activeYear, overlays, activeFrom))}
             aria-current={data === "chart" ? "page" : undefined}
           >
             {text.chart}
           </a>{" "}
           <a
             className="segment-option"
-            href={href(mode, presentation, "table", activeYear, overlays, activeFrom)}
+            href={withProvince(href(mode, presentation, "table", activeYear, overlays, activeFrom))}
             aria-current={data === "table" ? "page" : undefined}
           >
             {text.table}

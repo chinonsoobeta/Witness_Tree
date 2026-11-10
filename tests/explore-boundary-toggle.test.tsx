@@ -88,14 +88,15 @@ test("hiding an outline removes its layers and its source and touches nothing el
 test("each Show or Hide keeps its link and, on a plain click, toggles in place with replaceState", () => {
   const view = readFileSync(new URL("../components/explore/ExploreView.tsx", import.meta.url), "utf8");
   const toggle = view.slice(view.indexOf('className="segment-option overlay-toggle"'), view.indexOf("{active ? text.hide : text.show}"));
-  assert.match(toggle, /href=\{href\(\s*mode,\s*presentation,\s*data,\s*activeYear,\s*toggleBoundaryOverlay\(overlays, id\),\s*activeFrom,\s*\)\}/);
+  assert.match(toggle, /href=\{withProvince\(href\(\s*mode,\s*presentation,\s*data,\s*activeYear,\s*toggleBoundaryOverlay\(overlays, id\),\s*activeFrom,\s*\)\)\}/);
   // A modified or middle click still follows the link.
   assert.match(toggle, /if \(event\.button !== 0 \|\| event\.metaKey \|\| event\.ctrlKey \|\| event\.shiftKey \|\| event\.altKey\) return;/);
   assert.match(toggle, /event\.preventDefault\(\);/);
   assert.match(toggle, /setOverlays\(next\);/);
   // The address keeps the map position in its hash.
   assert.match(toggle, /replaceAddress\(`\$\{window\.location\.pathname\}\$\{href\(mode, presentation, data, activeYear, next, activeFrom\)\}\$\{window\.location\.hash\}`\)/);
-  assert.match(view, /History\.prototype\.replaceState\.call\(window\.history, window\.history\.state, "", url\)/);
+  // Native replaceState, with the province and the map position carried over (C6).
+  assert.match(view, /History\.prototype\.replaceState\.call\(window\.history, window\.history\.state, "", keepAddressState\(url, window\.location\)\)/);
   // Everything that carries the outlines forward reads the same state.
   assert.match(view, /const \[overlays, setOverlays\] = useState\(routeOverlays\);/);
 });

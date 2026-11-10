@@ -3,7 +3,7 @@ import Link from "next/link";
 import { provincialCauseByInterval } from "@/lib/phase4/provincial-cause";
 import { ExploreView } from "@/components/explore";
 import { SiteShell } from "@/components/site";
-import { exploreFixtures, readExploreQuery } from "@/lib/explore";
+import { exploreFixtures, readExploreProvince, readExploreQuery } from "@/lib/explore";
 // Imported by path rather than through the barrel: this module carries every
 // span for every district and must never be pulled into a browser bundle.
 // The same holds for the economic-region table.
@@ -39,6 +39,7 @@ export default async function Page({
           data={query.data === "table" ? "table" : "chart"}
           year={interval.toYear}
           fromYear={interval.fromYear}
+          province={readExploreProvince(query.province)}
           overlays={overlays}
           ignored={ignored}
           ridingMeasurements={[...ridingIntervalMeasurements(interval), ...regionIntervalMeasurements(interval)]}

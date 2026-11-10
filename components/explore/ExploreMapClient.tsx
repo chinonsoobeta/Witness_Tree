@@ -988,6 +988,8 @@ export function ExploreMapClient({
   measuredBoundaryKeys,
   stageRef,
   onExpandedChange,
+  initialProvince = null,
+  onProvinceChange,
   onPlaybackChange,
 }: Readonly<{
   locale: Locale;
@@ -1029,6 +1031,10 @@ export function ExploreMapClient({
   stageRef?: RefObject<HTMLElement | null>;
   /** Told when the map is enlarged or put back, so the stage can lay itself out. */
   onExpandedChange?: (expanded: ExploreMapExpanded) => void;
+  /** The province the address names, framed when the map is built (C6). */
+  initialProvince?: ExploreMapView | null;
+  /** Told when the reader picks a province, or all four (null). */
+  onProvinceChange?: (province: ExploreMapView | null) => void;
   /** Told whether the map can follow playback, so Play waits or pauses rather than stepping a map that isn't drawing. */
   onPlaybackChange?: (playback: ExploreMapPlayback) => void;
 }>) {
@@ -1045,9 +1051,9 @@ export function ExploreMapClient({
    */
   const mapRef = useRef<MapLibreMap | null>(null);
   const [view, setView] = useState<MapView | null>(null);
-  const [selectedMapView, setSelectedMapView] = useState<ExploreMapView | null>(null);
+  const [selectedMapView, setSelectedMapView] = useState<ExploreMapView | null>(initialProvince);
   // Read by the map's own handlers, which are bound once when it is built.
-  const focusRef = useRef<ExploreMapView | null>(null);
+  const focusRef = useRef<ExploreMapView | null>(initialProvince);
   const regionsRef = useRef(forestRegions);
   const recoveryRef = useRef(recoveryRegions);
   const overlaysRef = useRef(overlays);
@@ -1337,6 +1343,8 @@ export function ExploreMapClient({
           const container = map.getContainer();
           map.setMaxBounds(panLimitFor(COMBINED_PROVINCE_BOUNDS, container.clientWidth, container.clientHeight, FRAME_PADDING));
         });
+        // A province named in the address is framed from the start (C6).
+        if (focusRef.current) map.fitBounds(MAP_VIEW_BOUNDS[focusRef.current], { padding: FRAME_PADDING, maxZoom: 6, duration: 0 });
         map.once("load", () => {
           if (!active) return;
           if (pmtilesTimeout) clearTimeout(pmtilesTimeout);
@@ -1896,6 +1904,7 @@ export function ExploreMapClient({
         selected={selectedMapView}
         onSelect={(mapView) => {
           setSelectedMapView(mapView);
+          onProvinceChange?.(mapView);
           setHoveredRegion(null);
           readerMovedRef.current = false;
           fitMapToView(mapView);
