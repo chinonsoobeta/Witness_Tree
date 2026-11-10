@@ -4138,6 +4138,21 @@ dd > a:only-child {
     width: 100%;
     min-width: 0;
   }
+  /* Play's tools in one row: the slider, then the pace, each under its label. */
+  .explore--expanded .explore-play-tools {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 4px 10px;
+  }
+  .explore--expanded .explore-play-jump,
+  .explore--expanded .explore-play-speed {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+  }
+  .explore--expanded .explore-play-jump input {
+    width: 100%;
+  }
   .explore--expanded .province-bar--map {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -4226,6 +4241,35 @@ dd > a:only-child {
 }
 .explore-toolbar .year-row {
   flex: 1 1 320px;
+}
+/* Play's own tools (E1): jump the last year and pick a pace. They sit with
+   Play, so they follow it into full screen. */
+.explore-play-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  flex-basis: 100%;
+}
+.explore-play-tools[hidden] {
+  display: none;
+}
+.explore-play-jump,
+.explore-play-speed {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink-2);
+  font-size: var(--text-small);
+}
+.explore-play-jump input {
+  width: min(260px, 52vw);
+  min-height: 44px;
+  margin: 0;
+  accent-color: var(--accent-fill);
+}
+.explore-play-speed .explore-year-select {
+  width: auto;
 }
 
 /* Boundaries: a menu of overlays rather than four cards in a column. A native

@@ -36,6 +36,9 @@ const TEXT = {
     stillMap: "Play needs the interactive map, which isn’t showing. Retry the interactive map to play through the years.",
     complete: `Playback reached ${EXPLORE_YEAR_MAX}, the end of the record.`,
     update: "Update",
+    speed: "Speed",
+    speeds: { slow: "Slow", normal: "Normal", fast: "Fast" },
+    jump: "Move the last year",
   },
   fr: {
     legend: "Années affichées",
@@ -57,10 +60,20 @@ const TEXT = {
     stillMap: "La lecture a besoin de la carte interactive, qui ne s’affiche pas. Réessayez la carte interactive pour faire défiler les années.",
     complete: `La lecture a atteint ${EXPLORE_YEAR_MAX}, la fin du registre.`,
     update: "Mettre à jour",
+    speed: "Vitesse",
+    speeds: { slow: "Lente", normal: "Normale", fast: "Rapide" },
+    jump: "Déplacer la dernière année",
   },
 } as const;
 
 const STEP_MS = 1500;
+
+/*
+ * How long Play shows each year (E1). Normal is the pace Play always had; a
+ * reader who asks the system for less motion starts on Slow.
+ */
+const PLAY_SPEEDS = { slow: STEP_MS * 2, normal: STEP_MS, fast: STEP_MS / 2 } as const;
+type PlaySpeed = keyof typeof PLAY_SPEEDS;
 
 /**
  * What the map beside this control can show, as far as playback cares.
@@ -144,6 +157,16 @@ function setPlayRun(next: boolean) {
 }
 
 const readPlayRun = () => playRun;
+
+/* The pace of Play, kept in the module for the same reason as the play flag. */
+let speed: PlaySpeed | null = null;
+const readSpeed = () => speed;
+const noSpeed = () => null;
+
+function setSpeed(next: PlaySpeed) {
+  speed = next;
+  for (const listener of playListeners) listener();
+}
 
 /** Whether a Play run is under way, for the map's colour classes. */
 export function usePlayRunActive() {
@@ -234,7 +257,15 @@ export function ExploreYearControl({
   }, [correctAddress, arrivalHref]);
 
   const isPlaying = useSyncExternalStore(subscribePlaying, readPlaying, notPlaying);
+  const inRun = useSyncExternalStore(subscribePlaying, readPlayRun, notPlaying);
+  const chosenSpeed = useSyncExternalStore(subscribePlaying, readSpeed, noSpeed);
   const ready = useSyncExternalStore(neverChanges, alwaysReady, neverReady);
+  const reducedMotion = useSyncExternalStore(
+    neverChanges,
+    () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+    neverReady,
+  );
+  const playSpeed: PlaySpeed = chosenSpeed ?? (reducedMotion ? "slow" : "normal");
 
   const committed = parseExploreInterval(state.fromYear, state.year);
   const committedKey = spanKey(committed);
@@ -334,10 +365,10 @@ export function ExploreYearControl({
         setPlaying(false);
         setPlayStatus("complete");
       }
-    }, mapBlocked ? 0 : STEP_MS);
+    }, mapBlocked ? 0 : PLAY_SPEEDS[playSpeed]);
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [wholeRecord, isPlaying, nextHref, committedKey, onYearChange, onIntervalChange, mapWaiting, mapBlocked]);
+  }, [wholeRecord, isPlaying, nextHref, committedKey, onYearChange, onIntervalChange, mapWaiting, mapBlocked, playSpeed]);
 
   const resumable = (playStatus === "paused" || playStatus === "stalled") && committed.toYear < EXPLORE_YEAR_MAX;
   const togglePlayback = () => {
@@ -351,6 +382,28 @@ export function ExploreYearControl({
     setPlaying(true);
     // Resume carries on from the span on display; Play starts the walk again.
     if (!resumable) commit({ fromYear: playStart, toYear: playStart + 1 }, "replace");
+  };
+  /*
+   * The last year on a slider (E1), for jumping while paused or playing. Inside
+   * a Play run it moves the last year without ending the run: playing carries
+   * on from there, and a pause stays resumable. Outside a run it is the
+   * last-year picker by another means. The status line says nothing new for
+   * it; a focused slider names its own value, as any native slider does.
+   */
+  const jumpTo = (toYear: number, timestamp: number) => {
+    if (!inRun) {
+      selectYear("to", toYear, timestamp);
+      return;
+    }
+    const span = orderSpan({ fromYear: committed.fromYear, toYear }, "to");
+    commit(span, "replace");
+    // At the end of the record there is nothing left to play: the run is
+    // complete, as if it had walked there. Anywhere earlier a pause stays a
+    // pause, so Resume carries on from the year the reader chose.
+    if (span.toYear === EXPLORE_YEAR_MAX) {
+      setPlaying(false);
+      setPlayStatus("complete");
+    } else if (!isPlaying) setPlayStatus("paused");
   };
   // The accessible name starts with the visible word, so a reader who says or
   // searches for "Pause" finds the control that shows "Pause".
@@ -428,6 +481,31 @@ export function ExploreYearControl({
         </button>
         {wholeRecord ? null : <p className="year-help" id={HELP_ID}>{text.help}</p>}
       </div>
+      {wholeRecord ? null : (
+        <div className="explore-play-tools" hidden={!ready}>
+          <label className="explore-play-jump" htmlFor="explore-play-jump-year">
+            <span>{text.jump}</span>
+            <input
+              id="explore-play-jump-year"
+              type="range"
+              min={EXPLORE_YEAR_MIN}
+              max={EXPLORE_YEAR_MAX}
+              step={1}
+              value={shown.toYear}
+              disabled={!ready}
+              onChange={(event) => jumpTo(Number(event.target.value), event.timeStamp)}
+            />
+          </label>
+          <label className="explore-play-speed" htmlFor="explore-play-speed-choice">
+            <span>{text.speed}</span>
+            <select id="explore-play-speed-choice" className="explore-year-select" value={playSpeed} disabled={!ready} onChange={(event) => setSpeed(event.target.value as PlaySpeed)}>
+              {(Object.keys(PLAY_SPEEDS) as PlaySpeed[]).map((option) => (
+                <option key={option} value={option}>{text.speeds[option]}</option>
+              ))}
+            </select>
+          </label>
+        </div>
+      )}
       {orderStatus !== null ? <p className="year-order-status" role="status">{text.moved(orderStatus.which, orderStatus.year)}</p> : null}
       {playMessage !== null ? (
         <p className="year-play-status" role="status">
