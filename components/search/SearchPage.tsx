@@ -22,6 +22,8 @@ const copy = {
     title: "Search",
     scope: "Search scope",
     places: "Places",
+    placesHeading: "Search places by name",
+    placesField: "Province, riding or community",
     districts: "Federal ridings",
     notice: "Search provinces, ridings and communities. Figures cover 1984 to 2022.",
     shareNote: "Each riding’s share is how much of the place lies inside it. The riding figures are for the whole riding.",
@@ -33,6 +35,9 @@ const copy = {
     title: "Recherche",
     scope: "Portée de la recherche",
     places: "Lieux",
+    // Draft French for the owner's review (2026-11-10).
+    placesHeading: "Rechercher un lieu par son nom",
+    placesField: "Province, circonscription ou collectivité",
     districts: "Circonscriptions fédérales",
     notice: "Recherchez une province, une circonscription ou une collectivité. Les chiffres couvrent la période de 1984 à 2022.",
     shareNote: "La part de chaque circonscription indique quelle partie du lieu s’y trouve. Les chiffres des circonscriptions portent sur toute la circonscription.",
@@ -111,12 +116,12 @@ export function SearchPage({
 
       {scope === "places" ? (
         <section>
-          <h2>{text.places}</h2>
+          <h2>{text.placesHeading}</h2>
           <SearchSuggest
             className="search-page-field"
             locale={locale}
             action={locale === "en" ? "/en/search" : "/fr/recherche"}
-            label={text.places}
+            label={text.placesField}
             labelHidden
             submitLabel={locale === "en" ? "Find" : "Trouver"}
             defaultValue={query}
