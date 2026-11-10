@@ -101,7 +101,7 @@ test("the APNG writer refuses frames it cannot animate together", () => {
 const text: StampText = {
   place: "Skeena—Bulkley Valley",
   interval: "Detected forest loss, 1984–1985",
-  boundary: "Boundary: Federal ridings. Elections Canada, 2023 representation order.",
+  boundary: "Federal riding · British Columbia. Elections Canada, 2023 representation order.",
   evidence: "Evidence: Satellite observation · Data: phase2-per-cell-span-archive-four-province-v1 (0de224ad834b)",
   caveats: [
     "Patches are simplified for display and are not for counting.",

@@ -31,8 +31,9 @@ const COPY = {
 export function EmbedSnippet({ locale, place }: Readonly<{ locale: Locale; place: Readonly<{ geography: PlaceGeography; code: string; name: string }> }>) {
   const text = COPY[locale];
   return (
-    <section className="place-embed" aria-labelledby="place-embed-heading">
-      <h2 className="eyebrow" id="place-embed-heading">{text.heading}</h2>
+    // The heading is the place page's: the snippet sits in a closed section
+    // whose summary names it, so it is not repeated here.
+    <section className="place-embed" aria-label={text.heading}>
       <p>{text.lead}</p>
       <label htmlFor="place-embed-code">{text.label}</label>
       <textarea id="place-embed-code" className="place-embed-code" readOnly rows={4} spellCheck={false} value={embedSnippet(locale, place)} />

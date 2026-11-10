@@ -48,6 +48,8 @@ export type TimelapseHooks = Readonly<{
   needsRegions: boolean;
   /** The boundary set, e.g. "Federal ridings", and its edition and source. */
   boundarySet: string;
+  /** The map readout's heading for the boundary, e.g. "Federal riding · Ontario" (F3). */
+  boundaryHeading: string;
   boundarySource: string;
   /** The patch archive's product and release, which every frame names. */
   dataVersion: string;
@@ -84,7 +86,6 @@ const text = {
     kilobytes: "KB",
     stamp: {
       interval: { all: "Detected forest loss", harvest: "Detected loss with a recorded harvest", fire: "Detected loss with a recorded fire" },
-      boundary: "Boundary",
       evidence: "Evidence",
       data: "Data",
       shading: {
@@ -127,7 +128,6 @@ const text = {
     kilobytes: "ko",
     stamp: {
       interval: { all: "Perte forestière détectée", harvest: "Perte détectée avec récolte consignée", fire: "Perte détectée avec incendie consigné" },
-      boundary: "Limite",
       evidence: "Preuve",
       data: "Données",
       shading: {
@@ -255,7 +255,8 @@ export function TimelapseExport({ locale, getMap, boundary, cause, hooks, onClos
   const stampText = (interval: string): StampText => ({
     place: boundary.name,
     interval,
-    boundary: `${words.stamp.boundary}${colon(locale)} ${hooks.boundarySet}. ${hooks.boundarySource}`.trim(),
+    // Headed as the map readout heads it, so the image and the page agree (F3).
+    boundary: `${hooks.boundaryHeading}. ${hooks.boundarySource}`.trim(),
     evidence: `${words.stamp.evidence}${colon(locale)} ${EVIDENCE_DEFINITIONS["satellite-observation"].label[locale]} · ${words.stamp.data}${colon(locale)} ${hooks.dataVersion}`,
     caveats: [
       words.stamp.shading[cause === "all" ? "loss" : cause],

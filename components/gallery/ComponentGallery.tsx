@@ -1,5 +1,6 @@
 import type { ConfidenceResult, EvidenceClass, Locale, Provenance, Reported } from "@/lib/domain";
 import { ConfidenceBadge, CoverageBand, EvidenceChip, ReportedValue } from "@/components/policy";
+import { ReadingAids } from "@/components/transparency/ReadingAids";
 
 type GalleryCopy = Readonly<{
   title: string;
@@ -84,6 +85,7 @@ export function ComponentGallery({ locale }: ComponentGalleryProps) {
       <header className="masthead">
         <h1>{copy.title}</h1>
         <p>{copy.intro}</p>
+        <ReadingAids locale={locale} current="marks" />
       </header>
       <div className="gallery-grid">
         <ThemePanel title={copy.light} theme="light">

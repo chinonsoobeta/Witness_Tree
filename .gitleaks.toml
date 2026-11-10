@@ -1,7 +1,7 @@
 # Secret-scanning configuration for the `secrets` CI job.
 #
 # The bundled rule set stays on in full. What follows only tells the one
-# entropy-based heuristic, `generic-api-key`, to stop reporting two shapes this
+# entropy-based heuristic, `generic-api-key`, to stop reporting three shapes this
 # repository uses structurally, and clears a single fabricated placeholder that
 # a deleted test used to prove credential-shaped output gets rejected.
 #
@@ -40,6 +40,19 @@ regexTarget = "secret"
 regexes = [
   '''^federal-electoral-districts-2025-shp$''',
   '''^phase1-ntems-raster-execution-v1$''',
+]
+
+# Two field names of this repository's own diagnostics, compared against a loop
+# variable called `key` in `scripts/build-place-cause-recovery-measurements.mjs`
+# (`key === "..."`). They name cell counts, not credentials. Both are listed
+# literally, so nothing else is covered.
+[[allowlists]]
+description = "Diagnostic field names compared against a variable named key"
+targetRules = ["generic-api-key"]
+regexTarget = "secret"
+regexes = [
+  '''^phase3UnionMismatchCells$''',
+  '''^phase3UnknownMismatchCells$''',
 ]
 
 # `tests/current-wildfire-promotion-checkpoint.test.mjs`, deleted from the tree

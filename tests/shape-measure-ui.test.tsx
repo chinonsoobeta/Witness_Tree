@@ -227,6 +227,10 @@ test("the circle's districts link out, and a district the index cannot name is s
 test("the home page asks what happened within 10 km and opens the circle without any address", () => {
   const english = renderToStaticMarkup(<HomeSearch locale="en" />);
   const french = renderToStaticMarkup(<HomeSearch locale="fr" />);
-  assert.match(english, /<a href="\/en\/explore\/draw\?shape=circle">What happened within 10 km of me\?<\/a>/);
-  assert.match(french, /<a href="\/fr\/explorer\/dessiner\?shape=circle">Qu’est-il arrivé dans un rayon de 10\u00a0km autour de moi\u202F\?<\/a>/);
+  assert.match(english, /<a href="\/en\/explore\/draw\?shape=circle">What happened within 10 km of a place you choose\?<\/a>/);
+  assert.match(french, /<a href="\/fr\/explorer\/dessiner\?shape=circle">Qu’est-il arrivé dans un rayon de 10\u00a0km autour d’un lieu de votre choix\u202F\?<\/a>/);
+  // The permissions policy refuses geolocation, so the link does not promise
+  // to find the reader (L6, 2026-11-10).
+  assert.doesNotMatch(english, /of me\b/);
+  assert.doesNotMatch(french, /autour de moi/);
 });

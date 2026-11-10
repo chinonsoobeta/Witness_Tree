@@ -1,7 +1,11 @@
-import source from "@/data/phase2-federal-riding-latest-comparison.json";
 import release from "@/data/phase3-riding-interval-measurements.json";
-import { districtIndexLayer, PROVINCIAL_LAYER_IDS } from "@/lib/districts/index-lookup";
-import { provincialRidingKnownForestHectares, ridingIntervalMeasurements } from "@/lib/explore/riding-intervals";
+import { districtIndexLayer, FEDERAL_LAYER_ID, PROVINCIAL_LAYER_IDS } from "@/lib/districts/index-lookup";
+import { EXPLORE_INTERVAL_FIRST_YEAR, EXPLORE_INTERVAL_LAST_YEAR } from "@/lib/explore/interval";
+import {
+  parseRidingIntervalRelease,
+  provincialRidingKnownForestHectares,
+  ridingIntervalMeasurements,
+} from "@/lib/explore/riding-intervals";
 import {
   adaptFederalRidingComparison,
   adaptProvincialRidingComparison,
@@ -13,16 +17,50 @@ import {
 } from "./real-adapter";
 import type { ComparisonPlace, RankedRiding, RankingContext } from "./types";
 
-export const federalRidingComparison = adaptFederalRidingComparison(
-  source as Parameters<typeof adaptFederalRidingComparison>[0],
-);
-
 /*
- * Provincial ridings over the federal comparison's own span, so the two levels
- * on one page always describe the same years. Names and representation orders
- * come from the district index the address lookup already reads.
+ * Compare covers the whole record, 1984 to 2022, for federal and provincial
+ * ridings alike, from the riding interval release that Explore and the place
+ * pages read, so a riding shows the same figure on all three. Names and
+ * representation orders come from the district index the address lookup
+ * already reads.
  */
-const interval = source.context.interval;
+const interval = { fromYear: EXPLORE_INTERVAL_FIRST_YEAR, toYear: EXPLORE_INTERVAL_LAST_YEAR } as const;
+const dataVersion = release.builtFrom.replace(/^derived\//, "");
+const measurements = ridingIntervalMeasurements(interval);
+
+const federalLayer = districtIndexLayer(FEDERAL_LAYER_ID);
+if (!federalLayer) throw new Error("No district index layer names the federal ridings.");
+const federalNames: ReadonlyMap<string, { en: string; fr: string }> = new Map(federalLayer.legend.map((entry) => [`CA-${entry.districtId}`, entry.name]));
+const federalName = (boundaryId: string) => {
+  const name = federalNames.get(boundaryId);
+  if (!name) throw new Error(`Federal riding ${boundaryId} has no name in the district index.`);
+  return name;
+};
+/** Each federal riding's mapped forest at the span's start, as provincialRidingKnownForestHectares gives it for provincial ones. */
+const start = interval.fromYear - EXPLORE_INTERVAL_FIRST_YEAR;
+const federalForest: ReadonlyMap<string, number> = new Map(parseRidingIntervalRelease(release)
+  .filter((district) => district.jurisdiction === "CA")
+  .map((district) => [district.boundaryId, Math.round(district.knownForestCellsByStartYear[start]! * 9) / 100]));
+const federalRows = measurements.filter((row) => row.jurisdiction === "CA");
+const measuredFederal = new Set(federalRows.map((row) => row.boundaryId));
+
+export const federalRidingComparison = adaptFederalRidingComparison({
+  interval,
+  dataVersion,
+  rows: federalRows.map((row) => ({
+    boundaryId: row.boundaryId,
+    name: federalName(row.boundaryId),
+    coverage: row.coverage,
+    observedLossPercent: row.observedLossPercent,
+    observedLossHectares: row.observedLossHectares,
+    ...(row.admittedUnknownPercent === undefined ? {} : { admittedUnknownPercent: row.admittedUnknownPercent }),
+    knownForestedHectares: federalForest.get(row.boundaryId) ?? Number.NaN,
+  })),
+  outside: [...federalNames.keys()]
+    .filter((boundaryId) => !measuredFederal.has(boundaryId))
+    .map((boundaryId) => ({ boundaryId, name: federalName(boundaryId) })),
+});
+
 const layers = byCoveredProvince((province) => {
   const id = PROVINCIAL_LAYER_IDS.find((layer) => layer.startsWith(`${province.toLowerCase()}-`));
   const layer = id ? districtIndexLayer(id) : null;
@@ -34,9 +72,9 @@ const forest = provincialRidingKnownForestHectares(interval);
 
 export const provincialRidingComparison = adaptProvincialRidingComparison({
   interval,
-  dataVersion: release.builtFrom.replace(/^derived\//, ""),
+  dataVersion,
   editions: byCoveredProvince((province) => layers[province].edition),
-  rows: ridingIntervalMeasurements(interval)
+  rows: measurements
     .filter((row) => row.jurisdiction !== "CA")
     .map((row) => {
       const layer = layers[row.jurisdiction as CoveredProvince];
@@ -78,7 +116,7 @@ export function comparisonRankings(places: readonly (ComparisonPlace | null)[]):
   const federal = places.some((place) => place !== null && provincialRidingProvince(place.id) === null) || provinces.size === 0;
   return [
     ...(federal ? [{
-      scope: { level: "federal" as const, nationalTotal: federalRidingComparison.rows.length },
+      scope: { level: "federal" as const, nationalTotal: federalRidingComparison.nationalTotal },
       rows: federalRidingComparison.comparisonRows,
       context: federalRidingComparison.context,
     }] : []),
@@ -88,4 +126,38 @@ export function comparisonRankings(places: readonly (ComparisonPlace | null)[]):
       context: provincialRidingComparison.contexts[province],
     })),
   ];
+}
+
+/** The three rankings Compare offers, chosen by the address's `rank`. */
+export const RANKING_TABS = ["federal", "provincial", "cities"] as const;
+export type RankingTab = (typeof RANKING_TABS)[number];
+
+/**
+ * The ranking the address asks for. Without a valid `rank`, the chosen ridings
+ * decide: provincial when every chosen riding is provincial, federal otherwise,
+ * and federal when none is chosen.
+ */
+export function parseRankingTab(value: string | undefined, places: readonly (ComparisonPlace | null)[]): RankingTab {
+  const named = RANKING_TABS.find((tab) => tab === value);
+  if (named) return named;
+  const chosen = places.filter((place): place is ComparisonPlace => place !== null);
+  return chosen.length > 0 && chosen.every((place) => provincialRidingProvince(place.id) !== null) ? "provincial" : "federal";
+}
+
+/**
+ * The riding rankings under a tab: the federal one; or, for provincial, the
+ * provinces of the chosen provincial ridings, and all four, west to east, when
+ * none is chosen.
+ */
+export function ridingRankingsForTab(tab: "federal" | "provincial", places: readonly (ComparisonPlace | null)[] = []): ReturnType<typeof comparisonRankings> {
+  if (tab === "federal") return comparisonRankings([]);
+  const chosen = new Set(places.flatMap((place) => {
+    const province = place ? provincialRidingProvince(place.id) : null;
+    return province ? [province] : [];
+  }));
+  return COVERED_PROVINCES.filter((province) => chosen.size === 0 || chosen.has(province)).map((province) => ({
+    scope: { level: "provincial" as const, province },
+    rows: provincialRidingComparison.rowsByProvince[province],
+    context: provincialRidingComparison.contexts[province],
+  }));
 }

@@ -1,5 +1,70 @@
 @import "tailwindcss";
 
+/* BC Sans, shown in a fallback face while it loads.
+
+   The package stylesheet (imported once, in components/site/Document.tsx)
+   declares the faces without font-display, so browsers hide all text until
+   the files arrive: the page painted as a blank ground with its rules and
+   borders, for up to three seconds on a slow connection, most noticeably on
+   the default System theme (audit 2026-11-10, L4). The same six faces are
+   declared again here, from the same unmodified package files, with
+   font-display: swap. This stylesheet is imported after the package one,
+   and a later face with the same family, weight and style replaces the
+   earlier one, so these are the faces the browser uses. */
+@font-face {
+  font-family: "BC Sans";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../node_modules/@bcgov/bc-sans/fonts/BCSans-Regular.woff2") format("woff2"),
+       url("../node_modules/@bcgov/bc-sans/fonts/BCSans-Regular.woff") format("woff");
+}
+
+@font-face {
+  font-family: "BC Sans";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../node_modules/@bcgov/bc-sans/fonts/BCSans-Italic.woff2") format("woff2"),
+       url("../node_modules/@bcgov/bc-sans/fonts/BCSans-Italic.woff") format("woff");
+}
+
+@font-face {
+  font-family: "BC Sans";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../node_modules/@bcgov/bc-sans/fonts/BCSans-Bold.woff2") format("woff2"),
+       url("../node_modules/@bcgov/bc-sans/fonts/BCSans-Bold.woff") format("woff");
+}
+
+@font-face {
+  font-family: "BC Sans";
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../node_modules/@bcgov/bc-sans/fonts/BCSans-BoldItalic.woff2") format("woff2"),
+       url("../node_modules/@bcgov/bc-sans/fonts/BCSans-BoldItalic.woff") format("woff");
+}
+
+@font-face {
+  font-family: "BC Sans";
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url("../node_modules/@bcgov/bc-sans/fonts/BCSans-Light.woff2") format("woff2"),
+       url("../node_modules/@bcgov/bc-sans/fonts/BCSans-Light.woff") format("woff");
+}
+
+@font-face {
+  font-family: "BC Sans";
+  font-style: italic;
+  font-weight: 300;
+  font-display: swap;
+  src: url("../node_modules/@bcgov/bc-sans/fonts/BCSans-LightItalic.woff2") format("woff2"),
+       url("../node_modules/@bcgov/bc-sans/fonts/BCSans-LightItalic.woff") format("woff");
+}
+
 /* ==========================================================================
    Token layer.
    Five groups: ground and surface, ink, rules and edges, brand,
@@ -100,6 +165,8 @@
   --insect: #4a3aa7;
   --recovery: #4a3aa7;
   --map-ground: #eeefe9; /* the map canvas, which does not follow the theme */
+  --map-ground-dark: #211e19; /* the still map's ground in dark theme; lib/explore/map-ground.ts holds the same value for the live map */
+  --map-casing: #f6f7f2; /* the light track under a map outline, the same in both themes */
   --unknown: #6b7670;
 
   /* observed-loss ramp: held in :root only, and never themed, because the
@@ -1169,39 +1236,43 @@ h4 {
   text-decoration: underline;
 }
 
-/* The colour-theme control. Three native radios in a segmented pill.
+/* The colour-theme control, in the footer since 2026-11-10 (L3): in the
+   header it took the room of three menu items. Three native radios in one
+   segmented control, on the page ground, so it takes the page's ink tokens.
 
    The inputs are not hidden with display:none or visibility:hidden, which would
    remove them from the accessibility tree and from the tab order along with the
    arrow-key group behaviour the platform gives radios for free. Each one is
-   instead stretched transparently over its own label, so the whole pill is the
-   hit target, the radio still receives focus, and the visible state is carried by
-   the sibling span through :checked and :focus-visible. */
+   instead stretched transparently over its own label, so the whole segment is
+   the hit target, the radio still receives focus, and the visible state is
+   carried by the sibling span through :checked and :focus-visible. */
 .theme-toggle {
   display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 2px;
-  padding: 4px 0 0;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-top: 18px;
 }
 .theme-toggle-label {
-  padding: 10px 16px 4px;
-  /* The top bar is dark in both themes, so its type takes the topbar token
-     set. --muted resolves against the page ground and would disappear here. */
-  color: var(--topbar-ink-2);
-  font-size: var(--text-small);
-  font-weight: 700;
+  color: var(--muted);
+  font-size: var(--text-compact);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
-/* Inside the menu panel the options stack as full-width rows, the same shape as
-   the links above them. Three pills side by side does not survive translation at
-   this width: "Système / Clair / Sombre" needs more room than the panel has, and
-   any arrangement that fits by shrinking clips a label in one language or the
-   other. Above the nav breakpoint the row has the room, and they sit inline. */
+/* One outline around the set and a hairline between the options, because
+   choosing one unchooses the other two; three loose pills would read as three
+   independent buttons. "Système / Clair / Sombre" fits in one row at 320px. */
+.theme-options {
+  display: inline-flex;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-control);
+}
 .theme-option {
   position: relative;
-  display: flex;
+  display: inline-flex;
+}
+.theme-option + .theme-option {
+  border-inline-start: 1px solid var(--rule-strong);
 }
 .theme-option input {
   position: absolute;
@@ -1215,39 +1286,32 @@ h4 {
 .theme-option > span {
   display: flex;
   align-items: center;
-  width: 100%;
   min-height: 44px;
-  padding: 0 16px;
+  padding: 0 12px;
   border: 1px solid transparent;
-  border-radius: var(--radius-control);
-  color: var(--topbar-ink-2);
+  color: var(--ink-2);
+  font-size: var(--text-compact);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
   transition:
     color var(--dur) var(--ease),
     background-color var(--dur) var(--ease),
     border-color var(--dur) var(--ease);
 }
-/* Colour alone, because the hover fill this rule used to carry was
-   var(--topbar-fill), which is the bar's own ground: it painted the span the
-   exact colour already behind it and changed nothing a reader could see. */
 .theme-option input:hover + span {
-  color: var(--topbar-ink);
+  color: var(--ink);
 }
-/* The chosen option is a full inversion, the same plate the design gives every
-   either/or control on the site. It was previously a fill of var(--topbar-fill)
-   on a bar of var(--topbar-fill), so the only thing separating the current
-   theme from the two it was not was a hairline border and a shade of grey.
-
-   The border stays, and stays the reason this is not colour alone: in
-   forced-colours mode every fill collapses to the system ground, and what
-   survives is that the chosen option is drawn inside a box and the other two
-   are not. */
+/* The chosen option is a full inversion. The border stays, and is the reason
+   this is not colour alone: in forced-colours mode every fill collapses to the
+   system ground, and what survives is that the chosen option is drawn inside a
+   box and the other two are not. */
 .theme-option input:checked + span {
-  border-color: var(--topbar-ink);
-  background: var(--topbar-ink);
-  color: var(--topbar-fill);
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--ground);
 }
 .theme-option input:focus-visible + span {
-  outline: 2px solid var(--topbar-accent);
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 /* Server-rendered inert, until the island mounts and can actually change
@@ -1257,7 +1321,7 @@ h4 {
   cursor: default;
 }
 .theme-option input:disabled + span {
-  color: var(--topbar-ink-2);
+  color: var(--ink-2);
 }
 
 /* The language switch: the one control every reader on a bilingual
@@ -1327,6 +1391,41 @@ h4 {
 /* The landing page is the one screen that opens on a question rather than a
    section name, and the canvas gives it its own larger step. */
 .masthead--record h1 { font-size: clamp(38px, 4.6vw, 60px); }
+/* The row under the Methods, Glossary, How figures are marked and What the
+   record cannot see mastheads that links the four to each other (L5). The page
+   the reader is on is plain bold text, not a link. */
+.reading-aids {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 16px;
+  margin-top: 20px;
+}
+.reading-aids-label {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--text-compact);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.reading-aids ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.reading-aids li {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: var(--text-small);
+}
+.reading-aids [aria-current="page"] {
+  color: var(--ink);
+  font-weight: 700;
+}
 .province-bar {
   display: flex;
   align-items: center;
@@ -1681,9 +1780,12 @@ h4 {
   text-decoration: underline;
 }
 
+/* C5: the map takes most of a laptop screen once it is in view, never less
+   than it used to (430px) and never more than 640px. */
 .explore-map {
+  --explore-map-height: clamp(430px, calc(100svh - 320px), 640px);
   position: relative;
-  min-height: 430px;
+  min-height: var(--explore-map-height);
   border: 1px solid var(--rule);
   border-radius: var(--radius);
   overflow: hidden;
@@ -1718,7 +1820,7 @@ h4 {
 }
 .explore-map-canvas {
   width: 100%;
-  height: 430px;
+  height: var(--explore-map-height);
 }
 .explore-map[data-map-source="geojson-fallback"] .explore-map-canvas,
 .explore-map[data-state="error"] .explore-map-canvas {
@@ -1734,7 +1836,23 @@ h4 {
    */
   max-width: 100%;
   height: auto;
-  min-height: 430px;
+  min-height: var(--explore-map-height, 430px);
+}
+/* D8: the still map's ground follows the theme, as the live map's does, and
+   its outlines turn light so a dark class keeps an edge against it. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .explore-map-fallback-ground {
+    fill: var(--map-ground-dark);
+  }
+  :root:not([data-theme="light"]) .explore-map-fallback path {
+    stroke: var(--map-casing);
+  }
+}
+:root[data-theme="dark"] .explore-map-fallback-ground {
+  fill: var(--map-ground-dark);
+}
+:root[data-theme="dark"] .explore-map-fallback path {
+  stroke: var(--map-casing);
 }
 /* In flow above the map. It used to float on the frame, which is how the
    layer panel came to cover it when the legend grew. */
@@ -1936,28 +2054,70 @@ h4 {
 }
 .explore-map-key-boundaries {
   flex: 1 1 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 14px;
   margin: 0;
   padding-top: 10px;
   border-top: 1px solid var(--rule);
   color: var(--muted);
   font-size: 12.5px;
 }
+.explore-map-key-boundaries p {
+  margin: 0;
+}
+.explore-map-key-boundaries ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.explore-map-key-boundaries li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+/* The sample lines sit on the map's own light ground, so they read in both themes. */
+.explore-map-key-boundaries svg {
+  flex: none;
+  border-radius: 2px;
+  background: var(--map-ground);
+}
+/*
+ * F4: the readout is kept compact (tight lines, its actions on one wrapping
+ * row) and never taller than the map leaves room for; on a narrow frame it is
+ * docked under the map instead of covering it (after the phone rules below).
+ */
 .explore-map-boundary-status {
   position: absolute;
   inset-block-start: 62px;
   inset-inline-end: 12px;
   z-index: 1;
-  max-width: min(260px, calc(100% - 24px));
-  padding: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 6px;
+  max-width: min(300px, calc(100% - 24px));
+  max-height: calc(100% - 140px);
+  overflow-y: auto;
+  padding: 8px 10px;
   border: 1px solid var(--rule-strong);
   border-radius: var(--radius-sm);
   background: var(--surface);
   color: var(--ink);
   font-size: 12px;
+  line-height: 1.35;
   pointer-events: auto;
 }
+.explore-map-boundary-status > strong,
 .explore-map-boundary-status p {
-  margin: 4px 0;
+  flex: 1 1 100%;
+}
+.explore-map-boundary-status p {
+  margin: 0;
 }
 .explore-map-boundary-status button {
   min-height: 30px;
@@ -1968,6 +2128,10 @@ h4 {
   color: inherit;
   font: inherit;
   cursor: pointer;
+}
+.explore-map-boundary-status .explore-map-place-link {
+  flex: 1 1 100%;
+  font-weight: 700;
 }
 /*
  * Zoom buttons and a scale bar, floated over the map.
@@ -2078,13 +2242,10 @@ h4 {
    * its height is not what keeps them apart and it does not need padding
    * against a legend that grows. It only has to be a usable map.
    */
-  .explore-map,
-  .explore-map-fallback {
-    min-height: 30rem;
-  }
-  /* The canvas fills the taller frame, so no dead band sits under the map. */
-  .explore-map-canvas {
-    height: 30rem;
+  /* The frame, the canvas and the still map all take this one height, so no
+     dead band sits under the map and the docked readout (F4) starts at its foot. */
+  .explore-map {
+    --explore-map-height: 30rem;
   }
   .province-bar--map {
     display: grid;
@@ -2107,6 +2268,22 @@ h4 {
   }
   .explore-map-scale {
     justify-self: start;
+  }
+}
+/* F4: on a narrow frame the boundary readout is docked under the map. */
+@media (max-width: 760px) {
+  /* Docked under the map, full width, in the frame's own flow. */
+  .explore:not(.explore--expanded) .explore-map-boundary-status {
+    position: static;
+    max-width: none;
+    max-height: none;
+    border-width: 1px 0 0;
+    border-radius: 0;
+  }
+  /* The zoom and scale controls stay on the map, not on the docked readout. */
+  .explore:not(.explore--expanded) .explore-map-controls {
+    inset-block: var(--explore-map-height) auto;
+    translate: 0 calc(-100% - 12px);
   }
 }
 .explore-map:fullscreen {
@@ -2630,9 +2807,10 @@ h4 {
     position: static;
     display: flex;
     align-items: center;
-    /* 18px until the colour-theme control joined the row. The French row is the
-       widest the site has, and at 18px it cleared the pill by a single pixel,
-       which any font fallback would have swallowed. */
+    /* 14px since the colour-theme control joined the row, where at 18px the
+       French row cleared it by a single pixel. The control moved to the footer
+       on 2026-11-10 (L3); the gap was kept so the measured breakpoints below
+       still hold. */
     gap: 14px;
     min-width: 0;
     padding: 0;
@@ -2649,57 +2827,12 @@ h4 {
     background: none;
     text-decoration: underline;
   }
-  /* In the inline row the group's name is carried by the accessible name alone.
-     It is clipped rather than removed, because aria-labelledby points at it and a
-     display:none element names nothing. */
-  .theme-toggle-label {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-  }
-  /* One segmented control rather than three loose pills with a 2px gutter
-     between them: a single outline around the set, a hairline between the
-     options, and the chosen one inverted. Three separated pills read as three
-     independent buttons, which is the wrong claim, because choosing one of
-     these unchooses the other two.
-
-     The divider sits on the wrapper and the state box on the span, so the two
-     never contend for the same pixel and the row does not shift width when the
-     reader changes theme. There is deliberately no overflow:hidden: at a 2px
-     radius it would clip nothing worth clipping and it would eat the focus
-     ring, which has to sit outside the frame to keep its contrast against the
-     bar rather than against the inverted plate. */
-  .theme-toggle {
-    flex-direction: row;
-    align-items: stretch;
-    gap: 0;
-    padding: 0;
-    border: 1px solid var(--topbar-edge);
-    border-radius: var(--radius-control);
-  }
-  .theme-option {
-    display: inline-flex;
-  }
-  .theme-option + .theme-option {
-    border-inline-start: 1px solid var(--topbar-edge);
-  }
-  .theme-option > span {
-    width: auto;
-    padding: 0 11px;
-    border-radius: 0;
-    font-size: var(--text-compact);
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-  }
 }
 
 /* Between 800px and the one-row width the bar takes two rows: the wordmark and
-   the language switch on the first, the links and the colour-theme control on
-   the second. Measured with BC Sans, the French second row is 683px against 760px
+   the language switch on the first, the links on the second. (The colour-theme
+   control sat on the second row too until it moved to the footer on 2026-11-10,
+   so the widths below, measured with it, now leave more room.) Measured with BC Sans, the French second row is 683px against 760px
    of bar at 800px, and the English 585px. The language switch is lifted onto the
    first row by position, not moved in the DOM, so the nav landmark, the one list
    of links and the switch's place after them in the tab order are all unchanged.
@@ -3095,8 +3228,12 @@ h4 {
   border-radius: var(--radius-control);
   background: var(--surface);
 }
+/* Tall enough that the circle the map zooms to once a centre is set reads as
+   a shape on the land rather than a mark (L6, 2026-11-10): 320px was a strip
+   at the national view. 60% of the viewport, between 380px and 560px, keeps
+   the fields above and the hint below within one scroll on a phone. */
 .shape-draw-canvas {
-  height: 320px;
+  height: clamp(380px, 60vh, 560px);
   border-bottom: 1px solid var(--rule);
 }
 .shape-draw-hint,
@@ -3513,6 +3650,136 @@ dd > a:only-child {
   margin: 0;
 }
 
+/* BC harvest volume chart (components/transparency/BcHarvestVolumeChart.tsx).
+   Line style carries the series as well as colour: the total is the heavy
+   line, the covered harvest the thin one, and the allowable cut, a policy
+   limit rather than a measurement, is dashed. */
+.bc-volume-figure {
+  margin: 0;
+}
+.bc-volume-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+  font-family: var(--ui);
+  font-size: 14px;
+}
+.bc-volume-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.bc-volume-swatch {
+  flex: 0 0 auto;
+  width: 28px;
+  border-top: 3px solid var(--harvest);
+}
+.bc-volume-swatch--regulated {
+  border-top: 2px solid var(--accent);
+}
+.bc-volume-swatch--allowable {
+  border-top: 2px dashed var(--clay-ink);
+}
+.bc-volume-scroll {
+  width: 100%;
+  overflow-x: auto;
+}
+.bc-volume-chart {
+  display: block;
+  min-width: 640px;
+}
+.bc-volume-line {
+  fill: none;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.bc-volume-line--total {
+  stroke: var(--harvest);
+  stroke-width: 3;
+}
+.bc-volume-line--regulated {
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+.bc-volume-line--allowable {
+  stroke: var(--clay-ink);
+  stroke-width: 2;
+  stroke-dasharray: 6 4;
+  stroke-linecap: butt;
+}
+.bc-volume-dot--total { fill: var(--harvest); }
+.bc-volume-dot--regulated { fill: var(--accent); }
+.bc-volume-dot--allowable { fill: var(--clay-ink); }
+.bc-volume-grid {
+  stroke: var(--rule);
+  stroke-width: 1;
+}
+.bc-volume-axis {
+  stroke: var(--rule-strong);
+  stroke-width: 1;
+}
+.bc-volume-tick,
+.bc-volume-note,
+.bc-volume-axis-title {
+  fill: var(--ink-2);
+  font-family: var(--ui);
+  font-variant-numeric: tabular-nums lining-nums;
+  font-size: 12px;
+}
+.bc-volume-note {
+  font-style: italic;
+}
+.bc-volume-summary,
+.bc-volume-caption p {
+  max-width: var(--measure);
+  margin: 12px 0 0;
+}
+.bc-volume-caption {
+  color: var(--ink-2);
+  font-size: 15px;
+}
+/* The table under the chart is a native <details>, so it opens and closes
+   without script. It is forced open when printed and when the page is read
+   without JavaScript, by the same two mechanisms .nav-disclosure uses:
+   ::details-content for current engines, display on the content for older
+   ones. The summary is hidden then, because it would toggle nothing. */
+.bc-volume-table > summary {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  font-family: var(--ui);
+  font-weight: 700;
+  color: var(--accent);
+  cursor: pointer;
+}
+/* display:flex drops the native triangle, so the open/closed cue is drawn
+   here; the empty alternative text keeps it out of the accessible name. */
+.bc-volume-table > summary::before {
+  content: "\25B8" / "";
+  margin-right: 8px;
+}
+.bc-volume-table[open] > summary::before {
+  content: "\25BE" / "";
+}
+.bc-volume-table[open] > summary {
+  margin-bottom: 12px;
+}
+@media print, (scripting: none) {
+  .bc-volume-table::details-content {
+    content-visibility: visible;
+    block-size: auto;
+  }
+  .bc-volume-table > .table-scroll {
+    display: block;
+  }
+  .bc-volume-table > summary {
+    display: none;
+  }
+}
+
 /* ==========================================================================
    Surfaces: comparison.
    .comparison-table was declared in markup and never styled; it is now the
@@ -3658,6 +3925,17 @@ dd > a:only-child {
 .comparison-card--empty p,
 .comparison-empty {
   color: var(--ink-2);
+}
+.comparison-prompt {
+  margin: 0 0 32px;
+  color: var(--ink-2);
+}
+/* Two classes, to outrank the later `.segment { margin: 0 }` reset. */
+.comparison-rankings .comparison-rank-tabs {
+  margin-bottom: 28px;
+}
+.comparison-rankings .content-section {
+  padding-top: 0;
 }
 .comparison-selection-notice {
   margin-bottom: 20px;
@@ -4022,6 +4300,188 @@ dd > a:only-child {
     display: block;
   }
 }
+/*
+ * The enlarged map (G1, G3). The Explore section itself goes full screen, or,
+ * where the browser has no full screen or refuses it, is laid over the page.
+ * It keeps what changes the map (the years and Play, the Boundaries menu, the
+ * province buttons and the legend) and sets the rest aside until the reader
+ * comes back. The legend sits beside the map on a wide screen and under it on
+ * a narrow one, never over it, and folds away with its own button.
+ */
+.explore--expanded {
+  box-sizing: border-box;
+  gap: 8px;
+  padding: 10px 16px 12px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--ground);
+}
+.explore--expanded:fullscreen {
+  width: 100vw;
+  height: 100vh;
+}
+.explore--expanded[data-expanded="page"] {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+}
+.explore--expanded > :not(.explore-toolbar):not(.explore-workspace),
+.explore--expanded .explore-workspace > :not(.explore-canvas),
+.explore--expanded .explore-canvas > .explore-note,
+.explore--expanded .explore-modes,
+.explore--expanded .explore-mode-status,
+.explore--expanded .query-notice,
+.explore--expanded .year-help {
+  display: none;
+}
+.explore--expanded > .explore-toolbar {
+  order: 0;
+  padding-block: 0 8px;
+  border-block-start: 0;
+}
+.explore--expanded > .explore-workspace {
+  order: 1;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+.explore--expanded .explore-canvas,
+.explore--expanded .explore-map-client {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+.explore--expanded .explore-map-stack {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+.explore--expanded .explore-map {
+  flex: 1 1 auto;
+  min-height: 240px;
+}
+.explore--expanded .explore-map-canvas,
+.explore--expanded .explore-map-fallback {
+  height: 100%;
+  min-height: 240px;
+}
+.explore--expanded .explore-map-stack > .explore-map-layer-panel {
+  flex: none;
+  max-height: 40vh;
+  overflow-y: auto;
+}
+.explore-map-expanded-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.explore-map-expanded-bar button {
+  min-height: 34px;
+  padding: 4px 10px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--text-small);
+  cursor: pointer;
+}
+/* A phone keeps the map as much of the screen as the controls allow. */
+@media (max-width: 759px) {
+  .explore--expanded .explore-map-readout,
+  .explore--expanded .year-head {
+    display: none;
+  }
+  /* The two year pickers side by side, each under its label, Play below. */
+  .explore--expanded .explore-toolbar .year-control {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px 10px;
+  }
+  .explore--expanded .explore-toolbar .year-control > :not(label):not(select) {
+    grid-column: 1 / -1;
+  }
+  .explore--expanded .year-control > label:nth-of-type(1) { grid-area: 1 / 1; }
+  .explore--expanded .year-control > select:nth-of-type(1) { grid-area: 2 / 1; }
+  .explore--expanded .year-control > label:nth-of-type(2) { grid-area: 1 / 2; }
+  .explore--expanded .year-control > select:nth-of-type(2) { grid-area: 2 / 2; }
+  .explore--expanded .explore-toolbar .explore-year-select {
+    width: 100%;
+    min-width: 0;
+  }
+  /* Play's tools in one row: the slider, then the pace, each under its label. */
+  .explore--expanded .explore-play-tools {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 4px 10px;
+  }
+  .explore--expanded .explore-play-jump,
+  .explore--expanded .explore-play-speed {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+  }
+  .explore--expanded .explore-play-jump input {
+    width: 100%;
+  }
+  .explore--expanded .explore-play-restore {
+    grid-column: 1 / -1;
+  }
+  .explore--expanded .province-bar--map {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .explore--expanded .province-bar--map button:first-child {
+    grid-column: auto;
+  }
+  .explore--expanded .province-bar--map button > span:first-child {
+    flex: none;
+  }
+  /* The map takes half the screen; the notes under it scroll into view. */
+  .explore--expanded .explore-map {
+    min-height: 50vh;
+  }
+}
+@media (min-width: 900px) {
+  .explore--expanded .explore-map-stack {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 320px);
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    gap: 10px 12px;
+  }
+  .explore--expanded .explore-map-stack[data-legend="closed"] {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .explore--expanded .explore-map-stack > * {
+    grid-column: 1;
+  }
+  .explore--expanded .explore-map-stack > .explore-map {
+    grid-row: 2;
+  }
+  .explore--expanded .explore-map-stack > .explore-map-expanded-bar {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: center;
+  }
+  .explore--expanded .explore-map-stack > .explore-map-layer-panel {
+    grid-column: 2;
+    grid-row: 2;
+    align-self: start;
+    max-height: 100%;
+  }
+  .explore--expanded .explore-map-stack > #explore-timelapse {
+    grid-column: 1 / -1;
+    grid-row: 3;
+  }
+}
+/* C5: a shorter masthead on Explore, so the map comes up the first screen. */
+.explore-masthead {
+  padding-block: 32px 16px;
+}
+.explore-masthead h1 {
+  margin-block: 0 8px;
+}
 .explore-data-lead { max-width: 70ch; color: var(--ink-2); }
 .explore-unknown { margin-top: 20px; max-width: 70ch; }
 .explore-unknown h3 { margin: 0 0 8px; font-size: 17px; }
@@ -4029,8 +4489,8 @@ dd > a:only-child {
 .explore-toolbar {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 14px 0 12px;
+  gap: 8px;
+  padding: 10px 0 8px;
   border-block: 1px solid var(--rule);
 }
 .explore-toolbar-row {
@@ -4064,6 +4524,39 @@ dd > a:only-child {
 }
 .explore-toolbar .year-row {
   flex: 1 1 320px;
+}
+/* Play's own tools (E1, E2): jump the last year, pick a pace, and take back
+   the reader's years. They sit with Play, so they follow it into full screen. */
+.explore-play-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  flex-basis: 100%;
+}
+.explore-play-tools[hidden] {
+  display: none;
+}
+.explore-play-jump,
+.explore-play-speed {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink-2);
+  font-size: var(--text-small);
+}
+.explore-play-jump input {
+  width: min(260px, 52vw);
+  min-height: 44px;
+  margin: 0;
+  accent-color: var(--accent-fill);
+}
+.explore-play-speed .explore-year-select {
+  width: auto;
+}
+.explore-play-restore {
+  white-space: normal;
+  text-align: start;
 }
 
 /* Boundaries: a menu of overlays rather than four cards in a column. A native
@@ -4317,6 +4810,14 @@ dd > a:only-child {
 
 .explore-annual h3 {
   margin: 0 0 12px;
+}
+
+/* Last-year figures under a longer span: a rule sets them apart from the
+   span headline above, so the two are not read as one measurement. */
+.explore-annual h3.explore-annual-last {
+  margin-block-start: 20px;
+  padding-block-start: 16px;
+  border-block-start: 1px solid var(--rule);
 }
 
 .explore-annual dl {
@@ -4835,7 +5336,7 @@ dd > a:only-child {
   height: 10px;
 }
 @media (min-width: 800px) {
-  .nav-panel a, .theme-option > span {
+  .nav-panel a {
     min-height: 40px;
   }
 }
@@ -4985,6 +5486,10 @@ dd > a:only-child {
   display: inline-flex;
   align-items: center;
   min-height: 44px;
+}
+.wildfire-status-lead {
+  max-width: var(--measure);
+  margin: 0 0 16px;
 }
 .comparison-picker label {
   min-width: 0;
@@ -5180,250 +5685,57 @@ dd > a:only-child {
   }
 }
 
-/* Landing: loss and unmapped area use equal panels and a shared hectare scale. */
-.landing-coverage > .lead { max-width: var(--measure); }
-/* Four readings of one instrument, ranked.
-   The provinces were a two-column grid of cards, which is a layout for
-   browsing, and these are not things to browse. A list ranks; cards only sit
-   beside each other. Neither measure prints a sentence explaining its scale,
-   because each bar draws exactly what the figure beside it says. */
-.province-list-block {
-  margin-block: 28px;
-}
-.province-list-head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 16px 28px;
-}
-.province-list-headline {
-  margin: 0;
-  font-size: clamp(21px, 2.3vw, 27px);
-  font-weight: 700;
-  line-height: 1.2;
-  letter-spacing: -0.015em;
-  text-wrap: balance;
-}
-.measure-toggle {
-  display: flex;
-  flex-shrink: 0;
-  border: 1px solid var(--rule-strong);
-  border-radius: var(--radius-control);
-  overflow: hidden;
-}
-.measure-toggle-option {
-  min-height: 44px;
-  padding: 0 18px;
-  border: none;
-  background: var(--ground);
-  color: var(--ink-2);
-  font-family: var(--ui);
-  font-size: var(--text-small);
-  font-weight: 700;
-  cursor: pointer;
-  transition:
-    background-color var(--dur) var(--ease),
-    color var(--dur) var(--ease);
-}
-.measure-toggle-option + .measure-toggle-option {
-  border-left: 1px solid var(--rule-strong);
-}
-.measure-toggle-option[aria-pressed="true"] {
-  background: var(--ink);
-  color: var(--ground);
-}
-/* A key, not a disclaimer: it names the two parts of a bar the reader can
-   see, rather than asking the reader to discount what the bar draws. */
-.province-list-key {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 24px;
-  margin: 18px 0 0;
-  padding: 0;
-  list-style: none;
-  font-family: var(--ui);
-  font-size: var(--text-small);
-  color: var(--ink-2);
-}
-.province-list-key li {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-}
-.province-list-key-mapped,
-.province-list-key-gap {
-  display: block;
-  width: 26px;
-  height: 12px;
-}
-.province-list-key-mapped {
-  background: var(--accent);
-}
-.province-list-key-gap {
-  background: var(--ground);
-  border: 1px dashed var(--edge-unknown);
-}
-.province-list {
-  margin: 8px 0 0;
+/* The home page since 2026-11-10 (A1, A4): the four provinces one entry each,
+   three doors, and single lines for recovery, data and limits. */
+.home-provinces-list {
+  display: grid;
+  gap: 14px;
+  margin: 16px 0 0;
   padding: 0;
   list-style: none;
 }
-.province-list-row {
-  display: flex;
-  flex-direction: column;
-  gap: 13px;
-  padding: 22px 0 24px;
-  border-top: 1px solid var(--rule);
+.home-province {
+  padding-left: 14px;
+  border-left: 2px solid var(--rule-strong);
 }
-/* Place left, figure right, one baseline. Four rows then present four figures
-   down a single right edge, which is the comparison the ranking exists to
-   make; stacked, each figure sat at a different distance from the top of its
-   own row and the reader had to find it four times. */
-.province-list-head-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 4px 40px;
-}
-.province-list-identity {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 4px 12px;
-  min-width: 0;
-}
-.province-list-row:last-child {
-  border-bottom: 1px solid var(--rule);
-}
-.province-list-mark {
-  display: flex;
-  align-items: center;
-  gap: 9px;
+.home-province p {
   margin: 0;
-  font-family: var(--ui);
-  font-size: var(--text-compact);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--muted);
+  max-width: 52rem;
 }
-.province-list .province-list-place {
-  margin: 0;
-  font-size: clamp(20px, 2.2vw, 26px);
-  font-weight: 700;
-  line-height: 1.2;
-  letter-spacing: -0.015em;
-}
-/* Matched against `.page-wrap h3` rather than left as a bare class: the base
-   heading scale is a descendant selector, so a class alone loses to it. */
-.province-list .province-list-span {
-  font-weight: 400;
+.home-province-figure {
   font-variant-numeric: tabular-nums lining-nums;
+}
+.home-province-name {
+  margin-right: 4px;
+}
+.home-province-note {
   color: var(--ink-2);
+  font-size: var(--text-small);
+  line-height: 1.5;
 }
-.province-list-figure {
-  display: flex;
-  align-items: baseline;
-  gap: 7px;
-  margin: 0;
-  font-size: clamp(30px, 3.6vw, 42px);
-  font-weight: 700;
-  font-variant-numeric: tabular-nums lining-nums;
-  letter-spacing: -0.01em;
-  line-height: 1.05;
+.home-provinces-more {
+  margin-top: 16px;
 }
-/* "ha" set at 42px is a third as wide as the number it qualifies and reads as
-   part of it. At reading size on the same baseline it stays legible and stops
-   competing, which is the whole of what the unit has to do. */
-.province-list-unit {
-  font-size: 17px;
-  font-weight: 400;
-  letter-spacing: 0;
-  color: var(--muted);
+/* Shorter gaps than a long page's sections: these are four short blocks. */
+.page-wrap > .home-provinces,
+.page-wrap > .home-doors,
+.page-wrap > .home-more,
+.page-wrap > .home-caveat {
+  padding-block: 32px;
 }
-/* The track is the page's own ground inside a hairline, not a filled panel:
-   what the bar has not reached has to read as nothing measured rather than as
-   a second, paler quantity. The outline is what the empty end of a bar is made
-   of, and it is why a full bar and an empty one cannot be mistaken for each
-   other on either ground. */
-.province-list-track {
-  display: flex;
-  height: 12px;
-  background: var(--ground);
-  border: 1px solid var(--rule);
+.page-wrap > .home-more {
+  border-bottom: 0;
+  padding-bottom: 0;
 }
-/* The accent, which swaps from the deep moss to the light one under the dark
-   palette so the fill keeps its weight on a dark ground. It was
-   --edge-derived, a clay brown that belongs to the derived-estimate mark: a
-   satellite observation was being drawn in the colour of a different class of
-   evidence, which is the one thing a mark system cannot afford. */
-.province-list-fill {
-  display: block;
-  height: 100%;
-  background: var(--accent);
+.home-doors .record-grid {
+  margin-top: 0;
 }
-/* Unknown reads as a dashed edge, never as a hatch: the 45 degree hatch is
-   already spoken for by observation with no matching record. A province with
-   a gap too small to draw still keeps its 1px dashed edge, for the same
-   reason the share never prints as 0%. */
-.province-list-gap {
-  display: block;
-  height: 100%;
-  min-width: 1px;
-  background: var(--ground);
-  border-left: 1px dashed var(--edge-unknown);
-}
-/* The caveat and the value it rests on, on one line. The recorded value used
-   to sit in a bordered band across the full width of the row, which put a rule
-   between a sentence and the number that sentence is about. */
-.province-list-base {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 10px 40px;
-}
-.province-list-note {
-  flex: 1 1 380px;
-  margin: 0;
+.home-more > p,
+.home-caveat > p {
   max-width: var(--measure);
+}
+.home-caveat > p {
   color: var(--ink-2);
-  line-height: 1.55;
-}
-.province-list-note strong {
-  font-weight: 700;
-  font-variant-numeric: tabular-nums lining-nums;
-  color: var(--ink);
-}
-.province-list-foot {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 4px;
-  margin: 0;
-  font-family: var(--ui);
-  font-size: var(--text-compact);
-  color: var(--muted);
-  text-align: right;
-}
-.province-list-foot span {
-  font-variant-numeric: tabular-nums lining-nums;
-}
-@media (max-width: 700px) {
-  .province-list-head {
-    align-items: stretch;
-    flex-direction: column;
-  }
-  .measure-toggle-option {
-    flex: 1 1 0;
-  }
-  /* Once the base wraps there is no right-hand column to align to, and a
-     right-aligned block under a left-aligned paragraph reads as a mistake. */
-  .province-list-foot {
-    align-items: flex-start;
-    text-align: start;
-  }
 }
 
 /* The four marks and their definitions, said once. The mark is a shape, not
@@ -5469,12 +5781,6 @@ dd > a:only-child {
   border: 2px solid var(--edge-unknown);
   border-radius: 50%;
 }
-.evidence-band-lead {
-  margin: 0;
-  max-width: var(--measure);
-  color: var(--ink-2);
-  font-size: 19px;
-}
 @media (max-width: 900px) {
   .evidence-marks { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
@@ -5487,8 +5793,9 @@ dd > a:only-child {
 
    One bordered unit, because the figure and the things that bound it are one
    claim. The border is the point: a reader who screenshots the number gets the
-   denominator, the unmapped share and the refusal of the annual sum in the
-   same rectangle, and cannot take a total from a product that publishes none.
+   denominator and the unmapped share in the same rectangle. Since 2026-11-10
+   (A2) it holds one measure, the forest lost at least once; the yearly sum is
+   stated only in Explore's figures panel.
 
    The figure is set in tabular figures at display size and the heading is
    deliberately smaller than it. The heading names the measure; the number is
@@ -5526,31 +5833,17 @@ dd > a:only-child {
   color: var(--ink-2);
   text-wrap: balance;
 }
-/* The two measures side by side, as equals. */
-.cumulative-pair {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 20px 32px;
-  margin-top: 12px;
-}
-.cumulative-pair .cumulative-figure {
-  margin-top: 4px;
-  font-size: clamp(30px, 3.6vw, 46px);
-}
 .cumulative-label {
-  margin: 0;
+  margin: 16px 0 0;
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--muted);
 }
-@media (max-width: 760px) {
-  .cumulative-pair { grid-template-columns: minmax(0, 1fr); }
-}
 /* The minimum, said inside the unit beside the number it bounds. It was the
    smallest text in the block (16px against claims of 17px to 20px) although it
-   is the sentence that governs both figures, so since 2026-10-28 it is set at
+   is the sentence that governs the figure, so since 2026-10-28 it is set at
    the claims' size, with a larger lead and a rule above it. */
 .cumulative-minimum {
   display: flex;
@@ -5568,40 +5861,6 @@ dd > a:only-child {
 }
 .cumulative-minimum .mark-glyph {
   margin-top: 8px;
-}
-/* Where the two measures stand side by side, the minimum is the first line under
-   the two figures, ruled above and below, and each figure's basis follows in its
-   own column. Only the drawing moves: the markup keeps each figure with its
-   basis, then the minimum, so a screen reader and a copied block read every
-   figure next to its denominator. The two wrappers dissolve into this grid; they
-   are plain divs, with no role to lose. Under 761px the column order is the
-   markup order, which keeps each figure with its basis on a phone. */
-@media (min-width: 761px) {
-  .cumulative-headline {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: 32px;
-  }
-  .cumulative-headline > .eyebrow,
-  .cumulative-headline > h2,
-  .cumulative-minimum {
-    grid-column: 1 / -1;
-  }
-  .cumulative-pair,
-  .cumulative-measure {
-    display: contents;
-  }
-  .cumulative-measure:first-child > * { grid-column: 1; }
-  .cumulative-measure:last-child > * { grid-column: 2; }
-  .cumulative-label { grid-row: 3; margin-top: 16px; }
-  .cumulative-pair .cumulative-figure { grid-row: 4; }
-  .cumulative-minimum {
-    grid-row: 5;
-    margin-top: 14px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid var(--rule-strong);
-  }
-  .cumulative-claim { grid-row: 6; margin-top: 14px; }
 }
 /* Three bases as three short rows: a label and one line each. They are peers,
    so they share one column rather than one being set as a footnote. */
@@ -5650,47 +5909,6 @@ dd > a:only-child {
 */
 @media (max-width: 420px) {
   .cumulative-figure { font-size: clamp(30px, 9.4vw, 40px); }
-}
-
-/* What the record does not claim, as a list of claims rather than one
-   sentence carrying five of them in a row. */
-.limits-block {
-  padding: 28px 32px;
-  background: var(--sand);
-}
-.limits-block > h2 {
-  margin: 0;
-}
-.limits-body > p {
-  max-width: var(--measure);
-  color: var(--ink-2);
-}
-.limits-body > p:last-child {
-  margin-bottom: 0;
-}
-.limits-list {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 11px 40px;
-  margin: 0 0 24px;
-  padding: 0;
-  list-style: none;
-}
-.limits-list li {
-  padding-left: 15px;
-  border-left: 1px solid var(--rule-strong);
-  line-height: 1.45;
-}
-@media (min-width: 900px) {
-  .limits-block {
-    display: grid;
-    grid-template-columns: 230px minmax(0, 1fr);
-    gap: 48px;
-    align-items: start;
-  }
-}
-@media (max-width: 620px) {
-  .limits-list { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* The search control the homepage grew when Search left the global nav. */
@@ -5924,6 +6142,7 @@ dd > a:only-child {
 .place-hero > .place-identity { position: static; top: auto; z-index: auto; background: none; color: inherit; padding: 36px 0; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
 .place-hero > .place-identity h1 { margin: 0; max-width: 20ch; text-wrap: pretty; }
 .place-hero > .place-identity .eyebrow { color: var(--hero-eyebrow); margin: 0; }
+.place-hero-sentence { margin: 0; max-width: 60ch; color: var(--hero-ink); font-size: 1.15rem; line-height: 1.5; text-wrap: pretty; }
 .place-hero-lead { margin: 0; max-width: 52ch; color: var(--hero-ink-2); text-wrap: pretty; }
 .place-hero-alias { margin: 0; color: var(--hero-eyebrow); font-size: 0.85rem; }
 
@@ -6000,12 +6219,24 @@ dd > a:only-child {
 .place-share-status:empty { display: none; }
 /* A real place's page: the minimum note, its limitations and the places it links to. */
 .place-stat-minimum { margin: 0; color: var(--muted); font-size: 0.85rem; }
+.place-stat-context { margin: 8px 0 0; color: var(--muted); font-size: 0.85rem; line-height: 1.45; }
 .place-limitations { margin: 0; padding-inline-start: 1.1rem; display: flex; flex-direction: column; gap: 6px; }
 .place-observed h3 { margin: 6px 0 0; font-size: 0.95rem; }
 .place-related { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr)); gap: 8px 20px; }
 .place-related li { display: flex; flex-direction: column; min-width: 0; }
 .place-related-share { color: var(--muted); font-size: 0.85rem; }
+.place-related-figure { color: var(--ink); font-size: 0.85rem; line-height: 1.4; }
 .place-related-links { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 8px 0 0; }
+/* The small map of a place: hidden until script starts it, and again if its tiles fail, so the link is all a no-script or failed page shows. */
+.place-map-section { display: flex; flex-direction: column; gap: 8px; }
+.place-map { margin: 0; display: flex; flex-direction: column; gap: 8px; max-width: 960px; }
+.place-map-frame { aspect-ratio: 16 / 9; width: 100%; max-height: 420px; border: 1px solid var(--rule-strong); background: var(--map-ground); }
+.place-map[data-state="static"] .place-map-frame, .place-map[data-state="failed"] .place-map-frame { display: none; }
+.place-map-caption { display: flex; flex-direction: column; gap: 4px; font-size: 0.9rem; }
+.place-map-caption small { color: var(--muted); }
+.place-map-key { display: inline-flex; align-items: center; gap: 6px; }
+.place-map-swatch { display: inline-block; width: 14px; height: 14px; border: 1px solid var(--ink); }
+@media print { .place-map-frame { display: none; } }
 /* "Embed this figure" on a place page: the iframe code in a read-only box, and its terms. */
 .place-embed { display: flex; flex-direction: column; gap: 8px; }
 .place-embed .eyebrow, .place-embed p { margin: 0; }
@@ -6013,6 +6244,56 @@ dd > a:only-child {
 .place-embed-code { width: 100%; min-width: 0; resize: vertical; padding: 8px; border: 1px solid var(--muted); border-radius: 4px; background: var(--surface-2); color: var(--ink); font: 0.8rem/1.4 var(--mono); overflow-wrap: anywhere; }
 .place-embed-terms { color: var(--muted); font-size: 0.85rem; }
 .place-embed-links { display: flex; flex-wrap: wrap; gap: 8px 20px; }
+/* A real place's page: detected loss year by year (components/places/PlaceYearlyChart.tsx). */
+.place-yearly { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.place-yearly > .eyebrow, .place-yearly p { margin: 0; }
+.place-yearly-note, .place-yearly-causes { max-width: 80ch; color: var(--ink-2); }
+.place-yearly-figure { margin: 0; display: flex; flex-direction: column; gap: 8px; }
+/* Narrower than this the year labels get too small to read, so the chart scrolls. */
+.place-yearly-scroll { overflow-x: auto; max-width: 960px; }
+.place-yearly-scroll:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.place-yearly-chart { display: block; width: 100%; min-width: 600px; height: auto; }
+.place-yearly-bar--figure { fill: var(--accent-fill); }
+.place-yearly-bar--minimum { fill: url(#place-yearly-hatch); stroke: var(--accent-fill); stroke-width: 1; }
+.place-yearly-hatch-ground { fill: var(--surface); }
+.place-yearly-hatch-line { stroke: var(--accent-fill); stroke-width: 3; }
+.place-yearly-gap { fill: none; stroke: var(--edge-unknown); stroke-width: 1; stroke-dasharray: 3 3; }
+.place-yearly-axis { stroke: var(--rule-strong); stroke-width: 1; }
+.place-yearly-grid { stroke: var(--rule); stroke-width: 1; }
+.place-yearly-tick { fill: var(--ink-2); font-family: var(--ui); font-size: 12px; font-variant-numeric: tabular-nums lining-nums; }
+.place-yearly-key { display: flex; flex-direction: column; gap: 6px; color: var(--muted); font-size: 0.85rem; max-width: 80ch; }
+.place-yearly-swatch { display: inline-block; width: 12px; height: 12px; vertical-align: -1px; margin-inline-end: 4px; }
+.place-yearly-swatch--minimum { border: 1px solid var(--accent-fill); background: repeating-linear-gradient(45deg, var(--accent-fill) 0 2px, var(--surface) 2px 5px); }
+.place-yearly-swatch--gap { border: 1px dashed var(--edge-unknown); }
+.place-yearly-table > summary { cursor: pointer; font-weight: 700; }
+.place-yearly-table > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.place-yearly-table .table-scroll { max-width: 640px; }
+.place-yearly-table table { --table-min: 0; margin-top: 8px; }
+.place-yearly-table td { font-variant-numeric: tabular-nums; }
+.place-yearly-reason { color: var(--muted); }
+.place-yearly-row--unknown td { color: var(--muted); }
+@media print {
+  .place-yearly-table::details-content { content-visibility: visible; display: contents; }
+}
+/* A real place's page: sources, limits, citation and embed code as closed
+   sections at the foot, full width. */
+.place-more { display: flex; flex-direction: column; gap: 10px; padding-top: 8px; border-top: 1px solid var(--rule); }
+.place-more > .eyebrow { margin: 0 0 4px; }
+.place-more-item { border: 1px solid var(--rule); border-radius: var(--radius); background: var(--surface); padding: 0 18px; }
+.place-more-item[open] { padding-bottom: 18px; display: flex; flex-direction: column; gap: 12px; }
+.place-more-item--caution { border-color: var(--clay); background: var(--tint-derived); }
+.place-more-item--caution > summary, .place-more-item--caution a { color: var(--clay-ink); }
+.place-more-cite p { margin: 0; overflow-wrap: anywhere; }
+.place-more-cite .place-share { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; }
+.place-more-item > summary { cursor: pointer; padding: 14px 0; list-style-position: inside; }
+.place-more-item > summary h3 { display: inline; margin: 0; font-size: 1rem; }
+.place-more-item > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.place-more-item > :not(summary), .place-more-item .provenance, .place-more-item .place-embed-code { max-width: 80ch; }
+@media print {
+  /* On paper every section prints open, so no limitation is left behind a click. */
+  .place-more-item::details-content { content-visibility: visible; display: contents; }
+  .place-more-item > summary { list-style: none; }
+}
 
 @media (max-width: 1000px) {
   .place-hero { grid-template-columns: minmax(0, 1fr); }
@@ -6031,31 +6312,13 @@ dd > a:only-child {
   .place-year-value { grid-column: 2; text-align: left; }
 }
 
-.recovery-answer-provinces {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
-  gap: 0.5rem 1.5rem;
-  padding: 0;
-  list-style: none;
-}
-.recovery-answer-provinces li {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  border-bottom: 1px solid var(--rule);
-  padding-bottom: 0.25rem;
-}
 .explore-reading .recovery-headline p {
   font-size: var(--text-small);
   font-weight: 400;
   line-height: 1.45;
 }
-.recovery-headline p + p,
-.recovery-answer > p {
+.recovery-headline p + p {
   margin-top: 0.5rem;
-}
-.recovery-answer .eyebrow {
-  margin-top: 1.25rem;
 }
 /* ==========================================================================
    Riding print sheet (components/places/RidingSheet.tsx).

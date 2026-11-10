@@ -93,85 +93,43 @@ test("the entry gate has no figures or product navigation and tolerates the abse
   }
 });
 
-test("landing figures show detected loss alone, on a scale of detected loss", async () => {
+test("landing figures state each province's minimum with its share and unmapped reason", async () => {
   /*
-   * The card used to carry two measures side by side on one shared hectare
-   * scale, detected loss and unmapped area, which is what forced the page to
-   * print that the unmapped bar was not a measurement of forest loss. A
-   * disclaimer that exists to undo a drawing means the drawing is wrong, so the
-   * second bar is gone and the disclaimer with it.
-   *
-   * The cards are a ranked list now, and the unmapped share is a measure of
-   * its own behind a toggle rather than a clause inside the loss caveat. The
-   * assertions move with it at the same strictness: the server renders the
-   * loss measure, one value and one bar per row, scaled against the largest
-   * detected loss of the four, ranked by that same figure, with the unmapped
-   * share still in the sentence that says why the figure is a floor.
-   *
-   * The scale sentence stays gone. Each bar draws what the figure beside it
-   * says, so there is nothing for a sentence to undo.
+   * Until 2026-11-10 the provinces were a ranked list of tall rows with a bar
+   * each, a toggle to a second measure, and the evidence legend above them.
+   * The home page was cut to about two screens (audit items A1, A3 and A4):
+   * the legend is on "How figures are marked", the gap notes are on "What the
+   * record cannot see", and each province is one short entry. What has to
+   * survive the cut is held here at the same strictness: four entries ranked
+   * by detected loss, each figure exactly as the record states it (rounding a
+   * minimum to the hectare could round it up), its share of the 1984 forest,
+   * the word that makes it a minimum, and the unmapped share with its reason
+   * linked to Methods.
    */
   const hectares = [18028529.19, 10823352.93, 9280647.27, 6842768.76];
-  const scale = Math.max(...hectares);
   for (const locale of ["en", "fr"]) {
     const html = await (await render(`/${locale}`)).text();
-    const rows = [...html.matchAll(/<li class="province-list-row"[^>]*>([\s\S]*?)<\/li>/g)].map((match) => match[1]);
+    const rows = [...html.matchAll(/<li class="home-province">([\s\S]*?)<\/li>/g)].map((match) => match[1]);
     assert.equal(rows.length, 4);
     // The headline states its own minimum, so the home page carries no separate caveat note.
     assert.doesNotMatch(html, /class="coverage-(note|statement)"/);
-    assert.ok(html.indexOf('class="evidence-marks"') < html.indexOf('class="province-list-row"'));
+    // Removed from home on 2026-11-10; each has a page of its own.
+    assert.doesNotMatch(html, /class="evidence-marks"|class="province-list-row"|id="cities-most-lost"|class="limits-list"/);
 
-    // Whole hectares on the headline. Two decimal places on a satellite-derived
-    // floor claim centimetres no source can back.
-    const whole = new Intl.NumberFormat(`${locale}-CA`, { maximumFractionDigits: 0 });
-    // The unit is its own span now, so the figure and the word can share a
-    // baseline at different sizes. What the element renders is unchanged, and
-    // that is what this still asserts.
-    //
-    // The two spans are named rather than stripped with a tag regex. Naming
-    // them pins the structure as well as the text, and the separator is a
-    // literal space in the pattern rather than a whitespace class, because the
-    // French group separator is itself a space character: a pattern loose
-    // enough to skip over it would be comparing a different string.
-    const figure = /<p class="province-list-figure"><span class="province-list-value">([^<]*)<\/span> <span class="province-list-unit">([^<]*)<\/span><\/p>/g;
-    const values = rows.flatMap((row) =>
-      [...row.matchAll(figure)].map(([, value, unit]) => `${value} ${unit}`),
-    );
-    assert.deepEqual(values, hectares.map((value) => `${whole.format(value)} ha`));
-
-    // One bar per row, and the scale is detected loss. The unmapped hectares
-    // are deliberately not in this maximum: they never share the scale again.
-    const widths = rows.flatMap((row) => [...row.matchAll(/class="province-list-fill" style="width:([\d.]+)%"/g)].map((match) => Number(match[1])));
-    assert.equal(widths.length, 4);
-    widths.forEach((width, index) => assert.ok(Math.abs(width - (hectares[index] / scale) * 100) < 1e-9));
-    assert.equal(Math.max(...widths), 100);
-
-    // The unmapped measure is a measure, not a second bar on this one. Its
-    // own bar reaches the page only once the reader asks for it.
-    assert.doesNotMatch(html, /province-list-gap/);
-    assert.doesNotMatch(html, /hectare scale|échelle en hectares/);
-
-    // The exact value stays at the foot of the row, which is what makes the
-    // rounded headline cost nothing.
-    const exact = new Intl.NumberFormat(`${locale}-CA`, { maximumFractionDigits: 2 });
-    const unit = locale === "en" ? "ha detected" : "ha détectés";
-    const recorded = rows.flatMap((row) => [...row.matchAll(/class="province-list-foot"><span>([^<]+)</g)].map((match) => match[1]));
-    assert.deepEqual(recorded, hectares.map((value) => `${exact.format(value)} ${unit}`));
+    const exact = new Intl.NumberFormat(`${locale}-CA`, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const lost = locale === "en" ? "ha lost at least once" : "ha perdus au moins une fois";
+    const figures = rows.flatMap((row) => [...row.matchAll(/<strong class="home-province-name">[^<]+<\/strong> <span>([^<]+)<\/span>/g)].map((match) => match[1]));
+    assert.deepEqual(figures, hectares.map((value) => `${exact.format(value)} ${lost}`));
 
     for (const row of rows) {
-      // The span rides on the figure now, not on a masthead badge that claimed
-      // 1984 to 2022 over figures covering three years.
-      assert.match(row, /class="province-list-span">\d{4}\u2013\d{4}</u);
-      assert.match(row, /of the forest mapped in 1984|de la forêt cartographiée en 1984/);
-      assert.match(row, /<strong>[^<]*%<\/strong>/);
-      assert.match(row, /counts as unknown, not zero|compte comme inconnue, pas comme nulle/);
+      assert.match(row, /of its forest mapped in 1984|de sa forêt cartographiée en 1984/);
+      assert.match(row, /A minimum\.|Un minimum\./);
+      assert.match(row, /unknown, not zero|inconnues, pas nulles/);
       // The unknown-area reason links to the Methods section that explains it.
       assert.match(row, /href="\/en\/methods#coverage-gap"|href="\/fr\/methodes#coverage-gap"/);
-      assert.match(row, /href="\/en\/data"|href="\/fr\/donnees"/);
     }
-    // British Columbia leads the loss ranking and carries the qualifier that
-    // stops its gap reading as unmeasured forest. It rides on this measure
-    // too, because a claim behind a control is a claim most readers never see.
+    // British Columbia carries the qualifier that stops its gap reading as
+    // unmeasured forest, and its tiny gap is said as under 0.01%, not 0%.
     const bcRow = rows.find((row) => /British Columbia|Colombie-Britannique/.test(row));
     assert.ok(bcRow);
     assert.match(bcRow, /&lt;0[.,]01/);
@@ -203,7 +161,7 @@ test("emits application security headers with the map delivery allowances", asyn
 });
 
 test("Explore sends its map legend and the tile connection in the first HTML", async () => {
-  for (const [pathname, heading] of [["/en/explore", "Detected forest loss, 2021–2022"], ["/fr/explorer", "Perte forestière détectée, 2021–2022"]]) {
+  for (const [pathname, heading] of [["/en/explore", "Detected forest loss, 1984–2022"], ["/fr/explorer", "Perte forestière détectée, 1984–2022"]]) {
     const html = await (await render(pathname)).text();
     const head = /<head>([\s\S]*?)<\/head>/.exec(html)?.[1] ?? "";
     // Opened while the page loads, so the first archive range does not wait for a handshake.
@@ -225,8 +183,12 @@ test("Explore sends its map legend and the tile connection in the first HTML", a
  */
 test("Explore serves its span-honest rankings link, Play name, map notice and phone readout", async () => {
   const cases = [
-    ["/en/explore", "Ridings with the largest share of forest lost over the whole record, 1984–2022, not the years you chose (2021–2022)", 'aria-label="Play year by year from 1984">Play<', "2021–2022 · 1,352,468.43 ha detected as lost, a minimum"],
-    ["/fr/explorer", "Circonscriptions ayant perdu la plus grande part de leur forêt sur l’ensemble du registre, 1984–2022, et non pendant les années choisies (2021–2022)", 'aria-label="Lecture année par année depuis 1984">Lecture<', "2021–2022 · "],
+    // With no years in the address Explore opens on the whole record, so the ranking's span is the span on display.
+    ["/en/explore", "Ridings with the largest share of forest lost, 1984–2022<", 'aria-label="Play year by year from 1984">Play<', "1984–2022 · "],
+    ["/fr/explorer", "Circonscriptions ayant perdu la plus grande part de leur forêt, 1984–2022<", 'aria-label="Lecture année par année depuis 1984">Lecture<', "1984–2022 · "],
+    // A last year alone is still the one-year interval ending there, as it always was.
+    ["/en/explore?year=2022", "Ridings with the largest share of forest lost over the whole record, 1984–2022, not the years you chose (2021–2022)", 'aria-label="Play year by year from 1984">Play<', "2021–2022 · 1,352,468.43 ha detected as lost, a minimum"],
+    ["/fr/explorer?year=2022", "Circonscriptions ayant perdu la plus grande part de leur forêt sur l’ensemble du registre, 1984–2022, et non pendant les années choisies (2021–2022)", 'aria-label="Lecture année par année depuis 1984">Lecture<', "2021–2022 · "],
     ["/en/explore?from=1990&year=2000", "not the years you chose (1990–2000)", 'aria-label="Play year by year from 1990">Play<', "1990–2000 · "],
     ["/en/explore?from=1984&year=2022", "Ridings with the largest share of forest lost, 1984–2022<", 'aria-label="Play year by year from 1984">Play<', "1984–2022 · "],
   ];
@@ -257,10 +219,18 @@ test("renders both localized public records with neutral non-claims", async () =
   assert.match(french, /<html lang="fr">/);
   assert.doesNotMatch(french, /<html lang="en">/);
   assert.match(english, /What happened to the forest here\?/);
-  assert.match(english, /How much sellable timber there is/);
   assert.match(french, /Qu’est-il arrivé à la forêt ici\u202F\?/);
-  assert.match(french, /La quantité de bois vendable/);
-  assert.doesNotMatch(`${english}\n${french}`, /the truth|real-time|complete record/i);
+  // Since 2026-11-10 (A9) the list of non-claims is at the end of Methods,
+  // and the home page links straight to it.
+  assert.match(english, /href="\/en\/methods#limits"/);
+  assert.match(french, /href="\/fr\/methodes#limits"/);
+  const [englishMethods, frenchMethods] = await Promise.all([
+    render("/en/methods").then((response) => response.text()),
+    render("/fr/methodes").then((response) => response.text()),
+  ]);
+  assert.match(englishMethods, /<section class="governance-section" id="limits">[\s\S]*How much sellable timber there is/);
+  assert.match(frenchMethods, /<section class="governance-section" id="limits">[\s\S]*La quantité de bois vendable/);
+  assert.doesNotMatch(`${english}\n${french}\n${englishMethods}\n${frenchMethods}`, /the truth|real-time|complete record/i);
 });
 
 test("renders the Unknown Atlas in both languages with its four sections", async () => {
@@ -344,12 +314,14 @@ test("renders a real community page in each language from its checked-in record"
   assert.match(french, /href="\/fr\/lieux\/1984-2022-v1\/er-2021\/\d{4}"/);
 });
 
-test("a federal and a provincial riding each serve a one-page print sheet in both languages, and a community does not", async () => {
+test("a riding, a community and an economic region each serve a one-page print sheet in both languages", async () => {
   const sheets = [
     { pathname: "/en/places/1984-2022-v1/federal-2023/24002/print", lang: "en", button: "Print or save as PDF", measure: "Detected loss as a share of mapped forest" },
     { pathname: "/fr/lieux/1984-2022-v1/federal-2023/24002/print", lang: "fr", button: "Imprimer ou enregistrer en PDF", measure: "Perte détectée en part de la forêt cartographiée" },
     { pathname: "/en/places/1984-2022-v1/bc-2023/258/print", lang: "en", button: "Print or save as PDF", measure: "Detected loss as a share of mapped forest" },
     { pathname: "/fr/lieux/1984-2022-v1/bc-2023/258/print", lang: "fr", button: "Imprimer ou enregistrer en PDF", measure: "Perte détectée en part de la forêt cartographiée" },
+    { pathname: "/en/places/1984-2022-v1/csd-2021/5924034/print", lang: "en", button: "Print or save as PDF", measure: "Detected loss as a share of mapped forest" },
+    { pathname: "/fr/lieux/1984-2022-v1/er-2021/5910/print", lang: "fr", button: "Imprimer ou enregistrer en PDF", measure: "Perte détectée en part de la forêt cartographiée" },
   ];
   for (const { pathname, lang, button, measure } of sheets) {
     const response = await render(pathname);
@@ -372,8 +344,7 @@ test("a federal and a provincial riding each serve a one-page print sheet in bot
     assert.doesNotMatch(html, /\b(rank|ranked|classement|rang)\b/i, pathname);
   }
   assert.match(await (await render("/en/places/1984-2022-v1/federal-2023/24002/print")).text(), /<h1>Abitibi—Témiscamingue<\/h1>/);
-  assert.equal((await render("/en/places/1984-2022-v1/csd-2021/5924034/print")).status, 404);
-  assert.equal((await render("/fr/lieux/1984-2022-v1/er-2021/5910/print")).status, 404);
+  assert.equal((await render("/en/places/1984-2022-v1/csd-2021/0000000/print")).status, 404);
   assert.equal((await render("/en/places/1984-2022-v1/federal-2023/00000/print")).status, 404);
 });
 
@@ -518,11 +489,11 @@ test("renders localized search results and the Explore table without browser Jav
   ]);
 
   assert.match(englishSearch, /<main\b[^>]*id="main"/);
-  assert.match(englishSearch, /<h2>Places<\/h2>/);
+  assert.match(englishSearch, /<h2>Search places by name<\/h2>/);
   assert.match(englishSearch, /Search provinces, ridings and communities\. Figures cover 1984 to 2022\./);
   assert.match(englishSearch, /British Columbia/);
   assert.match(frenchSearch, /<main\b[^>]*id="main"/);
-  assert.match(frenchSearch, /<h2>Lieux<\/h2>/);
+  assert.match(frenchSearch, /<h2>Rechercher un lieu par son nom<\/h2>/);
   assert.match(frenchSearch, /Recherchez une province, une circonscription ou une collectivité\. Les chiffres couvrent la période de 1984 à 2022\./);
   assert.match(frenchSearch, /Colombie-Britannique/);
 
@@ -554,16 +525,22 @@ test("renders localized search results and the Explore table without browser Jav
 });
 
 test("Compare serves a federal riding beside a provincial one, and an unknown riding as an empty side with a notice", async () => {
-  const [mixed, unknown] = await Promise.all([
+  const [mixed, mixedProvincial, unknown] = await Promise.all([
     render("/en/compare?left=federal-59001&right=provincial-BC-258").then((response) => response.text()),
+    render("/en/compare?left=federal-59001&right=provincial-BC-258&rank=provincial").then((response) => response.text()),
     render("/fr/comparer?left=inexistante&right=provincial-QC-137").then((response) => response.text()),
   ]);
   assert.match(mixed, /<option value="federal-59001" selected="">/);
   assert.match(mixed, /<option value="provincial-BC-258" selected="">Abbotsford-Mission<\/option>/);
   assert.match(mixed, /Provincial riding · British Columbia/);
-  assert.match(mixed, /<h2 id="rankings-BC-heading">Provincial ridings in British Columbia<\/h2>/);
-  assert.match(mixed, /53 of British Columbia’s 93 provincial ridings are ranked\./);
+  // The rankings are tabs since 2026-11-10: a mixed pair opens the federal one, and the
+  // provincial one is a tab away at the same address with rank=provincial.
+  assert.match(mixed, /<section class="comparison-rankings" id="rankings"/);
   assert.match(mixed, />Show all 280 federal ridings<\/a>/);
+  assert.doesNotMatch(mixed, /id="rankings-BC-heading"/);
+  assert.match(mixed, /href="\?[^"]*rank=provincial[^"]*#rankings"/);
+  assert.match(mixedProvincial, /<h2 id="rankings-BC-heading">Provincial ridings in British Columbia<\/h2>/);
+  assert.match(mixedProvincial, /53 of British Columbia’s 93 provincial ridings are ranked\./);
   assert.match(unknown, /role="status"/);
   assert.match(unknown, /Côté gauche\u202F: aucune circonscription ne porte l’identifiant «\u00A0inexistante\u00A0»\./);
   assert.match(unknown, /<h2>Aucune circonscription choisie<\/h2>/);
@@ -590,8 +567,8 @@ test("Explore and the chart builder name the values they ignore, in both languag
   const [en, fr, backwards, ok, chartEn, chartFr, chartOk] = await Promise.all(
     [englishExplore, frenchExplore, inverted, valid, englishChart, frenchChart, validChart].map((response) => response.text()),
   );
-  assert.match(en, /class="notice query-notice" role="note">The last year in this link, “abc”, is not a four-digit year\. The page shows the default years, 2021–2022, instead\./);
-  assert.match(fr, /La dernière année de ce lien, 1900, ne peut pas être utilisée\u202F: une dernière année doit se situer entre 1985 et 2022\. La page affiche donc les années par défaut, 2021–2022\./);
+  assert.match(en, /class="notice query-notice" role="note">The last year in this link, “abc”, is not a four-digit year\. The page shows the default years, 1984–2022, instead\./);
+  assert.match(fr, /La dernière année de ce lien, 1900, ne peut pas être utilisée\u202F: une dernière année doit se situer entre 1985 et 2022\. La page affiche donc les années par défaut, 1984–2022\./);
   assert.match(backwards, /The first year in this link, 2010, is not before its last year, 2002\./);
   assert.doesNotMatch(ok, /query-notice/);
   assert.match(chartEn, /The first year in this link, 2019, comes after its last year, 2010\. The chart shows the default years, 1985–2022, instead\./);

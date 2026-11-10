@@ -19,6 +19,11 @@ for (const route of routes) {
     await expect(page.locator(`.theme-option input[value="${theme}"]`)).toBeEnabled();
     await expect(page.locator(`.theme-option input[value="${theme}"]`)).toBeChecked();
     await page.evaluate(() => document.fonts.ready);
+    // Applying the stored theme moves the chosen option of the footer's theme switch over a
+    // 320 ms colour transition, and a browser does not advance a transition that is off screen,
+    // so axe could read a colour halfway between two states. The contrast to measure is the one
+    // a reader is left with: bring every running transition to its end first.
+    await page.evaluate(() => { for (const animation of document.getAnimations()) if (animation instanceof CSSTransition) animation.finish(); });
     const result = await new AxeBuilder({ page }).withTags(wcag).analyze();
     await info.attach("accessibility-evidence", {
       body: JSON.stringify({ status: result.violations.length ? "failed" : "passed", route, theme,

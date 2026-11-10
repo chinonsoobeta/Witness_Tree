@@ -26,7 +26,7 @@ Real Version 2.1 execution and readback are complete for all **21/21 outputs**: 
 
 The corrected annual province execution now measures the mapped-extent defect rather than relying on district samples. All four provinces have partial coverage: the unknown shares are 0.004464% in British Columbia, 24.021462% in Alberta, 9.030311% in Ontario and 15.049623% in Quebec. Public mapped-part figures are therefore labelled as minima. The exact local, nonproduction output pair and coverage rows are bound in [`data/phase2-annual-province-zonal-v2-receipt-2026-08-29.json`](../data/phase2-annual-province-zonal-v2-receipt-2026-08-29.json); this correction does not move a formal Phase 2 gate.
 
-The local federal riding comparison now uses the corrected 2021-2022 interval for all 343 districts under the 2023 Representation Order. Exactly 69 districts have complete mapped coverage; 57 of them meet the 500-hectare ranking floor and are rankable by detected-loss share, while 12 complete districts remain unranked below that floor. Another 91 retain partial coverage and 183 have no mapped coverage; those 274 keep total loss and share Unknown. The 205,143-byte generated comparison record has SHA-256 `84a5cf39868390bfacd9cfd7ac24045150f95c6527a7d34b58ca9d04313dc1c7` and binds the exact annual output, sidecar, mapped-extent verification and bilingual Elections Canada geometry.
+The local federal riding comparison now uses the corrected 2021-2022 interval for all 343 districts under the 2023 Representation Order. Exactly 69 districts have complete mapped coverage; 57 of them meet the 500-hectare ranking floor and are rankable by detected-loss share, while 12 complete districts remain unranked below that floor. Another 91 retain partial coverage and 183 have no mapped coverage; those 274 keep total loss and share Unknown. The 205,143-byte generated comparison record has SHA-256 `84a5cf39868390bfacd9cfd7ac24045150f95c6527a7d34b58ca9d04313dc1c7` and binds the exact annual output, sidecar, mapped-extent verification and bilingual Elections Canada geometry. On 2026-11-10 Compare stopped reading this 2021-2022 record and now reads the 1984 to 2022 riding figures for both levels (see "Site-wide fixes, 2026-11-10"). The record, its builder and its test stay checked in; no page reads it.
 
 The corrected district execution is also complete for the four provincial editions. The final 774-row map join contains 188 complete, 171 partial and 415 none-mapped districts. Every one of the 586 incomplete rows retains null total loss and share. On 2026-09-18 Alberta was re-sourced from the Government of Alberta's open-licence copy and Québec was re-read from Élections Québec's published bytes ([record](../data/provincial-electoral-sources-2026-09-18.json)); the grade counts did not change. The 517,524-byte checked-in record now has SHA-256 `a5adc6db951c5edde6515ef602443780067b2dbe717f5441e58f0f5414ddfc2b` (it was 517,447 bytes, `b0a3c6fb…`, before the re-source); its converter requires all five exact output/sidecar/marker sets before writing. Both localized Explore maps consume it through a runtime validator and expose only complete normalized shares and totals, while keeping known mapped-part loss separately labelled. These riding records remain local, non-admitted, non-released and nonproduction, and they do not satisfy the separate formal independent-comparison gate.
 
@@ -193,6 +193,12 @@ so there the centre comes from the map or the coordinate fields. The home page
 links to the circle as "What happened within 10 km of me?". The French strings
 are drafts awaiting the owner's review.
 
+On 2026-11-10 the circle map grew from 320 px to 60% of the viewport (380 to
+560 px), and the home link became "What happened within 10 km of a place you
+choose?", because the page has no "use my location" control: the site's
+permissions policy sends `geolocation=()` (`next.config.ts`), and changing it is
+the owner's decision.
+
 ### Phase 4 provincial matching run
 
 On 2026-09-26 the first Phase 4 matching run was computed for British Columbia and Québec: 11.1% of 100,731,284 detected changes match an official harvest, fire, insect or windthrow record (56% by area). An independent recount agrees exactly on four intervals. The owner admitted the run the same day ([admission](../data/phase4-provincial-matching-admission-2026-09-26.json)); it is published on the methods page in both languages ([publication](../data/phase4-provincial-matching-publication-2026-09-26.json)) and released as `phase4-provincial-matching-v1` ([release](../data/phase4-provincial-matching-release-2026-09-26.json)). The owner retired the outside provincial review checkpoint ([scope decision](PHASE_SCOPE_DECISION_2026-09-26.md)); no outside review took place. Phase 4 is 4/4. See [the run record](PHASE4_PROVINCIAL_MATCHING_RUN.md). A cross-tabulation of the same run shows what the provincial records add where the national rasters record no cause: in BC and Québec, 19% of that loss lies in changes matching a provincial harvest, fire, insect or windthrow record ([cross-tabulation](../data/phase4-provincial-cause-crosstab.json)).
@@ -262,6 +268,10 @@ template moved to `/en/components/example-places/<id>` and
 `/fr/composants/exemples-lieux/<id>` and stays noindex. These pages are not
 expert reviewed, not a formal release and not production eligible; the French
 strings are drafts awaiting bilingual review.
+
+On 2026-11-10 the place pages were rebuilt around the same records; see
+"Site-wide fixes, 2026-11-10" for the opening sentence, the yearly chart, the
+map, the context figures and the closed sections at the foot.
 ### Place share cards
 
 On 2026-10-29 every place page (feature plan item 1, plan section 9.3) gained a
@@ -366,6 +376,14 @@ The shared JavaScript gate went from 135,846 to 136,323 gzip bytes (limit
 page's sheet link are drafts awaiting bilingual review. The sheets are not
 expert reviewed, not a formal release and not production eligible.
 
+On 2026-11-10 the same sheet was extended to every community and economic
+region, so the sentence above that they return 404 is superseded: all 3,046
+places have a sheet in each language (6,092 static pages). The sheet names its
+own kind of place in the back link, the code label and the province chart's
+caveat, and carries every caveat listed above. `tests/rendered-html.test.mjs`
+serves a community and a region sheet; `tests/browser/riding-sheet.spec.ts`
+still prints riding sheets only.
+
 ### Embedded figures
 
 On 2026-10-29 feature plan item 3 (branch `feature/embeds`) gave each of the
@@ -457,7 +475,222 @@ headless Chromium; Firefox and Safari (including WebM support there) are
 unverified, and the size estimates are approximate. The French strings are
 Claude's drafts awaiting the owner's review. Because
 `components/explore/ExploreMapClient.tsx` changed, the deployed map render gate
-is stale until a redeploy and a fresh observation.
+is stale until a redeploy and a fresh observation. The 2026-11-10 site-wide fixes
+changed the map client again; the observation remains stale.
+
+### Site-wide fixes, 2026-11-10
+
+A review of the live site on 2026-11-10 produced a list of fixes, built by four
+delegated builders and audited before integration. Nothing here changes a
+measured figure, a source, a licence or a formal gate count. The French strings
+added are drafts awaiting the owner's review. None of it is expert reviewed, a
+formal release or production eligible.
+
+**Home.** The home page is about 2,000 px tall at desktop width (it was about
+7,800): the question and search, the 10 km link, the province bar, one headline
+figure (forest lost at least once, 1984 to 2022, with its share and its
+minimum), one short entry per province, three doors (the map, Compare's
+rankings, harvest and fire) and single lines for recovery, the Data page and
+the limits. The headline no longer prints yearly losses added together, which
+the harvest and fire page says the site never does; Explore's figures panel
+still states and explains that sum. The evidence-mark legend, the data cards,
+the two top-five lists and the "Read the record" cards left the home page; each
+lives on the page the home page now links to. The six non-claims the home page
+listed now end the Methods page (`#limits`).
+
+**Header, footer and small pages.** The colour-theme switch moved from the
+header to the footer. The footer no longer links to Account (accounts are not
+active; the page keeps its address). The wildfire page's panel is headed "This
+page has no live feed"; its five Phase 5 display fields are unchanged. Methods,
+"How figures are marked" and "What the record cannot see" link to each other in
+a "Reading aids" row. The Glossary page does not carry the row: it is rendered
+by `components/governance/GovernancePage.tsx`, which the Phase 0 and Phase 7
+records bind by digest. `app/globals.css` declares the six BC Sans faces again,
+from the same unmodified package files, with `font-display: swap`, so text
+shows in a fallback face while the fonts load; the single package import is
+unchanged.
+
+**BC harvest volume.** `/en/data/bc-harvest-volume` leads with a
+server-rendered line chart of the table's three volume columns, with gaps where
+a value is missing, and keeps all 114 rows in a closed `<details>` under it
+(open in print and without script). `/en/data/provincial-harvest-volume` is
+unchanged.
+
+**Place pages.** Each of the 6,092 pages opens with one sentence built from its
+own figures (a minimum says so and gives no share; an Unknown gives its reason
+and no number). Each has a year-by-year chart of detected loss for 1985 to
+2022, server rendered with a table: an Unknown year is a dashed gap, a partly
+mapped year a hatched minimum, and the years are never added up. Community
+charts read [`data/place-yearly-measurements.json`](../data/place-yearly-measurements.json),
+a re-export by `scripts/build-place-yearly-measurements.mjs` of the
+census-subdivision aggregate the whole-record figures came from; no count
+changed. Each page has a small map of its boundary over the loss patches
+(`components/places/PlaceMap.tsx`), loaded only when it nears the screen and
+replaced by a plain link without script or when tiles fail; it frames the place
+from [`data/place-extents.json`](../data/place-extents.json), built by
+`scripts/build-place-extents.mjs` from the seven boundary files the figures
+cite. The share card ends with the province's own share, and a community page
+gives its region's and ridings' own figures by their own rules. Sources,
+limits, the citation and the embed code sit in closed sections at the foot;
+the share-card download and the print sheet link are in plain view above them.
+
+**Compare.** Compare reads the 1984 to 2022 riding figures for federal and
+provincial ridings, the same release Explore and the place pages read, in
+place of the 2021-2022 federal record. All 343 federal ridings are still accounted
+for and the 500-hectare ranking floor is unchanged. One rule changed: a federal
+riding with less than 1% of its forest unmapped is now measured over its mapped
+forest, the owner's rule the provincial tables already applied; any other
+partly mapped riding still gets no share. On
+1984 to 2022, 42 of the 280 in-scope federal ridings are ranked, 225 are partly
+mapped and 13 are under the floor. The page opens with no pair chosen. Its
+rankings have three tabs chosen by `rank=federal|provincial|cities` at
+`#rankings`; the cities tab renders the ranking the home page used to carry,
+with its rules. The Phase 7 wording describes the ranked table as accepting
+ridings only; the cities tab is a separate component beside it, and whether
+that wording should change is the owner's call. Saying "Satellite observation"
+once per table instead of on every row was not done: it needs edits to
+`RankedRidingsTable.tsx` and `SideBySideComparison.tsx`, which the Phase 7
+record binds by digest.
+
+**Explore.** A link that names no years opens on the whole record, 1984 to
+2022 (it opened on 2021 to 2022); a link naming only `year` still means that
+one annual interval. The loss-share classes take their edges from the length of
+the span (six sets, for 1, 2 to 3, 4 to 7, 8 to 15, 16 to 25 and 26 to 38
+years), chosen from the checked-in region figures so no class holds more than
+about a third of the regions; the legend prints the edges in use, and a Play
+run holds the whole-record edges throughout. Under a span longer than a year
+the per-cell figures are headed as the last year alone, since nothing in the
+data adds them over a span. The address carries a chosen province
+(`province=bc|ab|on|qc`), and the headline then gives that province's figures,
+an Unknown shown as Unknown with its reason; the harvest and wildfire modes
+keep the four-province headline, and the browser's Back does not restore a
+province. The address carries the map position as `#map=<zoom>/<lat>/<lng>`,
+which place pages link to; it is written only while the reader has moved the
+map, so a copied link does not pin a camera fitted to one screen. On the map:
+a scroll passes over it unless two fingers or a modifier key are used (not in
+full screen); the map and its controls, Play included, can fill the screen,
+with an in-page enlarged view where full screen is refused; Show and Hide
+change an outline in place; each outline has a light casing; watersheds are a
+heavier dash and dot, with a key of sample lines; the patch zoom stays in the
+chosen province; the region shading fades to a quarter as the loss patches
+appear; dark theme has a dark map ground, and exported images keep the light
+one. The other provinces are drawn as one faint land tone from the released
+federal-riding archive (no new host; that archive is now read on every load).
+The three territorial ridings are left out of it because their polygons take in
+Arctic waters and Hudson Bay, so the territories are not drawn as land, and the
+still map has no land tone. The pinned readout is headed by the kind of
+boundary and its province, links to the place's page where one exists, sits
+under the map on frames up to 760 px wide, and says of a federal riding outside
+the four provinces that the record has no figures there. Play has a pace choice
+(slow by default under reduced motion), a last-year slider, and a control that
+returns to the reader's own years. Explore's rankings link opens Compare's
+federal ranking. Checked in headless Chromium only: no real touch device,
+iPhone Safari or screen reader. Time-lapse frames still use the one-year class
+edges and carry no class key. The basemap question (place names and water
+under the figures) was left for the owner.
+
+**Search.** Each part of the search page has its own heading, and the ridings
+tab says "Federal and provincial ridings" when it finds both. The riding
+finder still names all 343 federal ridings; one outside the four provinces
+links to Compare, which says it holds no figures for it.
+
+**Harvest, fire and regrowth for each place: measured, not published.**
+[`data/place-cause-recovery-measurements.json`](../data/place-cause-recovery-measurements.json)
+holds, for the four provinces and all 3,046 places, recorded harvest and fire
+cells by year, the cause recorded at each lost cell's latest loss, and whether
+it was treed again for five years, with Unknown and unmapped cells carried
+through. The method, inputs, run and checks are in
+[`docs/PLACE_CAUSE_RECOVERY_MEASUREMENTS.md`](PLACE_CAUSE_RECOVERY_MEASUREMENTS.md);
+`npm run check:place-cause-recovery-measurements` checks the record against the
+other checked-in records. The province rows reproduce the published province
+series and the v3 recovery figures exactly, economic regions add to their
+provinces, and community loss matches the whole-record file cell for cell.
+**Not admitted, not released: no page reads it.** Publishing any of it extends
+two owner decisions (`docs/HARVEST_FIRE_SERIES_DECISION.md` and
+`docs/VLCE2_FOREST_MASK_DECISION.md`) and needs the owner's written decision.
+Two things a reader of the record should know first: the v3 "lost" count
+includes cells not treed in 1984, so it is larger than the place pages' "lost
+at least once" (18.4% over the four provinces, 38.6% in Alberta); and the
+cause-of-latest-loss split has no owner admission at any level.
+
+**Gate records touched.** No status and no count changed (Phase 3 4/5, Phase 4
+4/4, Phase 7 12/14, Phase 8 8/16, Phase 9 0/4). Digests were refreshed, each with a dated
+sentence in the criterion's reason: Phase 4 for
+`components/transparency/MethodologyPage.tsx` (a reading-aid row, the moved
+list of limits, and Explore's opening span; the matching text and figures are
+unchanged); Phase 7 for `ExploreView.tsx`, `ExploreYearControl.tsx` and
+`tests/explore.test.tsx` under its three Explore criteria, where the
+time-control reason now records that the opening span is 1984 to 2022; Phase 8
+for `ExploreMapClient.tsx` and `tests/explore.test.tsx` under CDN and tile
+validation, and for `docs/OPERATIONS_HANDBOOK.md`; Phase 3 and Phase 8 for
+the bundle gate (below); Phase 9 for the Phase 8 record. The Phase 8 sentence says plainly that the map's style and layers
+changed this time and that the federal-riding archive is read on every load.
+**The deployed map render observation is stale for the map client until the
+Site is redeployed and observed again.** The new launch script joined the
+exit-code taxonomy (twenty-seven runners), the handbook's count followed, and
+the new checker is registered as suite-covered in `data/ci-check-coverage.json`
+because a CI step would change the checksum-bound workflow file.
+
+**The bundle gate changed, under the owner's 2026-10-28 sentence that the
+bundle limit can be raised as necessary; the owner can reverse either part.**
+Running CI's own checks on the combined branch showed the gate failing, not
+because the site grew (shared and Explore together measure 485,098 gzip bytes,
+against 491,687 on `main`) but because of how chunks are counted. Two changes
+in `scripts/check-budgets.mjs`, with the figures in `docs/PERFORMANCE.md`:
+(1) the map library, which a place page's small map now fetches once it
+scrolls into view, counts against the Explore limit wherever it is fetched,
+where the old rule would have put it on every page's shared budget; (2) the
+Explore limit is 416 KiB where the plan says 400 (measured 417,972; shared
+measured 67,126 against the unchanged 136 KiB). A reader who scrolls to a
+place page's map does fetch the map library (about 296,000 gzip bytes) on top
+of that page's own JavaScript. Phase 3 (`budgets-pass-in-ci`) and Phase 8
+(`load-testing`, for `docs/PERFORMANCE.md`) carry the dated sentences. On the
+way, client code stopped importing through the `lib/explore` barrel, which had
+been shipping the riding measurements to the browser unused. The same run
+found three smaller gate failures, now fixed with no change a reader sees: the
+outline key's sample lines have a title, and the map's land tone, dark ground
+and casing colour live in `lib/explore/map-ground.ts` and two palette tokens
+(`--map-ground-dark`, `--map-casing`), not in a component file or a rule.
+
+**One archive, one source.** The final browser run caught a defect the audit
+had missed. The new land tone (D7) reads the federal-riding archive, and the
+federal-riding outlines opened the same archive as a second source. Two
+sources ask for the same byte ranges at the same moment, and Chromium then
+fails one of the two requests on some loads: with the riding outlines on, the
+interactive map fell back to the still map on 11 of 20 headless loads. The
+economic-region outlines and the region shading had the same fault, in code
+that is on `main` too (3 of 16 loads, measured on this branch). Each of those outlines now draws from the source already on
+the map, and the region source is always in the style, so its header is read
+on every load of the interactive map. Measured after the fix: 56 of 56 loads
+reached the interactive map, across every outline and three modes.
+`tests/explore-boundary-toggle.test.tsx` pins it. It was measured in headless
+Chromium against the local build, not on the deployed site.
+
+**CI's security scans.** The first CI run on the pull request failed two scans
+that cannot be run locally. CodeQL reported two new tests: one escaped only the
+first `<` of a figure, and one built a regular expression from a figure while
+escaping only its full stops. Both were fixed (`replaceAll`, and a plain
+`includes`); no finding was accepted. The secret scan reads the whole history
+and reported two diagnostic field names in
+`scripts/build-place-cause-recovery-measurements.mjs`, compared against a loop
+variable called `key`. They are cell-count names, not credentials. History is
+not rewritten here, so `.gitleaks.toml` lists those two names as exact,
+anchored literals for the one heuristic rule, in the form its other entries
+use. That is a change to the scanner's configuration and is the owner's to
+reverse.
+
+**Build.** The combined build on 2026-11-10 took 93 s and generated 24,523
+static pages (it was 13,761 items): `.next` is 3.3 GB in 99,292 files (it was
+1.85 GB in 59,050), with a 1.1 GB peak. Most of the growth is the print sheet
+for every community and region, in two languages. Whether the host builds and
+serves that many pages was to be confirmed on the preview deployment before
+merging; rendering the community and region sheets on demand is the fallback.
+
+**Browser tests.** `tests/browser/accessibility.spec.ts` now ends running CSS
+transitions before the axe scan: with the theme switch in the footer, the
+320 ms colour change on its chosen option does not advance off screen, and the
+scan read a colour between two states. The settled colours pass. The riding
+sheet spec still covers ridings only, not the new community and region sheets.
 
 ## Other formal phase counts
 

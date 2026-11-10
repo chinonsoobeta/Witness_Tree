@@ -15,6 +15,16 @@ import { placeDetail, resultMeta, ridingCompareHref, ridingFigure, ridingFigureI
 import { placeFigure } from "@/lib/search/place-figures";
 import { communityPagePath, ridingPagePath } from "@/lib/place-pages/paths";
 
+/*
+ * Every federal riding in Canada, so a riding outside the four provinces is
+ * still found by name. Its link opens Compare, which names it and says it holds
+ * no figures for it; nothing is shown here as a measurement.
+ */
+const ALL_FEDERAL_RIDINGS = [
+  ...federalRidingComparison.places,
+  ...federalRidingComparison.outside.map((riding) => ({ ...riding, placeType: "federal-riding" as const })),
+];
+
 export type SearchScope = "places" | "districts";
 
 const copy = {
@@ -22,7 +32,10 @@ const copy = {
     title: "Search",
     scope: "Search scope",
     places: "Places",
-    districts: "Federal ridings",
+    placesHeading: "Search places by name",
+    placesField: "Province, riding or community",
+    // The address finder names provincial ridings as well; without it, only the federal finder is offered.
+    districts: { both: "Federal and provincial ridings", federal: "Federal ridings" },
     notice: "Search provinces, ridings and communities. Figures cover 1984 to 2022.",
     shareNote: "Each riding’s share is how much of the place lies inside it. The riding figures are for the whole riding.",
     lost: "of the mapped forest detected as lost",
@@ -33,7 +46,10 @@ const copy = {
     title: "Recherche",
     scope: "Portée de la recherche",
     places: "Lieux",
-    districts: "Circonscriptions fédérales",
+    // Draft French for the owner's review (2026-11-10).
+    placesHeading: "Rechercher un lieu par son nom",
+    placesField: "Province, circonscription ou collectivité",
+    districts: { both: "Circonscriptions fédérales et provinciales", federal: "Circonscriptions fédérales" },
     notice: "Recherchez une province, une circonscription ou une collectivité. Les chiffres couvrent la période de 1984 à 2022.",
     shareNote: "La part de chaque circonscription indique quelle partie du lieu s’y trouve. Les chiffres des circonscriptions portent sur toute la circonscription.",
     lost: "de la forêt cartographiée détectée comme perdue",
@@ -105,18 +121,18 @@ export function SearchPage({
           href="?scope=districts"
           aria-current={scope === "districts" ? "page" : undefined}
         >
-          {text.districts}
+          {addressLookup ? text.districts.both : text.districts.federal}
         </a>
       </nav>
 
       {scope === "places" ? (
         <section>
-          <h2>{text.places}</h2>
+          <h2>{text.placesHeading}</h2>
           <SearchSuggest
             className="search-page-field"
             locale={locale}
             action={locale === "en" ? "/en/search" : "/fr/recherche"}
-            label={text.places}
+            label={text.placesField}
             labelHidden
             submitLabel={locale === "en" ? "Find" : "Trouver"}
             defaultValue={query}
@@ -134,7 +150,7 @@ export function SearchPage({
           <FederalDistrictFinder
             locale={locale}
             query={query}
-            rows={federalRidingComparison.places}
+            rows={ALL_FEDERAL_RIDINGS}
           />
         </>
       )}

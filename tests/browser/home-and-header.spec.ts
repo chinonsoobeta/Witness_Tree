@@ -64,7 +64,7 @@ async function headerLayout(page: Page) {
       viewport: document.documentElement.clientWidth,
       toggleShown: getComputedStyle(toggle).display !== "none",
       links: [...document.querySelectorAll(".nav-panel a")].map(rect),
-      controls: [...document.querySelectorAll(".wordmark, .nav-panel a, .theme-toggle, .locale-link")].map(rect),
+      controls: [...document.querySelectorAll(".site-header .wordmark, .nav-panel a, .site-header .locale-link")].map(rect),
     };
   });
 }

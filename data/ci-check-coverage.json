@@ -458,6 +458,11 @@
       "reason": "This owner release evidence gate is reviewed in the local gate set."
     },
     {
+      "check": "scripts/check-place-cause-recovery-measurements.mjs",
+      "category": "suite-covered",
+      "reason": "tests/place-cause-recovery-measurements.test.mjs imports this checker and runs it against the checked-in record in npm run test:suite; adding a direct CI step would change the checksum-bound .github/workflows/ci.yml."
+    },
+    {
       "check": "scripts/check-postgres-tenant-isolation.mjs",
       "category": "environment-bound",
       "reason": "The harness requires an explicitly offered Postgres instance and exits NOT EXECUTED when none exists; the owner runs the throwaway-container drill separately."

@@ -21,8 +21,8 @@ for (const locale of ["en", "fr"] as const) {
     await page.evaluate(() => document.fonts.ready);
 
     const measured = await page.evaluate(() => {
-      // Both measures are set at the same size since 2026-09-27, so each
-      // figure has to hold its unit on one line.
+      // One measure since 2026-11-10 (A2): the yearly sum left the headline.
+      // The figure has to hold its unit on one line.
       const figures = [...document.querySelectorAll(".cumulative-figure")];
       const block = document.querySelector(".cumulative-headline");
       if (figures.length === 0 || !block) return null;
@@ -41,8 +41,8 @@ for (const locale of ["en", "fr"] as const) {
         blockWidth: Math.round(block.getBoundingClientRect().width),
         documentWidth: document.documentElement.scrollWidth,
         viewport: document.documentElement.clientWidth,
-        // Each measure's basis and the shared minimum, so a basis that fell
-        // out is visible here and not only in the server-rendered markup.
+        // The figure's basis and its minimum, so a basis that fell out is
+        // visible here and not only in the server-rendered markup.
         bases: document.querySelectorAll(".cumulative-claim, .cumulative-minimum").length,
       };
     });
@@ -53,10 +53,10 @@ for (const locale of ["en", "fr"] as const) {
     });
 
     expect(measured).not.toBeNull();
-    expect(measured!.figures).toBe(2);
-    expect(measured!.lines).toEqual([1, 1]);
+    expect(measured!.figures).toBe(1);
+    expect(measured!.lines).toEqual([1]);
     expect(new Set(measured!.fontSize).size).toBe(1);
-    expect(measured!.bases).toBe(3);
+    expect(measured!.bases).toBe(2);
     expect(measured!.documentWidth).toBeLessThanOrEqual(measured!.viewport + 1);
     expect(measured!.blockWidth).toBeLessThanOrEqual(measured!.viewport);
   });

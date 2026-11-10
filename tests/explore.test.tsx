@@ -251,10 +251,16 @@ test("Explore puts explanation and controls before the map, then the reading pan
       en.indexOf('id="explore-data-heading"'),
   );
   // Only the chosen view's status is stated, under the toolbar.
-  assert.match(en, /<p class="explore-mode-status">Map: 1985–2022/);
+  // C4: one plain reason the map's first change is a year after the record starts.
+  assert.match(en, /<p class="explore-mode-status">Pick any first and last year from 1984 to 2022\. The record starts in 1984, so the first loss it can show is the change from 1984 to 1985\.<\/p>/);
+  assert.match(
+    renderToStaticMarkup(<ExploreView events={exploreFixtures} locale="fr" />),
+    /<p class="explore-mode-status">Choisissez n’importe quelle première et dernière année de 1984 à 2022\. Le registre commence en 1984\u202F: la première perte qu’il peut montrer est donc le changement de 1984 à 1985\.<\/p>/u,
+  );
+  assert.doesNotMatch(en, /Map: 1985–2022\. Province figures/);
   assert.match(
     renderToStaticMarkup(<ExploreView events={exploreFixtures} locale="en" mode="recorded-harvest" />),
-    /<p class="explore-mode-status">[^<]*Province figures for harvest and fire, 1985–2022/,
+    /<p class="explore-mode-status">The map and the province figures show harvest and fire from 1985 to 2022\. The record starts in 1984, so its first change is from 1984 to 1985\./,
   );
   assert.match(
     renderToStaticMarkup(<ExploreView events={exploreFixtures} locale="en" mode="condition-recovery" />),
@@ -381,7 +387,8 @@ test("Explore uses the exact PMTiles release with a GeoJSON/SVG fallback on map 
   assert.match(map, /const provinceAvailable = mode === "forest-change";/);
   assert.match(map, /unavailableYear/);
   assert.match(map, /spanRows\.find\(\(row\) => row\.id === feature\.properties\.province_id\)/);
-  assert.match(map, /setPaintProperty\(PROVINCE_FILL_LAYER_ID, "fill-color", provinceFillColour\(fromYear, year, shading\)\)/);
+  // The span moves the fill in place; a Play run classes it on the held edges.
+  assert.match(map, /const fill = classSpan \? provinceFillColour\(fromYear, year, shading, classBreaks\) : provinceFillColour\(fromYear, year, shading\);\n\s*map\.setPaintProperty\(PROVINCE_FILL_LAYER_ID, "fill-color", fill\)/);
   assert.match(view, /Detected loss \(%\)/);
   assert.match(style, /phase2_province_loss_2020_2022/);
   assert.match(style, /\.pmtiles/);
@@ -437,7 +444,9 @@ test("map failures retain diagnostics, retry, and a reachable patch zoom", async
   // The zoom stays where the reader is when that is inside a province, and
   // otherwise goes to the nearest province's forest rather than the empty
   // middle of the four-province view.
-  assert.match(map, /center: patchZoomCentre\(map\.getCenter\(\)\)/);
+  // A chosen province keeps the zoom inside it (D4); with all four it is as before.
+  assert.match(map, /const target = patchZoomTarget\(map\.getCenter\(\), focusRef\.current\);\n\s+map\.easeTo\(\{\n\s+center: target\.centre,/);
+  assert.match(map, /const target = patchZoomCentre\(centre\);/);
   assert.match(map, /const PATCH_FOCUS: Readonly<Record<ExploreMapView, Position>>/);
   // The patch zoom sits in the legend beside the patch key, and is offered
   // only while patches exist and the map is zoomed out past them.
@@ -510,7 +519,7 @@ test("the map keeps one four-province camera envelope and the forest map alive a
   assert.doesNotMatch(map, /mapView === "national"|^\s*national:/m);
 });
 
-test("the map exposes native full screen only when supported", async () => {
+test("the map uses native full screen where supported and enlarges in the page elsewhere", async () => {
   const map = await (await import("node:fs/promises")).readFile(
     new URL("../components/explore/ExploreMapClient.tsx", import.meta.url),
     "utf8",
@@ -522,8 +531,14 @@ test("the map exposes native full screen only when supported", async () => {
   assert.match(map, /requestAnimationFrame\(syncFullscreenState\)/);
   assert.match(map, /window\.addEventListener\("resize", syncFullscreenState\)/);
   assert.match(map, /await frame\.requestFullscreen\(\)/);
+  assert.match(map, /pageScrollRef\.current = window\.scrollY;\n\s*await frame\.requestFullscreen\(\);/);
   assert.match(map, /await document\.exitFullscreen\(\)/);
-  assert.match(map, /\{fullscreenAvailable \? \(/);
+  // G3: the button is offered wherever the map is; without native full
+  // screen, or when the browser refuses it, the map enlarges within the page.
+  assert.match(map, /\{state === "ready" \|\| state === "loading" \? \(\n\s*<button\n\s*ref=\{fullscreenButtonRef\}/);
+  assert.match(map, /if \(!fullscreenAvailable\) \{\n\s*expandInPage\(\);/);
+  assert.match(map, /if \(document\.fullscreenElement !== frame\) expandInPage\(\);/);
+  assert.match(map, /const expandInPage = \(\) => \{\n\s*pageScrollRef\.current = window\.scrollY;\n\s*setExpanded\("page"\);/);
   assert.match(map, /isFullscreen \? text\[locale\]\.exitFullscreen : text\[locale\]\.enterFullscreen/);
 });
 
@@ -572,8 +587,10 @@ test("playback swaps only the patch layer, holds the chosen first year, and stop
   assert.doesNotMatch(map, /map\.removeSource\(EXPLORE_PER_CELL/);
   assert.match(map, /map\.addSource\(EXPLORE_PER_CELL_SPAN_LAYER\.sourceId, perCellSource\(\)\)/);
   assert.match(map, /\[mapReady, perCellKey, cause, overlayKey\]/);
-  // The map is rebuilt only when a mode changes what it can draw, never for a year.
-  assert.match(map, /\[patchCapable, shaded, overlayKey, retryNonce\]/);
+  // The map is rebuilt only when a mode changes what it can draw, never for a
+  // year, and (F1) never for Show or Hide, which swap the outlines in place.
+  assert.match(map, /\[patchCapable, shaded, retryNonce\]/);
+  assert.match(map, /syncBoundaryLayers\(map, overlays\);[\s\S]*?\}, \[mapReady, overlayKey\]\);/);
   assert.doesNotMatch(
     map,
     /\[available, provinceAvailable, perCellArchive, overlayKey, cause\]/,
@@ -980,4 +997,33 @@ test("Explore shows its coverage caveat before the map and its evidence key besi
   const client = readFileSync(new URL("../components/explore/ExploreMapClient.tsx", import.meta.url), "utf8");
   assert.match(client, /<i className=\{`loss-swatch \$\{className\}`\} \/>/);
   for (const patch of ["patch-harvest", "patch-fire", "patch-none"]) assert.match(client, new RegExp(`symbol\\("${patch}"\\)`));
+});
+
+/*
+ * C3 of the 2026-11-10 review. Under a span longer than a year the per-cell
+ * figures are the last year alone, and the heading says so and sits apart
+ * from the span headline; under an annual span the heading is unchanged.
+ */
+test("the per-cell figures under a longer span are named as its last year alone", () => {
+  const heading = (markup: string) => markup.match(/<h3 id="explore-annual-heading"([^>]*)>([^<]*)<\/h3>/);
+  const cases = [
+    { locale: "en", text: "Per-cell detected loss in the last year alone, 2021–2022" },
+    { locale: "fr", text: "Perte détectée par cellule pendant la dernière année seulement, 2021–2022" },
+  ] as const;
+  for (const { locale, text } of cases) {
+    const span = heading(renderToStaticMarkup(<ExploreView events={exploreFixtures} locale={locale} year={2022} fromYear={1984} />));
+    assert.ok(span);
+    assert.equal(span[2], text);
+    assert.match(span[1], /class="explore-annual-last"/);
+    const annual = heading(renderToStaticMarkup(<ExploreView events={exploreFixtures} locale={locale} year={2022} fromYear={2021} />));
+    assert.ok(annual);
+    assert.equal(annual[2], `${locale === "en" ? "Per-cell detected loss" : "Perte détectée par cellule"}, 2021–2022`);
+    assert.doesNotMatch(annual[1], /explore-annual-last/);
+    // Under a chosen province's headline these are still four-province figures, and the heading says so.
+    const chosen = heading(renderToStaticMarkup(<ExploreView events={exploreFixtures} locale={locale} province="bc" year={2022} fromYear={1984} />));
+    assert.ok(chosen);
+    assert.equal(chosen[2], `${text} · ${locale === "en" ? "The four provinces together" : "Les quatre provinces ensemble"}`);
+  }
+  const css = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
+  assert.match(css, /\.explore-annual h3\.explore-annual-last \{[^}]*border-block-start: 1px solid var\(--rule\);/);
 });

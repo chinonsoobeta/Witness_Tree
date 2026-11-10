@@ -1,7 +1,7 @@
 {
   "schemaVersion": "witness-tree/operator-runner-exit-taxonomy/1",
   "status": "engineering-derived-static-inventory",
-  "boundary": "Explicit shell refusals, literal exits, forwarded-status exits, and inline Node predicates in the twenty-six scripts/run-*.sh operator runners. Native child statuses propagated by errexit or pipefail are outside the intentional taxonomy and require the child diagnostic.",
+  "boundary": "Explicit shell refusals, literal exits, forwarded-status exits, and inline Node predicates in the twenty-seven scripts/run-*.sh operator runners. Native child statuses propagated by errexit or pipefail are outside the intentional taxonomy and require the child diagnostic.",
   "codes": [
     {
       "code": 0,
@@ -209,6 +209,13 @@
       },
       "defaultFailCode": null,
       "siteContractSha256": "49446d152e6a73c9b49cd4cdde76e1a4c29f0b8b7f0345c880a8546c88f12af9"
+    },
+    "scripts/run-place-cause-recovery-zonal.sh": {
+      "codes": {
+        "1": 1
+      },
+      "defaultFailCode": null,
+      "siteContractSha256": "ddb8954de8ac53d3d30f4fcc666687702da7b53fcac6a5a066930010b1d87759"
     },
     "scripts/run-place-name-index.sh": {
       "codes": {

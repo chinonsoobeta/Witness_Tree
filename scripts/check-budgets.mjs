@@ -7,7 +7,10 @@ import { gzipSync } from "node:zlib";
 // limit can be raised as necessary."; the Compare riding typeahead measured the
 // shared total at 133,352 gzip bytes, so the limit is 136 KiB (see docs/PERFORMANCE.md).
 export const SHARED_LIMIT = 136 * 1024;
-export const EXPLORE_LIMIT = 400 * 1024;
+// 400 KiB until 2026-11-10. Under the same sentence the limit is 416 KiB: the
+// site-wide fixes measured the map budget at 417,972 gzip bytes while the two
+// totals together fell (docs/PERFORMANCE.md has the figures and the reason).
+export const EXPLORE_LIMIT = 416 * 1024;
 
 const manifestPath = (root) => path.join(root, ".vite", "manifest.json");
 const hasExploreName = (key, entry) => /explore/i.test(`${key} ${entry.name ?? ""} ${entry.src ?? ""}`);
@@ -123,11 +126,14 @@ export async function nextBudgetManifest(root) {
   const build = JSON.parse(await readFile(path.join(root, "build-manifest.json"), "utf8"));
   const appPaths = JSON.parse(await readFile(path.join(root, "server/app-paths-manifest.json"), "utf8"));
   const sources = new Map();
-  const add = (file, source) => {
+  // The chunks a route's own client modules list: what that route loads up front.
+  const upFront = new Set();
+  const add = (file, source, listed = false) => {
     if (!file.endsWith(".js")) return;
     const normalized = file.replace(/^\/_next\//, "");
     if (!sources.has(normalized)) sources.set(normalized, new Set());
     sources.get(normalized).add(source);
+    if (listed && source !== "framework") upFront.add(normalized);
   };
   for (const file of [...build.rootMainFiles, ...build.polyfillFiles]) add(file, "framework");
   for (const [route, serverFile] of Object.entries(appPaths)) {
@@ -138,7 +144,7 @@ export async function nextBudgetManifest(root) {
     for (const manifest of Object.values(context.__RSC_MANIFEST ?? {})) {
       for (const [module, entry] of Object.entries(manifest.clientModules)) {
         const framework = module.includes("/node_modules/next/");
-        for (const chunk of entry.chunks) add(chunk, framework ? "framework" : route);
+        for (const chunk of entry.chunks) add(chunk, framework ? "framework" : route, true);
       }
     }
   }
@@ -167,9 +173,16 @@ export async function nextBudgetManifest(root) {
     const owners = sources.get(key);
     if (!owners) throw new Error(`Budget chunk is unattributable: ${key}.`);
     const routes = [...owners].filter((owner) => owner !== "framework");
+    const isExplore = (route) => /\/(explore|explorer)(\/|$)/.test(route);
+    // A chunk no route loads up front, fetched only when a page asks for it,
+    // counts against the Explore limit whenever Explore is one of the routes
+    // that can ask: that is the map library, which a place page's small map
+    // also fetches once it scrolls into view. A chunk any other route loads up
+    // front is shared, as before.
+    const lazyMapChunk = !upFront.has(key) && routes.some(isExplore);
     manifest[key] = { file: key, isEntry: true,
       isFramework: routes.length === 0,
-      name: routes.length > 0 && routes.every((route) => /\/(explore|explorer)(\/|$)/.test(route)) ? "Explore" : "shared" };
+      name: routes.length > 0 && (routes.every(isExplore) || lazyMapChunk) ? "Explore" : "shared" };
   }
   return manifest;
 }
