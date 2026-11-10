@@ -444,7 +444,9 @@ test("map failures retain diagnostics, retry, and a reachable patch zoom", async
   // The zoom stays where the reader is when that is inside a province, and
   // otherwise goes to the nearest province's forest rather than the empty
   // middle of the four-province view.
-  assert.match(map, /center: patchZoomCentre\(map\.getCenter\(\)\)/);
+  // A chosen province keeps the zoom inside it (D4); with all four it is as before.
+  assert.match(map, /const target = patchZoomTarget\(map\.getCenter\(\), focusRef\.current\);\n\s+map\.easeTo\(\{\n\s+center: target\.centre,/);
+  assert.match(map, /const target = patchZoomCentre\(centre\);/);
   assert.match(map, /const PATCH_FOCUS: Readonly<Record<ExploreMapView, Position>>/);
   // The patch zoom sits in the legend beside the patch key, and is offered
   // only while patches exist and the map is zoomed out past them.

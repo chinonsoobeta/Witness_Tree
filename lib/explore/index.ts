@@ -9,6 +9,7 @@ export * from "./riding-measurements";
 export * from "./href";
 export * from "./interval";
 export * from "./province-address";
+export * from "./map-hash";
 export * from "./period";
 export * from "./province-spans";
 export * from "./unmapped-reasons";

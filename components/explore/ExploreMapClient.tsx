@@ -1,6 +1,6 @@
 "use client";
 
-import { lazy, Suspense, useEffect, useRef, useState, type RefObject } from "react";
+import { lazy, Suspense, useEffect, useRef, useState, useSyncExternalStore, type RefObject } from "react";
 import type {
   ExpressionSpecification,
   FilterSpecification,
@@ -22,10 +22,12 @@ import {
   EXPLORE_PER_CELL_SPAN_LAYER,
   EXPLORE_PRODUCTION_LAYER,
   EXPLORE_YEAR_MAX,
+  formatMapHash,
   perCellCauseForMode,
   perCellSpanYears,
   provinceSpanMeasurements,
   provinceSpanReach,
+  readMapHash,
   spanShareBreaks,
   spanShareClassOn,
   type BoundaryOverlayId,
@@ -134,11 +136,18 @@ const text = {
     scaleBar: "Scale bar",
     mapPanel: "Map legend",
     boundariesShown: "Boundaries shown",
-    boundary: "Boundary",
-    jurisdiction: "Jurisdiction",
+    boundaryKind: {
+      "federal-ridings": "Federal riding",
+      "provincial-ridings": "Provincial riding",
+      "economic-regions": "Economic region",
+      "census-subdivisions": "City or town",
+      watersheds: "Watershed",
+    },
     province: "Province",
     placeFiguresLoading: "Loading this place’s figures…",
     placeFiguresFailed: "This place’s figures didn’t load. Try again later.",
+    outsideRecord:
+      "No figures here. The record covers British Columbia, Alberta, Ontario and Québec only; this riding is drawn to show where it lies.",
     clearBoundary: "Clear boundary",
     placePage: "Open this place’s page",
     interval: "Interval",
@@ -146,6 +155,9 @@ const text = {
     totalLoss: "Detected loss",
     knownObservedSubtotal: "Known detected subtotal",
     zoomToPatches: "Zoom in to see the patches",
+    patchZoomedCentre: "Zoomed in on the centre of the map.",
+    patchZoomedChosen: (province: string) => `Zoomed in on forest in ${province}, the province you chose.`,
+    patchZoomedNearest: (province: string) => `Zoomed in on forest in ${province}, the province nearest the centre of the map.`,
     patchHint: "Loss patches appear when you zoom in close.",
     enterFullscreen: "View map full screen",
     exitFullscreen: "Exit full screen",
@@ -231,11 +243,18 @@ const text = {
     scaleBar: "Barre d’échelle",
     mapPanel: "Légende de la carte",
     boundariesShown: "Limites affichées",
-    boundary: "Limite",
-    jurisdiction: "Autorité compétente",
+    boundaryKind: {
+      "federal-ridings": "Circonscription fédérale",
+      "provincial-ridings": "Circonscription provinciale",
+      "economic-regions": "Région économique",
+      "census-subdivisions": "Ville ou municipalité",
+      watersheds: "Bassin versant",
+    },
     province: "Province",
     placeFiguresLoading: "Chargement des chiffres de ce lieu…",
     placeFiguresFailed: "Les chiffres de ce lieu n’ont pas pu être chargés. Réessayez plus tard.",
+    outsideRecord:
+      "Aucun chiffre ici. Le registre ne couvre que la Colombie-Britannique, l’Alberta, l’Ontario et le Québec\u202F; cette circonscription est tracée pour montrer où elle se trouve.",
     clearBoundary: "Effacer la limite",
     placePage: "Ouvrir la page de ce lieu",
     interval: "Période",
@@ -243,6 +262,9 @@ const text = {
     totalLoss: "Perte détectée",
     knownObservedSubtotal: "Sous-total détecté connu",
     zoomToPatches: "Zoomer pour voir les parcelles",
+    patchZoomedCentre: "Zoom sur le centre de la carte.",
+    patchZoomedChosen: (province: string) => `Zoom sur une zone forestière de la province choisie\u202F: ${province}.`,
+    patchZoomedNearest: (province: string) => `Zoom sur une zone forestière de la province la plus proche du centre de la carte\u202F: ${province}.`,
     patchHint: "Les parcelles de perte apparaissent en zoom rapproché.",
     enterFullscreen: "Afficher la carte en plein écran",
     exitFullscreen: "Quitter le plein écran",
@@ -304,6 +326,26 @@ const MAP_VIEW_BOUNDS: Readonly<Record<ExploreMapView, MapBounds>> = {
   ab: [-120, 48.9, -109, 60.1],
   on: [-95.2, 41.5, -74.1, 56.9],
   qc: [-79.9, 45, -57, 62.1],
+};
+
+/*
+ * D4: where "Zoom in to see the patches" goes, and what the map then says.
+ * A chosen province keeps the zoom inside it: the map centre if that is in
+ * the province's frame, otherwise the province's forest. With all four, the
+ * centre if it is in a province, otherwise the nearest province's forest.
+ * The note names the province whenever the zoom leaves the map centre.
+ */
+type PatchZoomTarget = Readonly<{ centre: Position; province: ExploreMapView | null; chosen: boolean }>;
+const insideMapView = (view: ExploreMapView, { lng, lat }: Readonly<{ lng: number; lat: number }>) => {
+  const [west, south, east, north] = MAP_VIEW_BOUNDS[view];
+  return lng >= west && lng <= east && lat >= south && lat <= north;
+};
+const patchZoomTarget = (centre: Readonly<{ lng: number; lat: number }>, chosen: ExploreMapView | null): PatchZoomTarget => {
+  if (chosen) return insideMapView(chosen, centre) ? { centre: [centre.lng, centre.lat], province: null, chosen: true } : { centre: PATCH_FOCUS[chosen], province: chosen, chosen: true };
+  const target = patchZoomCentre(centre);
+  const views = Object.keys(PATCH_FOCUS) as ExploreMapView[];
+  const province = views.find((view) => PATCH_FOCUS[view] === target) ?? null;
+  return { centre: target, province, chosen: false };
 };
 
 /** Zoom where the reader is if that is in a province; otherwise to the nearest province's forest. */
@@ -429,9 +471,60 @@ const PROVINCE_OUTLINE_LAYER_ID = `${EXPLORE_PRODUCTION_LAYER.sourceLayer}-outli
  */
 const REGION_SOURCE_ID = "forest-regions";
 const REGION_FILL_LAYER_ID = "forest-regions-fill";
+const CANADA_LAND_SOURCE_ID = "canada-land";
+const CANADA_LAND_LAYER_ID = "canada-land-fill";
+// A step darker than the ground: land, not data.
+const CANADA_LAND_COLOUR = "#dcdfd5";
+// Yukon, the Northwest Territories and Nunavut: one riding each.
+const TERRITORIAL_RIDING_IDS = ["CA-60001", "CA-61001", "CA-62001"];
+
+/*
+ * D8: the ground the data sits on follows the site theme. Only what lies
+ * outside the figures changes: the sea, the other land and the provinces
+ * painted out around a chosen one. The classes, the hatching, the fill for a
+ * region with no figure and the outlines keep their printed colours, and in
+ * dark theme the province outlines get the same light track as the boundary
+ * outlines (F2), so a dark class still has an edge against a dark ground.
+ * An exported image always uses the light ground, to match its light caption.
+ */
+type MapTheme = "light" | "dark";
+const MAP_GROUND: Readonly<Record<MapTheme, Readonly<{ ground: string; land: string }>>> = {
+  light: { ground: EXPLORE_MAP_COLOURS.ground, land: CANADA_LAND_COLOUR },
+  dark: { ground: "#211e19", land: "#36322b" },
+};
+const PREFERS_DARK = "(prefers-color-scheme: dark)";
+const readMapTheme = (): MapTheme => {
+  const chosen = document.documentElement.getAttribute("data-theme");
+  if (chosen === "light" || chosen === "dark") return chosen;
+  return window.matchMedia(PREFERS_DARK).matches ? "dark" : "light";
+};
+const readServerMapTheme = (): MapTheme => "light";
+const subscribeMapTheme = (onChange: () => void) => {
+  const query = window.matchMedia(PREFERS_DARK);
+  query.addEventListener("change", onChange);
+  const observer = new MutationObserver(onChange);
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+  return () => {
+    query.removeEventListener("change", onChange);
+    observer.disconnect();
+  };
+};
+function applyMapGround(map: MapLibreMap, theme: MapTheme) {
+  const { ground, land } = MAP_GROUND[theme];
+  if (map.getLayer("ground")) map.setPaintProperty("ground", "background-color", ground);
+  for (const id of [CANADA_LAND_LAYER_ID, PROVINCE_MASK_LAYER_ID]) {
+    if (!map.getLayer(id)) continue;
+    map.setPaintProperty(id, "fill-color", land);
+    map.setPaintProperty(id, "fill-outline-color", land);
+  }
+  if (map.getLayer(PROVINCE_CASING_LAYER_ID)) {
+    map.setLayoutProperty(PROVINCE_CASING_LAYER_ID, "visibility", theme === "dark" ? "visible" : "none");
+  }
+}
 const REGION_HATCH_LAYER_ID = "forest-regions-hatch";
 const REGION_HATCH_IMAGE = "forest-region-hatch";
 const PROVINCE_MASK_LAYER_ID = "province-mask";
+const PROVINCE_CASING_LAYER_ID = "province-casing";
 const PROVINCE_FOCUS_LAYER_ID = "province-focus-outline";
 const TRANSPARENT = "rgba(0, 0, 0, 0)";
 const REGION_OVERLAY = BOUNDARY_OVERLAYS["economic-regions"];
@@ -481,7 +574,26 @@ const hatchImage = () => {
   return { width: size, height: size, data };
 };
 
-const regionLayers = (figures: readonly ForestRegionFigure[], breaks: ShareBreaks): StyleSpecification["layers"] => [
+/*
+ * D6: where loss patches are drawn, the shading under them fades as they
+ * appear, from the zoom the patch archive starts to just past the zoom where
+ * they are readable, so the grey "neither recorded" patches show. A quarter
+ * of the shading stays, so the region's class can still be read. The
+ * hatching for land with no data is not faded: it marks a minimum.
+ */
+const PATCH_FADE_KEEP = 0.25;
+const patchFade = (opacity: number) =>
+  [
+    "interpolate",
+    ["linear"],
+    ["zoom"],
+    EXPLORE_PER_CELL_LAYER.minZoom,
+    opacity,
+    PATCH_READABLE_ZOOM + 0.5,
+    opacity * PATCH_FADE_KEEP,
+  ] as unknown as number;
+
+const regionLayers = (figures: readonly ForestRegionFigure[], breaks: ShareBreaks, patches = false): StyleSpecification["layers"] => [
   {
     id: REGION_FILL_LAYER_ID,
     type: "fill",
@@ -489,7 +601,7 @@ const regionLayers = (figures: readonly ForestRegionFigure[], breaks: ShareBreak
     "source-layer": REGION_OVERLAY.sourceLayer!,
     paint: {
       "fill-color": regionFillColour(figures, breaks),
-      "fill-opacity": 1,
+      "fill-opacity": patches ? patchFade(1) : 1,
       // The economic regions inside one region share a colour and no edge.
       "fill-outline-color": TRANSPARENT,
     },
@@ -557,7 +669,8 @@ const provinceMaskLayers = (view: ExploreMapView | null): StyleSpecification["la
     "source-layer": EXPLORE_PRODUCTION_LAYER.sourceLayer,
     filter: provinceMaskFilter(view),
     layout: { visibility: view ? "visible" : "none" },
-    paint: { "fill-color": EXPLORE_MAP_COLOURS.ground, "fill-opacity": 1, "fill-outline-color": EXPLORE_MAP_COLOURS.ground },
+    // Painted as the other land (D7), so a province set aside is not a hole in Canada.
+    paint: { "fill-color": CANADA_LAND_COLOUR, "fill-opacity": 1, "fill-outline-color": CANADA_LAND_COLOUR },
   },
   {
     id: PROVINCE_FOCUS_LAYER_ID,
@@ -597,6 +710,60 @@ const boundaryProvince = (boundary: BoundarySelection): string | null =>
       ? PROVINCE_CODE_FOR_PRUID[boundary.boundaryId.slice(12, 14)] ?? null
       : null;
 
+/*
+ * Every province and territory, by the Statistics Canada code a federal
+ * riding's id begins with (CA-35059 is in Ontario). The ridings cover all of
+ * Canada, so the readout can name where any of them lies (F3).
+ */
+const PROVINCE_NAME_FOR_PRUID: Readonly<Record<string, Readonly<Record<Locale, string>>>> = {
+  "10": { en: "Newfoundland and Labrador", fr: "Terre-Neuve-et-Labrador" },
+  "11": { en: "Prince Edward Island", fr: "Île-du-Prince-Édouard" },
+  "12": { en: "Nova Scotia", fr: "Nouvelle-Écosse" },
+  "13": { en: "New Brunswick", fr: "Nouveau-Brunswick" },
+  "24": { en: "Québec", fr: "Québec" },
+  "35": { en: "Ontario", fr: "Ontario" },
+  "46": { en: "Manitoba", fr: "Manitoba" },
+  "47": { en: "Saskatchewan", fr: "Saskatchewan" },
+  "48": { en: "Alberta", fr: "Alberta" },
+  "59": { en: "British Columbia", fr: "Colombie-Britannique" },
+  "60": { en: "Yukon", fr: "Yukon" },
+  "61": { en: "Northwest Territories", fr: "Territoires du Nord-Ouest" },
+  "62": { en: "Nunavut", fr: "Nunavut" },
+};
+const PRUID_FOR_PROVINCE_CODE: Readonly<Record<string, string>> = { BC: "59", AB: "48", ON: "35", QC: "24" };
+
+/**
+ * The Statistics Canada code of the province or territory a boundary lies in,
+ * or null for a watershed, which crosses provincial lines.
+ */
+const boundaryPruid = (boundary: BoundarySelection): string | null => {
+  if (boundary.overlay === "watersheds") return null;
+  if (boundary.overlay === "federal-ridings") {
+    const code = boundary.boundaryId.slice(3, 5);
+    return code in PROVINCE_NAME_FOR_PRUID ? code : null;
+  }
+  const province = boundaryProvince(boundary) ?? boundary.jurisdiction;
+  return PRUID_FOR_PROVINCE_CODE[province] ?? null;
+};
+
+/**
+ * A federal riding outside the four provinces the record covers (F6). The
+ * ridings are drawn across Canada, so the readout says why such a riding has
+ * no figures rather than showing them as Unknown.
+ */
+const outsideRecord = (boundary: BoundarySelection): boolean => {
+  if (boundary.overlay !== "federal-ridings") return false;
+  const pruid = boundaryPruid(boundary);
+  return pruid !== null && !(pruid in PROVINCE_CODE_FOR_PRUID);
+};
+
+/** The readout's heading: the kind of boundary, then where it lies. */
+const boundaryHeading = (locale: Locale, boundary: BoundarySelection): string => {
+  const pruid = boundaryPruid(boundary);
+  const kind = text[locale].boundaryKind[boundary.overlay];
+  return pruid ? `${kind} · ${PROVINCE_NAME_FOR_PRUID[pruid]![locale]}` : kind;
+};
+
 const boundaryJurisdiction = (locale: Locale, jurisdiction: string) =>
   ({
     CA: { en: "Canada", fr: "Canada" },
@@ -609,7 +776,7 @@ const boundaryJurisdiction = (locale: Locale, jurisdiction: string) =>
 // The tiles carry only the province geometry and its id that matter here; the
 // 2020-2022 figures baked into them are not read. The colour comes from the
 // span release, so it follows the year control without a new tile request.
-const provinceLayers = (fromYear: number, toYear: number, shading: ProvinceShading, breaks: ShareBreaks): StyleSpecification["layers"] => [
+const provinceLayers = (fromYear: number, toYear: number, shading: ProvinceShading, breaks: ShareBreaks, patches = false): StyleSpecification["layers"] => [
   {
     id: PROVINCE_FILL_LAYER_ID,
     type: "fill",
@@ -617,7 +784,7 @@ const provinceLayers = (fromYear: number, toYear: number, shading: ProvinceShadi
     "source-layer": EXPLORE_PRODUCTION_LAYER.sourceLayer,
     paint: {
       "fill-color": provinceFillColour(fromYear, toYear, shading, breaks),
-      "fill-opacity": 0.88,
+      "fill-opacity": patches ? patchFade(0.88) : 0.88,
     },
   },
   {
@@ -631,6 +798,20 @@ const provinceLayers = (fromYear: number, toYear: number, shading: ProvinceShadi
     },
   },
 ];
+
+/**
+ * The light track round the four provinces, shown in dark theme only (D8).
+ * Drawn under the shading, so only its outer half shows: an edge where a
+ * province meets the dark ground, and under the bare outlines of the patch modes.
+ */
+const provinceCasingLayer = (): StyleSpecification["layers"][number] => ({
+  id: PROVINCE_CASING_LAYER_ID,
+  type: "line",
+  source: EXPLORE_PRODUCTION_LAYER.sourceLayer,
+  "source-layer": EXPLORE_PRODUCTION_LAYER.sourceLayer,
+  layout: { visibility: "none" },
+  paint: { "line-color": BOUNDARY_CASING_COLOUR, "line-width": 3.25 },
+});
 
 /*
  * The province outlines alone, for the modes that shade nothing. Without them
@@ -701,6 +882,10 @@ function swapPerCellLayer(
   beforeLayerId?: string,
 ) {
   if (map.getLayer(PER_CELL_LAYER_ID)) map.removeLayer(PER_CELL_LAYER_ID);
+  // The shading under the patches fades as they appear, and is whole again
+  // where no patches are drawn (D6).
+  if (map.getLayer(REGION_FILL_LAYER_ID)) map.setPaintProperty(REGION_FILL_LAYER_ID, "fill-opacity", years ? patchFade(1) : 1);
+  if (map.getLayer(PROVINCE_FILL_LAYER_ID)) map.setPaintProperty(PROVINCE_FILL_LAYER_ID, "fill-opacity", years ? patchFade(0.88) : 0.88);
   if (!years) return;
   if (!map.getSource(EXPLORE_PER_CELL_SPAN_LAYER.sourceId))
     map.addSource(EXPLORE_PER_CELL_SPAN_LAYER.sourceId, perCellSource());
@@ -806,7 +991,7 @@ const boundaryStyle = (overlays: readonly BoundaryOverlayId[]) => {
         // At a national view the southern districts are only a few pixels
         // across, so a constant-width line turns them into a solid mass that
         // reads as the subject of the map rather than the frame around it.
-        "line-width": ["interpolate", ["linear"], ["zoom"], 0, 0.4, 5, 0.7, 10, 1.4],
+        "line-width": boundaryLineWidth(overlay.weight ?? 1),
         "line-opacity": ["interpolate", ["linear"], ["zoom"], 0, 0.45, 5, 0.6, 10, 0.8],
         ...(overlay.dash ? { "line-dasharray": [...overlay.dash] } : {}),
       },
@@ -830,6 +1015,14 @@ const boundaryStyle = (overlays: readonly BoundaryOverlayId[]) => {
   }
   return { sources, layers };
 };
+
+/**
+ * The outline's width by zoom, times its weight: a watershed is drawn heavier
+ * than the region and riding borders it would otherwise be mistaken for (F5).
+ */
+function boundaryLineWidth(weight: number): ExpressionSpecification {
+  return ["interpolate", ["linear"], ["zoom"], 0, 0.4 * weight, 5, 0.7 * weight, 10, 1.4 * weight];
+}
 
 /** Every layer id the outlines can use, switched on or not. */
 const ALL_BOUNDARY_LAYER_IDS = BOUNDARY_OVERLAY_IDS.flatMap((id) =>
@@ -873,6 +1066,26 @@ const buildStyle = (
     // same ground, so this also makes the two paths agree.
     { id: "ground", type: "background", paint: { "background-color": EXPLORE_MAP_COLOURS.ground } },
   ];
+  /*
+   * D7: the other provinces, faintly, so the four do not float as islands.
+   * Drawn from the federal-riding outlines the site already releases, as one
+   * flat tone with no edges: it says where land is and nothing about forest.
+   * The three territorial ridings are left out: their areas take in the
+   * Arctic waters and Hudson Bay, which a land tone would show as land. Its
+   * own source, so showing and hiding the riding outlines cannot remove it.
+   */
+  const ridings = BOUNDARY_OVERLAYS["federal-ridings"];
+  if (ridings.url && ridings.sourceLayer) {
+    sources[CANADA_LAND_SOURCE_ID] = { type: "vector", url: `pmtiles://${ridings.url}`, bounds: [-141, 41, -52, 84] };
+    layers.push({
+      id: CANADA_LAND_LAYER_ID,
+      type: "fill",
+      source: CANADA_LAND_SOURCE_ID,
+      "source-layer": ridings.sourceLayer,
+      filter: ["!", ["in", ["get", "id"], ["literal", TERRITORIAL_RIDING_IDS]]],
+      paint: { "fill-color": CANADA_LAND_COLOUR, "fill-outline-color": CANADA_LAND_COLOUR },
+    });
+  }
   // The province archive is always loaded: shaded in forest-loss mode,
   // outlines only in every other mode, so the map always shows where it is.
   sources[EXPLORE_PRODUCTION_LAYER.sourceLayer] = {
@@ -880,14 +1093,17 @@ const buildStyle = (
     url: `pmtiles://${EXPLORE_PRODUCTION_LAYER.url}`,
     bounds: [-141, 41, -52, 70],
   };
+  // Under the shading, so it shows where a province meets the ground (D8).
+  layers.push(provinceCasingLayer());
   if (province) {
-    const [fill, outline] = provinceLayers(span.fromYear, span.toYear, province, breaks);
+    // The shading fades under the loss patches as they appear (D6).
+    const [fill, outline] = provinceLayers(span.fromYear, span.toYear, province, breaks, years !== null);
     layers.push(fill);
     // Forest loss is shaded by region over the province fill, which still
     // answers wherever the region figures for the span are not yet in.
     if (province === "loss") {
       sources[REGION_SOURCE_ID] = { type: "vector", url: `pmtiles://${REGION_OVERLAY.url}`, bounds: [-141, 41, -52, 84] };
-      layers.push(...regionLayers(regions, breaks));
+      layers.push(...regionLayers(regions, breaks, years !== null));
     }
     layers.push(outline);
   } else if (recovery.length > 0) {
@@ -1052,6 +1268,8 @@ export function ExploreMapClient({
   const mapRef = useRef<MapLibreMap | null>(null);
   const [view, setView] = useState<MapView | null>(null);
   const [selectedMapView, setSelectedMapView] = useState<ExploreMapView | null>(initialProvince);
+  // Where the patch zoom went, said until the reader moves the map (D4).
+  const [patchZoomNote, setPatchZoomNote] = useState<PatchZoomTarget | null>(null);
   // Read by the map's own handlers, which are bound once when it is built.
   const focusRef = useRef<ExploreMapView | null>(initialProvince);
   const regionsRef = useRef(forestRegions);
@@ -1124,6 +1342,7 @@ export function ExploreMapClient({
   const [failed, setFailed] = useState(false);
   const [failureKind, setFailureKind] = useState<MapFailureKind | null>(null);
   const [mapReady, setMapReady] = useState(false);
+  const mapTheme = useSyncExternalStore(subscribeMapTheme, readMapTheme, readServerMapTheme);
   const [retryNonce, setRetryNonce] = useState(0);
   const [hoveredBoundary, setHoveredBoundary] = useState<BoundarySelection | null>(null);
   const [pinnedBoundary, setPinnedBoundary] = useState<BoundarySelection | null>(null);
@@ -1168,6 +1387,12 @@ export function ExploreMapClient({
     // stageRef is a ref object, fixed for the life of the page.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // D8: the map ground follows the site theme, at load and on every change.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (mapReady && map) applyMapGround(map, mapTheme);
+  }, [mapReady, mapTheme]);
 
   // Full screen leaves nothing to scroll, so the map takes the wheel and one finger again.
   useEffect(() => {
@@ -1335,7 +1560,9 @@ export function ExploreMapClient({
         map.on("move", publishView);
         // A drag, wheel or pinch carries the browser event; a fit or ease from code does not.
         map.on("movestart", (event) => {
-          if ((event as { originalEvent?: unknown }).originalEvent) readerMovedRef.current = true;
+          if (!(event as { originalEvent?: unknown }).originalEvent) return;
+          readerMovedRef.current = true;
+          setPatchZoomNote(null);
         });
         // A rotated phone or full screen changes the frame, and so the limit.
         map.on("resize", () => {
@@ -1343,8 +1570,34 @@ export function ExploreMapClient({
           const container = map.getContainer();
           map.setMaxBounds(panLimitFor(COMBINED_PROVINCE_BOUNDS, container.clientWidth, container.clientHeight, FRAME_PADDING));
         });
-        // A province named in the address is framed from the start (C6).
-        if (focusRef.current) map.fitBounds(MAP_VIEW_BOUNDS[focusRef.current], { padding: FRAME_PADDING, maxZoom: 6, duration: 0 });
+        // A position in the address wins (D5); it counts as the reader's own,
+        // so full screen does not refit it away. Otherwise a province named in
+        // the address is framed from the start (C6).
+        const hashCamera = readMapHash(window.location.hash);
+        if (hashCamera) {
+          map.jumpTo({ center: [hashCamera.lng, hashCamera.lat], zoom: hashCamera.zoom });
+          readerMovedRef.current = true;
+        } else if (focusRef.current) map.fitBounds(MAP_VIEW_BOUNDS[focusRef.current], { padding: FRAME_PADDING, maxZoom: 6, duration: 0 });
+        /*
+         * Once the map settles, the address carries its position only while
+         * that position is the reader's own (D5): a gesture, the zoom buttons,
+         * the patch zoom, a key, or a hash the page opened with. A fit made by
+         * the page (a province, All, a refit for a new frame) takes any map
+         * hash out instead, so a copied link never pins a camera fitted to
+         * someone else's screen. The movestart handler above has already
+         * marked a gesture by then. The browser's own replaceState is used so
+         * no navigation starts.
+         */
+        map.on("moveend", () => {
+          if (!active || !map) return;
+          const { pathname, search, hash } = window.location;
+          if (readerMovedRef.current) {
+            const centre = map.getCenter();
+            History.prototype.replaceState.call(window.history, window.history.state, "", `${pathname}${search}${formatMapHash({ zoom: map.getZoom(), lat: centre.lat, lng: centre.lng })}`);
+          } else if (hash.startsWith("#map=")) {
+            History.prototype.replaceState.call(window.history, window.history.state, "", `${pathname}${search}`);
+          }
+        });
         map.once("load", () => {
           if (!active) return;
           if (pmtilesTimeout) clearTimeout(pmtilesTimeout);
@@ -1632,7 +1885,7 @@ export function ExploreMapClient({
   const placeMeasurement = boundary && placeEntry && placeEntry !== "failed"
     ? censusSubdivisionMeasurement(placeEntry, boundary.boundaryId, { fromYear, toYear: year })
     : null;
-  const readout = boundary && (placeState === null || placeState === "ready")
+  const readout = boundary && !outsideRecord(boundary) && (placeState === null || placeState === "ready")
     ? boundaryReadout(
       boundary,
       placeMeasurement ? [...ridingMeasurements, placeMeasurement] : ridingMeasurements,
@@ -1640,7 +1893,6 @@ export function ExploreMapClient({
       { fromYear, toYear: year },
     )
     : null;
-  const province = boundary ? boundaryProvince(boundary) : null;
   // The pinned boundary's place page, where it has one: a riding or region the
   // record measures, or a city or town whose figures loaded.
   const placePageHref = pinnedBoundary && activeBoundaryKey === boundarySelectionKey(pinnedBoundary)
@@ -1654,7 +1906,7 @@ export function ExploreMapClient({
     : null;
   // A riding, region, city or town that is pinned, in a mode whose years change the map.
   const timelapseBoundary =
-    cause !== null && source === "pmtiles" && pinnedBoundary &&
+    cause !== null && source === "pmtiles" && pinnedBoundary && !outsideRecord(pinnedBoundary) &&
     (MEASURED_BOUNDARY_OVERLAYS as readonly string[]).includes(pinnedBoundary.overlay)
       ? pinnedBoundary
       : null;
@@ -1664,9 +1916,14 @@ export function ExploreMapClient({
           target.setMissingStyleImageResolver((id) => {
             if (id === REGION_HATCH_IMAGE && !target.hasImage(REGION_HATCH_IMAGE)) target.addImage(REGION_HATCH_IMAGE, hatchImage());
           }),
-        apply: (target, span, regions) => showTimelapseSpan(target, { shading, cause, overlays, boundary: timelapseBoundary }, span, regions),
+        apply: (target, span, regions) => {
+          // An exported image keeps the light ground under its light caption (D8).
+          applyMapGround(target, "light");
+          showTimelapseSpan(target, { shading, cause, overlays, boundary: timelapseBoundary }, span, regions);
+        },
         needsRegions: shading === "loss",
         boundarySet: BOUNDARY_OVERLAYS[timelapseBoundary.overlay].label[locale],
+        boundaryHeading: boundaryHeading(locale, timelapseBoundary),
         boundarySource: BOUNDARY_OVERLAYS[timelapseBoundary.overlay].attribution?.[locale] ?? "",
         dataVersion: `${EXPLORE_PER_CELL_SPAN_LAYER.productId} (${EXPLORE_PER_CELL_SPAN_LAYER.releaseId.slice(0, 12)})`,
         firstYear: EXPLORE_PER_CELL_SPAN_LAYER.firstYear - 1,
@@ -1689,11 +1946,13 @@ export function ExploreMapClient({
     const map = mapRef.current;
     if (!map) return;
     readerMovedRef.current = true;
+    const target = patchZoomTarget(map.getCenter(), focusRef.current);
     map.easeTo({
-      center: patchZoomCentre(map.getCenter()),
+      center: target.centre,
       zoom: PATCH_TARGET_ZOOM,
       duration: 350,
     });
+    setPatchZoomNote(target);
   };
   const retryMap = () => {
     setFeatures([]);
@@ -1885,10 +2144,33 @@ export function ExploreMapClient({
         </div>
       ) : null}
       {overlays.length > 0 ? (
-        <p className="explore-map-key-boundaries">
-          {text[locale].boundariesShown}{colon(locale)}{" "}
-          {overlays.map((id) => BOUNDARY_OVERLAYS[id].label[locale]).join(" · ")}
-        </p>
+        <div className="explore-map-key-boundaries">
+          <p>{text[locale].boundariesShown}{colon(locale)}</p>
+          {/* F5: a short key, one sample line for each outline that is on. */}
+          <ul>
+            {overlays.map((id) => {
+              const overlay = BOUNDARY_OVERLAYS[id];
+              const width = 1.5 * (overlay.weight ?? 1);
+              return (
+                <li key={id}>
+                  <svg width="30" height="10" viewBox="0 0 30 10" aria-hidden="true" focusable="false">
+                    <line x1="1" y1="5" x2="29" y2="5" stroke={BOUNDARY_CASING_COLOUR} strokeWidth={width + 2} strokeLinecap="butt" />
+                    <line
+                      x1="1"
+                      y1="5"
+                      x2="29"
+                      y2="5"
+                      stroke={overlay.colour ?? EXPLORE_MAP_COLOURS.ink}
+                      strokeWidth={width}
+                      strokeDasharray={overlay.dash ? overlay.dash.map((part) => part * width).join(" ") : undefined}
+                    />
+                  </svg>
+                  {overlay.label[locale]}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
       ) : null}
     </div>
   ) : null;
@@ -1905,6 +2187,7 @@ export function ExploreMapClient({
         onSelect={(mapView) => {
           setSelectedMapView(mapView);
           onProvinceChange?.(mapView);
+          setPatchZoomNote(null);
           setHoveredRegion(null);
           readerMovedRef.current = false;
           fitMapToView(mapView);
@@ -1947,7 +2230,7 @@ export function ExploreMapClient({
             role="img"
             aria-label={text[locale].label}
           >
-            <rect width="1000" height="500" fill={EXPLORE_MAP_COLOURS.ground} />
+            <rect className="explore-map-fallback-ground" width="1000" height="500" fill={EXPLORE_MAP_COLOURS.ground} />
             {features.map((feature) => (
               <path
                 key={feature.id}
@@ -1980,6 +2263,13 @@ export function ExploreMapClient({
                   {text[locale].zoomToPatches}
                 </button>
               </div>
+            ) : null}
+            {state === "ready" && source === "pmtiles" && patchZoomNote && !patchZoomOffered ? (
+              <p className="explore-map-patch-hint explore-map-patch-note" role="status">
+                {patchZoomNote.province === null
+                  ? text[locale].patchZoomedCentre
+                  : (patchZoomNote.chosen ? text[locale].patchZoomedChosen : text[locale].patchZoomedNearest)(boundaryJurisdiction(locale, patchZoomNote.province.toUpperCase()))}
+              </p>
             ) : null}
             {state === "ready" && source === "pmtiles" && regionDefinition && regionFigure ? (
               <aside className="explore-map-boundary-status" role="status">
@@ -2022,12 +2312,9 @@ export function ExploreMapClient({
             ) : null}
             {state === "ready" && source === "pmtiles" && boundary ? (
               <aside className="explore-map-boundary-status" role="status">
-                <strong>{text[locale].boundary}</strong>
+                <strong>{boundaryHeading(locale, boundary)}</strong>
                 <p>{boundary.name}</p>
-                <p>
-                  {province ? text[locale].province : text[locale].jurisdiction}
-                  {colon(locale)} {boundaryJurisdiction(locale, province ?? boundary.jurisdiction)}
-                </p>
+                {outsideRecord(boundary) ? <p>{text[locale].outsideRecord}</p> : null}
                 {placeState === "loading" ? <p>{text[locale].placeFiguresLoading}</p> : null}
                 {placeState === "failed" ? <p>{text[locale].placeFiguresFailed}</p> : null}
                 {readout?.kind === "boundary-only" ? <p>{readout.note}</p> : null}

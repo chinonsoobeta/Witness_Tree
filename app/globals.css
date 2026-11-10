@@ -1836,6 +1836,22 @@ h4 {
   height: auto;
   min-height: var(--explore-map-height, 430px);
 }
+/* D8: the still map's ground follows the theme, as the live map's does, and
+   its outlines turn light so a dark class keeps an edge against it. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .explore-map-fallback-ground {
+    fill: #211e19;
+  }
+  :root:not([data-theme="light"]) .explore-map-fallback path {
+    stroke: #f6f7f2;
+  }
+}
+:root[data-theme="dark"] .explore-map-fallback-ground {
+  fill: #211e19;
+}
+:root[data-theme="dark"] .explore-map-fallback path {
+  stroke: #f6f7f2;
+}
 /* In flow above the map. It used to float on the frame, which is how the
    layer panel came to cover it when the legend grew. */
 .explore-map-stack {
@@ -2036,28 +2052,70 @@ h4 {
 }
 .explore-map-key-boundaries {
   flex: 1 1 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 14px;
   margin: 0;
   padding-top: 10px;
   border-top: 1px solid var(--rule);
   color: var(--muted);
   font-size: 12.5px;
 }
+.explore-map-key-boundaries p {
+  margin: 0;
+}
+.explore-map-key-boundaries ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.explore-map-key-boundaries li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+/* The sample lines sit on the map's own light ground, so they read in both themes. */
+.explore-map-key-boundaries svg {
+  flex: none;
+  border-radius: 2px;
+  background: #eeefe9;
+}
+/*
+ * F4: the readout is kept compact (tight lines, its actions on one wrapping
+ * row) and never taller than the map leaves room for; on a narrow frame it is
+ * docked under the map instead of covering it (after the phone rules below).
+ */
 .explore-map-boundary-status {
   position: absolute;
   inset-block-start: 62px;
   inset-inline-end: 12px;
   z-index: 1;
-  max-width: min(260px, calc(100% - 24px));
-  padding: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 6px;
+  max-width: min(300px, calc(100% - 24px));
+  max-height: calc(100% - 140px);
+  overflow-y: auto;
+  padding: 8px 10px;
   border: 1px solid var(--rule-strong);
   border-radius: var(--radius-sm);
   background: var(--surface);
   color: var(--ink);
   font-size: 12px;
+  line-height: 1.35;
   pointer-events: auto;
 }
+.explore-map-boundary-status > strong,
 .explore-map-boundary-status p {
-  margin: 4px 0;
+  flex: 1 1 100%;
+}
+.explore-map-boundary-status p {
+  margin: 0;
 }
 .explore-map-boundary-status button {
   min-height: 30px;
@@ -2070,8 +2128,7 @@ h4 {
   cursor: pointer;
 }
 .explore-map-boundary-status .explore-map-place-link {
-  display: block;
-  margin-block: 6px;
+  flex: 1 1 100%;
   font-weight: 700;
 }
 /*
@@ -2183,13 +2240,10 @@ h4 {
    * its height is not what keeps them apart and it does not need padding
    * against a legend that grows. It only has to be a usable map.
    */
-  .explore-map,
-  .explore-map-fallback {
-    min-height: 30rem;
-  }
-  /* The canvas fills the taller frame, so no dead band sits under the map. */
-  .explore-map-canvas {
-    height: 30rem;
+  /* The frame, the canvas and the still map all take this one height, so no
+     dead band sits under the map and the docked readout (F4) starts at its foot. */
+  .explore-map {
+    --explore-map-height: 30rem;
   }
   .province-bar--map {
     display: grid;
@@ -2212,6 +2266,22 @@ h4 {
   }
   .explore-map-scale {
     justify-self: start;
+  }
+}
+/* F4: on a narrow frame the boundary readout is docked under the map. */
+@media (max-width: 760px) {
+  /* Docked under the map, full width, in the frame's own flow. */
+  .explore:not(.explore--expanded) .explore-map-boundary-status {
+    position: static;
+    max-width: none;
+    max-height: none;
+    border-width: 1px 0 0;
+    border-radius: 0;
+  }
+  /* The zoom and scale controls stay on the map, not on the docked readout. */
+  .explore:not(.explore--expanded) .explore-map-controls {
+    inset-block: var(--explore-map-height) auto;
+    translate: 0 calc(-100% - 12px);
   }
 }
 .explore-map:fullscreen {
