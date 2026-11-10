@@ -457,6 +457,12 @@ const PROVINCE_OUTLINE_LAYER_ID = `${EXPLORE_PRODUCTION_LAYER.sourceLayer}-outli
  */
 const REGION_SOURCE_ID = "forest-regions";
 const REGION_FILL_LAYER_ID = "forest-regions-fill";
+const CANADA_LAND_SOURCE_ID = "canada-land";
+const CANADA_LAND_LAYER_ID = "canada-land-fill";
+// A step darker than the ground: land, not data.
+const CANADA_LAND_COLOUR = "#dcdfd5";
+// Yukon, the Northwest Territories and Nunavut: one riding each.
+const TERRITORIAL_RIDING_IDS = ["CA-60001", "CA-61001", "CA-62001"];
 const REGION_HATCH_LAYER_ID = "forest-regions-hatch";
 const REGION_HATCH_IMAGE = "forest-region-hatch";
 const PROVINCE_MASK_LAYER_ID = "province-mask";
@@ -924,6 +930,26 @@ const buildStyle = (
     // same ground, so this also makes the two paths agree.
     { id: "ground", type: "background", paint: { "background-color": EXPLORE_MAP_COLOURS.ground } },
   ];
+  /*
+   * D7: the other provinces, faintly, so the four do not float as islands.
+   * Drawn from the federal-riding outlines the site already releases, as one
+   * flat tone with no edges: it says where land is and nothing about forest.
+   * The three territorial ridings are left out: their areas take in the
+   * Arctic waters and Hudson Bay, which a land tone would show as land. Its
+   * own source, so showing and hiding the riding outlines cannot remove it.
+   */
+  const ridings = BOUNDARY_OVERLAYS["federal-ridings"];
+  if (ridings.url && ridings.sourceLayer) {
+    sources[CANADA_LAND_SOURCE_ID] = { type: "vector", url: `pmtiles://${ridings.url}`, bounds: [-141, 41, -52, 84] };
+    layers.push({
+      id: CANADA_LAND_LAYER_ID,
+      type: "fill",
+      source: CANADA_LAND_SOURCE_ID,
+      "source-layer": ridings.sourceLayer,
+      filter: ["!", ["in", ["get", "id"], ["literal", TERRITORIAL_RIDING_IDS]]],
+      paint: { "fill-color": CANADA_LAND_COLOUR, "fill-outline-color": CANADA_LAND_COLOUR },
+    });
+  }
   // The province archive is always loaded: shaded in forest-loss mode,
   // outlines only in every other mode, so the map always shows where it is.
   sources[EXPLORE_PRODUCTION_LAYER.sourceLayer] = {
