@@ -2,6 +2,7 @@ import { UNRANKED_COPY } from "@/components/comparison/RankedRidingsTable";
 import { CONDITION_RECOVERY_COPY } from "@/components/explore/ConditionRecoveryFigures";
 import { METHODOLOGY_COPY } from "@/components/transparency/MethodologyPage";
 import { OFFICIAL_COMPARISON_WITHHELD } from "@/components/transparency/OfficialPublishedHarvestComparison";
+import { ReadingAids } from "@/components/transparency/ReadingAids";
 import { MINIMUM_RANKED_FOREST_HECTARES } from "@/lib/comparison";
 import { formatHectares, formatNumber, type Locale } from "@/lib/domain";
 import { BOUNDARY_READOUT_WORDS } from "@/lib/explore/boundary-readout";
@@ -239,6 +240,7 @@ export function UnknownAtlasPage({ locale }: Readonly<{ locale: Locale }>) {
       <header className="masthead">
         <h1>{text.title}</h1>
         <p className="dek">{text.dek}</p>
+        <ReadingAids locale={locale} current="unknown" />
       </header>
 
       <section className="content-section" id="no-data" aria-labelledby="no-data-title">

@@ -1,4 +1,5 @@
 import type { ConfidenceResult } from "@/lib/domain/confidence";
+import { ReadingAids } from "./ReadingAids";
 import type { Locale } from "@/lib/domain";
 import { provincialMatchingTextEn } from "@/lib/phase4/methods-matching-en";
 import { provincialMatchingTextFr } from "@/lib/phase4/methods-matching-fr";
@@ -151,6 +152,7 @@ export function MethodologyPage({ locale }: Readonly<{ locale: Locale }>) {
       <header className="masthead">
         <h1>{copy.title}</h1>
         <p className="dek">{copy.statement}</p>
+        <ReadingAids locale={locale} current="methods" />
       </header>
       <div className="content-section prose-measure">
         {sections.map(([heading, text], index) => (

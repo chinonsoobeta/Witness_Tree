@@ -1389,6 +1389,41 @@ h4 {
 /* The landing page is the one screen that opens on a question rather than a
    section name, and the canvas gives it its own larger step. */
 .masthead--record h1 { font-size: clamp(38px, 4.6vw, 60px); }
+/* The row under the Methods, Glossary, How figures are marked and What the
+   record cannot see mastheads that links the four to each other (L5). The page
+   the reader is on is plain bold text, not a link. */
+.reading-aids {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 16px;
+  margin-top: 20px;
+}
+.reading-aids-label {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--text-compact);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.reading-aids ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.reading-aids li {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: var(--text-small);
+}
+.reading-aids [aria-current="page"] {
+  color: var(--ink);
+  font-weight: 700;
+}
 .province-bar {
   display: flex;
   align-items: center;

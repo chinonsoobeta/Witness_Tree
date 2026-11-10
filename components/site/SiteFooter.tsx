@@ -7,15 +7,17 @@ import { ThemeToggle } from "./ThemeToggle";
  * to the header; Releases, Decisions, Engagement and Privacy were retired from
  * the public site on 2026-10-03. Account left the footer on 2026-11-10 (K1):
  * accounts are not active, so a link to it promised a service that does not
- * run. The page stays at its address for anyone who has it.
+ * run. The page stays at its address for anyone who has it. Methods
+ * leads "The record" since 2026-11-10 (L5): it is the way in to the glossary,
+ * how figures are marked and what the record cannot see.
  */
 const GROUPS = {
   en: [
-    ["The record", [["Corrections", "/en/corrections"], ["Glossary", "/en/glossary"]]],
+    ["The record", [["Methods", "/en/methods"], ["Glossary", "/en/glossary"], ["Corrections", "/en/corrections"]]],
     ["Your use", [["Terms", "/en/terms"]]],
   ],
   fr: [
-    ["Le registre", [["Corrections", "/fr/corrections"], ["Glossaire", "/fr/glossaire"]]],
+    ["Le registre", [["Méthodes", "/fr/methodes"], ["Glossaire", "/fr/glossaire"], ["Corrections", "/fr/corrections"]]],
     ["Votre utilisation", [["Conditions", "/fr/conditions"]]],
   ],
 } as const;
