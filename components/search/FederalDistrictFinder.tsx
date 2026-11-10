@@ -27,9 +27,12 @@ export function normalizeFederalDistrictSearch(value: string) {
     .trim();
 }
 
-export function findFederalDistricts(
+/** What the finder reads of a riding: enough to name it and link to Compare, which says so when it holds no figures for it. */
+export type FederalDistrictRow = Pick<ComparisonPlace, "id" | "name" | "placeType">;
+
+export function findFederalDistricts<Row extends FederalDistrictRow>(
   query: string,
-  rows: readonly ComparisonPlace[],
+  rows: readonly Row[],
 ) {
   const needle = normalizeFederalDistrictSearch(query);
   if (!needle) return [];
@@ -54,7 +57,7 @@ export function FederalDistrictFinder({
 }: Readonly<{
   locale: Locale;
   query: string;
-  rows: readonly ComparisonPlace[];
+  rows: readonly FederalDistrictRow[];
   parameters?: readonly Readonly<{ name: string; value: string }>[];
 }>) {
   const text = copy[locale];

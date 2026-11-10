@@ -363,6 +363,13 @@ export function RecordPlacePage({ locale, record }: Readonly<{ locale: Locale; r
           {compareHref ? <p className="place-related-links"><a href={compareHref}>{text.compare}</a></p> : null}
         </section>
 
+        {/* The share card and the print sheet stay in plain sight: they are
+            how a reader takes the figure away with its caveats attached. */}
+        <p className="place-related-links place-take-away">
+          <a href={receiptPath(locale, record)} download={`${PLACE_DATA_VERSION}-${record.geography}-${record.code}-${locale}.png`}>{text.download}</a>
+          <a href={placeSheetPath(locale, record.geography, record.code)}>{text.sheet[sheetGroup(record)]}</a>
+        </p>
+
         {/* Sources, limits, citation and embed code, full width at the foot of
             the page. Each is a closed <details>, so every limitation is one
             click away; without script they open natively, and the print rules
@@ -397,8 +404,6 @@ export function RecordPlacePage({ locale, record }: Readonly<{ locale: Locale; r
             <summary><h3>{text.citation}</h3></summary>
             <p id="place-citation">{citation}</p>
             <p className="place-share">
-              <a href={receiptPath(locale, record)} download={`${PLACE_DATA_VERSION}-${record.geography}-${record.code}-${locale}.png`}>{text.download}</a>
-              <a href={placeSheetPath(locale, record.geography, record.code)}>{text.sheet[sheetGroup(record)]}</a>
               <CopyCitation targetId="place-citation" label={text.copy} copied={text.copied} failed={text.copyFailed} />
             </p>
           </details>

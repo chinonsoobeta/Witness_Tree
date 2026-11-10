@@ -15,6 +15,16 @@ import { placeDetail, resultMeta, ridingCompareHref, ridingFigure, ridingFigureI
 import { placeFigure } from "@/lib/search/place-figures";
 import { communityPagePath, ridingPagePath } from "@/lib/place-pages/paths";
 
+/*
+ * Every federal riding in Canada, so a riding outside the four provinces is
+ * still found by name. Its link opens Compare, which names it and says it holds
+ * no figures for it; nothing is shown here as a measurement.
+ */
+const ALL_FEDERAL_RIDINGS = [
+  ...federalRidingComparison.places,
+  ...federalRidingComparison.outside.map((riding) => ({ ...riding, placeType: "federal-riding" as const })),
+];
+
 export type SearchScope = "places" | "districts";
 
 const copy = {
@@ -140,7 +150,7 @@ export function SearchPage({
           <FederalDistrictFinder
             locale={locale}
             query={query}
-            rows={federalRidingComparison.places}
+            rows={ALL_FEDERAL_RIDINGS}
           />
         </>
       )}

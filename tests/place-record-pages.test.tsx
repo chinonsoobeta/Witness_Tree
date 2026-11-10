@@ -158,7 +158,12 @@ test("sources, limits, citation and embed code sit in closed sections at the foo
     const tail = html.slice(foot);
     // Every limitation, the provenance, the boundary source, the citation and the embed code are still in the page.
     assert.equal((tail.match(/<li>/g) ?? []).length >= 5, true);
-    for (const pattern of [/2785c103-9c2d-429b-9f3d-89f5cd9ea94d/, /interval-union-and-sum-1984-2022-v1/, /id="place-citation"/, /id="place-embed-code"/, /opengraph-image/]) assert.match(tail, pattern);
+    for (const pattern of [/2785c103-9c2d-429b-9f3d-89f5cd9ea94d/, /interval-union-and-sum-1984-2022-v1/, /id="place-citation"/, /id="place-embed-code"/]) assert.match(tail, pattern);
+    // The share card and the print sheet are not behind a click: they sit in plain view, above the closed sections.
+    const takeAway = html.slice(html.indexOf('place-take-away'), foot);
+    assert.match(takeAway, /opengraph-image/);
+    assert.match(takeAway, /\/print"/);
+    assert.doesNotMatch(takeAway, /<details/);
     assert.match(tail, locale === "en" ? /The accuracy of detected loss is Unknown/ : /L’exactitude de la perte détectée est inconnue/);
   }
 });
