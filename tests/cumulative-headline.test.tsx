@@ -69,33 +69,34 @@ test("the figure, its denominator, its unmapped share and its span are one block
     // footnote under it.
     const minimum = /<p class="cumulative-minimum">([\s\S]*?)<\/p>/.exec(markup)?.[1];
     assert.ok(minimum, `no minimum statement in ${locale}`);
-    assert.match(minimum, locale === "en" ? /Both are minimums/ : /Ce sont deux minimums/);
+    assert.match(minimum, locale === "en" ? /This is a minimum\./ : /C’est un minimum\./);
     assert.ok(minimum.includes(formatHectares(measured.unknownHectares, locale)));
     assert.match(minimum, locale === "en" ? /unknown, not zero/ : /inconnues, pas comme nulles/);
   }
 });
 
-test("the annual sum appears only as a different measure, never as the figure", () => {
+/*
+ * Until 2026-11-10 the headline set the yearly losses added together beside
+ * this figure as a second measure. The harvest and fire page says yearly
+ * losses are never added up on this site, so the home headline contradicted
+ * it (audit item A2). The sum is stated in Explore's figures panel, where it
+ * is explained; here it must not appear at all, in any form.
+ */
+test("the headline states one figure and never the yearly sum", () => {
   const measured = measureWholeRecord();
   for (const locale of ["en", "fr"] as const) {
     const markup = renderToStaticMarkup(<CumulativeHeadline locale={locale} />);
     const summed = formatHectares(measured.summedLossHectares, locale);
 
-    // Summing the 38 intervals overstates the union by about 25 million
-    // hectares, because a cell cleared more than once is counted once here and
-    // once per interval there. The larger number is on the page on purpose,
-    // and it is only defensible while it is named as a second measure.
+    // The sum is a different, larger number, so its absence is a real check.
     assert.ok(measured.summedLossHectares > measured.unionLossHectares);
-    const measures = [...markup.matchAll(/<div class="cumulative-measure">([\s\S]*?)<\/div>/g)].map((match) => match[1]);
-    const summedBlocks = measures.filter((block) => block.includes(summed));
-    assert.equal(summedBlocks.length, 1, `the annual sum appears in ${summedBlocks.length} blocks in ${locale}`);
-    // It is named as its own measure, says why it is larger, and carries no share.
-    assert.match(summedBlocks[0], locale === "en" ? /counts twice/ : /compte deux fois/);
-    assert.match(summedBlocks[0], locale === "en" ? /has no percentage/ : /n’a pas de pourcentage/);
-    assert.doesNotMatch(summedBlocks[0], /\d\s?%/);
+    assert.ok(!markup.includes(summed), `the yearly sum is still printed in ${locale}`);
+    assert.doesNotMatch(markup, locale === "en" ? /added together|counts twice/i : /additionn|compte deux fois/i);
 
-    // And it is never the headline figure itself.
-    const figure = /<p class="cumulative-figure">([^<]+)<\/p>/.exec(markup)?.[1];
-    assert.notEqual(figure, summed);
+    // Exactly one figure and one measure block, and the figure is the union.
+    const figures = [...markup.matchAll(/<p class="cumulative-figure">([^<]+)<\/p>/g)].map((match) => match[1]);
+    assert.deepEqual(figures, [formatHectares(measured.unionLossHectares, locale)]);
+    assert.equal((markup.match(/<div class="cumulative-measure">/g) ?? []).length, 1);
+    assert.doesNotMatch(markup, /cumulative-pair/);
   }
 });
