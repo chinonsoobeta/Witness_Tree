@@ -509,7 +509,26 @@ const hatchImage = () => {
   return { width: size, height: size, data };
 };
 
-const regionLayers = (figures: readonly ForestRegionFigure[], breaks: ShareBreaks): StyleSpecification["layers"] => [
+/*
+ * D6: where loss patches are drawn, the shading under them fades as they
+ * appear, from the zoom the patch archive starts to just past the zoom where
+ * they are readable, so the grey "neither recorded" patches show. A quarter
+ * of the shading stays, so the region's class can still be read. The
+ * hatching for land with no data is not faded: it marks a minimum.
+ */
+const PATCH_FADE_KEEP = 0.25;
+const patchFade = (opacity: number) =>
+  [
+    "interpolate",
+    ["linear"],
+    ["zoom"],
+    EXPLORE_PER_CELL_LAYER.minZoom,
+    opacity,
+    PATCH_READABLE_ZOOM + 0.5,
+    opacity * PATCH_FADE_KEEP,
+  ] as unknown as number;
+
+const regionLayers = (figures: readonly ForestRegionFigure[], breaks: ShareBreaks, patches = false): StyleSpecification["layers"] => [
   {
     id: REGION_FILL_LAYER_ID,
     type: "fill",
@@ -517,7 +536,7 @@ const regionLayers = (figures: readonly ForestRegionFigure[], breaks: ShareBreak
     "source-layer": REGION_OVERLAY.sourceLayer!,
     paint: {
       "fill-color": regionFillColour(figures, breaks),
-      "fill-opacity": 1,
+      "fill-opacity": patches ? patchFade(1) : 1,
       // The economic regions inside one region share a colour and no edge.
       "fill-outline-color": TRANSPARENT,
     },
@@ -637,7 +656,7 @@ const boundaryJurisdiction = (locale: Locale, jurisdiction: string) =>
 // The tiles carry only the province geometry and its id that matter here; the
 // 2020-2022 figures baked into them are not read. The colour comes from the
 // span release, so it follows the year control without a new tile request.
-const provinceLayers = (fromYear: number, toYear: number, shading: ProvinceShading, breaks: ShareBreaks): StyleSpecification["layers"] => [
+const provinceLayers = (fromYear: number, toYear: number, shading: ProvinceShading, breaks: ShareBreaks, patches = false): StyleSpecification["layers"] => [
   {
     id: PROVINCE_FILL_LAYER_ID,
     type: "fill",
@@ -645,7 +664,7 @@ const provinceLayers = (fromYear: number, toYear: number, shading: ProvinceShadi
     "source-layer": EXPLORE_PRODUCTION_LAYER.sourceLayer,
     paint: {
       "fill-color": provinceFillColour(fromYear, toYear, shading, breaks),
-      "fill-opacity": 0.88,
+      "fill-opacity": patches ? patchFade(0.88) : 0.88,
     },
   },
   {
@@ -729,6 +748,10 @@ function swapPerCellLayer(
   beforeLayerId?: string,
 ) {
   if (map.getLayer(PER_CELL_LAYER_ID)) map.removeLayer(PER_CELL_LAYER_ID);
+  // The shading under the patches fades as they appear, and is whole again
+  // where no patches are drawn (D6).
+  if (map.getLayer(REGION_FILL_LAYER_ID)) map.setPaintProperty(REGION_FILL_LAYER_ID, "fill-opacity", years ? patchFade(1) : 1);
+  if (map.getLayer(PROVINCE_FILL_LAYER_ID)) map.setPaintProperty(PROVINCE_FILL_LAYER_ID, "fill-opacity", years ? patchFade(0.88) : 0.88);
   if (!years) return;
   if (!map.getSource(EXPLORE_PER_CELL_SPAN_LAYER.sourceId))
     map.addSource(EXPLORE_PER_CELL_SPAN_LAYER.sourceId, perCellSource());
@@ -909,13 +932,14 @@ const buildStyle = (
     bounds: [-141, 41, -52, 70],
   };
   if (province) {
-    const [fill, outline] = provinceLayers(span.fromYear, span.toYear, province, breaks);
+    // The shading fades under the loss patches as they appear (D6).
+    const [fill, outline] = provinceLayers(span.fromYear, span.toYear, province, breaks, years !== null);
     layers.push(fill);
     // Forest loss is shaded by region over the province fill, which still
     // answers wherever the region figures for the span are not yet in.
     if (province === "loss") {
       sources[REGION_SOURCE_ID] = { type: "vector", url: `pmtiles://${REGION_OVERLAY.url}`, bounds: [-141, 41, -52, 84] };
-      layers.push(...regionLayers(regions, breaks));
+      layers.push(...regionLayers(regions, breaks, years !== null));
     }
     layers.push(outline);
   } else if (recovery.length > 0) {
