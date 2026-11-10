@@ -24,7 +24,8 @@ const copy = {
     places: "Places",
     placesHeading: "Search places by name",
     placesField: "Province, riding or community",
-    districts: "Federal ridings",
+    // The address finder names provincial ridings as well; without it, only the federal finder is offered.
+    districts: { both: "Federal and provincial ridings", federal: "Federal ridings" },
     notice: "Search provinces, ridings and communities. Figures cover 1984 to 2022.",
     shareNote: "Each riding’s share is how much of the place lies inside it. The riding figures are for the whole riding.",
     lost: "of the mapped forest detected as lost",
@@ -38,7 +39,7 @@ const copy = {
     // Draft French for the owner's review (2026-11-10).
     placesHeading: "Rechercher un lieu par son nom",
     placesField: "Province, circonscription ou collectivité",
-    districts: "Circonscriptions fédérales",
+    districts: { both: "Circonscriptions fédérales et provinciales", federal: "Circonscriptions fédérales" },
     notice: "Recherchez une province, une circonscription ou une collectivité. Les chiffres couvrent la période de 1984 à 2022.",
     shareNote: "La part de chaque circonscription indique quelle partie du lieu s’y trouve. Les chiffres des circonscriptions portent sur toute la circonscription.",
     lost: "de la forêt cartographiée détectée comme perdue",
@@ -110,7 +111,7 @@ export function SearchPage({
           href="?scope=districts"
           aria-current={scope === "districts" ? "page" : undefined}
         >
-          {text.districts}
+          {addressLookup ? text.districts.both : text.districts.federal}
         </a>
       </nav>
 

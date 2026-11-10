@@ -53,7 +53,7 @@ test("Search exposes one field behind a labelled places or districts scope", () 
   assert.doesNotMatch(districts, /<h2>Search places<\/h2>/);
 });
 
-test("each part of Search has its own heading, in both languages", () => {
+test("each part of Search has its own heading, and the ridings tab names the levels it finds", () => {
   for (const [locale, tab, heading, field] of [
     ["en", "Places", "Search places by name", "Province, riding or community"],
     ["fr", "Lieux", "Rechercher un lieu par son nom", "Province, circonscription ou collectivité"],
@@ -63,6 +63,14 @@ test("each part of Search has its own heading, in both languages", () => {
     assert.match(html, new RegExp(`<h2>${heading}</h2>`));
     assert.match(html, new RegExp(`>${field}</label>`));
   }
+  const tab = (locale: "en" | "fr", addressLookup: boolean) => {
+    const html = renderToStaticMarkup(<SearchPage locale={locale} scope="districts" query="" addressLookup={addressLookup} />);
+    return html.match(/<a class="segment-option" href="\?scope=districts"[^>]*>([^<]*)<\/a>/)?.[1];
+  };
+  assert.equal(tab("en", true), "Federal and provincial ridings", "the address finder names provincial ridings too");
+  assert.equal(tab("fr", true), "Circonscriptions fédérales et provinciales");
+  assert.equal(tab("en", false), "Federal ridings", "without it, only the federal finder is offered");
+  assert.equal(tab("fr", false), "Circonscriptions fédérales");
 });
 
 test("real place search handles suffixes, bilingual names, dash spelling, gaps, and share display", () => {
