@@ -658,11 +658,11 @@ federal-riding outlines opened the same archive as a second source. Two
 sources ask for the same byte ranges at the same moment, and Chromium then
 fails one of the two requests on some loads: with the riding outlines on, the
 interactive map fell back to the still map on 11 of 20 headless loads. The
-economic-region outlines and the region shading had the same fault on `main`
-(3 of 16 loads). Each of those outlines now draws from the source already on
+economic-region outlines and the region shading had the same fault, in code
+that is on `main` too (3 of 16 loads, measured on this branch). Each of those outlines now draws from the source already on
 the map, and the region source is always in the style, so its header is read
 on every load of the interactive map. Measured after the fix: 56 of 56 loads
-reached the interactive map, across every outline and four modes.
+reached the interactive map, across every outline and three modes.
 `tests/explore-boundary-toggle.test.tsx` pins it. It was measured in headless
 Chromium against the local build, not on the deployed site.
 
