@@ -2,17 +2,13 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { usePathname } from "next/navigation";
-import {
-  EXPLORE_INTERVAL_FIRST_YEAR,
-  EXPLORE_INTERVAL_LAST_YEAR,
-  EXPLORE_YEAR_MAX,
-  EXPLORE_YEAR_MIN,
-  exploreHref,
-  isAnnualInterval,
-  keepAddressState,
-  parseExploreInterval,
-  type ExploreQueryState,
-} from "@/lib/explore";
+// Each name comes from its own module, not the lib/explore barrel: the barrel also
+// re-exports the riding measurements, and importing it here would ship that whole
+// record to the browser.
+import { exploreHref, type ExploreQueryState } from "@/lib/explore/href";
+import { EXPLORE_INTERVAL_FIRST_YEAR, EXPLORE_INTERVAL_LAST_YEAR, isAnnualInterval, parseExploreInterval } from "@/lib/explore/interval";
+import { keepAddressState } from "@/lib/explore/province-address";
+import { EXPLORE_YEAR_MAX, EXPLORE_YEAR_MIN } from "@/lib/explore/types";
 import { intervalHeading } from "@/lib/domain/loss-vocabulary";
 import { formatYearRange, yearRange, type Locale } from "@/lib/domain";
 

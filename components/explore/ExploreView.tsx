@@ -13,36 +13,19 @@ import {
   ProvenanceBlock,
 } from "@/components/policy";
 import { colon, formatHectares, formatNumber, formatPercent, formatYearRange, formatYearRangeKey, labelled, semicolon, SUM_TERM, yearRange, type Locale } from "@/lib/domain";
-import {
-  BOUNDARY_OVERLAY_IDS,
-  BOUNDARY_OVERLAYS,
-  EXPLORE_COVERAGE_SPAN,
-  EXPLORE_DEFAULT_YEAR,
-  EXPLORE_INTERVAL_FIRST_YEAR,
-  EXPLORE_INTERVAL_LAST_YEAR,
-  EXPLORE_MODES,
-  EXPLORE_PRODUCTION_LAYER,
-  EXPLORE_YEAR_MIN,
-  exploreHref,
-  fixturesForYear,
-  formatUnknownSharePercent,
-  fourProvinceAnnualForYear,
-  perCellArchiveSpan,
-  perCellCauseForMode,
-  fourProvinceSpanMeasurement,
-  provinceSpanDisplayRows,
-  provinceSpanReach,
-  quotedQueryValue,
-  serializeBoundaryOverlays,
-  toggleBoundaryOverlay,
-  type BoundaryOverlayId,
-  type ExploreDataView,
-  type ExploreEvent,
-  type ExploreMode,
-  type ExplorePresentation,
-  type IgnoredQueryValue,
-  type RidingBoundaryMeasurement,
-} from "@/lib/explore";
+// Each name comes from its own module, not the lib/explore barrel: the barrel also
+// re-exports the riding measurements, and importing it here would ship that whole
+// record to the browser.
+import { BOUNDARY_OVERLAY_IDS, BOUNDARY_OVERLAYS, serializeBoundaryOverlays, toggleBoundaryOverlay, type BoundaryOverlayId } from "@/lib/explore/boundaries";
+import { type RidingBoundaryMeasurement } from "@/lib/explore/boundary-readout";
+import { fixturesForYear } from "@/lib/explore/fixtures";
+import { exploreHref, quotedQueryValue, type IgnoredQueryValue } from "@/lib/explore/href";
+import { EXPLORE_INTERVAL_FIRST_YEAR, EXPLORE_INTERVAL_LAST_YEAR } from "@/lib/explore/interval";
+import { EXPLORE_PRODUCTION_LAYER, formatUnknownSharePercent } from "@/lib/explore/map-style";
+import { fourProvinceAnnualForYear, perCellCauseForMode } from "@/lib/explore/per-cell";
+import { perCellArchiveSpan, provinceSpanReach } from "@/lib/explore/period";
+import { fourProvinceSpanMeasurement, provinceSpanDisplayRows } from "@/lib/explore/province-spans";
+import { EXPLORE_COVERAGE_SPAN, EXPLORE_DEFAULT_YEAR, EXPLORE_MODES, EXPLORE_YEAR_MIN, type ExploreDataView, type ExploreEvent, type ExploreMode, type ExplorePresentation } from "@/lib/explore/types";
 import { harvestFireHref, harvestFireSpanTotals } from "@/lib/harvest-fire";
 import type { ForestRegionFigure } from "@/lib/explore/forest-regions";
 import type { ProvincialCauseBreakdown } from "@/lib/phase4/provincial-cause";

@@ -273,6 +273,22 @@ test("Next budgets count lazy Explore chunks and reject unattributed output", as
     assert.equal(result.rawShared, 0);
     assert.equal(result.rawExplore, Buffer.byteLength('load("map.js")map dependency'));
     assert.equal(manifest["static/chunks/framework.js"].isFramework, true);
+    // A place page that fetches the same map chunk lazily leaves it on the
+    // Explore limit; a chunk the place page loads up front is shared, and so
+    // is a lazy chunk Explore can never ask for.
+    await mkdir(path.join(root, "server/app/en/places/[kind]/[code]"), { recursive: true });
+    await writeFile(path.join(root, "server/app-paths-manifest.json"), JSON.stringify({ "/en/explore/page": "app/en/explore/page.js", "/en/places/[kind]/[code]/page": "app/en/places/[kind]/[code]/page.js" }));
+    await writeFile(path.join(root, "server/app/en/places/[kind]/[code]/page_client-reference-manifest.js"),
+      'globalThis.__RSC_MANIFEST = {"/en/places/[kind]/[code]/page": {clientModules: {"[project]/components/places/PlaceMap.tsx": {chunks: ["/_next/static/chunks/place.js"]}}}};');
+    await writeFile(path.join(root, "static/chunks/place.js"), 'load("map.js"); load("sheet.js")');
+    await writeFile(path.join(root, "static/chunks/sheet.js"), "place only");
+    const withPlace = await nextBudgetManifest(root);
+    assert.equal(withPlace["static/chunks/map.js"].name, "Explore");
+    assert.equal(withPlace["static/chunks/place.js"].name, "shared");
+    assert.equal(withPlace["static/chunks/sheet.js"].name, "shared");
+    await writeFile(path.join(root, "server/app/en/places/[kind]/[code]/page_client-reference-manifest.js"),
+      'globalThis.__RSC_MANIFEST = {"/en/places/[kind]/[code]/page": {clientModules: {"[project]/components/places/PlaceMap.tsx": {chunks: ["/_next/static/chunks/place.js", "/_next/static/chunks/map.js"]}}}};');
+    assert.equal((await nextBudgetManifest(root))["static/chunks/map.js"].name, "shared");
     await writeFile(path.join(root, "static/chunks/orphan.js"), "orphan");
     await assert.rejects(nextBudgetManifest(root), /unattributable/);
   } finally {

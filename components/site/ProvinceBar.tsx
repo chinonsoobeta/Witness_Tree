@@ -1,4 +1,5 @@
-import { EXPLORE_MAP_VIEWS, type ExploreMapView } from "@/lib/explore";
+// From its own module, not the lib/explore barrel: the map component imports this bar, and the barrel would ship the riding measurements to the browser with it.
+import { EXPLORE_MAP_VIEWS, type ExploreMapView } from "@/lib/explore/types";
 import type { Locale } from "@/lib/domain";
 
 const PROVINCES = {

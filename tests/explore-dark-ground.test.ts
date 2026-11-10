@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
+import { BOUNDARY_CASING_COLOUR, MAP_GROUND_DARK } from "../lib/explore/map-ground";
 
 /*
  * D8: in dark theme the map ground is dark. Only what lies outside the figures
@@ -23,7 +24,8 @@ test("D8: the theme follows the reader's choice first, then the system, and is l
 
 test("D8: only the ground, the other land and the painted-out provinces change colour", () => {
   assert.match(map, /light: \{ ground: EXPLORE_MAP_COLOURS\.ground, land: CANADA_LAND_COLOUR \},/);
-  assert.match(map, /dark: \{ ground: "#211e19", land: "#36322b" \},/);
+  assert.match(map, /dark: MAP_GROUND_DARK,/);
+  assert.deepEqual(MAP_GROUND_DARK, { ground: "#211e19", land: "#36322b" });
   assert.match(apply, /map\.setPaintProperty\("ground", "background-color", ground\);/);
   assert.match(apply, /for \(const id of \[CANADA_LAND_LAYER_ID, PROVINCE_MASK_LAYER_ID\]\)/);
   for (const kept of ["REGION_FILL_LAYER_ID", "PROVINCE_FILL_LAYER_ID", "REGION_HATCH_LAYER_ID", "PROVINCE_OUTLINE_LAYER_ID"]) {
@@ -45,8 +47,11 @@ test("D8: the province outlines get a light track in dark theme only, under the 
 test("D8: exported images keep the light ground, and the still map follows the theme", () => {
   assert.match(map, /applyMapGround\(target, "light"\);\n\s+showTimelapseSpan\(/);
   assert.match(map, /<rect className="explore-map-fallback-ground"/);
-  assert.match(css, /@media \(prefers-color-scheme: dark\) \{\n {2}:root:not\(\[data-theme="light"\]\) \.explore-map-fallback-ground \{\n {4}fill: #211e19;/);
-  assert.match(css, /:root\[data-theme="dark"\] \.explore-map-fallback-ground \{\n {2}fill: #211e19;/);
-  assert.match(css, /:root\[data-theme="dark"\] \.explore-map-fallback path \{\n {2}stroke: #f6f7f2;/);
-  assert.match(css, /:root:not\(\[data-theme="light"\]\) \.explore-map-fallback path \{\n {4}stroke: #f6f7f2;/);
+  assert.match(css, /@media \(prefers-color-scheme: dark\) \{\n {2}:root:not\(\[data-theme="light"\]\) \.explore-map-fallback-ground \{\n {4}fill: var\(--map-ground-dark\);/);
+  assert.match(css, /:root\[data-theme="dark"\] \.explore-map-fallback-ground \{\n {2}fill: var\(--map-ground-dark\);/);
+  assert.match(css, /:root\[data-theme="dark"\] \.explore-map-fallback path \{\n {2}stroke: var\(--map-casing\);/);
+  assert.match(css, /:root:not\(\[data-theme="light"\]\) \.explore-map-fallback path \{\n {4}stroke: var\(--map-casing\);/);
+  // The still map's tokens hold the live map's colours.
+  assert.ok(css.includes(`--map-ground-dark: ${MAP_GROUND_DARK.ground};`));
+  assert.ok(css.includes(`--map-casing: ${BOUNDARY_CASING_COLOUR};`));
 });

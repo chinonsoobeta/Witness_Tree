@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 import { BOUNDARY_OVERLAYS } from "../lib/explore/boundaries";
+import { BOUNDARY_CASING_COLOUR } from "../lib/explore/map-ground";
 import { EXPLORE_MAP_COLOURS } from "../lib/explore/map-style";
 
 /*
@@ -41,8 +42,8 @@ test("each outline gets a casing layer, drawn after the fills and before the lin
 });
 
 test("the casing is light against the darkest class, and every outline colour reads on it", () => {
-  const colour = map.match(/const BOUNDARY_CASING_COLOUR = "(#[0-9a-f]{6})";/)?.[1];
-  assert.ok(colour);
+  const colour = BOUNDARY_CASING_COLOUR;
+  assert.match(colour, /^#[0-9a-f]{6}$/);
   assert.ok(contrast(colour, EXPLORE_MAP_COLOURS.loss4) >= 7, "casing on the darkest class");
   assert.ok(contrast(colour, EXPLORE_MAP_COLOURS.loss3) >= 4.5, "casing on the second-darkest class");
   for (const overlay of Object.values(BOUNDARY_OVERLAYS)) {

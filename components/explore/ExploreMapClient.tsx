@@ -13,28 +13,17 @@ import { chooseScaleBar, metresPerPixel, type ScaleBar } from "@/lib/explore/map
 import { panLimitFor } from "@/lib/explore/map-camera";
 import { boundaryPlacePagePath, boundarySelectionKey } from "@/lib/explore/place-links";
 import { CAUSE_BREAKS, CAUSE_RAMPS, provinceCauseColours, type ProvinceCause } from "@/lib/explore/province-cause-shares";
-import {
-  perCellArchiveSpan,
-  BOUNDARY_OVERLAY_IDS,
-  BOUNDARY_OVERLAYS,
-  EXPLORE_MAP_COLOURS,
-  EXPLORE_PER_CELL_LAYER,
-  EXPLORE_PER_CELL_SPAN_LAYER,
-  EXPLORE_PRODUCTION_LAYER,
-  EXPLORE_YEAR_MAX,
-  formatMapHash,
-  perCellCauseForMode,
-  perCellSpanYears,
-  provinceSpanMeasurements,
-  provinceSpanReach,
-  readMapHash,
-  spanShareBreaks,
-  spanShareClassOn,
-  type BoundaryOverlayId,
-  type ExploreMapView,
-  type ExploreMode,
-  type PerCellCause,
-} from "@/lib/explore";
+// Each name comes from its own module, not the lib/explore barrel: the barrel also
+// re-exports the riding measurements, and importing it here would ship that whole
+// record to the browser.
+import { BOUNDARY_OVERLAY_IDS, BOUNDARY_OVERLAYS, type BoundaryOverlayId } from "@/lib/explore/boundaries";
+import { BOUNDARY_CASING_COLOUR, CANADA_LAND_COLOUR, MAP_GROUND_DARK } from "@/lib/explore/map-ground";
+import { formatMapHash, readMapHash } from "@/lib/explore/map-hash";
+import { EXPLORE_MAP_COLOURS, EXPLORE_PRODUCTION_LAYER } from "@/lib/explore/map-style";
+import { EXPLORE_PER_CELL_LAYER, EXPLORE_PER_CELL_SPAN_LAYER, perCellCauseForMode, perCellSpanYears, type PerCellCause } from "@/lib/explore/per-cell";
+import { perCellArchiveSpan, provinceSpanReach } from "@/lib/explore/period";
+import { provinceSpanMeasurements, spanShareBreaks, spanShareClassOn } from "@/lib/explore/province-spans";
+import { EXPLORE_YEAR_MAX, type ExploreMapView, type ExploreMode } from "@/lib/explore/types";
 import {
   boundaryReadout,
   MEASURED_BOUNDARY_OVERLAYS,
@@ -52,7 +41,7 @@ import {
   loadCensusSubdivisionFigures,
   type CensusSubdivisionFigures,
 } from "@/lib/explore/census-subdivisions";
-import { ProvinceBar } from "@/components/site";
+import { ProvinceBar } from "@/components/site/ProvinceBar";
 import { economicRegionTileId, FOREST_REGIONS, type ForestRegionFigure } from "@/lib/explore/forest-regions";
 import { NO_FOREST_COLOUR, RECOVERY_BREAKS, RECOVERY_RAMP, recoveryBand, type RecoveryRegionShade } from "@/lib/explore/recovery-shading";
 import type { TimelapseHooks } from "./TimelapseExport";
@@ -473,8 +462,6 @@ const REGION_SOURCE_ID = "forest-regions";
 const REGION_FILL_LAYER_ID = "forest-regions-fill";
 const CANADA_LAND_SOURCE_ID = "canada-land";
 const CANADA_LAND_LAYER_ID = "canada-land-fill";
-// A step darker than the ground: land, not data.
-const CANADA_LAND_COLOUR = "#dcdfd5";
 // Yukon, the Northwest Territories and Nunavut: one riding each.
 const TERRITORIAL_RIDING_IDS = ["CA-60001", "CA-61001", "CA-62001"];
 
@@ -490,7 +477,7 @@ const TERRITORIAL_RIDING_IDS = ["CA-60001", "CA-61001", "CA-62001"];
 type MapTheme = "light" | "dark";
 const MAP_GROUND: Readonly<Record<MapTheme, Readonly<{ ground: string; land: string }>>> = {
   light: { ground: EXPLORE_MAP_COLOURS.ground, land: CANADA_LAND_COLOUR },
-  dark: { ground: "#211e19", land: "#36322b" },
+  dark: MAP_GROUND_DARK,
 };
 const PREFERS_DARK = "(prefers-color-scheme: dark)";
 const readMapTheme = (): MapTheme => {
@@ -681,9 +668,6 @@ const provinceMaskLayers = (view: ExploreMapView | null): StyleSpecification["la
     paint: { "line-color": EXPLORE_MAP_COLOURS.ink, "line-width": 1.5 },
   },
 ];
-
-/** The light track drawn under each outline (F2); fixed, so it reads in both themes. */
-const BOUNDARY_CASING_COLOUR = "#f6f7f2";
 
 const boundaryLayerIds = (overlays: readonly BoundaryOverlayId[]) =>
   overlays.flatMap((id) => {
@@ -2154,6 +2138,7 @@ export function ExploreMapClient({
               return (
                 <li key={id}>
                   <svg width="30" height="10" viewBox="0 0 30 10" aria-hidden="true" focusable="false">
+                    <title>{overlay.label[locale]}</title>
                     <line x1="1" y1="5" x2="29" y2="5" stroke={BOUNDARY_CASING_COLOUR} strokeWidth={width + 2} strokeLinecap="butt" />
                     <line
                       x1="1"

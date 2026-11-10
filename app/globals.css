@@ -165,6 +165,8 @@
   --insect: #4a3aa7;
   --recovery: #4a3aa7;
   --map-ground: #eeefe9; /* the map canvas, which does not follow the theme */
+  --map-ground-dark: #211e19; /* the still map's ground in dark theme; lib/explore/map-ground.ts holds the same value for the live map */
+  --map-casing: #f6f7f2; /* the light track under a map outline, the same in both themes */
   --unknown: #6b7670;
 
   /* observed-loss ramp: held in :root only, and never themed, because the
@@ -1840,17 +1842,17 @@ h4 {
    its outlines turn light so a dark class keeps an edge against it. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .explore-map-fallback-ground {
-    fill: #211e19;
+    fill: var(--map-ground-dark);
   }
   :root:not([data-theme="light"]) .explore-map-fallback path {
-    stroke: #f6f7f2;
+    stroke: var(--map-casing);
   }
 }
 :root[data-theme="dark"] .explore-map-fallback-ground {
-  fill: #211e19;
+  fill: var(--map-ground-dark);
 }
 :root[data-theme="dark"] .explore-map-fallback path {
-  stroke: #f6f7f2;
+  stroke: var(--map-casing);
 }
 /* In flow above the map. It used to float on the frame, which is how the
    layer panel came to cover it when the legend grew. */
@@ -2082,7 +2084,7 @@ h4 {
 .explore-map-key-boundaries svg {
   flex: none;
   border-radius: 2px;
-  background: #eeefe9;
+  background: var(--map-ground);
 }
 /*
  * F4: the readout is kept compact (tight lines, its actions on one wrapping
@@ -6228,7 +6230,7 @@ dd > a:only-child {
 /* The small map of a place: hidden until script starts it, and again if its tiles fail, so the link is all a no-script or failed page shows. */
 .place-map-section { display: flex; flex-direction: column; gap: 8px; }
 .place-map { margin: 0; display: flex; flex-direction: column; gap: 8px; max-width: 960px; }
-.place-map-frame { aspect-ratio: 16 / 9; width: 100%; max-height: 420px; border: 1px solid var(--rule-strong); background: #eeefe9; }
+.place-map-frame { aspect-ratio: 16 / 9; width: 100%; max-height: 420px; border: 1px solid var(--rule-strong); background: var(--map-ground); }
 .place-map[data-state="static"] .place-map-frame, .place-map[data-state="failed"] .place-map-frame { display: none; }
 .place-map-caption { display: flex; flex-direction: column; gap: 4px; font-size: 0.9rem; }
 .place-map-caption small { color: var(--muted); }

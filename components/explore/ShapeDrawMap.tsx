@@ -8,7 +8,10 @@ import type {
   StyleSpecification,
 } from "maplibre-gl";
 import type { Locale } from "@/lib/domain";
-import { EXPLORE_MAP_COLOURS, EXPLORE_PRODUCTION_LAYER } from "@/lib/explore";
+// Each name comes from its own module, not the lib/explore barrel: the barrel also
+// re-exports the riding measurements, and importing it here would ship that whole
+// record to the browser.
+import { EXPLORE_MAP_COLOURS, EXPLORE_PRODUCTION_LAYER } from "@/lib/explore/map-style";
 import {
   appendCorner,
   cornerFromPoint,
