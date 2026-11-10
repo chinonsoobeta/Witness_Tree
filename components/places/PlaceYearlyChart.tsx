@@ -64,6 +64,9 @@ const RIGHT = 8;
 const TOP = 28;
 const BASELINE = HEIGHT - 30;
 
+/** Enough decimals to write a tick exactly (ticks are 1, 2 or 5 times a power of ten, or half that). */
+const tickDigits = (tick: number): 0 | 1 | 2 => ([0, 1] as const).find((digits) => Math.abs(Math.round(tick * 10 ** digits) - tick * 10 ** digits) < 1e-9) ?? 2;
+
 /** The smallest 1, 2 or 5 times a power of ten at or above the value. */
 function niceCeiling(value: number) {
   if (value <= 0) return 1;
@@ -82,6 +85,9 @@ export function PlaceYearlyChart({ rows, locale, wholeRecordHectares }: Readonly
   const valued = rows.filter((row) => row.kind !== "unknown") as readonly Extract<YearlyRow, { hectares: number }>[];
   const largest = valued.reduce<(typeof valued)[number] | null>((best, row) => (best === null || row.hectares > best.hectares ? row : best), null);
   const top = niceCeiling(largest?.hectares ?? 0);
+  // No scale above zero when no year has loss above zero, and no scale at all
+  // when no year has a figure: a labelled axis over gaps would read as zeros.
+  const ticks = largest && largest.hectares > 0 ? [0, 0.5, 1] : [0];
   const step = (WIDTH - LEFT - RIGHT) / rows.length;
   const barWidth = Math.max(4, step * 0.66);
   const plot = BASELINE - TOP;
@@ -109,12 +115,13 @@ export function PlaceYearlyChart({ rows, locale, wholeRecordHectares }: Readonly
               <line className="place-yearly-hatch-line" x1="0" y1="0" x2="0" y2="6" />
             </pattern>
           </defs>
-          {[0, 0.5, 1].map((fraction) => {
+          {ticks.map((fraction) => {
             const y = BASELINE - fraction * plot;
+            const tick = top * fraction;
             return (
               <g key={fraction} aria-hidden="true">
                 <line className={fraction === 0 ? "place-yearly-axis" : "place-yearly-grid"} x1={LEFT} x2={WIDTH - RIGHT} y1={y} y2={y} />
-                <text className="place-yearly-tick" x={LEFT - 8} y={y + 4} textAnchor="end">{formatNumber(top * fraction, locale, 0)}</text>
+                {valued.length ? <text className="place-yearly-tick" x={LEFT - 8} y={y + 4} textAnchor="end">{formatNumber(tick, locale, tickDigits(tick))}</text> : null}
               </g>
             );
           })}

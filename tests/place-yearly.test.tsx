@@ -83,3 +83,15 @@ test("riding and economic-region pages carry the yearly chart; community pages d
   assert.equal(community.yearly, null);
   assert.doesNotMatch(renderToStaticMarkup(<RecordPlacePage record={community} locale="en" />), /place-yearly-heading/);
 });
+
+test("the scale never prints a rounded or empty tick: small maxima keep their decimals, all-gap years get no scale", () => {
+  const ticks = (html: string) => [...html.matchAll(/class="place-yearly-tick" x="56" y="[\d.]+" text-anchor="end">([^<]*)</g)].map((match) => match[1]);
+  const small = yearlyRows({ loss: series(0, { 0: 3 }), known: series(1000), unknown: series(0) }); // 0.27 ha, scale to 0.5
+  assert.deepEqual(ticks(renderToStaticMarkup(<PlaceYearlyChart rows={small} locale="en" wholeRecordHectares={null} />)), ["0", "0.25", "0.5"]);
+  const gaps = yearlyRows({ loss: series(0), known: series(0), unknown: series(10) });
+  const html = renderToStaticMarkup(<PlaceYearlyChart rows={gaps} locale="en" wholeRecordHectares={null} />);
+  assert.deepEqual(ticks(html), [], "no labelled axis over gaps");
+  assert.equal((html.match(/class="place-yearly-gap"/g) ?? []).length, 38);
+  const zero = yearlyRows({ loss: series(0), known: series(1000), unknown: series(0) });
+  assert.deepEqual(ticks(renderToStaticMarkup(<PlaceYearlyChart rows={zero} locale="en" wholeRecordHectares={null} />)), ["0"], "measured zeros get only the zero line");
+});
