@@ -280,7 +280,7 @@ export function ExploreYearControl({
    *
    * Playback holds the first year the reader chose and moves only the last
    * year, one year a step, to the end of the record; the button says so. A
-   * first year with no later span to grow into (the default 2021 to 2022)
+   * first year with no later span to grow into (2021, as in 2021 to 2022)
    * starts from the beginning of the record instead, and the button names
    * that year too, so the reader is never surprised by where it starts.
    */

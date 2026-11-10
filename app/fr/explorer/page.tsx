@@ -20,8 +20,9 @@ export default async function Page({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const query = await searchParams;
-  // The span, not just its closing year. A URL that names only `year` still
-  // means the annual interval ending there, which is what it has always meant.
+  // The span, not just its closing year. A URL that names no year opens on the
+  // whole record, 1984 to 2022; one that names only `year` still means the
+  // annual interval ending there, which is what it has always meant.
   // Anything the page cannot use is listed in `ignored` and shown to the reader.
   const { mode, interval, overlays, ignored } = readExploreQuery(query);
   return (

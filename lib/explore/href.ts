@@ -98,9 +98,15 @@ export type ExploreRouteQuery = Readonly<
   Partial<Record<"mode" | "year" | "from" | "overlays", string | readonly string[]>>
 >;
 
-/** The span Explore opens at when a link names none, or names one it cannot show. */
+/**
+ * The span Explore opens at when a link names no year, or names one it cannot
+ * show: the whole record, 1984 to 2022. A single year is the narrowest span
+ * and the least telling first view, so it is no longer the default. A link
+ * that names only its last year still means the annual interval ending there,
+ * as it always has.
+ */
 export const EXPLORE_DEFAULT_INTERVAL: ExploreInterval = {
-  fromYear: EXPLORE_DEFAULT_YEAR - 1,
+  fromYear: EXPLORE_INTERVAL_FIRST_YEAR,
   toYear: EXPLORE_DEFAULT_YEAR,
 };
 
@@ -108,8 +114,9 @@ export const EXPLORE_DEFAULT_INTERVAL: ExploreInterval = {
  * The Explore route's state, read strictly from its address.
  *
  * `year` is the last year (1985 to 2022) and `from` the first (1984 to 2021);
- * a link naming only `year` still means the annual interval ending there, and
- * one naming only `from` runs to the end of the record. A year that is not
+ * a link naming neither opens on the whole record, 1984 to 2022, a link naming
+ * only `year` still means the annual interval ending there, and one naming
+ * only `from` runs to the end of the record. A year that is not
  * four ASCII digits, falls outside those bounds, or does not come before the
  * last year is not guessed at: the page opens at the default span and lists
  * what it ignored. So does a view or a boundary layer the page does not have.
@@ -145,7 +152,12 @@ export function readExploreQuery(query: ExploreRouteQuery): Readonly<{
     ignored.push(...yearProblems);
   } else {
     const toYear = yearText === undefined ? EXPLORE_DEFAULT_YEAR : Number(yearText);
-    const fromYear = fromText === undefined ? toYear - 1 : Number(fromText);
+    // No year at all opens the default span; a last year alone is its annual interval.
+    const fromYear = fromText !== undefined
+      ? Number(fromText)
+      : yearText === undefined
+        ? EXPLORE_DEFAULT_INTERVAL.fromYear
+        : toYear - 1;
     if (fromYear < toYear) interval = { fromYear, toYear };
     else ignored.push({ parameter: "from", value: String(fromYear), reason: "inverted", lastYear: String(toYear) });
   }
