@@ -1,5 +1,70 @@
 @import "tailwindcss";
 
+/* BC Sans, shown in a fallback face while it loads.
+
+   The package stylesheet (imported once, in components/site/Document.tsx)
+   declares the faces without font-display, so browsers hide all text until
+   the files arrive: the page painted as a blank ground with its rules and
+   borders, for up to three seconds on a slow connection, most noticeably on
+   the default System theme (audit 2026-11-10, L4). The same six faces are
+   declared again here, from the same unmodified package files, with
+   font-display: swap. This stylesheet is imported after the package one,
+   and a later face with the same family, weight and style replaces the
+   earlier one, so these are the faces the browser uses. */
+@font-face {
+  font-family: "BC Sans";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../node_modules/@bcgov/bc-sans/fonts/BCSans-Regular.woff2") format("woff2"),
+       url("../node_modules/@bcgov/bc-sans/fonts/BCSans-Regular.woff") format("woff");
+}
+
+@font-face {
+  font-family: "BC Sans";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../node_modules/@bcgov/bc-sans/fonts/BCSans-Italic.woff2") format("woff2"),
+       url("../node_modules/@bcgov/bc-sans/fonts/BCSans-Italic.woff") format("woff");
+}
+
+@font-face {
+  font-family: "BC Sans";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../node_modules/@bcgov/bc-sans/fonts/BCSans-Bold.woff2") format("woff2"),
+       url("../node_modules/@bcgov/bc-sans/fonts/BCSans-Bold.woff") format("woff");
+}
+
+@font-face {
+  font-family: "BC Sans";
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../node_modules/@bcgov/bc-sans/fonts/BCSans-BoldItalic.woff2") format("woff2"),
+       url("../node_modules/@bcgov/bc-sans/fonts/BCSans-BoldItalic.woff") format("woff");
+}
+
+@font-face {
+  font-family: "BC Sans";
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url("../node_modules/@bcgov/bc-sans/fonts/BCSans-Light.woff2") format("woff2"),
+       url("../node_modules/@bcgov/bc-sans/fonts/BCSans-Light.woff") format("woff");
+}
+
+@font-face {
+  font-family: "BC Sans";
+  font-style: italic;
+  font-weight: 300;
+  font-display: swap;
+  src: url("../node_modules/@bcgov/bc-sans/fonts/BCSans-LightItalic.woff2") format("woff2"),
+       url("../node_modules/@bcgov/bc-sans/fonts/BCSans-LightItalic.woff") format("woff");
+}
+
 /* ==========================================================================
    Token layer.
    Five groups: ground and surface, ink, rules and edges, brand,
