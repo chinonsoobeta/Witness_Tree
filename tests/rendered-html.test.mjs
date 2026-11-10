@@ -310,12 +310,14 @@ test("renders a real community page in each language from its checked-in record"
   assert.match(french, /href="\/fr\/lieux\/1984-2022-v1\/er-2021\/\d{4}"/);
 });
 
-test("a federal and a provincial riding each serve a one-page print sheet in both languages, and a community does not", async () => {
+test("a riding, a community and an economic region each serve a one-page print sheet in both languages", async () => {
   const sheets = [
     { pathname: "/en/places/1984-2022-v1/federal-2023/24002/print", lang: "en", button: "Print or save as PDF", measure: "Detected loss as a share of mapped forest" },
     { pathname: "/fr/lieux/1984-2022-v1/federal-2023/24002/print", lang: "fr", button: "Imprimer ou enregistrer en PDF", measure: "Perte détectée en part de la forêt cartographiée" },
     { pathname: "/en/places/1984-2022-v1/bc-2023/258/print", lang: "en", button: "Print or save as PDF", measure: "Detected loss as a share of mapped forest" },
     { pathname: "/fr/lieux/1984-2022-v1/bc-2023/258/print", lang: "fr", button: "Imprimer ou enregistrer en PDF", measure: "Perte détectée en part de la forêt cartographiée" },
+    { pathname: "/en/places/1984-2022-v1/csd-2021/5924034/print", lang: "en", button: "Print or save as PDF", measure: "Detected loss as a share of mapped forest" },
+    { pathname: "/fr/lieux/1984-2022-v1/er-2021/5910/print", lang: "fr", button: "Imprimer ou enregistrer en PDF", measure: "Perte détectée en part de la forêt cartographiée" },
   ];
   for (const { pathname, lang, button, measure } of sheets) {
     const response = await render(pathname);
@@ -338,8 +340,7 @@ test("a federal and a provincial riding each serve a one-page print sheet in bot
     assert.doesNotMatch(html, /\b(rank|ranked|classement|rang)\b/i, pathname);
   }
   assert.match(await (await render("/en/places/1984-2022-v1/federal-2023/24002/print")).text(), /<h1>Abitibi—Témiscamingue<\/h1>/);
-  assert.equal((await render("/en/places/1984-2022-v1/csd-2021/5924034/print")).status, 404);
-  assert.equal((await render("/fr/lieux/1984-2022-v1/er-2021/5910/print")).status, 404);
+  assert.equal((await render("/en/places/1984-2022-v1/csd-2021/0000000/print")).status, 404);
   assert.equal((await render("/en/places/1984-2022-v1/federal-2023/00000/print")).status, 404);
 });
 
