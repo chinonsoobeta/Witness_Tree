@@ -579,8 +579,10 @@ test("playback swaps only the patch layer, holds the chosen first year, and stop
   assert.doesNotMatch(map, /map\.removeSource\(EXPLORE_PER_CELL/);
   assert.match(map, /map\.addSource\(EXPLORE_PER_CELL_SPAN_LAYER\.sourceId, perCellSource\(\)\)/);
   assert.match(map, /\[mapReady, perCellKey, cause, overlayKey\]/);
-  // The map is rebuilt only when a mode changes what it can draw, never for a year.
-  assert.match(map, /\[patchCapable, shaded, overlayKey, retryNonce\]/);
+  // The map is rebuilt only when a mode changes what it can draw, never for a
+  // year, and (F1) never for Show or Hide, which swap the outlines in place.
+  assert.match(map, /\[patchCapable, shaded, retryNonce\]/);
+  assert.match(map, /syncBoundaryLayers\(map, overlays\);[\s\S]*?\}, \[mapReady, overlayKey\]\);/);
   assert.doesNotMatch(
     map,
     /\[available, provinceAvailable, perCellArchive, overlayKey, cause\]/,

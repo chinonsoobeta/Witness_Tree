@@ -307,6 +307,11 @@ function symbol(mode: ExploreMode, x: number) {
   );
 }
 
+/** Rewrites the address without a navigation, as the year control does. */
+function replaceAddress(url: string) {
+  History.prototype.replaceState.call(window.history, window.history.state, "", url);
+}
+
 function href(
   mode: ExploreMode,
   presentation: ExplorePresentation,
@@ -325,7 +330,7 @@ export function ExploreView({
   data = "chart",
   year = EXPLORE_DEFAULT_YEAR,
   fromYear,
-  overlays = [],
+  overlays: routeOverlays = [],
   ignored = [],
   ridingMeasurements = [],
   forestRegions = [],
@@ -380,6 +385,18 @@ export function ExploreView({
   const [mapPlayback, setMapPlayback] = useState<ExploreMapPlayback>("loading");
   // During a Play run the map's colour classes are those of the whole record.
   const playRun = usePlayRunActive();
+  /*
+   * The outlines on the map. Show and Hide change them in place and rewrite
+   * the address, so the scroll, the chosen province and the camera stay where
+   * the reader left them; a new address from outside resets them.
+   */
+  const routeOverlayKey = routeOverlays.join(",");
+  const [overlays, setOverlays] = useState(routeOverlays);
+  const [lastRouteOverlays, setLastRouteOverlays] = useState(routeOverlayKey);
+  if (lastRouteOverlays !== routeOverlayKey) {
+    setLastRouteOverlays(routeOverlayKey);
+    setOverlays(routeOverlays);
+  }
   if (lastRouteYear !== year) {
     setLastRouteYear(year);
     setActiveYear(year);
@@ -567,6 +584,15 @@ export function ExploreView({
                             active ? text.hide : text.show,
                             overlay.label[locale],
                           )}
+                          onClick={(event) => {
+                            // A plain click toggles in place; a new tab, or no
+                            // script at all, follows the link as before.
+                            if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+                            event.preventDefault();
+                            const next = toggleBoundaryOverlay(overlays, id);
+                            setOverlays(next);
+                            replaceAddress(`${window.location.pathname}${href(mode, presentation, data, activeYear, next, activeFrom)}${window.location.hash}`);
+                          }}
                         >
                           {active ? text.hide : text.show}
                         </a>

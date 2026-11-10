@@ -14,6 +14,7 @@ import { panLimitFor } from "@/lib/explore/map-camera";
 import { CAUSE_BREAKS, CAUSE_RAMPS, provinceCauseColours, type ProvinceCause } from "@/lib/explore/province-cause-shares";
 import {
   perCellArchiveSpan,
+  BOUNDARY_OVERLAY_IDS,
   BOUNDARY_OVERLAYS,
   EXPLORE_MAP_COLOURS,
   EXPLORE_PER_CELL_LAYER,
@@ -721,59 +722,15 @@ function showTimelapseSpan(
   }
 }
 
-const buildStyle = (
-  province: ProvinceShading | null,
-  years: PerCellSpanYears | null,
-  overlays: readonly BoundaryOverlayId[],
-  cause: PerCellCause,
-  span: Readonly<{ fromYear: number; toYear: number }>,
-  regions: readonly ForestRegionFigure[] = [],
-  focus: ExploreMapView | null = null,
-  recovery: readonly RecoveryRegionShade[] = [],
-  breaks: ShareBreaks = spanShareBreaks(span),
-): StyleSpecification => {
+/*
+ * The outlines the reader has switched on, as sources and layers. Built here
+ * so the map can be styled with them and can also swap them in place when
+ * Show or Hide is pressed, without rebuilding the map or moving the camera.
+ */
+const boundaryStyle = (overlays: readonly BoundaryOverlayId[]) => {
   const sources: StyleSpecification["sources"] = {};
-  const layers: StyleSpecification["layers"] = [
-    // The palette is a fixed printed-map palette: every colour in it, including
-    // the near-black boundary ink, assumes it sits on this light ground. Without
-    // an explicit background the canvas is transparent wherever no polygon is
-    // drawn, so in dark mode the card showed through and boundary lines outside
-    // the province fills became invisible. The SVG fallback already paints the
-    // same ground, so this also makes the two paths agree.
-    { id: "ground", type: "background", paint: { "background-color": EXPLORE_MAP_COLOURS.ground } },
-  ];
-  // The province archive is always loaded: shaded in forest-loss mode,
-  // outlines only in every other mode, so the map always shows where it is.
-  sources[EXPLORE_PRODUCTION_LAYER.sourceLayer] = {
-    type: "vector",
-    url: `pmtiles://${EXPLORE_PRODUCTION_LAYER.url}`,
-    bounds: [-141, 41, -52, 70],
-  };
-  if (province) {
-    const [fill, outline] = provinceLayers(span.fromYear, span.toYear, province, breaks);
-    layers.push(fill);
-    // Forest loss is shaded by region over the province fill, which still
-    // answers wherever the region figures for the span are not yet in.
-    if (province === "loss") {
-      sources[REGION_SOURCE_ID] = { type: "vector", url: `pmtiles://${REGION_OVERLAY.url}`, bounds: [-141, 41, -52, 84] };
-      layers.push(...regionLayers(regions, breaks));
-    }
-    layers.push(outline);
-  } else if (recovery.length > 0) {
-    sources[REGION_SOURCE_ID] = { type: "vector", url: `pmtiles://${REGION_OVERLAY.url}`, bounds: [-141, 41, -52, 84] };
-    layers.push(recoveryLayer(recovery), provinceOutlineLayer());
-  } else layers.push(provinceOutlineLayer());
-  if (years) {
-    sources[EXPLORE_PER_CELL_SPAN_LAYER.sourceId] = perCellSource();
-    // Every patch carries its closing year and the harvest and fire counts the
-    // disturbance record holds for its own interval, so every span and all
-    // three modes are this one archive filtered rather than another to load.
-    layers.push(perCellLayer(years, cause));
-  }
-  // A chosen province is shown alone: the others are painted out above the data.
-  layers.push(...provinceMaskLayers(focus));
-  // Boundaries are drawn last so they sit above the data they frame. Their
-  // fills paint nothing and exist only so the whole area answers the pointer:
+  const layers: StyleSpecification["layers"] = [];
+  // Their fills paint nothing and exist only so the whole area answers the pointer:
   // a filled boundary would compete with the loss ramp and invite reading a
   // district's colour as a measurement of that district.
   const availableOverlays = overlays.filter((id) => {
@@ -856,6 +813,85 @@ const buildStyle = (
       },
     });
   }
+  return { sources, layers };
+};
+
+/** Every layer id the outlines can use, switched on or not. */
+const ALL_BOUNDARY_LAYER_IDS = BOUNDARY_OVERLAY_IDS.flatMap((id) =>
+  ["fill", "casing", "line", "selected"].map((part) => `boundary-${id}-${part}`),
+);
+
+/*
+ * Show or Hide, in place: the outline layers are taken off and put back on top
+ * in the order the style draws them, and only an outline that is no longer
+ * shown loses its source. Tiles already loaded for a kept outline stay.
+ */
+export function syncBoundaryLayers(map: Pick<MapLibreMap, "getLayer" | "removeLayer" | "getSource" | "removeSource" | "addSource" | "addLayer">, overlays: readonly BoundaryOverlayId[]) {
+  for (const layerId of ALL_BOUNDARY_LAYER_IDS) if (map.getLayer(layerId)) map.removeLayer(layerId);
+  const next = boundaryStyle(overlays);
+  for (const id of BOUNDARY_OVERLAY_IDS) {
+    const sourceId = `boundary-${id}`;
+    if (!(sourceId in next.sources) && map.getSource(sourceId)) map.removeSource(sourceId);
+  }
+  for (const [sourceId, source] of Object.entries(next.sources)) if (!map.getSource(sourceId)) map.addSource(sourceId, source);
+  for (const layer of next.layers) map.addLayer(layer);
+}
+
+const buildStyle = (
+  province: ProvinceShading | null,
+  years: PerCellSpanYears | null,
+  overlays: readonly BoundaryOverlayId[],
+  cause: PerCellCause,
+  span: Readonly<{ fromYear: number; toYear: number }>,
+  regions: readonly ForestRegionFigure[] = [],
+  focus: ExploreMapView | null = null,
+  recovery: readonly RecoveryRegionShade[] = [],
+  breaks: ShareBreaks = spanShareBreaks(span),
+): StyleSpecification => {
+  const sources: StyleSpecification["sources"] = {};
+  const layers: StyleSpecification["layers"] = [
+    // The palette is a fixed printed-map palette: every colour in it, including
+    // the near-black boundary ink, assumes it sits on this light ground. Without
+    // an explicit background the canvas is transparent wherever no polygon is
+    // drawn, so in dark mode the card showed through and boundary lines outside
+    // the province fills became invisible. The SVG fallback already paints the
+    // same ground, so this also makes the two paths agree.
+    { id: "ground", type: "background", paint: { "background-color": EXPLORE_MAP_COLOURS.ground } },
+  ];
+  // The province archive is always loaded: shaded in forest-loss mode,
+  // outlines only in every other mode, so the map always shows where it is.
+  sources[EXPLORE_PRODUCTION_LAYER.sourceLayer] = {
+    type: "vector",
+    url: `pmtiles://${EXPLORE_PRODUCTION_LAYER.url}`,
+    bounds: [-141, 41, -52, 70],
+  };
+  if (province) {
+    const [fill, outline] = provinceLayers(span.fromYear, span.toYear, province, breaks);
+    layers.push(fill);
+    // Forest loss is shaded by region over the province fill, which still
+    // answers wherever the region figures for the span are not yet in.
+    if (province === "loss") {
+      sources[REGION_SOURCE_ID] = { type: "vector", url: `pmtiles://${REGION_OVERLAY.url}`, bounds: [-141, 41, -52, 84] };
+      layers.push(...regionLayers(regions, breaks));
+    }
+    layers.push(outline);
+  } else if (recovery.length > 0) {
+    sources[REGION_SOURCE_ID] = { type: "vector", url: `pmtiles://${REGION_OVERLAY.url}`, bounds: [-141, 41, -52, 84] };
+    layers.push(recoveryLayer(recovery), provinceOutlineLayer());
+  } else layers.push(provinceOutlineLayer());
+  if (years) {
+    sources[EXPLORE_PER_CELL_SPAN_LAYER.sourceId] = perCellSource();
+    // Every patch carries its closing year and the harvest and fire counts the
+    // disturbance record holds for its own interval, so every span and all
+    // three modes are this one archive filtered rather than another to load.
+    layers.push(perCellLayer(years, cause));
+  }
+  // A chosen province is shown alone: the others are painted out above the data.
+  layers.push(...provinceMaskLayers(focus));
+  // Boundaries are drawn last so they sit above the data they frame.
+  const boundaries = boundaryStyle(overlays);
+  Object.assign(sources, boundaries.sources);
+  layers.push(...boundaries.layers);
 
   return {
     version: 8,
@@ -976,11 +1012,13 @@ export function ExploreMapClient({
   const focusRef = useRef<ExploreMapView | null>(null);
   const regionsRef = useRef(forestRegions);
   const recoveryRef = useRef(recoveryRegions);
+  const overlaysRef = useRef(overlays);
   // Declared before the effect that builds the map, so it runs first.
   useEffect(() => {
     focusRef.current = selectedMapView;
     regionsRef.current = forestRegions;
     recoveryRef.current = recoveryRegions;
+    overlaysRef.current = overlays;
   });
   const regionKey = forestRegions.map((figure) => `${figure.id}:${figure.fromYear}-${figure.toYear}`).join(",");
   const classBreaks = spanShareBreaks(classSpan ?? { fromYear, toYear: year });
@@ -1146,7 +1184,7 @@ export function ExploreMapClient({
 
     const initializePmtiles = async () => {
       try {
-        const style = buildStyle(shading, null, overlays, "all", { fromYear, toYear: year }, regionsRef.current, focusRef.current, recoveryRef.current, breaksRef.current);
+        const style = buildStyle(shading, null, overlaysRef.current, "all", { fromYear, toYear: year }, regionsRef.current, focusRef.current, recoveryRef.current, breaksRef.current);
         const [maplibreModule, protocol] = await Promise.all([
           import("maplibre-gl"),
           import("pmtiles").then((pmtiles) => openStyleArchives(pmtiles, style)),
@@ -1220,14 +1258,16 @@ export function ExploreMapClient({
           publishView();
           let latestPoint: MapMouseEvent["point"] | null = null;
           let lastHoverKey = "";
+          // The outlines shown now, which Show and Hide change after the map is built.
           const queryBoundary = (point: MapMouseEvent["point"]) => {
-            const layers = boundaryPickLayerIds(overlays).filter((layerId) => map?.getLayer(layerId));
+            const shown = overlaysRef.current;
+            const layers = boundaryPickLayerIds(shown).filter((layerId) => map?.getLayer(layerId));
             if (layers.length === 0) return null;
             const currentMap = map;
             if (!currentMap) return null;
             return pickBoundary(
               currentMap.queryRenderedFeatures(point, { layers }) as readonly BoundaryFeature[],
-              overlays,
+              shown,
               locale,
             );
           };
@@ -1319,12 +1359,38 @@ export function ExploreMapClient({
       setMapReady(false);
       if (protocolRegistered) maplibre?.removeProtocol("pmtiles");
     };
-    // overlayKey stands in for `overlays`: the prop is a fresh array on every
-    // render of the server parent, so depending on it directly would tear down
-    // and rebuild the whole map each time. The key changes exactly when the
-    // selected overlay set changes, which is the only thing the style needs.
+    // The outlines are read from overlaysRef when the map is built and are
+    // then swapped in place (below), so Show and Hide never rebuild the map:
+    // the camera, the chosen province and the page scroll all stay put.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [patchCapable, shaded, overlayKey, retryNonce]);
+  }, [patchCapable, shaded, retryNonce]);
+
+  // Show and Hide: the outline layers change in place on the live map.
+  const builtOverlayKey = useRef<string | null>(null);
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!mapReady || !map) {
+      builtOverlayKey.current = null;
+      return;
+    }
+    // The first run after a build finds the outlines the style already drew.
+    if (builtOverlayKey.current === null) {
+      builtOverlayKey.current = overlayKey;
+      return;
+    }
+    if (builtOverlayKey.current === overlayKey) return;
+    builtOverlayKey.current = overlayKey;
+    try {
+      syncBoundaryLayers(map, overlays);
+    } catch (error: unknown) {
+      console.error("Explore boundary layer swap error", error);
+    }
+    // A pinned or pointed-at outline that is no longer shown is let go.
+    setPinnedBoundary((pinned) => (pinned && !overlays.includes(pinned.overlay) ? null : pinned));
+    setHoveredBoundary((hovered) => (hovered && !overlays.includes(hovered.overlay) ? null : hovered));
+    // overlayKey stands in for the fresh overlays array.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mapReady, overlayKey]);
 
   useEffect(() => {
     const map = mapRef.current;
