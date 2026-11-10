@@ -4,16 +4,18 @@ import { EXPLORE_COVERAGE_PERIOD } from "@/lib/explore";
 /*
  * The pages the header does not carry, in two short named groups. About moved
  * to the header; Releases, Decisions, Engagement and Privacy were retired from
- * the public site on 2026-10-03.
+ * the public site on 2026-10-03. Account left the footer on 2026-11-10 (K1):
+ * accounts are not active, so a link to it promised a service that does not
+ * run. The page stays at its address for anyone who has it.
  */
 const GROUPS = {
   en: [
     ["The record", [["Corrections", "/en/corrections"], ["Glossary", "/en/glossary"]]],
-    ["Your use", [["Account", "/en/account"], ["Terms", "/en/terms"]]],
+    ["Your use", [["Terms", "/en/terms"]]],
   ],
   fr: [
     ["Le registre", [["Corrections", "/fr/corrections"], ["Glossaire", "/fr/glossaire"]]],
-    ["Votre utilisation", [["Compte", "/fr/compte"], ["Conditions", "/fr/conditions"]]],
+    ["Votre utilisation", [["Conditions", "/fr/conditions"]]],
   ],
 } as const;
 

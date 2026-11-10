@@ -254,6 +254,8 @@ test("about routes are bilingual and carry the owner's own text", async () => {
   assert.doesNotMatch(footer, /\["About", "\/en\/about"\]|\["À propos", "\/fr\/a-propos"\]/);
   assert.doesNotMatch(header, /\["Account", "\/en\/account"\]|\["Wildfire", "\/en\/wildfire"\]/);
   assert.doesNotMatch(header, /\["Compte", "\/fr\/compte"\]|\["Incendies", "\/fr\/incendies"\]/);
-  assert.match(footer, /\["Account", "\/en\/account"\]/);
-  assert.match(footer, /\["Compte", "\/fr\/compte"\]/);
+  // Accounts are not active, so since 2026-11-10 (K1) no menu links to the
+  // Account page; it stays reachable by its address and in the sitemap.
+  assert.doesNotMatch(footer, /\/en\/account|\/fr\/compte/);
+  assert.doesNotMatch(header, /\/en\/account|\/fr\/compte/);
 });
