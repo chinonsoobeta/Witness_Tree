@@ -4986,6 +4986,10 @@ dd > a:only-child {
   align-items: center;
   min-height: 44px;
 }
+.wildfire-status-lead {
+  max-width: var(--measure);
+  margin: 0 0 16px;
+}
 .comparison-picker label {
   min-width: 0;
   max-width: 100%;

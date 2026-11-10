@@ -43,7 +43,8 @@ const COPY = {
     directory: "Provincial wildfire agencies",
     timing:
       "Fire conditions change quickly. Check when the agency page was last updated before you act.",
-    status: "Live feed status",
+    status: "This page has no live feed",
+    statusLead: "A live wildfire view must show the times below. They are empty because no feed is connected.",
     sourceUpdated: "Source updated",
     sourceUpdatedValue: "Unavailable; no live feed is connected.",
     lastRefresh: `Last successful ${PRODUCT_NAME.en} refresh`,
@@ -64,7 +65,8 @@ const COPY = {
     directory: "Organismes provinciaux responsables des feux de forêt",
     timing:
       "Les conditions changent rapidement. Vérifiez l’heure de la dernière mise à jour sur la page de l’organisme avant d’agir.",
-    status: "État du flux en direct",
+    status: "Cette page n’a pas de flux en direct",
+    statusLead: "Une vue des feux en direct doit afficher les heures ci-dessous. Elles sont vides, car aucun flux n’est connecté.",
     sourceUpdated: "Mise à jour de la source",
     sourceUpdatedValue: "Indisponible\u202F; aucun flux en direct n’est connecté.",
     lastRefresh: `Dernière actualisation réussie d’${PRODUCT_NAME.fr}`,
@@ -100,7 +102,14 @@ export function WildfireView({ locale }: WildfireViewProps) {
       </aside>
 
       <section className="content-section" aria-labelledby="wildfire-status-heading">
+        {/*
+          These five fields are a Phase 5 gate (plan 8.4, criterion
+          five-required-display-fields): they stay on the page. The heading
+          says plainly that nothing is live, so the empty fields do not read
+          as a feed that is running (audit 2026-11-10, K2).
+        */}
         <h2 id="wildfire-status-heading">{copy.status}</h2>
+        <p className="wildfire-status-lead">{copy.statusLead}</p>
         <dl className="stat-row">
           <div className="stat"><dt>{copy.sourceUpdated}</dt><dd>– {copy.sourceUpdatedValue}</dd></div>
           <div className="stat"><dt>{copy.lastRefresh}</dt><dd>– {copy.lastRefreshValue}</dd></div>
