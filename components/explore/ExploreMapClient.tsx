@@ -121,6 +121,10 @@ const text = {
     causeLegendCaption: "Average share of the forest per year",
     coverage: "Coverage",
     mapTitle: "Map",
+    // Shown over the map when a scroll or one-finger drag is left to the page.
+    gestureWindows: "Hold Ctrl and scroll to zoom the map",
+    gestureMac: "Hold ⌘ and scroll to zoom the map",
+    gestureMobile: "Use two fingers to move the map",
     zoomIn: "Zoom in",
     zoomOut: "Zoom out",
     resetView: "Reset the view",
@@ -212,6 +216,9 @@ const text = {
     causeLegendCaption: "Part moyenne de la forêt par année",
     coverage: "Couverture",
     mapTitle: "Carte",
+    gestureWindows: "Maintenez Ctrl et faites défiler pour zoomer sur la carte",
+    gestureMac: "Maintenez ⌘ et faites défiler pour zoomer sur la carte",
+    gestureMobile: "Utilisez deux doigts pour déplacer la carte",
     zoomIn: "Zoom avant",
     zoomOut: "Zoom arrière",
     resetView: "Réinitialiser la vue",
@@ -1096,6 +1103,14 @@ export function ExploreMapClient({
     };
   }, []);
 
+  // Full screen leaves nothing to scroll, so the map takes the wheel and one finger again.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!mapReady || !map) return;
+    if (isFullscreen) map.cooperativeGestures.disable();
+    else map.cooperativeGestures.enable();
+  }, [mapReady, isFullscreen]);
+
   // Whether the map may zoom to the patch layer. It is fixed when the map is
   // built, so a change of it rebuilds the map.
   const patchCapable = cause !== null;
@@ -1218,8 +1233,17 @@ export function ExploreMapClient({
           // aggregate to magnify and the old ceiling still applies.
           maxZoom: patchCapable ? EXPLORE_PER_CELL_SPAN_LAYER.maxZoom : 6,
           attributionControl: false,
+          // The page scrolls past the map: zooming needs Ctrl or ⌘ with the
+          // wheel, and moving it two fingers on a touch screen. Full screen
+          // turns this off, as nothing is left to scroll there.
+          cooperativeGestures: true,
           // MapLibre names the canvas for screen readers, in English unless told otherwise.
-          locale: { "Map.Title": text[locale].mapTitle },
+          locale: {
+            "Map.Title": text[locale].mapTitle,
+            "CooperativeGesturesHandler.WindowsHelpText": text[locale].gestureWindows,
+            "CooperativeGesturesHandler.MacHelpText": text[locale].gestureMac,
+            "CooperativeGesturesHandler.MobileHelpText": text[locale].gestureMobile,
+          },
         });
         mapRef.current = map;
         if (!map) return;
