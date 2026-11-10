@@ -27,7 +27,8 @@ const RouterContext: Context<AppRouterInstance | null> = AppRouterContext;
 const render = (element: ReactElement) =>
   renderElement(<RouterContext.Provider value={stubRouter}>{element}</RouterContext.Provider>);
 
-const DEFAULT_SPAN = { fromYear: 2021, toYear: 2022 };
+// Explore opens on the whole record; a link naming only its last year is still that year's annual interval.
+const DEFAULT_SPAN = { fromYear: 1984, toYear: 2022 };
 
 /* ---------- Explore: parsing ---------- */
 
@@ -103,8 +104,10 @@ test("the corrected address is the state shown, so a copied link is honest", () 
   const read = readExploreQuery({ mode: "lidar", year: "abc", overlays: "roads" } satisfies ExploreRouteQuery);
   assert.equal(
     exploreHref({ mode: read.mode, presentation: "map", data: "chart", year: read.interval.toYear, fromYear: read.interval.fromYear, overlays: read.overlays }),
-    "?mode=forest-change&presentation=map&data=chart&year=2022",
+    "?mode=forest-change&presentation=map&data=chart&year=2022&from=1984",
   );
+  // Read back, the corrected address opens exactly the span shown.
+  assert.deepEqual(readExploreQuery({ year: "2022", from: "1984" }).interval, DEFAULT_SPAN);
 });
 
 test("a quoted value is bounded so a crafted link cannot write a paragraph", () => {
@@ -156,9 +159,9 @@ test("each bad Explore year is named in English and French beside the span shown
     const fr = notice(explore("fr", query));
     assert.ok(en && fr, JSON.stringify(query));
     assert.match(en, english);
-    assert.match(en, /The page shows the default years, 2021–2022, instead\./);
+    assert.match(en, /The page shows the default years, 1984–2022, instead\./);
     assert.match(fr, french);
-    assert.match(fr, /La page affiche donc les années par défaut, 2021–2022\./);
+    assert.match(fr, /La page affiche donc les années par défaut, 1984–2022\./);
   }
 });
 

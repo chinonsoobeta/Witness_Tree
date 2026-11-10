@@ -1778,9 +1778,12 @@ h4 {
   text-decoration: underline;
 }
 
+/* C5: the map takes most of a laptop screen once it is in view, never less
+   than it used to (430px) and never more than 640px. */
 .explore-map {
+  --explore-map-height: clamp(430px, calc(100svh - 320px), 640px);
   position: relative;
-  min-height: 430px;
+  min-height: var(--explore-map-height);
   border: 1px solid var(--rule);
   border-radius: var(--radius);
   overflow: hidden;
@@ -1815,7 +1818,7 @@ h4 {
 }
 .explore-map-canvas {
   width: 100%;
-  height: 430px;
+  height: var(--explore-map-height);
 }
 .explore-map[data-map-source="geojson-fallback"] .explore-map-canvas,
 .explore-map[data-state="error"] .explore-map-canvas {
@@ -1831,7 +1834,7 @@ h4 {
    */
   max-width: 100%;
   height: auto;
-  min-height: 430px;
+  min-height: var(--explore-map-height, 430px);
 }
 /* In flow above the map. It used to float on the frame, which is how the
    layer panel came to cover it when the legend grew. */
@@ -2065,6 +2068,11 @@ h4 {
   color: inherit;
   font: inherit;
   cursor: pointer;
+}
+.explore-map-boundary-status .explore-map-place-link {
+  display: block;
+  margin-block: 6px;
+  font-weight: 700;
 }
 /*
  * Zoom buttons and a scale bar, floated over the map.
@@ -4220,6 +4228,188 @@ dd > a:only-child {
     display: block;
   }
 }
+/*
+ * The enlarged map (G1, G3). The Explore section itself goes full screen, or,
+ * where the browser has no full screen or refuses it, is laid over the page.
+ * It keeps what changes the map (the years and Play, the Boundaries menu, the
+ * province buttons and the legend) and sets the rest aside until the reader
+ * comes back. The legend sits beside the map on a wide screen and under it on
+ * a narrow one, never over it, and folds away with its own button.
+ */
+.explore--expanded {
+  box-sizing: border-box;
+  gap: 8px;
+  padding: 10px 16px 12px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--ground);
+}
+.explore--expanded:fullscreen {
+  width: 100vw;
+  height: 100vh;
+}
+.explore--expanded[data-expanded="page"] {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+}
+.explore--expanded > :not(.explore-toolbar):not(.explore-workspace),
+.explore--expanded .explore-workspace > :not(.explore-canvas),
+.explore--expanded .explore-canvas > .explore-note,
+.explore--expanded .explore-modes,
+.explore--expanded .explore-mode-status,
+.explore--expanded .query-notice,
+.explore--expanded .year-help {
+  display: none;
+}
+.explore--expanded > .explore-toolbar {
+  order: 0;
+  padding-block: 0 8px;
+  border-block-start: 0;
+}
+.explore--expanded > .explore-workspace {
+  order: 1;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+.explore--expanded .explore-canvas,
+.explore--expanded .explore-map-client {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+.explore--expanded .explore-map-stack {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+.explore--expanded .explore-map {
+  flex: 1 1 auto;
+  min-height: 240px;
+}
+.explore--expanded .explore-map-canvas,
+.explore--expanded .explore-map-fallback {
+  height: 100%;
+  min-height: 240px;
+}
+.explore--expanded .explore-map-stack > .explore-map-layer-panel {
+  flex: none;
+  max-height: 40vh;
+  overflow-y: auto;
+}
+.explore-map-expanded-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.explore-map-expanded-bar button {
+  min-height: 34px;
+  padding: 4px 10px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--text-small);
+  cursor: pointer;
+}
+/* A phone keeps the map as much of the screen as the controls allow. */
+@media (max-width: 759px) {
+  .explore--expanded .explore-map-readout,
+  .explore--expanded .year-head {
+    display: none;
+  }
+  /* The two year pickers side by side, each under its label, Play below. */
+  .explore--expanded .explore-toolbar .year-control {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px 10px;
+  }
+  .explore--expanded .explore-toolbar .year-control > :not(label):not(select) {
+    grid-column: 1 / -1;
+  }
+  .explore--expanded .year-control > label:nth-of-type(1) { grid-area: 1 / 1; }
+  .explore--expanded .year-control > select:nth-of-type(1) { grid-area: 2 / 1; }
+  .explore--expanded .year-control > label:nth-of-type(2) { grid-area: 1 / 2; }
+  .explore--expanded .year-control > select:nth-of-type(2) { grid-area: 2 / 2; }
+  .explore--expanded .explore-toolbar .explore-year-select {
+    width: 100%;
+    min-width: 0;
+  }
+  /* Play's tools in one row: the slider, then the pace, each under its label. */
+  .explore--expanded .explore-play-tools {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 4px 10px;
+  }
+  .explore--expanded .explore-play-jump,
+  .explore--expanded .explore-play-speed {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+  }
+  .explore--expanded .explore-play-jump input {
+    width: 100%;
+  }
+  .explore--expanded .explore-play-restore {
+    grid-column: 1 / -1;
+  }
+  .explore--expanded .province-bar--map {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .explore--expanded .province-bar--map button:first-child {
+    grid-column: auto;
+  }
+  .explore--expanded .province-bar--map button > span:first-child {
+    flex: none;
+  }
+  /* The map takes half the screen; the notes under it scroll into view. */
+  .explore--expanded .explore-map {
+    min-height: 50vh;
+  }
+}
+@media (min-width: 900px) {
+  .explore--expanded .explore-map-stack {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 320px);
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    gap: 10px 12px;
+  }
+  .explore--expanded .explore-map-stack[data-legend="closed"] {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .explore--expanded .explore-map-stack > * {
+    grid-column: 1;
+  }
+  .explore--expanded .explore-map-stack > .explore-map {
+    grid-row: 2;
+  }
+  .explore--expanded .explore-map-stack > .explore-map-expanded-bar {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: center;
+  }
+  .explore--expanded .explore-map-stack > .explore-map-layer-panel {
+    grid-column: 2;
+    grid-row: 2;
+    align-self: start;
+    max-height: 100%;
+  }
+  .explore--expanded .explore-map-stack > #explore-timelapse {
+    grid-column: 1 / -1;
+    grid-row: 3;
+  }
+}
+/* C5: a shorter masthead on Explore, so the map comes up the first screen. */
+.explore-masthead {
+  padding-block: 32px 16px;
+}
+.explore-masthead h1 {
+  margin-block: 0 8px;
+}
 .explore-data-lead { max-width: 70ch; color: var(--ink-2); }
 .explore-unknown { margin-top: 20px; max-width: 70ch; }
 .explore-unknown h3 { margin: 0 0 8px; font-size: 17px; }
@@ -4227,8 +4417,8 @@ dd > a:only-child {
 .explore-toolbar {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 14px 0 12px;
+  gap: 8px;
+  padding: 10px 0 8px;
   border-block: 1px solid var(--rule);
 }
 .explore-toolbar-row {
@@ -4262,6 +4452,39 @@ dd > a:only-child {
 }
 .explore-toolbar .year-row {
   flex: 1 1 320px;
+}
+/* Play's own tools (E1, E2): jump the last year, pick a pace, and take back
+   the reader's years. They sit with Play, so they follow it into full screen. */
+.explore-play-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  flex-basis: 100%;
+}
+.explore-play-tools[hidden] {
+  display: none;
+}
+.explore-play-jump,
+.explore-play-speed {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink-2);
+  font-size: var(--text-small);
+}
+.explore-play-jump input {
+  width: min(260px, 52vw);
+  min-height: 44px;
+  margin: 0;
+  accent-color: var(--accent-fill);
+}
+.explore-play-speed .explore-year-select {
+  width: auto;
+}
+.explore-play-restore {
+  white-space: normal;
+  text-align: start;
 }
 
 /* Boundaries: a menu of overlays rather than four cards in a column. A native
@@ -4515,6 +4738,14 @@ dd > a:only-child {
 
 .explore-annual h3 {
   margin: 0 0 12px;
+}
+
+/* Last-year figures under a longer span: a rule sets them apart from the
+   span headline above, so the two are not read as one measurement. */
+.explore-annual h3.explore-annual-last {
+  margin-block-start: 20px;
+  padding-block-start: 16px;
+  border-block-start: 1px solid var(--rule);
 }
 
 .explore-annual dl {

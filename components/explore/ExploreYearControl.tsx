@@ -9,11 +9,12 @@ import {
   EXPLORE_YEAR_MIN,
   exploreHref,
   isAnnualInterval,
+  keepAddressState,
   parseExploreInterval,
   type ExploreQueryState,
 } from "@/lib/explore";
 import { intervalHeading } from "@/lib/domain/loss-vocabulary";
-import type { Locale } from "@/lib/domain";
+import { formatYearRange, yearRange, type Locale } from "@/lib/domain";
 
 const TEXT = {
   en: {
@@ -36,6 +37,10 @@ const TEXT = {
     stillMap: "Play needs the interactive map, which isn’t showing. Retry the interactive map to play through the years.",
     complete: `Playback reached ${EXPLORE_YEAR_MAX}, the end of the record.`,
     update: "Update",
+    speed: "Speed",
+    speeds: { slow: "Slow", normal: "Normal", fast: "Fast" },
+    jump: "Move the last year",
+    restore: (span: string) => `Back to your years, ${span}`,
   },
   fr: {
     legend: "Années affichées",
@@ -57,10 +62,21 @@ const TEXT = {
     stillMap: "La lecture a besoin de la carte interactive, qui ne s’affiche pas. Réessayez la carte interactive pour faire défiler les années.",
     complete: `La lecture a atteint ${EXPLORE_YEAR_MAX}, la fin du registre.`,
     update: "Mettre à jour",
+    speed: "Vitesse",
+    speeds: { slow: "Lente", normal: "Normale", fast: "Rapide" },
+    jump: "Déplacer la dernière année",
+    restore: (span: string) => `Revenir à vos années, ${span}`,
   },
 } as const;
 
 const STEP_MS = 1500;
+
+/*
+ * How long Play shows each year (E1). Normal is the pace Play always had; a
+ * reader who asks the system for less motion starts on Slow.
+ */
+const PLAY_SPEEDS = { slow: STEP_MS * 2, normal: STEP_MS, fast: STEP_MS / 2 } as const;
+type PlaySpeed = keyof typeof PLAY_SPEEDS;
 
 /**
  * What the map beside this control can show, as far as playback cares.
@@ -87,7 +103,8 @@ function writeHistory(method: "push" | "replace", url: string) {
   // the browser's native prototype method keeps this client-owned control
   // shareable without remounting the map for every annual source swap.
   const write = method === "push" ? History.prototype.pushState : History.prototype.replaceState;
-  write.call(window.history, null, "", url);
+  // The province and the map position stay in the address (C6, D5).
+  write.call(window.history, null, "", keepAddressState(url, window.location));
 }
 
 /*
@@ -126,6 +143,54 @@ function subscribePlaying(listener: () => void) {
 
 const readPlaying = () => playing;
 const notPlaying = () => false;
+
+/*
+ * A Play run: from pressing Play until the reader picks years by hand. Pausing
+ * and resuming stay inside the run, and so does the end of the record. While a
+ * run lasts, the map holds the colour classes of the whole record, so that
+ * every frame is coloured on the same edges and frames can be compared. Held
+ * in the module for the same reason as the play flag, and announced through
+ * the same listeners.
+ */
+let playRun = false;
+
+function setPlayRun(next: boolean) {
+  if (playRun === next) return;
+  playRun = next;
+  for (const listener of playListeners) listener();
+}
+
+const readPlayRun = () => playRun;
+
+/*
+ * The span the reader had before pressing Play (E2), so one control can give
+ * it back once playback is paused or done. Cleared when they pick years by
+ * hand or take them back. Kept in the module with the run it belongs to.
+ */
+let beforePlay: Span | null = null;
+const readBeforePlay = () => beforePlay;
+const noSpan = () => null;
+
+function setBeforePlay(next: Span | null) {
+  if (beforePlay === next) return;
+  beforePlay = next;
+  for (const listener of playListeners) listener();
+}
+
+/* The pace of Play, kept in the module for the same reason as the play flag. */
+let speed: PlaySpeed | null = null;
+const readSpeed = () => speed;
+const noSpeed = () => null;
+
+function setSpeed(next: PlaySpeed) {
+  speed = next;
+  for (const listener of playListeners) listener();
+}
+
+/** Whether a Play run is under way, for the map's colour classes. */
+export function usePlayRunActive() {
+  return useSyncExternalStore(subscribePlaying, readPlayRun, notPlaying);
+}
 
 /* Hydration state, read through the same primitive as the play flag: the control
    is server-rendered inert so that the no-JavaScript form keeps its Update
@@ -211,7 +276,16 @@ export function ExploreYearControl({
   }, [correctAddress, arrivalHref]);
 
   const isPlaying = useSyncExternalStore(subscribePlaying, readPlaying, notPlaying);
+  const inRun = useSyncExternalStore(subscribePlaying, readPlayRun, notPlaying);
+  const restorable = useSyncExternalStore(subscribePlaying, readBeforePlay, noSpan);
+  const chosenSpeed = useSyncExternalStore(subscribePlaying, readSpeed, noSpeed);
   const ready = useSyncExternalStore(neverChanges, alwaysReady, neverReady);
+  const reducedMotion = useSyncExternalStore(
+    neverChanges,
+    () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+    neverReady,
+  );
+  const playSpeed: PlaySpeed = chosenSpeed ?? (reducedMotion ? "slow" : "normal");
 
   const committed = parseExploreInterval(state.fromYear, state.year);
   const committedKey = spanKey(committed);
@@ -228,6 +302,7 @@ export function ExploreYearControl({
   const [playStatus, setPlayStatus] = useState<"idle" | "playing" | "paused" | "stalled" | "complete">("idle");
   const [orderStatus, setOrderStatus] = useState<{ which: "first" | "last"; year: number } | null>(null);
   const changeGroup = useRef<{ name: "from" | "to"; started: number; span: Span } | null>(null);
+  const playButtonRef = useRef<HTMLButtonElement>(null);
   if (draft && draft.from !== committedKey) setDraft(null);
   const shown = wholeRecord
     ? { fromYear: EXPLORE_INTERVAL_FIRST_YEAR, toYear: EXPLORE_INTERVAL_LAST_YEAR }
@@ -253,6 +328,8 @@ export function ExploreYearControl({
 
   const selectYear = (name: "from" | "to", value: number, timestamp: number) => {
     setPlaying(false);
+    setPlayRun(false);
+    setBeforePlay(null);
     setPlayStatus("idle");
     const now = timestamp;
     const group = changeGroup.current;
@@ -280,7 +357,7 @@ export function ExploreYearControl({
    *
    * Playback holds the first year the reader chose and moves only the last
    * year, one year a step, to the end of the record; the button says so. A
-   * first year with no later span to grow into (the default 2021 to 2022)
+   * first year with no later span to grow into (2021, as in 2021 to 2022)
    * starts from the beginning of the record instead, and the button names
    * that year too, so the reader is never surprised by where it starts.
    */
@@ -310,10 +387,10 @@ export function ExploreYearControl({
         setPlaying(false);
         setPlayStatus("complete");
       }
-    }, mapBlocked ? 0 : STEP_MS);
+    }, mapBlocked ? 0 : PLAY_SPEEDS[playSpeed]);
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [wholeRecord, isPlaying, nextHref, committedKey, onYearChange, onIntervalChange, mapWaiting, mapBlocked]);
+  }, [wholeRecord, isPlaying, nextHref, committedKey, onYearChange, onIntervalChange, mapWaiting, mapBlocked, playSpeed]);
 
   const resumable = (playStatus === "paused" || playStatus === "stalled") && committed.toYear < EXPLORE_YEAR_MAX;
   const togglePlayback = () => {
@@ -323,9 +400,47 @@ export function ExploreYearControl({
       return;
     }
     setPlayStatus("playing");
+    // A new run remembers the reader's own years, unless it is already
+    // holding them from a run that was never undone.
+    if (!resumable && !inRun) setBeforePlay(committed);
+    if (!resumable) setPlayRun(true);
     setPlaying(true);
     // Resume carries on from the span on display; Play starts the walk again.
     if (!resumable) commit({ fromYear: playStart, toYear: playStart + 1 }, "replace");
+  };
+  /*
+   * The last year on a slider (E1), for jumping while paused or playing. Inside
+   * a Play run it moves the last year without ending the run: playing carries
+   * on from there, and a pause stays resumable. Outside a run it is the
+   * last-year picker by another means. The status line says nothing new for
+   * it; a focused slider names its own value, as any native slider does.
+   */
+  const jumpTo = (toYear: number, timestamp: number) => {
+    if (!inRun) {
+      selectYear("to", toYear, timestamp);
+      return;
+    }
+    const span = orderSpan({ fromYear: committed.fromYear, toYear }, "to");
+    commit(span, "replace");
+    // At the end of the record there is nothing left to play: the run is
+    // complete, as if it had walked there. Anywhere earlier a pause stays a
+    // pause, so Resume carries on from the year the reader chose.
+    if (span.toYear === EXPLORE_YEAR_MAX) {
+      setPlaying(false);
+      setPlayStatus("complete");
+    } else if (!isPlaying) setPlayStatus("paused");
+  };
+  // Back to the reader's own years, once playback has stopped and only if
+  // they differ from what is on display (E2).
+  const restoreSpan = restorable && !isPlaying && inRun && spanKey(restorable) !== committedKey ? restorable : null;
+  const restoreYears = () => {
+    if (!restoreSpan) return;
+    setPlayRun(false);
+    setBeforePlay(null);
+    setPlayStatus("idle");
+    commit(restoreSpan, "replace");
+    // The control goes once it has done its work; focus goes to Play, beside it.
+    playButtonRef.current?.focus();
   };
   // The accessible name starts with the visible word, so a reader who says or
   // searches for "Pause" finds the control that shows "Pause".
@@ -392,6 +507,7 @@ export function ExploreYearControl({
         <button
           type="button"
           className="year-play"
+          ref={playButtonRef}
           onClick={togglePlayback}
           disabled={!ready || wholeRecord || (mapBlocked && !isPlaying)}
           aria-label={playLabel.name}
@@ -403,6 +519,36 @@ export function ExploreYearControl({
         </button>
         {wholeRecord ? null : <p className="year-help" id={HELP_ID}>{text.help}</p>}
       </div>
+      {wholeRecord ? null : (
+        <div className="explore-play-tools" hidden={!ready}>
+          <label className="explore-play-jump" htmlFor="explore-play-jump-year">
+            <span>{text.jump}</span>
+            <input
+              id="explore-play-jump-year"
+              type="range"
+              min={EXPLORE_YEAR_MIN}
+              max={EXPLORE_YEAR_MAX}
+              step={1}
+              value={shown.toYear}
+              disabled={!ready}
+              onChange={(event) => jumpTo(Number(event.target.value), event.timeStamp)}
+            />
+          </label>
+          <label className="explore-play-speed" htmlFor="explore-play-speed-choice">
+            <span>{text.speed}</span>
+            <select id="explore-play-speed-choice" className="explore-year-select" value={playSpeed} disabled={!ready} onChange={(event) => setSpeed(event.target.value as PlaySpeed)}>
+              {(Object.keys(PLAY_SPEEDS) as PlaySpeed[]).map((option) => (
+                <option key={option} value={option}>{text.speeds[option]}</option>
+              ))}
+            </select>
+          </label>
+          {restoreSpan ? (
+            <button type="button" className="year-play explore-play-restore" onClick={restoreYears}>
+              {text.restore(formatYearRange(yearRange(restoreSpan.fromYear, restoreSpan.toYear), locale))}
+            </button>
+          ) : null}
+        </div>
+      )}
       {orderStatus !== null ? <p className="year-order-status" role="status">{text.moved(orderStatus.which, orderStatus.year)}</p> : null}
       {playMessage !== null ? (
         <p className="year-play-status" role="status">

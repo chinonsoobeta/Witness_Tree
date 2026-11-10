@@ -163,3 +163,47 @@ export function spanShareClass(percent: number | null): 0 | 1 | 2 | 3 | 4 | null
   for (const edge of SPAN_SHARE_BREAKS) if (percent >= edge) band += 1;
   return band as 0 | 1 | 2 | 3 | 4;
 }
+
+/*
+ * Class edges that follow the length of the span on display.
+ *
+ * The fixed breaks above put almost every region in the palest class for one
+ * year and in the two darkest for the whole record, so the map said little at
+ * either end. These edges were chosen from the checked-in figures: for every
+ * span of each length, the shares of the 17 map regions
+ * (forestRegionFigures in region-intervals.ts) were pooled, and each row's
+ * edges sit near that pool's quintiles, rounded to plain numbers. At every
+ * length no class then holds more than about a third of the regions
+ * (tests/explore-span-classes.test.tsx checks this against the same data).
+ *
+ * A colour therefore means "how this region compares at this span length",
+ * and the legend always prints the edges in use. During Play the edges of the
+ * whole record are held for the whole run, so the frames can be compared and
+ * the map darkens steadily.
+ */
+export const SPAN_SHARE_BREAKS_BY_LENGTH: readonly Readonly<{ maxYears: number; breaks: readonly [number, number, number, number] }>[] = [
+  { maxYears: 1, breaks: [0.5, 0.75, 1, 2] },
+  { maxYears: 3, breaks: [1, 1.5, 2.5, 4] },
+  { maxYears: 7, breaks: [2, 3, 5, 8] },
+  { maxYears: 15, breaks: [4, 6, 8, 12] },
+  { maxYears: 25, breaks: [6, 10, 14, 20] },
+  { maxYears: EXPLORE_INTERVAL_LAST_YEAR - EXPLORE_INTERVAL_FIRST_YEAR, breaks: [10, 15, 20, 25] },
+];
+
+/** The class edges for a span, from its length in years. */
+export function spanShareBreaks(interval: ExploreInterval): readonly [number, number, number, number] {
+  const years = interval.toYear - interval.fromYear;
+  const row = SPAN_SHARE_BREAKS_BY_LENGTH.find((entry) => years <= entry.maxYears) ?? SPAN_SHARE_BREAKS_BY_LENGTH[SPAN_SHARE_BREAKS_BY_LENGTH.length - 1]!;
+  return row.breaks;
+}
+
+/** The edges of the whole record, held through a Play run. */
+export const WHOLE_RECORD_SHARE_BREAKS = spanShareBreaks({ fromYear: EXPLORE_INTERVAL_FIRST_YEAR, toYear: EXPLORE_INTERVAL_LAST_YEAR });
+
+/** The class of a share on the given edges; a missing share has no class. */
+export function spanShareClassOn(percent: number | null, breaks: readonly number[]): 0 | 1 | 2 | 3 | 4 | null {
+  if (percent === null || !Number.isFinite(percent)) return null;
+  let band = 0;
+  for (const edge of breaks) if (percent >= edge) band += 1;
+  return band as 0 | 1 | 2 | 3 | 4;
+}

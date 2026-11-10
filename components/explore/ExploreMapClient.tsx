@@ -1,6 +1,6 @@
 "use client";
 
-import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState, type RefObject } from "react";
 import type {
   ExpressionSpecification,
   FilterSpecification,
@@ -11,9 +11,11 @@ import type {
 import { colon, formatHectares, formatNumber, formatPercent, formatYearRange, labelled, PRODUCT_NAME, yearRange, type Locale } from "@/lib/domain";
 import { chooseScaleBar, metresPerPixel, type ScaleBar } from "@/lib/explore/map-scale";
 import { panLimitFor } from "@/lib/explore/map-camera";
+import { boundaryPlacePagePath, boundarySelectionKey } from "@/lib/explore/place-links";
 import { CAUSE_BREAKS, CAUSE_RAMPS, provinceCauseColours, type ProvinceCause } from "@/lib/explore/province-cause-shares";
 import {
   perCellArchiveSpan,
+  BOUNDARY_OVERLAY_IDS,
   BOUNDARY_OVERLAYS,
   EXPLORE_MAP_COLOURS,
   EXPLORE_PER_CELL_LAYER,
@@ -24,8 +26,8 @@ import {
   perCellSpanYears,
   provinceSpanMeasurements,
   provinceSpanReach,
-  SPAN_SHARE_BREAKS,
-  spanShareClass,
+  spanShareBreaks,
+  spanShareClassOn,
   type BoundaryOverlayId,
   type ExploreMapView,
   type ExploreMode,
@@ -120,6 +122,10 @@ const text = {
     causeLegendCaption: "Average share of the forest per year",
     coverage: "Coverage",
     mapTitle: "Map",
+    // Shown over the map when a scroll or one-finger drag is left to the page.
+    gestureWindows: "Hold Ctrl and scroll to zoom the map",
+    gestureMac: "Hold ⌘ and scroll to zoom the map",
+    gestureMobile: "Use two fingers to move the map",
     zoomIn: "Zoom in",
     zoomOut: "Zoom out",
     resetView: "Reset the view",
@@ -134,6 +140,7 @@ const text = {
     placeFiguresLoading: "Loading this place’s figures…",
     placeFiguresFailed: "This place’s figures didn’t load. Try again later.",
     clearBoundary: "Clear boundary",
+    placePage: "Open this place’s page",
     interval: "Interval",
     normalizedShare: "Detected loss share",
     totalLoss: "Detected loss",
@@ -142,6 +149,8 @@ const text = {
     patchHint: "Loss patches appear when you zoom in close.",
     enterFullscreen: "View map full screen",
     exitFullscreen: "Exit full screen",
+    showLegend: "Show the legend",
+    hideLegend: "Hide the legend",
     mapPanelHarvest: "Harvest recorded",
     mapPanelFire: "Fire recorded",
     mapPanelNeither: "Neither recorded; the record may not cover it",
@@ -211,6 +220,9 @@ const text = {
     causeLegendCaption: "Part moyenne de la forêt par année",
     coverage: "Couverture",
     mapTitle: "Carte",
+    gestureWindows: "Maintenez Ctrl et faites défiler pour zoomer sur la carte",
+    gestureMac: "Maintenez ⌘ et faites défiler pour zoomer sur la carte",
+    gestureMobile: "Utilisez deux doigts pour déplacer la carte",
     zoomIn: "Zoom avant",
     zoomOut: "Zoom arrière",
     resetView: "Réinitialiser la vue",
@@ -225,6 +237,7 @@ const text = {
     placeFiguresLoading: "Chargement des chiffres de ce lieu…",
     placeFiguresFailed: "Les chiffres de ce lieu n’ont pas pu être chargés. Réessayez plus tard.",
     clearBoundary: "Effacer la limite",
+    placePage: "Ouvrir la page de ce lieu",
     interval: "Période",
     normalizedShare: "Part de perte détectée",
     totalLoss: "Perte détectée",
@@ -233,6 +246,8 @@ const text = {
     patchHint: "Les parcelles de perte apparaissent en zoom rapproché.",
     enterFullscreen: "Afficher la carte en plein écran",
     exitFullscreen: "Quitter le plein écran",
+    showLegend: "Afficher la légende",
+    hideLegend: "Masquer la légende",
     mapPanelHarvest: "Récolte consignée",
     mapPanelFire: "Incendie consigné",
     mapPanelNeither: "Ni récolte ni incendie consignés\u202F; le registre ne couvre peut-être pas cette zone",
@@ -250,6 +265,7 @@ const PMTILES_LOAD_TIMEOUT_MS = 10_000;
 // by the server and client trees having different positions around this island.
 const STATUS_ID = "explore-map-status";
 const ATTRIBUTION_ID = "explore-map-attribution";
+const LAYER_PANEL_ID = "explore-map-legend-panel";
 
 // The default camera and pan limit share this one four-province envelope so
 // they cannot drift apart. It frames all four provinces but is not a button.
@@ -368,15 +384,18 @@ const SPAN_CLASS_COLOURS = [
   EXPLORE_MAP_COLOURS.loss4,
 ] as const;
 
+/** The class edges in use: the span's own, or those held for a Play run. */
+type ShareBreaks = readonly number[];
+
 /*
  * One colour per province for the span on display. A province whose share
  * cannot be computed gets the ground colour, not the lightest band: the
- * lightest band says "under 1 percent", and nobody measured that.
+ * lightest band says "under" the first edge, and nobody measured that.
  */
-const provinceSpanColours = (fromYear: number, toYear: number): Readonly<Record<string, string>> =>
+const provinceSpanColours = (fromYear: number, toYear: number, breaks: ShareBreaks): Readonly<Record<string, string>> =>
   Object.fromEntries(
     provinceSpanMeasurements({ fromYear, toYear }).map((row) => {
-      const band = spanShareClass(row.unionLossPercent);
+      const band = spanShareClassOn(row.unionLossPercent, breaks);
       return [row.id, band === null ? EXPLORE_MAP_COLOURS.ground : SPAN_CLASS_COLOURS[band]];
     }),
   );
@@ -384,8 +403,14 @@ const provinceSpanColours = (fromYear: number, toYear: number): Readonly<Record<
 /** What the province fill shows: detected loss, or recorded harvest or fire. */
 type ProvinceShading = "loss" | ProvinceCause;
 
-const provinceFillColour = (fromYear: number, toYear: number, shading: ProvinceShading = "loss") => {
-  const colours = shading === "loss" ? provinceSpanColours(fromYear, toYear) : provinceCauseColours(shading, fromYear, toYear);
+// Classed on the span's own edges unless other edges are given (a Play run).
+const provinceFillColour = (
+  fromYear: number,
+  toYear: number,
+  shading: ProvinceShading = "loss",
+  breaks: ShareBreaks = spanShareBreaks({ fromYear, toYear }),
+) => {
+  const colours = shading === "loss" ? provinceSpanColours(fromYear, toYear, breaks) : provinceCauseColours(shading, fromYear, toYear);
   return [
     "match",
     ["get", "province_id"],
@@ -417,18 +442,18 @@ const regionForTile = new Map(
   FOREST_REGIONS.flatMap((region) => region.economicRegions.map((code) => [economicRegionTileId(code), region] as const)),
 );
 
-const regionColour = (figure: ForestRegionFigure) => {
+const regionColour = (figure: ForestRegionFigure, breaks: ShareBreaks) => {
   if (figure.mappedSharePercent === null) return NO_FOREST_COLOUR;
-  const band = spanShareClass(figure.mappedSharePercent);
+  const band = spanShareClassOn(figure.mappedSharePercent, breaks);
   return band === null ? NO_FOREST_COLOUR : SPAN_CLASS_COLOURS[band];
 };
 
 /** Every economic region in the colour of its owner region; transparent where no figure is current. */
-const regionFillColour = (figures: readonly ForestRegionFigure[]) => {
+const regionFillColour = (figures: readonly ForestRegionFigure[], breaks: ShareBreaks) => {
   const byId = new Map(figures.map((figure) => [figure.id, figure]));
   const pairs = [...regionForTile].flatMap(([tileId, region]) => {
     const figure = byId.get(region.id);
-    return figure ? [tileId, regionColour(figure)] : [];
+    return figure ? [tileId, regionColour(figure, breaks)] : [];
   });
   return (pairs.length === 0 ? TRANSPARENT : ["match", ["get", "id"], ...pairs, TRANSPARENT]) as unknown as string;
 };
@@ -456,14 +481,14 @@ const hatchImage = () => {
   return { width: size, height: size, data };
 };
 
-const regionLayers = (figures: readonly ForestRegionFigure[]): StyleSpecification["layers"] => [
+const regionLayers = (figures: readonly ForestRegionFigure[], breaks: ShareBreaks): StyleSpecification["layers"] => [
   {
     id: REGION_FILL_LAYER_ID,
     type: "fill",
     source: REGION_SOURCE_ID,
     "source-layer": REGION_OVERLAY.sourceLayer!,
     paint: {
-      "fill-color": regionFillColour(figures),
+      "fill-color": regionFillColour(figures, breaks),
       "fill-opacity": 1,
       // The economic regions inside one region share a colour and no edge.
       "fill-outline-color": TRANSPARENT,
@@ -544,6 +569,9 @@ const provinceMaskLayers = (view: ExploreMapView | null): StyleSpecification["la
   },
 ];
 
+/** The light track drawn under each outline (F2); fixed, so it reads in both themes. */
+const BOUNDARY_CASING_COLOUR = "#f6f7f2";
+
 const boundaryLayerIds = (overlays: readonly BoundaryOverlayId[]) =>
   overlays.flatMap((id) => {
     const overlay = BOUNDARY_OVERLAYS[id];
@@ -581,14 +609,14 @@ const boundaryJurisdiction = (locale: Locale, jurisdiction: string) =>
 // The tiles carry only the province geometry and its id that matter here; the
 // 2020-2022 figures baked into them are not read. The colour comes from the
 // span release, so it follows the year control without a new tile request.
-const provinceLayers = (fromYear: number, toYear: number, shading: ProvinceShading = "loss"): StyleSpecification["layers"] => [
+const provinceLayers = (fromYear: number, toYear: number, shading: ProvinceShading, breaks: ShareBreaks): StyleSpecification["layers"] => [
   {
     id: PROVINCE_FILL_LAYER_ID,
     type: "fill",
     source: EXPLORE_PRODUCTION_LAYER.sourceLayer,
     "source-layer": EXPLORE_PRODUCTION_LAYER.sourceLayer,
     paint: {
-      "fill-color": provinceFillColour(fromYear, toYear, shading),
+      "fill-color": provinceFillColour(fromYear, toYear, shading, breaks),
       "fill-opacity": 0.88,
     },
   },
@@ -609,7 +637,8 @@ const provinceLayers = (fromYear: number, toYear: number, shading: ProvinceShadi
  * a patch mode opened on an empty ground: the patches only draw from zoom 8,
  * so at the four-province view there was nothing to see or steer by.
  */
-const provinceOutlineLayer = (): StyleSpecification["layers"][number] => provinceLayers(EXPLORE_YEAR_MAX - 1, EXPLORE_YEAR_MAX)[1]!;
+const provinceOutlineLayer = (): StyleSpecification["layers"][number] =>
+  provinceLayers(EXPLORE_YEAR_MAX - 1, EXPLORE_YEAR_MAX, "loss", spanShareBreaks({ fromYear: EXPLORE_YEAR_MAX - 1, toYear: EXPLORE_YEAR_MAX }))[1]!;
 
 const PER_CELL_LAYER_ID = `${EXPLORE_PER_CELL_LAYER.sourceId}-fill`;
 
@@ -685,6 +714,8 @@ function swapPerCellLayer(
  * One span on a map built from this map's style, for the time-lapse export:
  * the same colours, region figures and patch filter the year control would
  * give it, and the selected boundary outlined. The live map is not touched.
+ * Every frame is one year, so every frame is classed on the same one-year
+ * edges and the frames can be compared.
  */
 function showTimelapseSpan(
   map: MapLibreMap,
@@ -693,9 +724,9 @@ function showTimelapseSpan(
   regions: readonly ForestRegionFigure[],
 ) {
   if (options.shading && map.getLayer(PROVINCE_FILL_LAYER_ID))
-    map.setPaintProperty(PROVINCE_FILL_LAYER_ID, "fill-color", provinceFillColour(span.fromYear, span.toYear, options.shading));
+    map.setPaintProperty(PROVINCE_FILL_LAYER_ID, "fill-color", provinceFillColour(span.fromYear, span.toYear, options.shading, spanShareBreaks(span)));
   if (map.getLayer(REGION_HATCH_LAYER_ID)) {
-    map.setPaintProperty(REGION_FILL_LAYER_ID, "fill-color", regionFillColour(regions));
+    map.setPaintProperty(REGION_FILL_LAYER_ID, "fill-color", regionFillColour(regions, spanShareBreaks(span)));
     map.setFilter(REGION_HATCH_LAYER_ID, regionHatchFilter(regions));
   }
   swapPerCellLayer(map, perCellSpanYears(span.fromYear, span.toYear), options.cause, boundaryLayerIds(options.overlays)[0]);
@@ -706,58 +737,15 @@ function showTimelapseSpan(
   }
 }
 
-const buildStyle = (
-  province: ProvinceShading | null,
-  years: PerCellSpanYears | null,
-  overlays: readonly BoundaryOverlayId[],
-  cause: PerCellCause,
-  span: Readonly<{ fromYear: number; toYear: number }>,
-  regions: readonly ForestRegionFigure[] = [],
-  focus: ExploreMapView | null = null,
-  recovery: readonly RecoveryRegionShade[] = [],
-): StyleSpecification => {
+/*
+ * The outlines the reader has switched on, as sources and layers. Built here
+ * so the map can be styled with them and can also swap them in place when
+ * Show or Hide is pressed, without rebuilding the map or moving the camera.
+ */
+const boundaryStyle = (overlays: readonly BoundaryOverlayId[]) => {
   const sources: StyleSpecification["sources"] = {};
-  const layers: StyleSpecification["layers"] = [
-    // The palette is a fixed printed-map palette: every colour in it, including
-    // the near-black boundary ink, assumes it sits on this light ground. Without
-    // an explicit background the canvas is transparent wherever no polygon is
-    // drawn, so in dark mode the card showed through and boundary lines outside
-    // the province fills became invisible. The SVG fallback already paints the
-    // same ground, so this also makes the two paths agree.
-    { id: "ground", type: "background", paint: { "background-color": EXPLORE_MAP_COLOURS.ground } },
-  ];
-  // The province archive is always loaded: shaded in forest-loss mode,
-  // outlines only in every other mode, so the map always shows where it is.
-  sources[EXPLORE_PRODUCTION_LAYER.sourceLayer] = {
-    type: "vector",
-    url: `pmtiles://${EXPLORE_PRODUCTION_LAYER.url}`,
-    bounds: [-141, 41, -52, 70],
-  };
-  if (province) {
-    const [fill, outline] = provinceLayers(span.fromYear, span.toYear, province);
-    layers.push(fill);
-    // Forest loss is shaded by region over the province fill, which still
-    // answers wherever the region figures for the span are not yet in.
-    if (province === "loss") {
-      sources[REGION_SOURCE_ID] = { type: "vector", url: `pmtiles://${REGION_OVERLAY.url}`, bounds: [-141, 41, -52, 84] };
-      layers.push(...regionLayers(regions));
-    }
-    layers.push(outline);
-  } else if (recovery.length > 0) {
-    sources[REGION_SOURCE_ID] = { type: "vector", url: `pmtiles://${REGION_OVERLAY.url}`, bounds: [-141, 41, -52, 84] };
-    layers.push(recoveryLayer(recovery), provinceOutlineLayer());
-  } else layers.push(provinceOutlineLayer());
-  if (years) {
-    sources[EXPLORE_PER_CELL_SPAN_LAYER.sourceId] = perCellSource();
-    // Every patch carries its closing year and the harvest and fire counts the
-    // disturbance record holds for its own interval, so every span and all
-    // three modes are this one archive filtered rather than another to load.
-    layers.push(perCellLayer(years, cause));
-  }
-  // A chosen province is shown alone: the others are painted out above the data.
-  layers.push(...provinceMaskLayers(focus));
-  // Boundaries are drawn last so they sit above the data they frame. Their
-  // fills paint nothing and exist only so the whole area answers the pointer:
+  const layers: StyleSpecification["layers"] = [];
+  // Their fills paint nothing and exist only so the whole area answers the pointer:
   // a filled boundary would compete with the loss ramp and invite reading a
   // district's colour as a measurement of that district.
   const availableOverlays = overlays.filter((id) => {
@@ -784,6 +772,23 @@ const buildStyle = (
       paint: {
         "fill-color": EXPLORE_MAP_COLOURS.ink,
         "fill-opacity": 0,
+      },
+    });
+  }
+  // A light casing under every outline, so a dark line still reads on the
+  // darkest loss classes; on the light ground it all but disappears.
+  for (const id of availableOverlays) {
+    const overlay = BOUNDARY_OVERLAYS[id];
+    const sourceId = `boundary-${id}`;
+    layers.push({
+      id: `${sourceId}-casing`,
+      type: "line",
+      source: sourceId,
+      "source-layer": overlay.sourceLayer,
+      paint: {
+        "line-color": BOUNDARY_CASING_COLOUR,
+        "line-width": ["interpolate", ["linear"], ["zoom"], 0, 1.6, 5, 2.2, 10, 3.6],
+        "line-opacity": ["interpolate", ["linear"], ["zoom"], 0, 0.5, 5, 0.65, 10, 0.75],
       },
     });
   }
@@ -823,6 +828,85 @@ const buildStyle = (
       },
     });
   }
+  return { sources, layers };
+};
+
+/** Every layer id the outlines can use, switched on or not. */
+const ALL_BOUNDARY_LAYER_IDS = BOUNDARY_OVERLAY_IDS.flatMap((id) =>
+  ["fill", "casing", "line", "selected"].map((part) => `boundary-${id}-${part}`),
+);
+
+/*
+ * Show or Hide, in place: the outline layers are taken off and put back on top
+ * in the order the style draws them, and only an outline that is no longer
+ * shown loses its source. Tiles already loaded for a kept outline stay.
+ */
+export function syncBoundaryLayers(map: Pick<MapLibreMap, "getLayer" | "removeLayer" | "getSource" | "removeSource" | "addSource" | "addLayer">, overlays: readonly BoundaryOverlayId[]) {
+  for (const layerId of ALL_BOUNDARY_LAYER_IDS) if (map.getLayer(layerId)) map.removeLayer(layerId);
+  const next = boundaryStyle(overlays);
+  for (const id of BOUNDARY_OVERLAY_IDS) {
+    const sourceId = `boundary-${id}`;
+    if (!(sourceId in next.sources) && map.getSource(sourceId)) map.removeSource(sourceId);
+  }
+  for (const [sourceId, source] of Object.entries(next.sources)) if (!map.getSource(sourceId)) map.addSource(sourceId, source);
+  for (const layer of next.layers) map.addLayer(layer);
+}
+
+const buildStyle = (
+  province: ProvinceShading | null,
+  years: PerCellSpanYears | null,
+  overlays: readonly BoundaryOverlayId[],
+  cause: PerCellCause,
+  span: Readonly<{ fromYear: number; toYear: number }>,
+  regions: readonly ForestRegionFigure[] = [],
+  focus: ExploreMapView | null = null,
+  recovery: readonly RecoveryRegionShade[] = [],
+  breaks: ShareBreaks = spanShareBreaks(span),
+): StyleSpecification => {
+  const sources: StyleSpecification["sources"] = {};
+  const layers: StyleSpecification["layers"] = [
+    // The palette is a fixed printed-map palette: every colour in it, including
+    // the near-black boundary ink, assumes it sits on this light ground. Without
+    // an explicit background the canvas is transparent wherever no polygon is
+    // drawn, so in dark mode the card showed through and boundary lines outside
+    // the province fills became invisible. The SVG fallback already paints the
+    // same ground, so this also makes the two paths agree.
+    { id: "ground", type: "background", paint: { "background-color": EXPLORE_MAP_COLOURS.ground } },
+  ];
+  // The province archive is always loaded: shaded in forest-loss mode,
+  // outlines only in every other mode, so the map always shows where it is.
+  sources[EXPLORE_PRODUCTION_LAYER.sourceLayer] = {
+    type: "vector",
+    url: `pmtiles://${EXPLORE_PRODUCTION_LAYER.url}`,
+    bounds: [-141, 41, -52, 70],
+  };
+  if (province) {
+    const [fill, outline] = provinceLayers(span.fromYear, span.toYear, province, breaks);
+    layers.push(fill);
+    // Forest loss is shaded by region over the province fill, which still
+    // answers wherever the region figures for the span are not yet in.
+    if (province === "loss") {
+      sources[REGION_SOURCE_ID] = { type: "vector", url: `pmtiles://${REGION_OVERLAY.url}`, bounds: [-141, 41, -52, 84] };
+      layers.push(...regionLayers(regions, breaks));
+    }
+    layers.push(outline);
+  } else if (recovery.length > 0) {
+    sources[REGION_SOURCE_ID] = { type: "vector", url: `pmtiles://${REGION_OVERLAY.url}`, bounds: [-141, 41, -52, 84] };
+    layers.push(recoveryLayer(recovery), provinceOutlineLayer());
+  } else layers.push(provinceOutlineLayer());
+  if (years) {
+    sources[EXPLORE_PER_CELL_SPAN_LAYER.sourceId] = perCellSource();
+    // Every patch carries its closing year and the harvest and fire counts the
+    // disturbance record holds for its own interval, so every span and all
+    // three modes are this one archive filtered rather than another to load.
+    layers.push(perCellLayer(years, cause));
+  }
+  // A chosen province is shown alone: the others are painted out above the data.
+  layers.push(...provinceMaskLayers(focus));
+  // Boundaries are drawn last so they sit above the data they frame.
+  const boundaries = boundaryStyle(overlays);
+  Object.assign(sources, boundaries.sources);
+  layers.push(...boundaries.layers);
 
   return {
     version: 8,
@@ -858,15 +942,16 @@ const symbol = (className: string) => (
 );
 
 // Worded rather than written as "5–<10%", which a screen reader reads as
-// symbols, and built from the breaks so the legend cannot drift from the fill.
-const spanLegend = (locale: Locale) => {
+// symbols, and built from the edges in use so the legend cannot drift from the
+// fill.
+const spanLegend = (locale: Locale, breaks: ShareBreaks) => {
   const pct = (value: number) => formatPercent(value, locale);
-  const [first] = SPAN_SHARE_BREAKS;
-  const last = SPAN_SHARE_BREAKS[SPAN_SHARE_BREAKS.length - 1];
+  const first = breaks[0]!;
+  const last = breaks[breaks.length - 1]!;
   return [
     locale === "fr" ? `Moins de ${pct(first)}` : `Under ${pct(first)}`,
-    ...SPAN_SHARE_BREAKS.slice(1).map((edge, i) =>
-      locale === "fr" ? `${pct(SPAN_SHARE_BREAKS[i])} à moins de ${pct(edge)}` : `${pct(SPAN_SHARE_BREAKS[i])} to under ${pct(edge)}`),
+    ...breaks.slice(1).map((edge, i) =>
+      locale === "fr" ? `${pct(breaks[i]!)} à moins de ${pct(edge)}` : `${pct(breaks[i]!)} to under ${pct(edge)}`),
     locale === "fr" ? `${pct(last)} ou plus` : `${pct(last)} or more`,
   ].map((label, band) => [`loss-${band}`, label] as const);
 };
@@ -884,6 +969,12 @@ const causeLegend = (locale: Locale) => {
   ];
 };
 
+/**
+ * How the map is enlarged: the browser's full screen, or, where the browser
+ * has none or refuses it, the same controls laid over the page (G1, G3).
+ */
+export type ExploreMapExpanded = "fullscreen" | "page" | null;
+
 export function ExploreMapClient({
   locale,
   mode,
@@ -893,6 +984,12 @@ export function ExploreMapClient({
   ridingMeasurements = [],
   forestRegions = [],
   recoveryRegions = [],
+  classSpan,
+  measuredBoundaryKeys,
+  stageRef,
+  onExpandedChange,
+  initialProvince = null,
+  onProvinceChange,
   onPlaybackChange,
 }: Readonly<{
   locale: Locale;
@@ -914,6 +1011,30 @@ export function ExploreMapClient({
   forestRegions?: readonly ForestRegionFigure[];
   /** Condition and recovery by economic region, in that mode only. */
   recoveryRegions?: readonly RecoveryRegionShade[];
+  /**
+   * The span whose class edges the loss shading uses. Left out, it is the span
+   * on display; during a Play run it is the whole record, so the edges hold
+   * still from frame to frame.
+   */
+  classSpan?: Readonly<{ fromYear: number; toYear: number }>;
+  /**
+   * The ridings and economic regions the record measures, keyed as
+   * boundarySelectionKey keys them, whatever span is on display. Each has a
+   * place page; the pinned readout links to it.
+   */
+  measuredBoundaryKeys?: ReadonlySet<string>;
+  /**
+   * What goes full screen: the Explore section, so the years, Play, the
+   * Boundaries menu, the province buttons and the legend come with the map.
+   * Left out, the map frame alone.
+   */
+  stageRef?: RefObject<HTMLElement | null>;
+  /** Told when the map is enlarged or put back, so the stage can lay itself out. */
+  onExpandedChange?: (expanded: ExploreMapExpanded) => void;
+  /** The province the address names, framed when the map is built (C6). */
+  initialProvince?: ExploreMapView | null;
+  /** Told when the reader picks a province, or all four (null). */
+  onProvinceChange?: (province: ExploreMapView | null) => void;
   /** Told whether the map can follow playback, so Play waits or pauses rather than stepping a map that isn't drawing. */
   onPlaybackChange?: (playback: ExploreMapPlayback) => void;
 }>) {
@@ -930,21 +1051,55 @@ export function ExploreMapClient({
    */
   const mapRef = useRef<MapLibreMap | null>(null);
   const [view, setView] = useState<MapView | null>(null);
-  const [selectedMapView, setSelectedMapView] = useState<ExploreMapView | null>(null);
+  const [selectedMapView, setSelectedMapView] = useState<ExploreMapView | null>(initialProvince);
   // Read by the map's own handlers, which are bound once when it is built.
-  const focusRef = useRef<ExploreMapView | null>(null);
+  const focusRef = useRef<ExploreMapView | null>(initialProvince);
   const regionsRef = useRef(forestRegions);
   const recoveryRef = useRef(recoveryRegions);
+  const overlaysRef = useRef(overlays);
   // Declared before the effect that builds the map, so it runs first.
   useEffect(() => {
     focusRef.current = selectedMapView;
     regionsRef.current = forestRegions;
     recoveryRef.current = recoveryRegions;
+    overlaysRef.current = overlays;
   });
   const regionKey = forestRegions.map((figure) => `${figure.id}:${figure.fromYear}-${figure.toYear}`).join(",");
+  const classBreaks = spanShareBreaks(classSpan ?? { fromYear, toYear: year });
+  // A primitive for effect dependencies.
+  const breaksKey = classBreaks.join(",");
+  const breaksRef = useRef(classBreaks);
+  useEffect(() => {
+    breaksRef.current = classBreaks;
+  });
   const [hoveredRegion, setHoveredRegion] = useState<string | null>(null);
   const [fullscreenAvailable, setFullscreenAvailable] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [expanded, setExpandedState] = useState<ExploreMapExpanded>(null);
+  // The stage is told in the same update, so its layout and this map's change
+  // together and the page behind is back in place before it is scrolled.
+  const expandedRef = useRef<ExploreMapExpanded>(null);
+  const onExpandedChangeRef = useRef(onExpandedChange);
+  useEffect(() => {
+    onExpandedChangeRef.current = onExpandedChange;
+  });
+  const setExpanded = (next: ExploreMapExpanded) => {
+    if (expandedRef.current === next) return;
+    expandedRef.current = next;
+    setExpandedState(next);
+    onExpandedChangeRef.current?.(next);
+  };
+  const isFullscreen = expanded !== null;
+  const [legendOpen, setLegendOpen] = useState(true);
+  const fullscreenButtonRef = useRef<HTMLButtonElement>(null);
+  // Set when the reader pans or zooms the map themselves, and cleared when a
+  // province button or the opening view frames it again: entering or leaving
+  // full screen refits the selection only while it is still unset (G2).
+  const readerMovedRef = useRef(false);
+  const pageScrollRef = useRef(0);
+  const expandInPage = () => {
+    pageScrollRef.current = window.scrollY;
+    setExpanded("page");
+  };
   // The province shading answers any span from 1984 to 2022 and the per-cell
   // detail every annual interval inside it, so the map is offered for the
   // whole series and each layer is shown wherever it has something to say.
@@ -986,7 +1141,7 @@ export function ExploreMapClient({
     onPlaybackChange?.(playback);
   }, [playback, onPlaybackChange]);
   useEffect(() => {
-    const frame = mapFrameRef.current;
+    const frame = stageRef?.current ?? mapFrameRef.current;
     const available = Boolean(
       frame?.requestFullscreen && document.fullscreenEnabled && document.exitFullscreen,
     );
@@ -994,7 +1149,9 @@ export function ExploreMapClient({
     if (!available) return;
 
     const syncFullscreenState = () => {
-      setIsFullscreen(document.fullscreenElement === frame);
+      const on = document.fullscreenElement === frame;
+      const current = expandedRef.current;
+      setExpanded(on ? "fullscreen" : current === "fullscreen" ? null : current);
       mapRef.current?.resize();
     };
     const syncAfterEscape = (event: KeyboardEvent) => {
@@ -1008,7 +1165,17 @@ export function ExploreMapClient({
       document.removeEventListener("keydown", syncAfterEscape);
       window.removeEventListener("resize", syncFullscreenState);
     };
+    // stageRef is a ref object, fixed for the life of the page.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Full screen leaves nothing to scroll, so the map takes the wheel and one finger again.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!mapReady || !map) return;
+    if (isFullscreen) map.cooperativeGestures.disable();
+    else map.cooperativeGestures.enable();
+  }, [mapReady, isFullscreen]);
 
   // Whether the map may zoom to the patch layer. It is fixed when the map is
   // built, so a change of it rebuilds the map.
@@ -1098,7 +1265,7 @@ export function ExploreMapClient({
 
     const initializePmtiles = async () => {
       try {
-        const style = buildStyle(shading, null, overlays, "all", { fromYear, toYear: year }, regionsRef.current, focusRef.current, recoveryRef.current);
+        const style = buildStyle(shading, null, overlaysRef.current, "all", { fromYear, toYear: year }, regionsRef.current, focusRef.current, recoveryRef.current, breaksRef.current);
         const [maplibreModule, protocol] = await Promise.all([
           import("maplibre-gl"),
           import("pmtiles").then((pmtiles) => openStyleArchives(pmtiles, style)),
@@ -1132,11 +1299,22 @@ export function ExploreMapClient({
           // aggregate to magnify and the old ceiling still applies.
           maxZoom: patchCapable ? EXPLORE_PER_CELL_SPAN_LAYER.maxZoom : 6,
           attributionControl: false,
+          // The page scrolls past the map: zooming needs Ctrl or ⌘ with the
+          // wheel, and moving it two fingers on a touch screen. Full screen
+          // turns this off, as nothing is left to scroll there.
+          cooperativeGestures: true,
           // MapLibre names the canvas for screen readers, in English unless told otherwise.
-          locale: { "Map.Title": text[locale].mapTitle },
+          locale: {
+            "Map.Title": text[locale].mapTitle,
+            "CooperativeGesturesHandler.WindowsHelpText": text[locale].gestureWindows,
+            "CooperativeGesturesHandler.MacHelpText": text[locale].gestureMac,
+            "CooperativeGesturesHandler.MobileHelpText": text[locale].gestureMobile,
+          },
         });
         mapRef.current = map;
         if (!map) return;
+        // A new map opens on the four provinces, as the reader has not moved it yet.
+        readerMovedRef.current = false;
         // MapLibre 6 asks this resolver before it answers a tile, so the hatch is
         // in the first tiles drawn; the styleimagemissing event only fires after.
         map.setMissingStyleImageResolver((id) => {
@@ -1155,12 +1333,18 @@ export function ExploreMapClient({
           });
         };
         map.on("move", publishView);
+        // A drag, wheel or pinch carries the browser event; a fit or ease from code does not.
+        map.on("movestart", (event) => {
+          if ((event as { originalEvent?: unknown }).originalEvent) readerMovedRef.current = true;
+        });
         // A rotated phone or full screen changes the frame, and so the limit.
         map.on("resize", () => {
           if (!map) return;
           const container = map.getContainer();
           map.setMaxBounds(panLimitFor(COMBINED_PROVINCE_BOUNDS, container.clientWidth, container.clientHeight, FRAME_PADDING));
         });
+        // A province named in the address is framed from the start (C6).
+        if (focusRef.current) map.fitBounds(MAP_VIEW_BOUNDS[focusRef.current], { padding: FRAME_PADDING, maxZoom: 6, duration: 0 });
         map.once("load", () => {
           if (!active) return;
           if (pmtilesTimeout) clearTimeout(pmtilesTimeout);
@@ -1172,14 +1356,16 @@ export function ExploreMapClient({
           publishView();
           let latestPoint: MapMouseEvent["point"] | null = null;
           let lastHoverKey = "";
+          // The outlines shown now, which Show and Hide change after the map is built.
           const queryBoundary = (point: MapMouseEvent["point"]) => {
-            const layers = boundaryPickLayerIds(overlays).filter((layerId) => map?.getLayer(layerId));
+            const shown = overlaysRef.current;
+            const layers = boundaryPickLayerIds(shown).filter((layerId) => map?.getLayer(layerId));
             if (layers.length === 0) return null;
             const currentMap = map;
             if (!currentMap) return null;
             return pickBoundary(
               currentMap.queryRenderedFeatures(point, { layers }) as readonly BoundaryFeature[],
-              overlays,
+              shown,
               locale,
             );
           };
@@ -1271,12 +1457,38 @@ export function ExploreMapClient({
       setMapReady(false);
       if (protocolRegistered) maplibre?.removeProtocol("pmtiles");
     };
-    // overlayKey stands in for `overlays`: the prop is a fresh array on every
-    // render of the server parent, so depending on it directly would tear down
-    // and rebuild the whole map each time. The key changes exactly when the
-    // selected overlay set changes, which is the only thing the style needs.
+    // The outlines are read from overlaysRef when the map is built and are
+    // then swapped in place (below), so Show and Hide never rebuild the map:
+    // the camera, the chosen province and the page scroll all stay put.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [patchCapable, shaded, overlayKey, retryNonce]);
+  }, [patchCapable, shaded, retryNonce]);
+
+  // Show and Hide: the outline layers change in place on the live map.
+  const builtOverlayKey = useRef<string | null>(null);
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!mapReady || !map) {
+      builtOverlayKey.current = null;
+      return;
+    }
+    // The first run after a build finds the outlines the style already drew.
+    if (builtOverlayKey.current === null) {
+      builtOverlayKey.current = overlayKey;
+      return;
+    }
+    if (builtOverlayKey.current === overlayKey) return;
+    builtOverlayKey.current = overlayKey;
+    try {
+      syncBoundaryLayers(map, overlays);
+    } catch (error: unknown) {
+      console.error("Explore boundary layer swap error", error);
+    }
+    // A pinned or pointed-at outline that is no longer shown is let go.
+    setPinnedBoundary((pinned) => (pinned && !overlays.includes(pinned.overlay) ? null : pinned));
+    setHoveredBoundary((hovered) => (hovered && !overlays.includes(hovered.overlay) ? null : hovered));
+    // overlayKey stands in for the fresh overlays array.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mapReady, overlayKey]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -1309,11 +1521,11 @@ export function ExploreMapClient({
   useEffect(() => {
     const map = mapRef.current;
     if (!mapReady || !map || !map.getLayer(REGION_HATCH_LAYER_ID)) return;
-    map.setPaintProperty(REGION_FILL_LAYER_ID, "fill-color", regionFillColour(forestRegions));
+    map.setPaintProperty(REGION_FILL_LAYER_ID, "fill-color", regionFillColour(forestRegions, classBreaks));
     map.setFilter(REGION_HATCH_LAYER_ID, regionHatchFilter(forestRegions));
-    // regionKey stands in for the fresh forestRegions array.
+    // regionKey and breaksKey stand in for the fresh arrays.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mapReady, regionKey]);
+  }, [mapReady, regionKey, breaksKey]);
 
   // A chosen province is shown alone; "All" shows the four together.
   useEffect(() => {
@@ -1331,10 +1543,13 @@ export function ExploreMapClient({
   useEffect(() => {
     const map = mapRef.current;
     if (!mapReady || !map || !shading || !map.getLayer(PROVINCE_FILL_LAYER_ID)) return;
-    map.setPaintProperty(PROVINCE_FILL_LAYER_ID, "fill-color", provinceFillColour(fromYear, year, shading));
-  }, [mapReady, shading, fromYear, year]);
+    const fill = classSpan ? provinceFillColour(fromYear, year, shading, classBreaks) : provinceFillColour(fromYear, year, shading);
+    map.setPaintProperty(PROVINCE_FILL_LAYER_ID, "fill-color", fill);
+    // breaksKey stands in for the fresh edges array and the class span.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mapReady, shading, fromYear, year, breaksKey]);
   const spanRows = provinceAvailable ? provinceSpanMeasurements({ fromYear, toYear: year }) : [];
-  const fallbackColours = provinceSpanColours(fromYear, year);
+  const fallbackColours = provinceSpanColours(fromYear, year, classBreaks);
   const spanLabel = formatYearRange(yearRange(fromYear, year), locale);
   const readyKey = recoveryAvailable
     ? "readyRecovery"
@@ -1426,6 +1641,17 @@ export function ExploreMapClient({
     )
     : null;
   const province = boundary ? boundaryProvince(boundary) : null;
+  // The pinned boundary's place page, where it has one: a riding or region the
+  // record measures, or a city or town whose figures loaded.
+  const placePageHref = pinnedBoundary && activeBoundaryKey === boundarySelectionKey(pinnedBoundary)
+    ? boundaryPlacePagePath(
+      locale,
+      pinnedBoundary,
+      pinnedBoundary.overlay === "census-subdivisions"
+        ? placeMeasurement !== null
+        : measuredBoundaryKeys?.has(boundarySelectionKey(pinnedBoundary)) ?? false,
+    )
+    : null;
   // A riding, region, city or town that is pinned, in a mode whose years change the map.
   const timelapseBoundary =
     cause !== null && source === "pmtiles" && pinnedBoundary &&
@@ -1462,6 +1688,7 @@ export function ExploreMapClient({
   const zoomToPatches = () => {
     const map = mapRef.current;
     if (!map) return;
+    readerMovedRef.current = true;
     map.easeTo({
       center: patchZoomCentre(map.getCenter()),
       zoom: PATCH_TARGET_ZOOM,
@@ -1479,14 +1706,75 @@ export function ExploreMapClient({
   // Offered only while it would do something: patches exist for this
   // selection and the map is still zoomed out past the point they appear.
   const patchZoomOffered = perCellYears !== null && view !== null && view.zoom < PATCH_READABLE_ZOOM;
+  // Entering or leaving the enlarged map. The page behind an in-page map does
+  // not scroll; the selection is refitted to the new frame unless the reader
+  // moved the map; and leaving gives focus back to the button that entered.
+  const previousExpandedRef = useRef<ExploreMapExpanded>(null);
+  useEffect(() => {
+    const was = previousExpandedRef.current;
+    previousExpandedRef.current = expanded;
+    if (was === expanded) return;
+    if (expanded !== null && was === null) {
+      // A phone has no room for the legend beside the map, so it starts folded there.
+      setLegendOpen(!window.matchMedia("(max-width: 759px)").matches);
+    }
+    let restoreScroll: (() => void) | null = null;
+    if (expanded !== null) {
+      // Enlarged, the section leaves the page's flow and the page would jump
+      // to its top; the reader comes back to where they were, as read before
+      // the section moved. Behind the in-page map the page does not scroll.
+      const root = document.documentElement;
+      const before = root.style.overflow;
+      const scrolled = pageScrollRef.current;
+      if (expanded === "page") root.style.overflow = "hidden";
+      restoreScroll = () => {
+        root.style.overflow = before;
+        window.scrollTo(0, scrolled);
+      };
+    }
+    const frameRequest = window.requestAnimationFrame(() => {
+      mapRef.current?.resize();
+      if (!readerMovedRef.current) fitMapToView(focusRef.current);
+    });
+    if (expanded === null) fullscreenButtonRef.current?.focus({ preventScroll: true });
+    return () => {
+      window.cancelAnimationFrame(frameRequest);
+      restoreScroll?.();
+    };
+  }, [expanded]);
+
+  // Escape closes the in-page map, as it leaves the browser's full screen.
+  useEffect(() => {
+    if (expanded !== "page") return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setExpanded(null);
+    };
+    document.addEventListener("keydown", closeOnEscape);
+    return () => document.removeEventListener("keydown", closeOnEscape);
+  }, [expanded]);
+
   const toggleFullscreen = async () => {
-    const frame = mapFrameRef.current;
-    if (!frame || !fullscreenAvailable) return;
+    const frame = stageRef?.current ?? mapFrameRef.current;
+    if (!frame) return;
+    if (expanded === "page") {
+      setExpanded(null);
+      return;
+    }
+    // No full screen here (iPhone Safari, for one): enlarge within the page.
+    if (!fullscreenAvailable) {
+      expandInPage();
+      return;
+    }
     try {
       if (document.fullscreenElement === frame) await document.exitFullscreen();
-      else await frame.requestFullscreen();
+      else {
+        pageScrollRef.current = window.scrollY;
+        await frame.requestFullscreen();
+      }
     } catch (error: unknown) {
       console.error("Explore map full-screen error", error);
+      // The browser refused, for example in a frame that does not allow it.
+      if (document.fullscreenElement !== frame) expandInPage();
     }
   };
   /*
@@ -1511,7 +1799,9 @@ export function ExploreMapClient({
    */
   const layerPanel = state === "ready" || state === "loading" ? (
     <div
+      id={LAYER_PANEL_ID}
       className="explore-map-layer-panel"
+      hidden={isFullscreen && !legendOpen}
       tabIndex={0}
       role="region"
       aria-label={text[locale].mapPanel}
@@ -1523,7 +1813,7 @@ export function ExploreMapClient({
             <span>{text[locale].legendCaption}</span>
           </p>
           <ol className="explore-map-legend explore-map-legend--scale" aria-label={text[locale].legend}>
-            {spanLegend(locale).map(([band, label]) => <li key={band}>{symbol(band)}<span>{label}</span></li>)}
+            {spanLegend(locale, classBreaks).map(([band, label]) => <li key={band}>{symbol(band)}<span>{label}</span></li>)}
             {forestRegions.length > 0 ? (
               <>
                 <li>
@@ -1607,17 +1897,29 @@ export function ExploreMapClient({
     <div className="explore-map-client">
       {/* React hoists this into the head of the server's HTML. */}
       <link rel="preconnect" href={TILE_ORIGIN} crossOrigin="anonymous" />
-      <div className="explore-map-stack">
+      <div className="explore-map-stack" data-legend={isFullscreen ? (legendOpen ? "open" : "closed") : undefined}>
       <ProvinceBar
         locale={locale}
         placement="map"
         selected={selectedMapView}
         onSelect={(mapView) => {
           setSelectedMapView(mapView);
+          onProvinceChange?.(mapView);
           setHoveredRegion(null);
+          readerMovedRef.current = false;
           fitMapToView(mapView);
         }}
       />
+      {isFullscreen ? (
+        <div className="explore-map-expanded-bar">
+          {layerPanel ? (
+            <button type="button" aria-expanded={legendOpen} aria-controls={LAYER_PANEL_ID} onClick={() => setLegendOpen((open) => !open)}>
+              {legendOpen ? text[locale].hideLegend : text[locale].showLegend}
+            </button>
+          ) : null}
+          <button type="button" onClick={() => void toggleFullscreen()}>{text[locale].exitFullscreen}</button>
+        </div>
+      ) : null}
       <div
         ref={mapFrameRef}
         className="explore-map"
@@ -1739,6 +2041,9 @@ export function ExploreMapClient({
                     {readout.summedLoss ? <p>{readout.summedLossLabel}{colon(locale)} {readout.summedLoss}</p> : null}
                   </>
                 ) : null}
+                {placePageHref ? (
+                  <a className="explore-map-place-link" href={placePageHref}>{text[locale].placePage}</a>
+                ) : null}
                 {timelapseBoundary && activeBoundaryKey === `${timelapseBoundary.overlay}:${timelapseBoundary.jurisdiction}:${timelapseBoundary.boundaryId}` ? (
                   <button type="button" aria-expanded={timelapseOpen} onClick={() => setTimelapseOpen(true)}>
                     {text[locale].timelapse}
@@ -1772,8 +2077,9 @@ export function ExploreMapClient({
             </div>
           ) : null}
           <div className="explore-map-control-cluster">
-            {fullscreenAvailable ? (
+            {state === "ready" || state === "loading" ? (
               <button
+                ref={fullscreenButtonRef}
                 type="button"
                 className="explore-map-corner-button explore-map-fullscreen-button"
                 onClick={() => void toggleFullscreen()}
@@ -1801,7 +2107,10 @@ export function ExploreMapClient({
               <button
                 type="button"
                 className="explore-map-zoom-button"
-                onClick={() => mapRef.current?.zoomIn()}
+                onClick={() => {
+                  readerMovedRef.current = true;
+                  mapRef.current?.zoomIn();
+                }}
                 disabled={!view || view.atMaxZoom}
               >
                 <span aria-hidden="true">+</span>
@@ -1810,7 +2119,10 @@ export function ExploreMapClient({
               <button
                 type="button"
                 className="explore-map-zoom-button"
-                onClick={() => mapRef.current?.zoomOut()}
+                onClick={() => {
+                  readerMovedRef.current = true;
+                  mapRef.current?.zoomOut();
+                }}
                 disabled={!view || view.atMinZoom}
               >
                 {/* A mathematical minus sign remains legible at button size. */}
