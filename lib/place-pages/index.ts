@@ -13,6 +13,7 @@ import type { PlaceProvince } from "@/lib/places/types";
 import { displayPlaceName, PLACE_NAME_INDEX, placeTypeLabel } from "@/lib/search/place-names";
 import { ridingSearchRow } from "@/lib/search/site-search";
 import type { WholeRecordCells } from "./figures";
+import type { YearlyCells } from "./yearly";
 import { PLACE_DATA_VERSION, PLACE_METHOD_VERSION, type PlaceGeography } from "./paths";
 
 /**
@@ -63,6 +64,8 @@ export type PlacePageRecord = Readonly<{
   /** The checked-in record the figures come from, as a repository path. */
   record: string;
   cells: WholeRecordCells;
+  /** Each annual step's cells, 1985 to 2022, for the year-by-year chart; null where the site holds no yearly series. */
+  yearly: YearlyCells | null;
   /** Ridings and regions admit an unknown share below 1% (owner decision, 2026-10-03); communities admit none. */
   unknownTolerancePercent: number;
   /** For a community: its economic region and the ridings that hold part of it, largest share first. */
@@ -90,6 +93,15 @@ const PROVINCIAL_GEOGRAPHY: Readonly<Record<PlaceProvince, PlaceGeography>> = { 
 const PROVINCE_OF_GEOGRAPHY = Object.fromEntries(Object.entries(PROVINCIAL_GEOGRAPHY).map(([province, geography]) => [geography, province])) as Record<string, PlaceProvince>;
 
 const WHOLE_RECORD = intervalWindowIndex({ fromYear: 1984, toYear: 2022 });
+
+/** A decoded area's annual steps, with the unknown count taken as the larger of the step's and the unmapped one. */
+function yearlyCells(area: Readonly<{ annualLossPrefix: readonly number[]; knownForestCellsByStartYear: readonly number[]; unknownCellsByStartYear: readonly number[]; unmappedCells: number }>): YearlyCells {
+  return {
+    loss: area.knownForestCellsByStartYear.map((_, step) => area.annualLossPrefix[step + 1]! - area.annualLossPrefix[step]!),
+    known: area.knownForestCellsByStartYear,
+    unknown: area.unknownCellsByStartYear.map((cells) => Math.max(cells, area.unmappedCells)),
+  };
+}
 const EN_DASH = String.fromCharCode(0x2013);
 
 /** Every record a page reads must be measured by the method its address names. */
@@ -231,6 +243,7 @@ function buildRecords(): ReadonlyMap<string, PlacePageRecord> {
       boundary: BOUNDARIES["csd-2021"],
       record: RECORD_PATHS.community,
       cells: { union, known, unknown: Math.max(unknownCells, unmapped) },
+      yearly: null,
       unknownTolerancePercent: 0,
       region: regionReference(regionOfPlace.get(place.id)!),
       federal: place.federal.map(({ id, share }) => ridingReference(id, share)),
@@ -259,6 +272,7 @@ function buildRecords(): ReadonlyMap<string, PlacePageRecord> {
         known: district.knownForestCellsByStartYear[0]!,
         unknown: Math.max(district.unknownCellsByStartYear[0]!, district.unmappedCells),
       },
+      yearly: yearlyCells(district),
       unknownTolerancePercent: REGION_UNKNOWN_TOLERANCE_PERCENT,
       region: null,
       federal: [],
@@ -285,6 +299,7 @@ function buildRecords(): ReadonlyMap<string, PlacePageRecord> {
         known: region.knownForestCellsByStartYear[0]!,
         unknown: Math.max(region.unknownCellsByStartYear[0]!, region.unmappedCells),
       },
+      yearly: yearlyCells(region),
       unknownTolerancePercent: REGION_UNKNOWN_TOLERANCE_PERCENT,
       region: null,
       federal: [],

@@ -18,6 +18,8 @@ import {
 import { PLACE_METHOD_VERSION } from "@/lib/place-pages/paths";
 import { placeSummary } from "@/lib/place-pages/summary";
 import { placeLeadSentence } from "@/lib/place-pages/sentence";
+import { yearlyRows } from "@/lib/place-pages/yearly";
+import { PlaceYearlyChart } from "./PlaceYearlyChart";
 import { RECEIPT_SIZE, receiptAlt, receiptPath } from "@/lib/share/meta";
 import { localizedAlternates } from "@/lib/site-metadata";
 import { embedTitle, oembedDiscoveryPath } from "@/lib/embed/paths";
@@ -244,6 +246,8 @@ export function RecordPlacePage({ locale, record }: Readonly<{ locale: Locale; r
             <dd>{PLACE_DATA_VERSION}</dd>
           </div>
         </dl>
+
+        {record.yearly ? <PlaceYearlyChart rows={yearlyRows(record.yearly, record.unknownTolerancePercent)} locale={locale} wholeRecordHectares={figures.lost.kind === "figure" ? figures.lost.value : null} /> : null}
 
         <section className="place-observed place-related-section" aria-labelledby="place-related-heading">
           <h2 className="eyebrow" id="place-related-heading">{text.related}</h2>

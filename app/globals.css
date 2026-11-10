@@ -6014,6 +6014,37 @@ dd > a:only-child {
 .place-embed-code { width: 100%; min-width: 0; resize: vertical; padding: 8px; border: 1px solid var(--muted); border-radius: 4px; background: var(--surface-2); color: var(--ink); font: 0.8rem/1.4 var(--mono); overflow-wrap: anywhere; }
 .place-embed-terms { color: var(--muted); font-size: 0.85rem; }
 .place-embed-links { display: flex; flex-wrap: wrap; gap: 8px 20px; }
+/* A real place's page: detected loss year by year (components/places/PlaceYearlyChart.tsx). */
+.place-yearly { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.place-yearly > .eyebrow, .place-yearly p { margin: 0; }
+.place-yearly-note, .place-yearly-causes { max-width: 80ch; color: var(--ink-2); }
+.place-yearly-figure { margin: 0; display: flex; flex-direction: column; gap: 8px; }
+/* Narrower than this the year labels get too small to read, so the chart scrolls. */
+.place-yearly-scroll { overflow-x: auto; max-width: 960px; }
+.place-yearly-scroll:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.place-yearly-chart { display: block; width: 100%; min-width: 600px; height: auto; }
+.place-yearly-bar--figure { fill: var(--accent-fill); }
+.place-yearly-bar--minimum { fill: url(#place-yearly-hatch); stroke: var(--accent-fill); stroke-width: 1; }
+.place-yearly-hatch-ground { fill: var(--surface); }
+.place-yearly-hatch-line { stroke: var(--accent-fill); stroke-width: 3; }
+.place-yearly-gap { fill: none; stroke: var(--edge-unknown); stroke-width: 1; stroke-dasharray: 3 3; }
+.place-yearly-axis { stroke: var(--rule-strong); stroke-width: 1; }
+.place-yearly-grid { stroke: var(--rule); stroke-width: 1; }
+.place-yearly-tick { fill: var(--ink-2); font-family: var(--ui); font-size: 12px; font-variant-numeric: tabular-nums lining-nums; }
+.place-yearly-key { display: flex; flex-direction: column; gap: 6px; color: var(--muted); font-size: 0.85rem; max-width: 80ch; }
+.place-yearly-swatch { display: inline-block; width: 12px; height: 12px; vertical-align: -1px; margin-inline-end: 4px; }
+.place-yearly-swatch--minimum { border: 1px solid var(--accent-fill); background: repeating-linear-gradient(45deg, var(--accent-fill) 0 2px, var(--surface) 2px 5px); }
+.place-yearly-swatch--gap { border: 1px dashed var(--edge-unknown); }
+.place-yearly-table > summary { cursor: pointer; font-weight: 700; }
+.place-yearly-table > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.place-yearly-table .table-scroll { max-width: 640px; }
+.place-yearly-table table { --table-min: 0; margin-top: 8px; }
+.place-yearly-table td { font-variant-numeric: tabular-nums; }
+.place-yearly-reason { color: var(--muted); }
+.place-yearly-row--unknown td { color: var(--muted); }
+@media print {
+  .place-yearly-table::details-content { content-visibility: visible; display: contents; }
+}
 /* A real place's page: sources, limits, citation and embed code as closed
    sections at the foot, full width. */
 .place-more { display: flex; flex-direction: column; gap: 10px; padding-top: 8px; border-top: 1px solid var(--rule); }
