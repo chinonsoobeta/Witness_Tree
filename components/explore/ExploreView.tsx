@@ -777,11 +777,13 @@ export function ExploreView({
           {/*
             The per-cell figures are annual, and nothing in the data adds them
             up over a span. Under a longer span they are set apart from the
-            span headline and named as its last year alone.
+            span headline and named as its last year alone. They are counted
+            for the four provinces together, so under a chosen province's
+            headline the heading says that too.
           */}
           {mode === "condition-recovery" ? null : (
             <h3 id="explore-annual-heading" className={multiYear ? "explore-annual-last" : undefined}>
-              {`${multiYear ? text.annualHeadingLastYear : text.annualHeading}, ${annual ? formatYearRangeKey(annual.interval, locale) : formatYearRange(yearRange(activeYear - 1, activeYear), locale)}`}
+              {`${multiYear ? text.annualHeadingLastYear : text.annualHeading}, ${annual ? formatYearRangeKey(annual.interval, locale) : formatYearRange(yearRange(activeYear - 1, activeYear), locale)}${chosenProvince ? ` · ${text.fourProvinces}` : ""}`}
             </h3>
           )}
           {annual ? (

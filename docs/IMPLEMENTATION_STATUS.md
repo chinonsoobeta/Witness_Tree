@@ -475,7 +475,8 @@ headless Chromium; Firefox and Safari (including WebM support there) are
 unverified, and the size estimates are approximate. The French strings are
 Claude's drafts awaiting the owner's review. Because
 `components/explore/ExploreMapClient.tsx` changed, the deployed map render gate
-is stale until a redeploy and a fresh observation.
+is stale until a redeploy and a fresh observation. The 2026-11-10 site-wide fixes
+changed the map client again; the observation remains stale.
 
 ### Site-wide fixes, 2026-11-10
 
@@ -551,6 +552,43 @@ once per table instead of on every row was not done: it needs edits to
 `RankedRidingsTable.tsx` and `SideBySideComparison.tsx`, which the Phase 7
 record binds by digest.
 
+**Explore.** A link that names no years opens on the whole record, 1984 to
+2022 (it opened on 2021 to 2022); a link naming only `year` still means that
+one annual interval. The loss-share classes take their edges from the length of
+the span (six sets, for 1, 2 to 3, 4 to 7, 8 to 15, 16 to 25 and 26 to 38
+years), chosen from the checked-in region figures so no class holds more than
+about a third of the regions; the legend prints the edges in use, and a Play
+run holds the whole-record edges throughout. Under a span longer than a year
+the per-cell figures are headed as the last year alone, since nothing in the
+data adds them over a span. The address carries a chosen province
+(`province=bc|ab|on|qc`), and the headline then gives that province's figures,
+an Unknown shown as Unknown with its reason; the harvest and wildfire modes
+keep the four-province headline, and the browser's Back does not restore a
+province. The address carries the map position as `#map=<zoom>/<lat>/<lng>`,
+which place pages link to; it is written only while the reader has moved the
+map, so a copied link does not pin a camera fitted to one screen. On the map:
+a scroll passes over it unless two fingers or a modifier key are used (not in
+full screen); the map and its controls, Play included, can fill the screen,
+with an in-page enlarged view where full screen is refused; Show and Hide
+change an outline in place; each outline has a light casing; watersheds are a
+heavier dash and dot, with a key of sample lines; the patch zoom stays in the
+chosen province; the region shading fades to a quarter as the loss patches
+appear; dark theme has a dark map ground, and exported images keep the light
+one. The other provinces are drawn as one faint land tone from the released
+federal-riding archive (no new host; that archive is now read on every load).
+The three territorial ridings are left out of it because their polygons take in
+Arctic waters and Hudson Bay, so the territories are not drawn as land, and the
+still map has no land tone. The pinned readout is headed by the kind of
+boundary and its province, links to the place's page where one exists, sits
+under the map on frames up to 760 px wide, and says of a federal riding outside
+the four provinces that the record has no figures there. Play has a pace choice
+(slow by default under reduced motion), a last-year slider, and a control that
+returns to the reader's own years. Explore's rankings link opens Compare's
+federal ranking. Checked in headless Chromium only: no real touch device,
+iPhone Safari or screen reader. Time-lapse frames still use the one-year class
+edges and carry no class key. The basemap question (place names and water
+under the figures) was left for the owner.
+
 **Search.** Each part of the search page has its own heading, and the ridings
 tab says "Federal and provincial ridings" when it finds both. The riding
 finder still names all 343 federal ridings; one outside the four provinces
@@ -575,11 +613,36 @@ includes cells not treed in 1984, so it is larger than the place pages' "lost
 at least once" (18.4% over the four provinces, 38.6% in Alberta); and the
 cause-of-latest-loss split has no owner admission at any level.
 
-**Gate records touched.** The Phase 4 record's digest for
-`components/transparency/MethodologyPage.tsx` was refreshed (a reading-aid row
-and the moved list of limits; the matching text and figures are unchanged). The
-new launch script joined the exit-code taxonomy (twenty-seven runners) and the
-handbook's count followed.
+**Gate records touched.** No status and no count changed (Phase 4 4/4, Phase 7
+12/14, Phase 8 8/16, Phase 9 0/4). Digests were refreshed, each with a dated
+sentence in the criterion's reason: Phase 4 for
+`components/transparency/MethodologyPage.tsx` (a reading-aid row, the moved
+list of limits, and Explore's opening span; the matching text and figures are
+unchanged); Phase 7 for `ExploreView.tsx`, `ExploreYearControl.tsx` and
+`tests/explore.test.tsx` under its three Explore criteria, where the
+time-control reason now records that the opening span is 1984 to 2022; Phase 8
+for `ExploreMapClient.tsx` and `tests/explore.test.tsx` under CDN and tile
+validation, and for `docs/OPERATIONS_HANDBOOK.md`; Phase 9 for the Phase 8
+record. The Phase 8 sentence says plainly that the map's style and layers
+changed this time and that the federal-riding archive is read on every load.
+**The deployed map render observation is stale for the map client until the
+Site is redeployed and observed again.** The new launch script joined the
+exit-code taxonomy (twenty-seven runners), the handbook's count followed, and
+the new checker is registered as suite-covered in `data/ci-check-coverage.json`
+because a CI step would change the checksum-bound workflow file.
+
+**Build.** The combined build on 2026-11-10 took 93 s and generated 24,523
+static pages (it was 13,761 items): `.next` is 3.3 GB in 99,292 files (it was
+1.85 GB in 59,050), with a 1.1 GB peak. Most of the growth is the print sheet
+for every community and region, in two languages. Whether the host builds and
+serves that many pages was to be confirmed on the preview deployment before
+merging; rendering the community and region sheets on demand is the fallback.
+
+**Browser tests.** `tests/browser/accessibility.spec.ts` now ends running CSS
+transitions before the axe scan: with the theme switch in the footer, the
+320 ms colour change on its chosen option does not advance off screen, and the
+scan read a colour between two states. The settled colours pass. The riding
+sheet spec still covers ridings only, not the new community and region sheets.
 
 ## Other formal phase counts
 

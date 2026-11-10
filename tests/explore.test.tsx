@@ -1019,6 +1019,10 @@ test("the per-cell figures under a longer span are named as its last year alone"
     assert.ok(annual);
     assert.equal(annual[2], `${locale === "en" ? "Per-cell detected loss" : "Perte détectée par cellule"}, 2021–2022`);
     assert.doesNotMatch(annual[1], /explore-annual-last/);
+    // Under a chosen province's headline these are still four-province figures, and the heading says so.
+    const chosen = heading(renderToStaticMarkup(<ExploreView events={exploreFixtures} locale={locale} province="bc" year={2022} fromYear={1984} />));
+    assert.ok(chosen);
+    assert.equal(chosen[2], `${text} · ${locale === "en" ? "The four provinces together" : "Les quatre provinces ensemble"}`);
   }
   const css = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
   assert.match(css, /\.explore-annual h3\.explore-annual-last \{[^}]*border-block-start: 1px solid var\(--rule\);/);
