@@ -3513,6 +3513,98 @@ dd > a:only-child {
   margin: 0;
 }
 
+/* BC harvest volume chart (components/transparency/BcHarvestVolumeChart.tsx).
+   Line style carries the series as well as colour: the total is the heavy
+   line, the covered harvest the thin one, and the allowable cut, a policy
+   limit rather than a measurement, is dashed. */
+.bc-volume-figure {
+  margin: 0;
+}
+.bc-volume-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+  font-family: var(--ui);
+  font-size: 14px;
+}
+.bc-volume-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.bc-volume-swatch {
+  flex: 0 0 auto;
+  width: 28px;
+  border-top: 3px solid var(--harvest);
+}
+.bc-volume-swatch--regulated {
+  border-top: 2px solid var(--accent);
+}
+.bc-volume-swatch--allowable {
+  border-top: 2px dashed var(--clay-ink);
+}
+.bc-volume-scroll {
+  width: 100%;
+  overflow-x: auto;
+}
+.bc-volume-chart {
+  display: block;
+  min-width: 640px;
+}
+.bc-volume-line {
+  fill: none;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.bc-volume-line--total {
+  stroke: var(--harvest);
+  stroke-width: 3;
+}
+.bc-volume-line--regulated {
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+.bc-volume-line--allowable {
+  stroke: var(--clay-ink);
+  stroke-width: 2;
+  stroke-dasharray: 6 4;
+  stroke-linecap: butt;
+}
+.bc-volume-dot--total { fill: var(--harvest); }
+.bc-volume-dot--regulated { fill: var(--accent); }
+.bc-volume-dot--allowable { fill: var(--clay-ink); }
+.bc-volume-grid {
+  stroke: var(--rule);
+  stroke-width: 1;
+}
+.bc-volume-axis {
+  stroke: var(--rule-strong);
+  stroke-width: 1;
+}
+.bc-volume-tick,
+.bc-volume-note,
+.bc-volume-axis-title {
+  fill: var(--ink-2);
+  font-family: var(--ui);
+  font-variant-numeric: tabular-nums lining-nums;
+  font-size: 12px;
+}
+.bc-volume-note {
+  font-style: italic;
+}
+.bc-volume-summary,
+.bc-volume-caption p {
+  max-width: var(--measure);
+  margin: 12px 0 0;
+}
+.bc-volume-caption {
+  color: var(--ink-2);
+  font-size: 15px;
+}
+
 /* ==========================================================================
    Surfaces: comparison.
    .comparison-table was declared in markup and never styled; it is now the
