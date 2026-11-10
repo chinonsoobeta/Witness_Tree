@@ -11,10 +11,13 @@ import {
   isRidingGeography,
   ridingSheetPath,
   placeProvinceName,
+  placeReferenceFigures,
   landCoverProvenance,
   type PlacePageRecord,
   type PlaceReference,
 } from "@/lib/place-pages";
+import { formatUnknownSharePercent } from "@/lib/explore/map-style";
+import { provinceSpanDisplayRows } from "@/lib/explore/province-spans";
 import { PLACE_METHOD_VERSION } from "@/lib/place-pages/paths";
 import { placeSummary } from "@/lib/place-pages/summary";
 import { placeLeadSentence } from "@/lib/place-pages/sentence";
@@ -82,6 +85,11 @@ export const COPY = {
     communityShare: (share: string) => `${share} of the community lies here`,
     explore: "See it on the Explore map",
     compare: "Compare it with another riding (2021–2022 figures)",
+    provinceContext: (province: string, share: string, gap: string) => `For comparison, ${province}: ${share} of the forest mapped there in 1984 was lost at least once. ${gap} of the province has no satellite data and is left out of that share.`,
+    referenceShare: (share: string) => `${share} of its forest mapped in 1984 lost at least once`,
+    referenceAdmitted: (gap: string) => ` (${gap} with no satellite data left out)`,
+    referenceMinimum: (lost: string, gap: string) => `At least ${lost} lost. The share is Unknown: ${gap} of its forest has no satellite data.`,
+    referenceUnknown: (reason: string) => `Share lost: Unknown. ${reason}`,
     over: "over",
     under: "under",
     code: { "csd-2021": "Census subdivision code", "er-2021": "Economic region code", federal: "Federal electoral district number", provincial: "Electoral district number" },
@@ -136,6 +144,12 @@ export const COPY = {
     communityShare: (share: string) => `${share} de la collectivité se trouve ici`,
     explore: "Voir sur la carte Explorer",
     compare: "Comparer avec une autre circonscription (chiffres de 2021–2022)",
+    // Draft French for the owner's review (2026-11-10).
+    provinceContext: (province: string, share: string, gap: string) => `À titre de comparaison, ${province}\u202F: ${share} de la forêt cartographiée en 1984 y a été perdue au moins une fois. ${gap} de la province n’a pas de données satellitaires et est exclu de cette part.`,
+    referenceShare: (share: string) => `${share} de sa forêt cartographiée en 1984 perdue au moins une fois`,
+    referenceAdmitted: (gap: string) => ` (${gap} sans données satellitaires exclu)`,
+    referenceMinimum: (lost: string, gap: string) => `Au moins ${lost} perdus. La part est inconnue\u202F: ${gap} de sa forêt n’a pas de données satellitaires.`,
+    referenceUnknown: (reason: string) => `Part perdue\u202F: inconnue. ${reason}`,
     over: "plus de",
     under: "moins de",
     code: { "csd-2021": "Code de subdivision de recensement", "er-2021": "Code de région économique", federal: "Numéro de circonscription électorale fédérale", provincial: "Numéro de circonscription électorale" },
@@ -157,11 +171,37 @@ function codeLabel(record: PlacePageRecord, locale: Locale) {
   return record.kind === "federal-riding" ? labels.federal : labels.provincial;
 }
 
-function ReferenceList({ items, locale, empty, note }: Readonly<{
+/** The province's own 1984–2022 share, as the home page reports it: of the forest mapped there, with the unmapped share beside it. */
+const PROVINCE_ROWS = provinceSpanDisplayRows({ fromYear: 1984, toYear: 2022 });
+
+function provinceContext(record: PlacePageRecord, locale: Locale) {
+  const row = PROVINCE_ROWS.find((entry) => entry.code === record.province);
+  if (!row || row.unionLossPercent === null) return null;
+  return COPY[locale].provinceContext(placeProvinceName(record.province)[locale], formatPercent(row.unionLossPercent, locale), formatUnknownSharePercent(row.unknownSharePercent, locale));
+}
+
+/** A linked area's own figure, under the minimum and Unknown rules its own page uses. */
+function referenceFigure(item: PlaceReference, locale: Locale) {
+  const text = COPY[locale];
+  const figures = placeReferenceFigures(item, locale);
+  if (!figures) return null;
+  if (figures.share.kind === "figure") {
+    const admitted = figures.admittedUnknownPercent === undefined ? "" : text.referenceAdmitted(formatUnknownSharePercent(figures.admittedUnknownPercent, locale));
+    return `${text.referenceShare(formatPercent(figures.share.value, locale))}${admitted}`;
+  }
+  if (figures.lostIsMinimum && figures.lost.kind === "figure" && figures.unknownSharePercent !== null) {
+    return text.referenceMinimum(formatHectares(figures.lost.value, locale), formatUnknownSharePercent(figures.unknownSharePercent, locale));
+  }
+  return text.referenceUnknown(figures.share.reason[locale]);
+}
+
+function ReferenceList({ items, locale, empty, note, figures = false }: Readonly<{
   items: readonly PlaceReference[];
   locale: Locale;
   empty: string;
   note?: (share: string) => string;
+  /** Show each linked area's own figure, for the areas a community sits in. */
+  figures?: boolean;
 }>) {
   if (items.length === 0) return <p>{empty}</p>;
   return (
@@ -171,6 +211,7 @@ function ReferenceList({ items, locale, empty, note }: Readonly<{
           <a href={placePagePath(locale, item.geography, item.code)}>{item.name[locale]}</a>
           {item.typeLabel ? <span className="place-related-share">{item.typeLabel[locale]}</span> : null}
           {note && item.share !== undefined ? <span className="place-related-share">{note(shareAmount(item.share, locale))}</span> : null}
+          {figures ? <span className="place-related-figure">{referenceFigure(item, locale)}</span> : null}
         </li>
       ))}
     </ul>
@@ -183,6 +224,7 @@ export function RecordPlacePage({ locale, record }: Readonly<{ locale: Locale; r
   const { figures, name, province, coverage, unmapped, citation } = summary;
   const provenance = landCoverProvenance(locale);
   const exploreHref = `${locale === "en" ? "/en/explore" : "/fr/explorer"}?overlays=${record.exploreOverlay}&from=1984&year=2022`;
+  const provinceSentence = provinceContext(record, locale);
   const compareHref = record.compareId ? `${locale === "en" ? "/en/compare" : "/fr/comparer"}?left=${encodeURIComponent(record.compareId)}` : null;
 
   return (
@@ -229,6 +271,7 @@ export function RecordPlacePage({ locale, record }: Readonly<{ locale: Locale; r
           <section className={`place-stat-card place-stat-card--${figures.share.kind}`}>
             <h2 className="eyebrow">{text.share}</h2>
             <ReportedValue reported={figures.share} coverageGrade="national-baseline" locale={locale} />
+            {provinceSentence ? <p className="place-stat-context">{provinceSentence}</p> : null}
           </section>
         </div>
 
@@ -254,11 +297,11 @@ export function RecordPlacePage({ locale, record }: Readonly<{ locale: Locale; r
           {record.kind === "community" ? (
             <>
               <h3>{text.region}</h3>
-              <ReferenceList items={record.region ? [record.region] : []} locale={locale} empty={text.noRiding} />
+              <ReferenceList items={record.region ? [record.region] : []} locale={locale} empty={text.noRiding} figures />
               <h3>{text.federal}</h3>
-              <ReferenceList items={record.federal} locale={locale} empty={text.noRiding} note={text.placeShare} />
+              <ReferenceList items={record.federal} locale={locale} empty={text.noRiding} note={text.placeShare} figures />
               <h3>{text.provincial}</h3>
-              <ReferenceList items={record.provincial} locale={locale} empty={text.noRiding} note={text.placeShare} />
+              <ReferenceList items={record.provincial} locale={locale} empty={text.noRiding} note={text.placeShare} figures />
             </>
           ) : (
             <>

@@ -3,7 +3,7 @@ import placeRegionRecord from "@/data/place-economic-regions.json";
 import regionRecord from "@/data/phase3-economic-region-interval-measurements.json";
 import ridingRecord from "@/data/phase3-riding-interval-measurements.json";
 import ledgerFacts from "@/data/phase1-ledger-facts-2026-09-26.json";
-import { localized, type LocalizedString } from "@/lib/domain/localized";
+import { localized, type Locale, type LocalizedString } from "@/lib/domain/localized";
 import type { BoundaryOverlayId } from "@/lib/explore/boundaries";
 import { intervalWindowIndex } from "@/lib/explore/interval";
 import { parseRegionIntervalRelease, REGION_UNKNOWN_TOLERANCE_PERCENT } from "@/lib/explore/region-intervals";
@@ -12,7 +12,7 @@ import { COVERED_FEDERAL_DISTRICT_PREFIXES } from "@/lib/comparison/real-adapter
 import type { PlaceProvince } from "@/lib/places/types";
 import { displayPlaceName, PLACE_NAME_INDEX, placeTypeLabel } from "@/lib/search/place-names";
 import { ridingSearchRow } from "@/lib/search/site-search";
-import type { WholeRecordCells } from "./figures";
+import { wholeRecordFigures, type WholeRecordCells, type WholeRecordFigures } from "./figures";
 import type { YearlyCells } from "./yearly";
 import { PLACE_DATA_VERSION, PLACE_METHOD_VERSION, type PlaceGeography } from "./paths";
 
@@ -317,6 +317,12 @@ const RECORDS = buildRecords();
 export function placePageRecord(dataVersion: string, geography: string, code: string): PlacePageRecord | undefined {
   if (dataVersion !== PLACE_DATA_VERSION) return undefined;
   return RECORDS.get(`${geography}/${code}`);
+}
+
+/** A linked area's own 1984–2022 figures, by the same rule and tolerance as its own page. */
+export function placeReferenceFigures(reference: PlaceReference, locale: Locale): WholeRecordFigures | undefined {
+  const record = RECORDS.get(`${reference.geography}/${reference.code}`);
+  return record && wholeRecordFigures(record.cells, { locale, unknownTolerancePercent: record.unknownTolerancePercent });
 }
 
 /** Every page, for static generation and the sitemap. */
