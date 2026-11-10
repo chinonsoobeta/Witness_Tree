@@ -1961,22 +1961,38 @@ h4 {
   color: var(--muted);
   font-size: 12.5px;
 }
+/*
+ * F4: the readout is kept compact (tight lines, its actions on one wrapping
+ * row) and never taller than the map leaves room for; on a narrow frame it is
+ * docked under the map instead of covering it (after the phone rules below).
+ */
 .explore-map-boundary-status {
   position: absolute;
   inset-block-start: 62px;
   inset-inline-end: 12px;
   z-index: 1;
-  max-width: min(260px, calc(100% - 24px));
-  padding: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 6px;
+  max-width: min(300px, calc(100% - 24px));
+  max-height: calc(100% - 140px);
+  overflow-y: auto;
+  padding: 8px 10px;
   border: 1px solid var(--rule-strong);
   border-radius: var(--radius-sm);
   background: var(--surface);
   color: var(--ink);
   font-size: 12px;
+  line-height: 1.35;
   pointer-events: auto;
 }
+.explore-map-boundary-status > strong,
 .explore-map-boundary-status p {
-  margin: 4px 0;
+  flex: 1 1 100%;
+}
+.explore-map-boundary-status p {
+  margin: 0;
 }
 .explore-map-boundary-status button {
   min-height: 30px;
@@ -1989,8 +2005,7 @@ h4 {
   cursor: pointer;
 }
 .explore-map-boundary-status .explore-map-place-link {
-  display: block;
-  margin-block: 6px;
+  flex: 1 1 100%;
   font-weight: 700;
 }
 /*
@@ -2102,13 +2117,10 @@ h4 {
    * its height is not what keeps them apart and it does not need padding
    * against a legend that grows. It only has to be a usable map.
    */
-  .explore-map,
-  .explore-map-fallback {
-    min-height: 30rem;
-  }
-  /* The canvas fills the taller frame, so no dead band sits under the map. */
-  .explore-map-canvas {
-    height: 30rem;
+  /* The frame, the canvas and the still map all take this one height, so no
+     dead band sits under the map and the docked readout (F4) starts at its foot. */
+  .explore-map {
+    --explore-map-height: 30rem;
   }
   .province-bar--map {
     display: grid;
@@ -2131,6 +2143,22 @@ h4 {
   }
   .explore-map-scale {
     justify-self: start;
+  }
+}
+/* F4: on a narrow frame the boundary readout is docked under the map. */
+@media (max-width: 760px) {
+  /* Docked under the map, full width, in the frame's own flow. */
+  .explore:not(.explore--expanded) .explore-map-boundary-status {
+    position: static;
+    max-width: none;
+    max-height: none;
+    border-width: 1px 0 0;
+    border-radius: 0;
+  }
+  /* The zoom and scale controls stay on the map, not on the docked readout. */
+  .explore:not(.explore--expanded) .explore-map-controls {
+    inset-block: var(--explore-map-height) auto;
+    translate: 0 calc(-100% - 12px);
   }
 }
 .explore-map:fullscreen {
