@@ -3604,6 +3604,44 @@ dd > a:only-child {
   color: var(--ink-2);
   font-size: 15px;
 }
+/* The table under the chart is a native <details>, so it opens and closes
+   without script. It is forced open when printed and when the page is read
+   without JavaScript, by the same two mechanisms .nav-disclosure uses:
+   ::details-content for current engines, display on the content for older
+   ones. The summary is hidden then, because it would toggle nothing. */
+.bc-volume-table > summary {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  font-family: var(--ui);
+  font-weight: 700;
+  color: var(--accent);
+  cursor: pointer;
+}
+/* display:flex drops the native triangle, so the open/closed cue is drawn
+   here; the empty alternative text keeps it out of the accessible name. */
+.bc-volume-table > summary::before {
+  content: "\25B8" / "";
+  margin-right: 8px;
+}
+.bc-volume-table[open] > summary::before {
+  content: "\25BE" / "";
+}
+.bc-volume-table[open] > summary {
+  margin-bottom: 12px;
+}
+@media print, (scripting: none) {
+  .bc-volume-table::details-content {
+    content-visibility: visible;
+    block-size: auto;
+  }
+  .bc-volume-table > .table-scroll {
+    display: block;
+  }
+  .bc-volume-table > summary {
+    display: none;
+  }
+}
 
 /* ==========================================================================
    Surfaces: comparison.

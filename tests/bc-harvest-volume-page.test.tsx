@@ -162,6 +162,33 @@ test("every figure in the chart's summary is a value the table prints", () => {
   }
 });
 
+/*
+ * The whole table stays, collapsed under the chart in a native <details>
+ * (J2), so it opens without script; the stylesheet forces it open when
+ * printed and when the page is read without JavaScript.
+ */
+test("the whole table sits collapsed under the chart and opens for print and without script", () => {
+  for (const locale of ["en", "fr"] as const) {
+    const page = renderToStaticMarkup(<BcHarvestVolumeIndicator rows={indicator.rows} locale={locale} />);
+    const details = page.indexOf('<details class="bc-volume-table">');
+    assert.ok(details > page.indexOf("</figure>"), `${locale}: under the chart`);
+    assert.ok(details < page.indexOf("<table>") && page.indexOf("</table>") < page.indexOf("</details>"), `${locale}: the table is inside`);
+    assert.doesNotMatch(page, /<details class="bc-volume-table" open/);
+    assert.match(page, locale === "en"
+      ? /<summary>Every year as a table \(114 rows, 1910–2023\)<\/summary>/
+      : /<summary>Toutes les années sous forme de tableau \(114\u00a0lignes, 1910–2023\)<\/summary>/);
+    // Every row is still there.
+    assert.equal((page.match(/<th scope="row">/g) ?? []).length, indicator.rows.length);
+  }
+  const css = read("app/globals.css");
+  const start = css.indexOf("@media print, (scripting: none) {\n  .bc-volume-table");
+  assert.ok(start >= 0, "print and no-script rule");
+  const rule = css.slice(start);
+  const block = rule.slice(0, rule.indexOf("\n}\n"));
+  assert.match(block, /\.bc-volume-table::details-content \{\n {4}content-visibility: visible;/);
+  assert.match(block, /\.bc-volume-table > \.table-scroll \{\n {4}display: block;/);
+});
+
 /** A stored (uncompressed) zip, enough to exercise the builder's reader. */
 function zip(files: Record<string, string>) {
   const locals: Buffer[] = [];
