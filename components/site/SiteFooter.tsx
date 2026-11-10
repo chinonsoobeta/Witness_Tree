@@ -1,5 +1,6 @@
 import type { Locale } from "@/lib/domain";
 import { EXPLORE_COVERAGE_PERIOD } from "@/lib/explore";
+import { ThemeToggle } from "./ThemeToggle";
 
 /*
  * The pages the header does not carry, in two short named groups. About moved
@@ -23,7 +24,17 @@ export function SiteFooter({ locale }: { locale: Locale }) {
   return (
     <footer className="site-footer">
       <div className="site-footer-inner">
-        <p className="footer-coverage">{EXPLORE_COVERAGE_PERIOD.compact} · BC · AB · ON · QC</p>
+        {/*
+          The colour-theme control sits here, under the coverage line, since
+          2026-11-10 (L3): in the header it took the room of three menu items.
+          Every page that has the header has this footer (SiteShell), so it is
+          on every page, and it is reached by Tab after the page's content.
+          It is outside the nav, because it is a setting, not a link.
+        */}
+        <div className="footer-meta">
+          <p className="footer-coverage">{EXPLORE_COVERAGE_PERIOD.compact} · BC · AB · ON · QC</p>
+          <ThemeToggle locale={locale} />
+        </div>
         <nav className="footer-nav" aria-label={locale === "en" ? "More pages" : "Autres pages"}>
           {GROUPS[locale].map(([group, links]) => (
             <div className="footer-group" key={group}>

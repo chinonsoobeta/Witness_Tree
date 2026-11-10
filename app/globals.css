@@ -1169,39 +1169,43 @@ h4 {
   text-decoration: underline;
 }
 
-/* The colour-theme control. Three native radios in a segmented pill.
+/* The colour-theme control, in the footer since 2026-11-10 (L3): in the
+   header it took the room of three menu items. Three native radios in one
+   segmented control, on the page ground, so it takes the page's ink tokens.
 
    The inputs are not hidden with display:none or visibility:hidden, which would
    remove them from the accessibility tree and from the tab order along with the
    arrow-key group behaviour the platform gives radios for free. Each one is
-   instead stretched transparently over its own label, so the whole pill is the
-   hit target, the radio still receives focus, and the visible state is carried by
-   the sibling span through :checked and :focus-visible. */
+   instead stretched transparently over its own label, so the whole segment is
+   the hit target, the radio still receives focus, and the visible state is
+   carried by the sibling span through :checked and :focus-visible. */
 .theme-toggle {
   display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 2px;
-  padding: 4px 0 0;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-top: 18px;
 }
 .theme-toggle-label {
-  padding: 10px 16px 4px;
-  /* The top bar is dark in both themes, so its type takes the topbar token
-     set. --muted resolves against the page ground and would disappear here. */
-  color: var(--topbar-ink-2);
-  font-size: var(--text-small);
-  font-weight: 700;
+  color: var(--muted);
+  font-size: var(--text-compact);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
-/* Inside the menu panel the options stack as full-width rows, the same shape as
-   the links above them. Three pills side by side does not survive translation at
-   this width: "Système / Clair / Sombre" needs more room than the panel has, and
-   any arrangement that fits by shrinking clips a label in one language or the
-   other. Above the nav breakpoint the row has the room, and they sit inline. */
+/* One outline around the set and a hairline between the options, because
+   choosing one unchooses the other two; three loose pills would read as three
+   independent buttons. "Système / Clair / Sombre" fits in one row at 320px. */
+.theme-options {
+  display: inline-flex;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-control);
+}
 .theme-option {
   position: relative;
-  display: flex;
+  display: inline-flex;
+}
+.theme-option + .theme-option {
+  border-inline-start: 1px solid var(--rule-strong);
 }
 .theme-option input {
   position: absolute;
@@ -1215,39 +1219,32 @@ h4 {
 .theme-option > span {
   display: flex;
   align-items: center;
-  width: 100%;
   min-height: 44px;
-  padding: 0 16px;
+  padding: 0 12px;
   border: 1px solid transparent;
-  border-radius: var(--radius-control);
-  color: var(--topbar-ink-2);
+  color: var(--ink-2);
+  font-size: var(--text-compact);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
   transition:
     color var(--dur) var(--ease),
     background-color var(--dur) var(--ease),
     border-color var(--dur) var(--ease);
 }
-/* Colour alone, because the hover fill this rule used to carry was
-   var(--topbar-fill), which is the bar's own ground: it painted the span the
-   exact colour already behind it and changed nothing a reader could see. */
 .theme-option input:hover + span {
-  color: var(--topbar-ink);
+  color: var(--ink);
 }
-/* The chosen option is a full inversion, the same plate the design gives every
-   either/or control on the site. It was previously a fill of var(--topbar-fill)
-   on a bar of var(--topbar-fill), so the only thing separating the current
-   theme from the two it was not was a hairline border and a shade of grey.
-
-   The border stays, and stays the reason this is not colour alone: in
-   forced-colours mode every fill collapses to the system ground, and what
-   survives is that the chosen option is drawn inside a box and the other two
-   are not. */
+/* The chosen option is a full inversion. The border stays, and is the reason
+   this is not colour alone: in forced-colours mode every fill collapses to the
+   system ground, and what survives is that the chosen option is drawn inside a
+   box and the other two are not. */
 .theme-option input:checked + span {
-  border-color: var(--topbar-ink);
-  background: var(--topbar-ink);
-  color: var(--topbar-fill);
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--ground);
 }
 .theme-option input:focus-visible + span {
-  outline: 2px solid var(--topbar-accent);
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 /* Server-rendered inert, until the island mounts and can actually change
@@ -1257,7 +1254,7 @@ h4 {
   cursor: default;
 }
 .theme-option input:disabled + span {
-  color: var(--topbar-ink-2);
+  color: var(--ink-2);
 }
 
 /* The language switch: the one control every reader on a bilingual
@@ -2630,9 +2627,10 @@ h4 {
     position: static;
     display: flex;
     align-items: center;
-    /* 18px until the colour-theme control joined the row. The French row is the
-       widest the site has, and at 18px it cleared the pill by a single pixel,
-       which any font fallback would have swallowed. */
+    /* 14px since the colour-theme control joined the row, where at 18px the
+       French row cleared it by a single pixel. The control moved to the footer
+       on 2026-11-10 (L3); the gap was kept so the measured breakpoints below
+       still hold. */
     gap: 14px;
     min-width: 0;
     padding: 0;
@@ -2649,57 +2647,12 @@ h4 {
     background: none;
     text-decoration: underline;
   }
-  /* In the inline row the group's name is carried by the accessible name alone.
-     It is clipped rather than removed, because aria-labelledby points at it and a
-     display:none element names nothing. */
-  .theme-toggle-label {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-  }
-  /* One segmented control rather than three loose pills with a 2px gutter
-     between them: a single outline around the set, a hairline between the
-     options, and the chosen one inverted. Three separated pills read as three
-     independent buttons, which is the wrong claim, because choosing one of
-     these unchooses the other two.
-
-     The divider sits on the wrapper and the state box on the span, so the two
-     never contend for the same pixel and the row does not shift width when the
-     reader changes theme. There is deliberately no overflow:hidden: at a 2px
-     radius it would clip nothing worth clipping and it would eat the focus
-     ring, which has to sit outside the frame to keep its contrast against the
-     bar rather than against the inverted plate. */
-  .theme-toggle {
-    flex-direction: row;
-    align-items: stretch;
-    gap: 0;
-    padding: 0;
-    border: 1px solid var(--topbar-edge);
-    border-radius: var(--radius-control);
-  }
-  .theme-option {
-    display: inline-flex;
-  }
-  .theme-option + .theme-option {
-    border-inline-start: 1px solid var(--topbar-edge);
-  }
-  .theme-option > span {
-    width: auto;
-    padding: 0 11px;
-    border-radius: 0;
-    font-size: var(--text-compact);
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-  }
 }
 
 /* Between 800px and the one-row width the bar takes two rows: the wordmark and
-   the language switch on the first, the links and the colour-theme control on
-   the second. Measured with BC Sans, the French second row is 683px against 760px
+   the language switch on the first, the links on the second. (The colour-theme
+   control sat on the second row too until it moved to the footer on 2026-11-10,
+   so the widths below, measured with it, now leave more room.) Measured with BC Sans, the French second row is 683px against 760px
    of bar at 800px, and the English 585px. The language switch is lifted onto the
    first row by position, not moved in the DOM, so the nav landmark, the one list
    of links and the switch's place after them in the tab order are all unchanged.
@@ -4965,7 +4918,7 @@ dd > a:only-child {
   height: 10px;
 }
 @media (min-width: 800px) {
-  .nav-panel a, .theme-option > span {
+  .nav-panel a {
     min-height: 40px;
   }
 }
