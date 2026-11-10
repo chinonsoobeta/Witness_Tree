@@ -17,6 +17,7 @@ import {
 } from "@/lib/place-pages";
 import { PLACE_METHOD_VERSION } from "@/lib/place-pages/paths";
 import { placeSummary } from "@/lib/place-pages/summary";
+import { placeLeadSentence } from "@/lib/place-pages/sentence";
 import { RECEIPT_SIZE, receiptAlt, receiptPath } from "@/lib/share/meta";
 import { localizedAlternates } from "@/lib/site-metadata";
 import { embedTitle, oembedDiscoveryPath } from "@/lib/embed/paths";
@@ -183,6 +184,7 @@ export function RecordPlacePage({ locale, record }: Readonly<{ locale: Locale; r
         <header className="place-identity">
           <p className="eyebrow">{record.typeLabel[locale]} · {province}</p>
           <h1>{name}</h1>
+          <p className="place-hero-sentence">{placeLeadSentence(figures, name, locale)}</p>
           <p className="place-hero-lead">{text.lead}</p>
           <p className="place-hero-alias">{codeLabel(record, locale)}{colon(locale)} {record.code}</p>
         </header>

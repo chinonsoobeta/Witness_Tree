@@ -5924,6 +5924,7 @@ dd > a:only-child {
 .place-hero > .place-identity { position: static; top: auto; z-index: auto; background: none; color: inherit; padding: 36px 0; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
 .place-hero > .place-identity h1 { margin: 0; max-width: 20ch; text-wrap: pretty; }
 .place-hero > .place-identity .eyebrow { color: var(--hero-eyebrow); margin: 0; }
+.place-hero-sentence { margin: 0; max-width: 60ch; color: var(--hero-ink); font-size: 1.15rem; line-height: 1.5; text-wrap: pretty; }
 .place-hero-lead { margin: 0; max-width: 52ch; color: var(--hero-ink-2); text-wrap: pretty; }
 .place-hero-alias { margin: 0; color: var(--hero-eyebrow); font-size: 0.85rem; }
 
