@@ -63,7 +63,7 @@ for (const [locale, code, name] of [["en", "bc", "British Columbia"], ["fr", "qc
     assert.ok(total.includes(formatHectares(row.unknownHectares, locale)));
     assert.match(total, locale === "en" ? /A minimum\./ : /Un minimum\./);
     // The phone's line over the map says the same.
-    assert.match(html, new RegExp(`<p class="explore-map-readout">${name} · 1984–2022 · ${formatHectares(row.unionLossHectares, locale).replace(/[.]/g, "\\.")}`));
+    assert.ok(html.includes(`<p class="explore-map-readout">${name} · 1984–2022 · ${formatHectares(row.unionLossHectares, locale)}`));
     // Every link and the year form carry the province.
     for (const link of html.match(/href="\?[^"]*"/g) ?? []) assert.match(link, new RegExp(`&amp;province=${code}"$`));
     assert.match(html, new RegExp(`<input type="hidden" name="province" value="${code}"/>`));

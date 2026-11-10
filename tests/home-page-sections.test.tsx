@@ -41,7 +41,7 @@ test("each province entry keeps its figure, share, minimum and unmapped reason",
       assert.ok(entry.includes(formatPercent(row.unionLossPercent as number, locale)), `${locale} ${row.code}: share`);
       assert.match(entry, locale === "en" ? /of its forest mapped in 1984/ : /de sa forêt cartographiée en 1984/);
       assert.match(entry, locale === "en" ? /A minimum\./ : /Un minimum\./);
-      const unknownShare = formatUnknownSharePercent(row.unknownSharePercent, locale).replace("<", "&lt;");
+      const unknownShare = formatUnknownSharePercent(row.unknownSharePercent, locale).replaceAll("<", "&lt;");
       assert.ok(entry.includes(unknownShare), `${locale} ${row.code}: unmapped share`);
       assert.match(entry, locale === "en" ? /unknown, not zero/ : /inconnues, pas nulles/);
       const methods = locale === "en" ? "/en/methods#coverage-gap" : "/fr/methodes#coverage-gap";

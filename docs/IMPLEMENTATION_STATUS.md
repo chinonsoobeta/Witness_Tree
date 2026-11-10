@@ -666,6 +666,19 @@ reached the interactive map, across every outline and three modes.
 `tests/explore-boundary-toggle.test.tsx` pins it. It was measured in headless
 Chromium against the local build, not on the deployed site.
 
+**CI's security scans.** The first CI run on the pull request failed two scans
+that cannot be run locally. CodeQL reported two new tests: one escaped only the
+first `<` of a figure, and one built a regular expression from a figure while
+escaping only its full stops. Both were fixed (`replaceAll`, and a plain
+`includes`); no finding was accepted. The secret scan reads the whole history
+and reported two diagnostic field names in
+`scripts/build-place-cause-recovery-measurements.mjs`, compared against a loop
+variable called `key`. They are cell-count names, not credentials. History is
+not rewritten here, so `.gitleaks.toml` lists those two names as exact,
+anchored literals for the one heuristic rule, in the form its other entries
+use. That is a change to the scanner's configuration and is the owner's to
+reverse.
+
 **Build.** The combined build on 2026-11-10 took 93 s and generated 24,523
 static pages (it was 13,761 items): `.next` is 3.3 GB in 99,292 files (it was
 1.85 GB in 59,050), with a 1.1 GB peak. Most of the growth is the print sheet
