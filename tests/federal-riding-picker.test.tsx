@@ -4,7 +4,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { rankedRidingFixtures }
 // @ts-expect-error -- Node's TypeScript runner requires explicit local extensions.
 from "../lib/comparison/fixtures.ts";
-import { FederalRidingPicker, selectComparedRidings }
+import { ComparisonPrompt, FederalRidingPicker, nothingChosen, selectComparedRidings }
 // @ts-expect-error -- Node's TypeScript runner requires explicit local extensions.
 from "../components/comparison/FederalRidingPicker.tsx";
 
@@ -18,7 +18,7 @@ test("selectComparedRidings uses an exact pair, across levels", () => {
 });
 
 test("an unknown id leaves its side empty with a notice, and nothing is put in its place", () => {
-  const pair = selectComparedRidings(rankedRidingFixtures, "missing", "r2", { fallback: [rankedRidingFixtures[2]!] });
+  const pair = selectComparedRidings(rankedRidingFixtures, "missing", "r2");
   assert.deepEqual(pairIds(pair), [null, "r2"]);
   assert.deepEqual(pair.notices, [{ side: "left", kind: "unknown", id: "missing" }]);
   const both = selectComparedRidings(rankedRidingFixtures, "x", "y");
@@ -40,12 +40,22 @@ test("a known riding the page does not compare is named, not called unknown", ()
   assert.equal(pair.notices[0]?.kind, "outside");
 });
 
-test("only a side the address leaves out takes a default, distinct from the other side", () => {
-  const fallback = [rankedRidingFixtures[2]!];
-  assert.deepEqual(pairIds(selectComparedRidings(rankedRidingFixtures, undefined, undefined, { fallback })), ["r3", "r1"]);
-  assert.deepEqual(pairIds(selectComparedRidings(rankedRidingFixtures, "r3", undefined, { fallback })), ["r3", "r1"]);
-  assert.deepEqual(pairIds(selectComparedRidings(rankedRidingFixtures, "", "r2", { fallback })), [null, "r2"], "an emptied field stays empty");
-  assert.deepEqual(selectComparedRidings(rankedRidingFixtures, "r1", undefined, { fallback }).notices, []);
+test("a side the address leaves out stays empty: the page opens with no pair, and nothing is filled in", () => {
+  const none = selectComparedRidings(rankedRidingFixtures, undefined, undefined);
+  assert.deepEqual(pairIds(none), [null, null]);
+  assert.deepEqual(none.notices, []);
+  assert.equal(nothingChosen(none), true, "the first visit shows the prompt");
+  assert.deepEqual(pairIds(selectComparedRidings(rankedRidingFixtures, "r3", undefined)), ["r3", null], "a link naming one riding fills one side");
+  assert.deepEqual(pairIds(selectComparedRidings(rankedRidingFixtures, undefined, "r2")), [null, "r2"]);
+  assert.deepEqual(pairIds(selectComparedRidings(rankedRidingFixtures, "", "r2")), [null, "r2"], "an emptied field stays empty");
+  assert.deepEqual(selectComparedRidings(rankedRidingFixtures, "r1", undefined).notices, []);
+  assert.equal(nothingChosen(selectComparedRidings(rankedRidingFixtures, "r1", undefined)), false);
+  assert.equal(nothingChosen(selectComparedRidings(rankedRidingFixtures, "x", undefined)), false, "an unknown id shows its notice, not the prompt");
+});
+
+test("the prompt is one line in each language", () => {
+  assert.equal(renderToStaticMarkup(<ComparisonPrompt locale="en" />), '<p class="comparison-prompt">Choose two ridings in the fields above to compare them, or start from the rankings below.</p>');
+  assert.equal(renderToStaticMarkup(<ComparisonPrompt locale="fr" />), '<p class="comparison-prompt">Choisissez deux circonscriptions dans les champs ci-dessus pour les comparer, ou partez des classements ci-dessous.</p>');
 });
 
 test("the bilingual GET picker uses exact ids and preserves view and sort", () => {

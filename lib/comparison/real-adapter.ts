@@ -1,126 +1,128 @@
-import { rankRidings } from "./ranking";
 import type { ComparisonPlace, RankedRiding, RankingContext } from "./types";
 
 export const MINIMUM_RANKED_FOREST_HECTARES = 500;
 /** Federal district numbers start with the province code: Quebec, Ontario, Alberta, British Columbia. */
 export const COVERED_FEDERAL_DISTRICT_PREFIXES = ["24", "35", "48", "59"] as const;
 
-type RawRow = Readonly<{
+/** A federal riding in the four provinces, with its figures for the comparison's span from the riding interval release. */
+export type FederalRidingSource = Readonly<{
+  /** The release's tile form, such as `CA-59001`. */
   boundaryId: string;
-  boundaryName: Readonly<{ en: string; fr: string }>;
-  fromYear: number;
-  toYear: number;
-  knownForestedHectares: number;
-  lossHectares: number | null;
+  name: Readonly<{ en: string; fr: string }>;
+  coverage: "complete" | "partial-with-unknown" | "none-mapped";
   observedLossPercent: number | null;
-  coverageGrade: "complete" | "partial-with-unknown" | "none-mapped";
-  rankable: boolean;
-  unmatchedOfficialShare: null;
+  observedLossHectares: number | null;
+  admittedUnknownPercent?: number;
+  knownForestedHectares: number;
 }>;
 
-type RawComparison = Readonly<{
-  schemaVersion: string;
-  status: string;
-  claims: Readonly<{ admitted: false; released: false; productionEligible: false; externalAction: false }>;
-  /** The span the document was built for. Every row must agree with it. */
-  context: Readonly<{ interval: Readonly<{ fromYear: number; toYear: number }> }>;
-  rows: readonly RawRow[];
-}>;
+/** Canada has 343 federal ridings under the 2023 Representation Order. */
+const FEDERAL_RIDING_COUNT = 343;
 
 export type RealFederalRidingComparison = Readonly<{
   context: RankingContext;
-  /** Every district in the source evidence, retained for search and audit surfaces. */
+  /** The four provinces' federal ridings, each with its figures. */
   rows: readonly RankedRiding[];
   places: readonly ComparisonPlace[];
   /** The four-province rows available on the comparison surface. */
   comparisonRows: readonly RankedRiding[];
-  /** A measured pair shown before the reader makes a selection. */
-  defaultPair: readonly [RankedRiding, RankedRiding];
+  /** Federal ridings outside the four provinces: named, so a link to one says why it can't be compared, and never measured here. */
+  outside: readonly Readonly<{ id: string; name: Readonly<{ en: string; fr: string }> }>[];
+  /** Every federal riding in Canada, to reconcile with the covered count. */
+  nationalTotal: number;
 }>;
 
-export function adaptFederalRidingComparison(input: RawComparison): RealFederalRidingComparison {
-  if (input.schemaVersion !== "witness-tree/phase2-federal-riding-latest-comparison/1") {
-    throw new Error("Federal-riding comparison has an unsupported schema.");
-  }
-  if (input.status !== "local-nonproduction-executed" || Object.values(input.claims).some(Boolean)) {
-    throw new Error("Federal-riding comparison must remain local, non-released, and nonproduction.");
-  }
-  if (input.rows.length !== 343) throw new Error("Federal-riding comparison must contain exactly 343 districts.");
-  /*
-   * The span comes from the document rather than from a literal here.
-   *
-   * A hardcoded 2021 to 2022 was correct for the only comparison ever built,
-   * and it was also the thing that would have silently mislabelled the next
-   * one: a document rebuilt over a wider span would have been rejected as
-   * malformed, or worse, relabelled with years it did not measure. Reading the
-   * declared span keeps the check exactly as strict, since every row is still
-   * required to agree with it, while letting the document say what it measured.
-   */
-  const interval = input.context?.interval;
+const isCoveredFederalId = (boundaryId: string) =>
+  COVERED_FEDERAL_DISTRICT_PREFIXES.some((prefix) => boundaryId.startsWith(`CA-${prefix}`));
+
+/*
+ * Federal ridings.
+ *
+ * Their figures come from the riding interval release that Explore and the
+ * place pages read, for the span the caller names, under the rule those apply:
+ * a riding with less than 1% of its forest unmapped is measured over its mapped
+ * forest and the unmapped share travels with it (owner decision, 2026-10-03).
+ * Ranking keeps the floor of 500 forested hectares. A riding that is not
+ * mapped in full never carries a figure, so it can't be restated as zero.
+ */
+export function adaptFederalRidingComparison(input: Readonly<{
+  interval: Readonly<{ fromYear: number; toYear: number }>;
+  dataVersion: string;
+  rows: readonly FederalRidingSource[];
+  outside: readonly Readonly<{ boundaryId: string; name: Readonly<{ en: string; fr: string }> }>[];
+}>): RealFederalRidingComparison {
+  const { interval } = input;
   if (!interval || !Number.isInteger(interval.fromYear) || !Number.isInteger(interval.toYear) ||
     interval.toYear <= interval.fromYear) {
     throw new Error("Federal-riding comparison must declare the span it measures.");
   }
+  if (input.rows.length + input.outside.length !== FEDERAL_RIDING_COUNT) {
+    throw new Error(`Federal-riding comparison must contain exactly ${FEDERAL_RIDING_COUNT} districts.`);
+  }
 
   const ids = new Set<string>();
+  const claim = (boundaryId: string) => {
+    if (ids.has(boundaryId)) throw new Error(`Duplicate federal district ${boundaryId}.`);
+    ids.add(boundaryId);
+  };
   const rows = input.rows.map((source): RankedRiding => {
-    if (ids.has(source.boundaryId)) throw new Error(`Duplicate federal district ${source.boundaryId}.`);
-    ids.add(source.boundaryId);
-    if (source.fromYear !== interval.fromYear || source.toYear !== interval.toYear) {
-      throw new Error(`Federal district ${source.boundaryId} was measured over a different span than the document declares.`);
-    }
-    const complete = source.coverageGrade === "complete";
-    if (source.rankable !== (complete && source.observedLossPercent !== null && source.lossHectares !== null && source.knownForestedHectares >= MINIMUM_RANKED_FOREST_HECTARES)) {
-      throw new Error(`Federal district ${source.boundaryId} has inconsistent rankability.`);
-    }
-    if (!complete && (source.observedLossPercent !== null || source.lossHectares !== null)) {
+    claim(source.boundaryId);
+    if (!isCoveredFederalId(source.boundaryId)) throw new Error(`Federal district ${source.boundaryId} is outside the four provinces.`);
+    if (!source.name.en.trim() || !source.name.fr.trim()) throw new Error(`Federal district ${source.boundaryId} has no name.`);
+    const complete = source.coverage === "complete";
+    if (!complete && (source.observedLossPercent !== null || source.observedLossHectares !== null)) {
       throw new Error(`Federal district ${source.boundaryId} fabricates a complete value from partial coverage.`);
     }
+    if (complete && (source.observedLossPercent === null || source.observedLossHectares === null)) {
+      throw new Error(`Federal district ${source.boundaryId} is fully mapped but has no figure.`);
+    }
+    if (!Number.isFinite(source.knownForestedHectares) || source.knownForestedHectares < 0) {
+      throw new Error(`Federal district ${source.boundaryId} has an invalid forest area.`);
+    }
     return {
-      id: `federal-${source.boundaryId}`,
-      name: source.boundaryName,
+      id: `federal-${source.boundaryId.slice("CA-".length)}`,
+      name: source.name,
       placeType: "federal-riding",
       detectedChangePercent: source.observedLossPercent,
-      detectedChangeHectares: source.lossHectares,
+      detectedChangeHectares: source.observedLossHectares,
       forestedHectares: source.knownForestedHectares,
-      unmatchedSharePercent: source.unmatchedOfficialShare,
+      unmatchedSharePercent: null,
       coverageGrade: complete ? "national-baseline" : "not-applicable",
-      measurementCoverage: source.coverageGrade,
+      measurementCoverage: source.coverage,
+      ...(source.admittedUnknownPercent === undefined ? {} : { admittedUnknownPercent: source.admittedUnknownPercent }),
       evidence: "satellite-observation",
-      sufficientCoverage: source.rankable,
+      sufficientCoverage: complete && source.knownForestedHectares >= MINIMUM_RANKED_FOREST_HECTARES,
     };
+  });
+  const outside = input.outside.map(({ boundaryId, name }) => {
+    claim(boundaryId);
+    if (isCoveredFederalId(boundaryId)) throw new Error(`Federal district ${boundaryId} is in the four provinces but has no figures.`);
+    return { id: `federal-${boundaryId.slice("CA-".length)}`, name };
   });
 
   const context: RankingContext = {
     timeRange: `${interval.fromYear}–${interval.toYear}`,
     boundaryEdition: "2023 Representation Order",
-    dataVersion: "phase2-real-national-1984-2022-v1",
+    dataVersion: input.dataVersion,
     evidence: "satellite-observation",
     denominatorDefinition: {
       en: `Share of the mapped forest as it stood in ${interval.fromYear}.`,
       fr: `Part de la forêt cartographiée telle qu’elle était en ${interval.fromYear}.`,
     },
     method: {
-      en: "Federal ridings that are fully mapped and have at least 500 hectares of forest are ranked by the share of forest lost.",
-      fr: "Les circonscriptions fédérales entièrement cartographiées et comptant au moins 500 hectares de forêt sont classées selon la part de forêt perdue.",
+      en: `Federal ridings with at least ${MINIMUM_RANKED_FOREST_HECTARES} hectares of forest, mapped in full or with less than 1% unmapped, are ranked by the share of forest lost. Where a small part is unmapped, the share is of the mapped forest.`,
+      // Draft French for the owner's review (2026-11-10), following the provincial wording.
+      fr: `Les circonscriptions fédérales comptant au moins ${MINIMUM_RANKED_FOREST_HECTARES} hectares de forêt, entièrement cartographiées ou dont moins de 1\u00A0% n’est pas cartographié, sont classées selon la part de forêt perdue. Lorsqu’une petite partie n’est pas cartographiée, la part porte sur la forêt cartographiée.`,
     },
   };
-  const comparisonRows = rows.filter((row) =>
-    COVERED_FEDERAL_DISTRICT_PREFIXES.some((prefix) => row.id.startsWith(`federal-${prefix}`)),
-  );
-  const ranked = rankRidings(comparisonRows).ranked;
-  if (ranked.length < 2) {
-    throw new Error("Federal-riding comparison needs two ranked districts for its default pair.");
-  }
-  const defaultPair: readonly [RankedRiding, RankedRiding] = [ranked[0]!, ranked[1]!];
-  return { context, rows, places: rows, comparisonRows, defaultPair };
+  return { context, rows, places: rows, comparisonRows: rows, outside, nationalTotal: rows.length + outside.length };
 }
 
 /*
  * Provincial ridings.
  *
- * Their figures come from the riding interval release that Explore reads, for
- * the same span as the federal comparison, under the rule Explore applies to
+ * Their figures come from the same riding interval release, for the same span
+ * as the federal comparison, under the rule Explore applies to
  * them: a riding with less than 1% of its forest unmapped is measured over its
  * mapped forest and the unmapped share travels with it (owner decision,
  * 2026-10-03). Ranking keeps the federal floor of 500 forested hectares.

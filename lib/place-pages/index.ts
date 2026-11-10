@@ -3,7 +3,9 @@ import placeRegionRecord from "@/data/place-economic-regions.json";
 import regionRecord from "@/data/phase3-economic-region-interval-measurements.json";
 import ridingRecord from "@/data/phase3-riding-interval-measurements.json";
 import ledgerFacts from "@/data/phase1-ledger-facts-2026-09-26.json";
-import { localized, type LocalizedString } from "@/lib/domain/localized";
+import extentRecord from "@/data/place-extents.json";
+import placeYearlyRecord from "@/data/place-yearly-measurements.json";
+import { localized, type Locale, type LocalizedString } from "@/lib/domain/localized";
 import type { BoundaryOverlayId } from "@/lib/explore/boundaries";
 import { intervalWindowIndex } from "@/lib/explore/interval";
 import { parseRegionIntervalRelease, REGION_UNKNOWN_TOLERANCE_PERCENT } from "@/lib/explore/region-intervals";
@@ -12,7 +14,9 @@ import { COVERED_FEDERAL_DISTRICT_PREFIXES } from "@/lib/comparison/real-adapter
 import type { PlaceProvince } from "@/lib/places/types";
 import { displayPlaceName, PLACE_NAME_INDEX, placeTypeLabel } from "@/lib/search/place-names";
 import { ridingSearchRow } from "@/lib/search/site-search";
-import type { WholeRecordCells } from "./figures";
+import { wholeRecordFigures, type WholeRecordCells, type WholeRecordFigures } from "./figures";
+import type { YearlyCells } from "./yearly";
+import type { PlaceExtent } from "./map-view";
 import { PLACE_DATA_VERSION, PLACE_METHOD_VERSION, type PlaceGeography } from "./paths";
 
 /**
@@ -29,7 +33,7 @@ import { PLACE_DATA_VERSION, PLACE_METHOD_VERSION, type PlaceGeography } from ".
  */
 
 export { PLACE_DATA_VERSION, PLACE_GEOGRAPHIES, type PlaceGeography } from "./paths";
-export { placePagePath, ridingPagePath, communityPagePath, isRidingGeography, ridingSheetPath, RIDING_GEOGRAPHIES } from "./paths";
+export { placePagePath, ridingPagePath, communityPagePath, isRidingGeography, placeSheetPath, RIDING_GEOGRAPHIES } from "./paths";
 export { wholeRecordFigures, landCoverProvenance, type WholeRecordCells, type WholeRecordFigures } from "./figures";
 
 export type PlacePageKind = "community" | "federal-riding" | "provincial-riding" | "economic-region";
@@ -63,6 +67,8 @@ export type PlacePageRecord = Readonly<{
   /** The checked-in record the figures come from, as a repository path. */
   record: string;
   cells: WholeRecordCells;
+  /** Each annual step's cells, 1985 to 2022, for the year-by-year chart; null where the site holds no yearly series. */
+  yearly: YearlyCells | null;
   /** Ridings and regions admit an unknown share below 1% (owner decision, 2026-10-03); communities admit none. */
   unknownTolerancePercent: number;
   /** For a community: its economic region and the ridings that hold part of it, largest share first. */
@@ -73,7 +79,11 @@ export type PlacePageRecord = Readonly<{
   communities: readonly PlaceReference[];
   /** The Explore overlay that draws this kind of area. */
   exploreOverlay: BoundaryOverlayId;
-  /** For a federal riding: its Compare selection id. */
+  /** The area's `id` in that overlay's outline tiles. */
+  mapFeatureId: string;
+  /** The box holding the area's boundary, from data/place-extents.json. */
+  extent: PlaceExtent;
+  /** For a federal or provincial riding: its Compare selection id. */
   compareId: string | null;
 }>;
 
@@ -90,6 +100,15 @@ const PROVINCIAL_GEOGRAPHY: Readonly<Record<PlaceProvince, PlaceGeography>> = { 
 const PROVINCE_OF_GEOGRAPHY = Object.fromEntries(Object.entries(PROVINCIAL_GEOGRAPHY).map(([province, geography]) => [geography, province])) as Record<string, PlaceProvince>;
 
 const WHOLE_RECORD = intervalWindowIndex({ fromYear: 1984, toYear: 2022 });
+
+/** A decoded area's annual steps, with the unknown count taken as the larger of the step's and the unmapped one. */
+function yearlyCells(area: Readonly<{ annualLossPrefix: readonly number[]; knownForestCellsByStartYear: readonly number[]; unknownCellsByStartYear: readonly number[]; unmappedCells: number }>): YearlyCells {
+  return {
+    loss: area.knownForestCellsByStartYear.map((_, step) => area.annualLossPrefix[step + 1]! - area.annualLossPrefix[step]!),
+    known: area.knownForestCellsByStartYear,
+    unknown: area.unknownCellsByStartYear.map((cells) => Math.max(cells, area.unmappedCells)),
+  };
+}
 const EN_DASH = String.fromCharCode(0x2013);
 
 /** Every record a page reads must be measured by the method its address names. */
@@ -162,6 +181,19 @@ const communityName = (place: (typeof PLACE_NAME_INDEX.places)[number]) =>
 
 // Communities.
 const placeCells = placeRecord.places as unknown as Readonly<Record<string, readonly number[]>>;
+// Each community's annual steps, built by scripts/build-place-yearly-measurements.mjs
+// from the same aggregate as its whole-record row.
+assertMethod(placeYearlyRecord.methodVersion, "The place yearly record");
+if (placeYearlyRecord.schema !== "witness-tree/place-yearly-measurements/1" || placeYearlyRecord.builtFrom.sha256 !== placeRecord.builtFrom.sha256) {
+  throw new Error("The place yearly record has an invalid envelope or was built from a different aggregate than the place record.");
+}
+const placeYearly = placeYearlyRecord.places as unknown as Readonly<Record<string, readonly [readonly number[], readonly number[], readonly number[]]>>;
+function communityYearly(id: string, unmapped: number): YearlyCells {
+  const row = placeYearly[id];
+  if (!row) throw new Error(`Place ${id} has no yearly series.`);
+  const [loss, known, unknown] = row;
+  return { loss, known, unknown: unknown.map((cells) => Math.max(cells, unmapped)) };
+}
 const regionOfPlace = new Map<string, string>();
 for (const [code, ids] of Object.entries(placeRegionRecord.regions as Readonly<Record<string, readonly string[]>>)) {
   for (const id of ids) {
@@ -209,12 +241,28 @@ for (const place of PLACE_NAME_INDEX.places) {
 const byName = (left: PlaceReference, right: PlaceReference) => left.name.en.localeCompare(right.name.en, "en-CA") || left.code.localeCompare(right.code);
 for (const list of [...communitiesByRiding.values(), ...communitiesByRegion.values()]) list.sort(byName);
 
+// Each page's bounding box, built by scripts/build-place-extents.mjs from the
+// boundary files the figures and the outline tiles come from.
+if (extentRecord.schema !== "witness-tree/place-extents/1" || extentRecord.crs !== "EPSG:4326" || JSON.stringify(extentRecord.order) !== JSON.stringify(["west", "south", "east", "north"])) {
+  throw new Error("The place extents have an invalid envelope.");
+}
+const EXTENTS = extentRecord.extents as unknown as Readonly<Record<string, PlaceExtent>>;
+function extentOf(key: string): PlaceExtent {
+  const box = EXTENTS[key];
+  if (!box || box.length !== 4 || !(box[0] <= box[2] && box[1] <= box[3])) throw new Error(`${key} has no extent.`);
+  return box;
+}
+
 function buildRecords(): ReadonlyMap<string, PlacePageRecord> {
   const records = new Map<string, PlacePageRecord>();
   const add = (record: PlacePageRecord) => {
     const key = `${record.geography}/${record.code}`;
     if (records.has(key)) throw new Error(`Two place pages share ${key}.`);
     records.set(key, record);
+  };
+  const finish = () => {
+    if (records.size !== Object.keys(EXTENTS).length) throw new Error(`${records.size} pages but ${Object.keys(EXTENTS).length} extents.`);
+    return records;
   };
 
   for (const place of PLACE_NAME_INDEX.places) {
@@ -231,12 +279,15 @@ function buildRecords(): ReadonlyMap<string, PlacePageRecord> {
       boundary: BOUNDARIES["csd-2021"],
       record: RECORD_PATHS.community,
       cells: { union, known, unknown: Math.max(unknownCells, unmapped) },
+      yearly: communityYearly(place.id, unmapped),
       unknownTolerancePercent: 0,
       region: regionReference(regionOfPlace.get(place.id)!),
       federal: place.federal.map(({ id, share }) => ridingReference(id, share)),
       provincial: place.provincial.map(({ id, share }) => ridingReference(id, share)),
       communities: [],
       exploreOverlay: "census-subdivisions",
+      mapFeatureId: `CA-${place.id}`,
+      extent: extentOf(`csd-2021/${place.id}`),
       compareId: null,
     });
   }
@@ -259,13 +310,16 @@ function buildRecords(): ReadonlyMap<string, PlacePageRecord> {
         known: district.knownForestCellsByStartYear[0]!,
         unknown: Math.max(district.unknownCellsByStartYear[0]!, district.unmappedCells),
       },
+      yearly: yearlyCells(district),
       unknownTolerancePercent: REGION_UNKNOWN_TOLERANCE_PERCENT,
       region: null,
       federal: [],
       provincial: [],
       communities: communitiesByRiding.get(district.boundaryId) ?? [],
       exploreOverlay: federal ? "federal-ridings" : "provincial-ridings",
-      compareId: federal ? `federal-${code}` : null,
+      mapFeatureId: district.boundaryId,
+      extent: extentOf(`${geography}/${code}`),
+      compareId: federal ? `federal-${code}` : `provincial-${district.boundaryId}`,
     });
   }
 
@@ -285,16 +339,19 @@ function buildRecords(): ReadonlyMap<string, PlacePageRecord> {
         known: region.knownForestCellsByStartYear[0]!,
         unknown: Math.max(region.unknownCellsByStartYear[0]!, region.unmappedCells),
       },
+      yearly: yearlyCells(region),
       unknownTolerancePercent: REGION_UNKNOWN_TOLERANCE_PERCENT,
       region: null,
       federal: [],
       provincial: [],
       communities: communitiesByRegion.get(code) ?? [],
       exploreOverlay: "economic-regions",
+      mapFeatureId: region.boundaryId,
+      extent: extentOf(`er-2021/${code}`),
       compareId: null,
     });
   }
-  return records;
+  return finish();
 }
 
 const RECORDS = buildRecords();
@@ -302,6 +359,12 @@ const RECORDS = buildRecords();
 export function placePageRecord(dataVersion: string, geography: string, code: string): PlacePageRecord | undefined {
   if (dataVersion !== PLACE_DATA_VERSION) return undefined;
   return RECORDS.get(`${geography}/${code}`);
+}
+
+/** A linked area's own 1984–2022 figures, by the same rule and tolerance as its own page. */
+export function placeReferenceFigures(reference: PlaceReference, locale: Locale): WholeRecordFigures | undefined {
+  const record = RECORDS.get(`${reference.geography}/${reference.code}`);
+  return record && wholeRecordFigures(record.cells, { locale, unknownTolerancePercent: record.unknownTolerancePercent });
 }
 
 /** Every page, for static generation and the sitemap. */

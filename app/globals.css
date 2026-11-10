@@ -3846,6 +3846,17 @@ dd > a:only-child {
 .comparison-empty {
   color: var(--ink-2);
 }
+.comparison-prompt {
+  margin: 0 0 32px;
+  color: var(--ink-2);
+}
+/* Two classes, to outrank the later `.segment { margin: 0 }` reset. */
+.comparison-rankings .comparison-rank-tabs {
+  margin-bottom: 28px;
+}
+.comparison-rankings .content-section {
+  padding-top: 0;
+}
 .comparison-selection-notice {
   margin-bottom: 20px;
 }
@@ -5828,6 +5839,7 @@ dd > a:only-child {
 .place-hero > .place-identity { position: static; top: auto; z-index: auto; background: none; color: inherit; padding: 36px 0; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
 .place-hero > .place-identity h1 { margin: 0; max-width: 20ch; text-wrap: pretty; }
 .place-hero > .place-identity .eyebrow { color: var(--hero-eyebrow); margin: 0; }
+.place-hero-sentence { margin: 0; max-width: 60ch; color: var(--hero-ink); font-size: 1.15rem; line-height: 1.5; text-wrap: pretty; }
 .place-hero-lead { margin: 0; max-width: 52ch; color: var(--hero-ink-2); text-wrap: pretty; }
 .place-hero-alias { margin: 0; color: var(--hero-eyebrow); font-size: 0.85rem; }
 
@@ -5904,12 +5916,24 @@ dd > a:only-child {
 .place-share-status:empty { display: none; }
 /* A real place's page: the minimum note, its limitations and the places it links to. */
 .place-stat-minimum { margin: 0; color: var(--muted); font-size: 0.85rem; }
+.place-stat-context { margin: 8px 0 0; color: var(--muted); font-size: 0.85rem; line-height: 1.45; }
 .place-limitations { margin: 0; padding-inline-start: 1.1rem; display: flex; flex-direction: column; gap: 6px; }
 .place-observed h3 { margin: 6px 0 0; font-size: 0.95rem; }
 .place-related { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr)); gap: 8px 20px; }
 .place-related li { display: flex; flex-direction: column; min-width: 0; }
 .place-related-share { color: var(--muted); font-size: 0.85rem; }
+.place-related-figure { color: var(--ink); font-size: 0.85rem; line-height: 1.4; }
 .place-related-links { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 8px 0 0; }
+/* The small map of a place: hidden until script starts it, and again if its tiles fail, so the link is all a no-script or failed page shows. */
+.place-map-section { display: flex; flex-direction: column; gap: 8px; }
+.place-map { margin: 0; display: flex; flex-direction: column; gap: 8px; max-width: 960px; }
+.place-map-frame { aspect-ratio: 16 / 9; width: 100%; max-height: 420px; border: 1px solid var(--rule-strong); background: #eeefe9; }
+.place-map[data-state="static"] .place-map-frame, .place-map[data-state="failed"] .place-map-frame { display: none; }
+.place-map-caption { display: flex; flex-direction: column; gap: 4px; font-size: 0.9rem; }
+.place-map-caption small { color: var(--muted); }
+.place-map-key { display: inline-flex; align-items: center; gap: 6px; }
+.place-map-swatch { display: inline-block; width: 14px; height: 14px; border: 1px solid var(--ink); }
+@media print { .place-map-frame { display: none; } }
 /* "Embed this figure" on a place page: the iframe code in a read-only box, and its terms. */
 .place-embed { display: flex; flex-direction: column; gap: 8px; }
 .place-embed .eyebrow, .place-embed p { margin: 0; }
@@ -5917,6 +5941,56 @@ dd > a:only-child {
 .place-embed-code { width: 100%; min-width: 0; resize: vertical; padding: 8px; border: 1px solid var(--muted); border-radius: 4px; background: var(--surface-2); color: var(--ink); font: 0.8rem/1.4 var(--mono); overflow-wrap: anywhere; }
 .place-embed-terms { color: var(--muted); font-size: 0.85rem; }
 .place-embed-links { display: flex; flex-wrap: wrap; gap: 8px 20px; }
+/* A real place's page: detected loss year by year (components/places/PlaceYearlyChart.tsx). */
+.place-yearly { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.place-yearly > .eyebrow, .place-yearly p { margin: 0; }
+.place-yearly-note, .place-yearly-causes { max-width: 80ch; color: var(--ink-2); }
+.place-yearly-figure { margin: 0; display: flex; flex-direction: column; gap: 8px; }
+/* Narrower than this the year labels get too small to read, so the chart scrolls. */
+.place-yearly-scroll { overflow-x: auto; max-width: 960px; }
+.place-yearly-scroll:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.place-yearly-chart { display: block; width: 100%; min-width: 600px; height: auto; }
+.place-yearly-bar--figure { fill: var(--accent-fill); }
+.place-yearly-bar--minimum { fill: url(#place-yearly-hatch); stroke: var(--accent-fill); stroke-width: 1; }
+.place-yearly-hatch-ground { fill: var(--surface); }
+.place-yearly-hatch-line { stroke: var(--accent-fill); stroke-width: 3; }
+.place-yearly-gap { fill: none; stroke: var(--edge-unknown); stroke-width: 1; stroke-dasharray: 3 3; }
+.place-yearly-axis { stroke: var(--rule-strong); stroke-width: 1; }
+.place-yearly-grid { stroke: var(--rule); stroke-width: 1; }
+.place-yearly-tick { fill: var(--ink-2); font-family: var(--ui); font-size: 12px; font-variant-numeric: tabular-nums lining-nums; }
+.place-yearly-key { display: flex; flex-direction: column; gap: 6px; color: var(--muted); font-size: 0.85rem; max-width: 80ch; }
+.place-yearly-swatch { display: inline-block; width: 12px; height: 12px; vertical-align: -1px; margin-inline-end: 4px; }
+.place-yearly-swatch--minimum { border: 1px solid var(--accent-fill); background: repeating-linear-gradient(45deg, var(--accent-fill) 0 2px, var(--surface) 2px 5px); }
+.place-yearly-swatch--gap { border: 1px dashed var(--edge-unknown); }
+.place-yearly-table > summary { cursor: pointer; font-weight: 700; }
+.place-yearly-table > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.place-yearly-table .table-scroll { max-width: 640px; }
+.place-yearly-table table { --table-min: 0; margin-top: 8px; }
+.place-yearly-table td { font-variant-numeric: tabular-nums; }
+.place-yearly-reason { color: var(--muted); }
+.place-yearly-row--unknown td { color: var(--muted); }
+@media print {
+  .place-yearly-table::details-content { content-visibility: visible; display: contents; }
+}
+/* A real place's page: sources, limits, citation and embed code as closed
+   sections at the foot, full width. */
+.place-more { display: flex; flex-direction: column; gap: 10px; padding-top: 8px; border-top: 1px solid var(--rule); }
+.place-more > .eyebrow { margin: 0 0 4px; }
+.place-more-item { border: 1px solid var(--rule); border-radius: var(--radius); background: var(--surface); padding: 0 18px; }
+.place-more-item[open] { padding-bottom: 18px; display: flex; flex-direction: column; gap: 12px; }
+.place-more-item--caution { border-color: var(--clay); background: var(--tint-derived); }
+.place-more-item--caution > summary, .place-more-item--caution a { color: var(--clay-ink); }
+.place-more-cite p { margin: 0; overflow-wrap: anywhere; }
+.place-more-cite .place-share { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; }
+.place-more-item > summary { cursor: pointer; padding: 14px 0; list-style-position: inside; }
+.place-more-item > summary h3 { display: inline; margin: 0; font-size: 1rem; }
+.place-more-item > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.place-more-item > :not(summary), .place-more-item .provenance, .place-more-item .place-embed-code { max-width: 80ch; }
+@media print {
+  /* On paper every section prints open, so no limitation is left behind a click. */
+  .place-more-item::details-content { content-visibility: visible; display: contents; }
+  .place-more-item > summary { list-style: none; }
+}
 
 @media (max-width: 1000px) {
   .place-hero { grid-template-columns: minmax(0, 1fr); }
