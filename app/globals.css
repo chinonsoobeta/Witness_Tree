@@ -1969,6 +1969,11 @@ h4 {
   font: inherit;
   cursor: pointer;
 }
+.explore-map-boundary-status .explore-map-place-link {
+  display: block;
+  margin-block: 6px;
+  font-weight: 700;
+}
 /*
  * Zoom buttons and a scale bar, floated over the map.
  *

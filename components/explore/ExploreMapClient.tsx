@@ -11,6 +11,7 @@ import type {
 import { colon, formatHectares, formatNumber, formatPercent, formatYearRange, labelled, PRODUCT_NAME, yearRange, type Locale } from "@/lib/domain";
 import { chooseScaleBar, metresPerPixel, type ScaleBar } from "@/lib/explore/map-scale";
 import { panLimitFor } from "@/lib/explore/map-camera";
+import { boundaryPlacePagePath, boundarySelectionKey } from "@/lib/explore/place-links";
 import { CAUSE_BREAKS, CAUSE_RAMPS, provinceCauseColours, type ProvinceCause } from "@/lib/explore/province-cause-shares";
 import {
   perCellArchiveSpan,
@@ -139,6 +140,7 @@ const text = {
     placeFiguresLoading: "Loading this place’s figures…",
     placeFiguresFailed: "This place’s figures didn’t load. Try again later.",
     clearBoundary: "Clear boundary",
+    placePage: "Open this place’s page",
     interval: "Interval",
     normalizedShare: "Detected loss share",
     totalLoss: "Detected loss",
@@ -233,6 +235,7 @@ const text = {
     placeFiguresLoading: "Chargement des chiffres de ce lieu…",
     placeFiguresFailed: "Les chiffres de ce lieu n’ont pas pu être chargés. Réessayez plus tard.",
     clearBoundary: "Effacer la limite",
+    placePage: "Ouvrir la page de ce lieu",
     interval: "Période",
     normalizedShare: "Part de perte détectée",
     totalLoss: "Perte détectée",
@@ -971,6 +974,7 @@ export function ExploreMapClient({
   forestRegions = [],
   recoveryRegions = [],
   classSpan,
+  measuredBoundaryKeys,
   onPlaybackChange,
 }: Readonly<{
   locale: Locale;
@@ -998,6 +1002,12 @@ export function ExploreMapClient({
    * still from frame to frame.
    */
   classSpan?: Readonly<{ fromYear: number; toYear: number }>;
+  /**
+   * The ridings and economic regions the record measures, keyed as
+   * boundarySelectionKey keys them, whatever span is on display. Each has a
+   * place page; the pinned readout links to it.
+   */
+  measuredBoundaryKeys?: ReadonlySet<string>;
   /** Told whether the map can follow playback, so Play waits or pauses rather than stepping a map that isn't drawing. */
   onPlaybackChange?: (playback: ExploreMapPlayback) => void;
 }>) {
@@ -1567,6 +1577,17 @@ export function ExploreMapClient({
     )
     : null;
   const province = boundary ? boundaryProvince(boundary) : null;
+  // The pinned boundary's place page, where it has one: a riding or region the
+  // record measures, or a city or town whose figures loaded.
+  const placePageHref = pinnedBoundary && activeBoundaryKey === boundarySelectionKey(pinnedBoundary)
+    ? boundaryPlacePagePath(
+      locale,
+      pinnedBoundary,
+      pinnedBoundary.overlay === "census-subdivisions"
+        ? placeMeasurement !== null
+        : measuredBoundaryKeys?.has(boundarySelectionKey(pinnedBoundary)) ?? false,
+    )
+    : null;
   // A riding, region, city or town that is pinned, in a mode whose years change the map.
   const timelapseBoundary =
     cause !== null && source === "pmtiles" && pinnedBoundary &&
@@ -1879,6 +1900,9 @@ export function ExploreMapClient({
                     {readout.knownObservedSubtotal ? <p>{text[locale].knownObservedSubtotal}{colon(locale)} {readout.knownObservedSubtotal}</p> : null}
                     {readout.summedLoss ? <p>{readout.summedLossLabel}{colon(locale)} {readout.summedLoss}</p> : null}
                   </>
+                ) : null}
+                {placePageHref ? (
+                  <a className="explore-map-place-link" href={placePageHref}>{text[locale].placePage}</a>
                 ) : null}
                 {timelapseBoundary && activeBoundaryKey === `${timelapseBoundary.overlay}:${timelapseBoundary.jurisdiction}:${timelapseBoundary.boundaryId}` ? (
                   <button type="button" aria-expanded={timelapseOpen} onClick={() => setTimelapseOpen(true)}>

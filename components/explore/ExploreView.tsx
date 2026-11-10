@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { CoverageStatement } from "@/components/policy/CoverageStatement";
 import { EvidenceKey } from "@/components/policy/EvidenceKey";
 import { ConditionRecoveryFigures, ConditionRecoveryHeadline } from "./ConditionRecoveryFigures";
@@ -47,6 +47,7 @@ import { harvestFireHref, harvestFireSpanTotals } from "@/lib/harvest-fire";
 import type { ForestRegionFigure } from "@/lib/explore/forest-regions";
 import type { ProvincialCauseBreakdown } from "@/lib/phase4/provincial-cause";
 import { ExploreMapClient } from "./ExploreMapClient";
+import { boundarySelectionKey } from "@/lib/explore/place-links";
 import { ExploreYearControl, usePlayRunActive, type ExploreMapPlayback } from "./ExploreYearControl";
 
 const copy = {
@@ -447,6 +448,9 @@ export function ExploreView({
   }, [spanIsServed, activeFrom, activeYear]);
   const liveIsCurrent = liveSpan?.key === spanKey;
   const districtsCurrent = spanIsServed || liveIsCurrent;
+  // Which ridings and regions have a place page does not depend on the span,
+  // so the rows the server sent decide it even while another span loads.
+  const measuredBoundaryKeys = useMemo(() => new Set(ridingMeasurements.map(boundarySelectionKey)), [ridingMeasurements]);
   const servedMeasurements = spanIsServed
     ? ridingMeasurements
     : liveIsCurrent
@@ -676,6 +680,7 @@ export function ExploreView({
           forestRegions={recovery ? [] : servedForestRegions}
           recoveryRegions={recovery ? recovery.rows.filter((row) => row.kind === "region") : []}
           classSpan={playRun ? EXPLORE_COVERAGE_SPAN : undefined}
+          measuredBoundaryKeys={measuredBoundaryKeys}
           onPlaybackChange={setMapPlayback}
         />
         {activeYear > activeFrom + 1 && !recovery ? (
