@@ -48,7 +48,8 @@ test("G1: the legend folds away and never floats over the map", () => {
 test("G2: entering and leaving refit the selection unless the reader moved the map", () => {
   assert.match(map, /if \(!readerMovedRef\.current\) fitMapToView\(focusRef\.current\);/);
   // A drag, wheel or pinch marks the map as moved; code-driven fits do not.
-  assert.match(map, /map\.on\("movestart", \(event\) => \{\n\s*if \(\(event as \{ originalEvent\?: unknown \}\)\.originalEvent\) readerMovedRef\.current = true;/);
+  // Only a move the reader made (one with an input event) counts.
+  assert.match(map, /map\.on\("movestart", \(event\) => \{\n\s*if \(!\(event as \{ originalEvent\?: unknown \}\)\.originalEvent\) return;\n\s*readerMovedRef\.current = true;/);
   assert.match(map, /readerMovedRef\.current = true;\n\s*mapRef\.current\?\.zoomIn\(\);/);
   assert.match(map, /readerMovedRef\.current = true;\n\s*mapRef\.current\?\.zoomOut\(\);/);
   assert.match(map, /const zoomToPatches = \(\) => \{\n\s*const map = mapRef\.current;\n\s*if \(!map\) return;\n\s*readerMovedRef\.current = true;/);

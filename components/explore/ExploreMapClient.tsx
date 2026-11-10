@@ -146,6 +146,9 @@ const text = {
     totalLoss: "Detected loss",
     knownObservedSubtotal: "Known detected subtotal",
     zoomToPatches: "Zoom in to see the patches",
+    patchZoomedCentre: "Zoomed in on the centre of the map.",
+    patchZoomedChosen: (province: string) => `Zoomed in on forest in ${province}, the province you chose.`,
+    patchZoomedNearest: (province: string) => `Zoomed in on forest in ${province}, the province nearest the centre of the map.`,
     patchHint: "Loss patches appear when you zoom in close.",
     enterFullscreen: "View map full screen",
     exitFullscreen: "Exit full screen",
@@ -243,6 +246,9 @@ const text = {
     totalLoss: "Perte détectée",
     knownObservedSubtotal: "Sous-total détecté connu",
     zoomToPatches: "Zoomer pour voir les parcelles",
+    patchZoomedCentre: "Zoom sur le centre de la carte.",
+    patchZoomedChosen: (province: string) => `Zoom sur une zone forestière de la province choisie\u202F: ${province}.`,
+    patchZoomedNearest: (province: string) => `Zoom sur une zone forestière de la province la plus proche du centre de la carte\u202F: ${province}.`,
     patchHint: "Les parcelles de perte apparaissent en zoom rapproché.",
     enterFullscreen: "Afficher la carte en plein écran",
     exitFullscreen: "Quitter le plein écran",
@@ -304,6 +310,26 @@ const MAP_VIEW_BOUNDS: Readonly<Record<ExploreMapView, MapBounds>> = {
   ab: [-120, 48.9, -109, 60.1],
   on: [-95.2, 41.5, -74.1, 56.9],
   qc: [-79.9, 45, -57, 62.1],
+};
+
+/*
+ * D4: where "Zoom in to see the patches" goes, and what the map then says.
+ * A chosen province keeps the zoom inside it: the map centre if that is in
+ * the province's frame, otherwise the province's forest. With all four, the
+ * centre if it is in a province, otherwise the nearest province's forest.
+ * The note names the province whenever the zoom leaves the map centre.
+ */
+type PatchZoomTarget = Readonly<{ centre: Position; province: ExploreMapView | null; chosen: boolean }>;
+const insideMapView = (view: ExploreMapView, { lng, lat }: Readonly<{ lng: number; lat: number }>) => {
+  const [west, south, east, north] = MAP_VIEW_BOUNDS[view];
+  return lng >= west && lng <= east && lat >= south && lat <= north;
+};
+const patchZoomTarget = (centre: Readonly<{ lng: number; lat: number }>, chosen: ExploreMapView | null): PatchZoomTarget => {
+  if (chosen) return insideMapView(chosen, centre) ? { centre: [centre.lng, centre.lat], province: null, chosen: true } : { centre: PATCH_FOCUS[chosen], province: chosen, chosen: true };
+  const target = patchZoomCentre(centre);
+  const views = Object.keys(PATCH_FOCUS) as ExploreMapView[];
+  const province = views.find((view) => PATCH_FOCUS[view] === target) ?? null;
+  return { centre: target, province, chosen: false };
 };
 
 /** Zoom where the reader is if that is in a province; otherwise to the nearest province's forest. */
@@ -1052,6 +1078,8 @@ export function ExploreMapClient({
   const mapRef = useRef<MapLibreMap | null>(null);
   const [view, setView] = useState<MapView | null>(null);
   const [selectedMapView, setSelectedMapView] = useState<ExploreMapView | null>(initialProvince);
+  // Where the patch zoom went, said until the reader moves the map (D4).
+  const [patchZoomNote, setPatchZoomNote] = useState<PatchZoomTarget | null>(null);
   // Read by the map's own handlers, which are bound once when it is built.
   const focusRef = useRef<ExploreMapView | null>(initialProvince);
   const regionsRef = useRef(forestRegions);
@@ -1335,7 +1363,9 @@ export function ExploreMapClient({
         map.on("move", publishView);
         // A drag, wheel or pinch carries the browser event; a fit or ease from code does not.
         map.on("movestart", (event) => {
-          if ((event as { originalEvent?: unknown }).originalEvent) readerMovedRef.current = true;
+          if (!(event as { originalEvent?: unknown }).originalEvent) return;
+          readerMovedRef.current = true;
+          setPatchZoomNote(null);
         });
         // A rotated phone or full screen changes the frame, and so the limit.
         map.on("resize", () => {
@@ -1689,11 +1719,13 @@ export function ExploreMapClient({
     const map = mapRef.current;
     if (!map) return;
     readerMovedRef.current = true;
+    const target = patchZoomTarget(map.getCenter(), focusRef.current);
     map.easeTo({
-      center: patchZoomCentre(map.getCenter()),
+      center: target.centre,
       zoom: PATCH_TARGET_ZOOM,
       duration: 350,
     });
+    setPatchZoomNote(target);
   };
   const retryMap = () => {
     setFeatures([]);
@@ -1905,6 +1937,7 @@ export function ExploreMapClient({
         onSelect={(mapView) => {
           setSelectedMapView(mapView);
           onProvinceChange?.(mapView);
+          setPatchZoomNote(null);
           setHoveredRegion(null);
           readerMovedRef.current = false;
           fitMapToView(mapView);
@@ -1980,6 +2013,13 @@ export function ExploreMapClient({
                   {text[locale].zoomToPatches}
                 </button>
               </div>
+            ) : null}
+            {state === "ready" && source === "pmtiles" && patchZoomNote && !patchZoomOffered ? (
+              <p className="explore-map-patch-hint explore-map-patch-note" role="status">
+                {patchZoomNote.province === null
+                  ? text[locale].patchZoomedCentre
+                  : (patchZoomNote.chosen ? text[locale].patchZoomedChosen : text[locale].patchZoomedNearest)(boundaryJurisdiction(locale, patchZoomNote.province.toUpperCase()))}
+              </p>
             ) : null}
             {state === "ready" && source === "pmtiles" && regionDefinition && regionFigure ? (
               <aside className="explore-map-boundary-status" role="status">
