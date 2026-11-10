@@ -79,3 +79,34 @@ test("E1: the tools are styled with the Explore rules and folded into one row in
   assert.match(css, /\.explore-play-tools\[hidden\] \{\n {2}display: none;\n\}/);
   assert.match(css, /\.explore--expanded \.explore-play-tools \{\n {4}display: grid;\n {4}grid-template-columns: minmax\(0, 1fr\) auto;/);
 });
+
+/*
+ * E2: once playback is paused or done, one control gives back the span the
+ * reader had before pressing Play, if it differs from what is on display.
+ */
+test("E2: a new run remembers the reader's span, and choosing years by hand forgets it", () => {
+  const toggle = source.match(/const togglePlayback = [\s\S]*?\n {2}\};/)?.[0] ?? "";
+  // Remembered before Play moves the first year, and only by a run that is not
+  // already holding the reader's own years from an earlier, undone run.
+  assert.match(toggle, /if \(!resumable && !inRun\) setBeforePlay\(committed\);\n\s+if \(!resumable\) setPlayRun\(true\);[\s\S]*commit\(\{ fromYear: playStart, toYear: playStart \+ 1 \}, "replace"\)/);
+  const select = source.match(/const selectYear = [\s\S]*?\n {2}\};/)?.[0] ?? "";
+  assert.match(select, /setPlayRun\(false\);\n\s+setBeforePlay\(null\);/);
+});
+
+test("E2: the control shows only when stopped inside a run with different years, and puts them back", () => {
+  assert.match(source, /const restoreSpan = restorable && !isPlaying && inRun && spanKey\(restorable\) !== committedKey \? restorable : null;/);
+  const restore = source.match(/const restoreYears = [\s\S]*?\n {2}\};/)?.[0] ?? "";
+  assert.match(restore, /setPlayRun\(false\);\n\s+setBeforePlay\(null\);\n\s+setPlayStatus\("idle"\);\n\s+commit\(restoreSpan, "replace"\);/);
+  // The button goes once it has worked; focus goes to Play rather than to the page.
+  assert.match(restore, /playButtonRef\.current\?\.focus\(\);/);
+  assert.match(source, /className="year-play"\n\s+ref=\{playButtonRef\}/);
+  assert.match(source, /\{restoreSpan \? \(\n\s+<button type="button" className="year-play explore-play-restore" onClick=\{restoreYears\}>\n\s+\{text\.restore\(formatYearRange\(yearRange\(restoreSpan\.fromYear, restoreSpan\.toYear\), locale\)\)\}/);
+  assert.match(source, /restore: \(span: string\) => `Back to your years, \$\{span\}`,/);
+  assert.match(source, /restore: \(span: string\) => `Revenir à vos années, \$\{span\}`,/);
+  // Nothing has played in a server render, so there is nothing to give back.
+  for (const locale of ["en", "fr"] as const) {
+    const html = render(<ExploreView events={exploreFixtures} locale={locale} mode="wildfire" year={2010} fromYear={2005} />);
+    assert.doesNotMatch(html, /explore-play-restore/);
+  }
+  assert.match(css, /\.explore-play-restore \{\n {2}white-space: normal;/);
+});

@@ -13,7 +13,7 @@ import {
   type ExploreQueryState,
 } from "@/lib/explore";
 import { intervalHeading } from "@/lib/domain/loss-vocabulary";
-import type { Locale } from "@/lib/domain";
+import { formatYearRange, yearRange, type Locale } from "@/lib/domain";
 
 const TEXT = {
   en: {
@@ -39,6 +39,7 @@ const TEXT = {
     speed: "Speed",
     speeds: { slow: "Slow", normal: "Normal", fast: "Fast" },
     jump: "Move the last year",
+    restore: (span: string) => `Back to your years, ${span}`,
   },
   fr: {
     legend: "Années affichées",
@@ -63,6 +64,7 @@ const TEXT = {
     speed: "Vitesse",
     speeds: { slow: "Lente", normal: "Normale", fast: "Rapide" },
     jump: "Déplacer la dernière année",
+    restore: (span: string) => `Revenir à vos années, ${span}`,
   },
 } as const;
 
@@ -157,6 +159,21 @@ function setPlayRun(next: boolean) {
 }
 
 const readPlayRun = () => playRun;
+
+/*
+ * The span the reader had before pressing Play (E2), so one control can give
+ * it back once playback is paused or done. Cleared when they pick years by
+ * hand or take them back. Kept in the module with the run it belongs to.
+ */
+let beforePlay: Span | null = null;
+const readBeforePlay = () => beforePlay;
+const noSpan = () => null;
+
+function setBeforePlay(next: Span | null) {
+  if (beforePlay === next) return;
+  beforePlay = next;
+  for (const listener of playListeners) listener();
+}
 
 /* The pace of Play, kept in the module for the same reason as the play flag. */
 let speed: PlaySpeed | null = null;
@@ -258,6 +275,7 @@ export function ExploreYearControl({
 
   const isPlaying = useSyncExternalStore(subscribePlaying, readPlaying, notPlaying);
   const inRun = useSyncExternalStore(subscribePlaying, readPlayRun, notPlaying);
+  const restorable = useSyncExternalStore(subscribePlaying, readBeforePlay, noSpan);
   const chosenSpeed = useSyncExternalStore(subscribePlaying, readSpeed, noSpeed);
   const ready = useSyncExternalStore(neverChanges, alwaysReady, neverReady);
   const reducedMotion = useSyncExternalStore(
@@ -282,6 +300,7 @@ export function ExploreYearControl({
   const [playStatus, setPlayStatus] = useState<"idle" | "playing" | "paused" | "stalled" | "complete">("idle");
   const [orderStatus, setOrderStatus] = useState<{ which: "first" | "last"; year: number } | null>(null);
   const changeGroup = useRef<{ name: "from" | "to"; started: number; span: Span } | null>(null);
+  const playButtonRef = useRef<HTMLButtonElement>(null);
   if (draft && draft.from !== committedKey) setDraft(null);
   const shown = wholeRecord
     ? { fromYear: EXPLORE_INTERVAL_FIRST_YEAR, toYear: EXPLORE_INTERVAL_LAST_YEAR }
@@ -308,6 +327,7 @@ export function ExploreYearControl({
   const selectYear = (name: "from" | "to", value: number, timestamp: number) => {
     setPlaying(false);
     setPlayRun(false);
+    setBeforePlay(null);
     setPlayStatus("idle");
     const now = timestamp;
     const group = changeGroup.current;
@@ -378,6 +398,9 @@ export function ExploreYearControl({
       return;
     }
     setPlayStatus("playing");
+    // A new run remembers the reader's own years, unless it is already
+    // holding them from a run that was never undone.
+    if (!resumable && !inRun) setBeforePlay(committed);
     if (!resumable) setPlayRun(true);
     setPlaying(true);
     // Resume carries on from the span on display; Play starts the walk again.
@@ -404,6 +427,18 @@ export function ExploreYearControl({
       setPlaying(false);
       setPlayStatus("complete");
     } else if (!isPlaying) setPlayStatus("paused");
+  };
+  // Back to the reader's own years, once playback has stopped and only if
+  // they differ from what is on display (E2).
+  const restoreSpan = restorable && !isPlaying && inRun && spanKey(restorable) !== committedKey ? restorable : null;
+  const restoreYears = () => {
+    if (!restoreSpan) return;
+    setPlayRun(false);
+    setBeforePlay(null);
+    setPlayStatus("idle");
+    commit(restoreSpan, "replace");
+    // The control goes once it has done its work; focus goes to Play, beside it.
+    playButtonRef.current?.focus();
   };
   // The accessible name starts with the visible word, so a reader who says or
   // searches for "Pause" finds the control that shows "Pause".
@@ -470,6 +505,7 @@ export function ExploreYearControl({
         <button
           type="button"
           className="year-play"
+          ref={playButtonRef}
           onClick={togglePlayback}
           disabled={!ready || wholeRecord || (mapBlocked && !isPlaying)}
           aria-label={playLabel.name}
@@ -504,6 +540,11 @@ export function ExploreYearControl({
               ))}
             </select>
           </label>
+          {restoreSpan ? (
+            <button type="button" className="year-play explore-play-restore" onClick={restoreYears}>
+              {text.restore(formatYearRange(yearRange(restoreSpan.fromYear, restoreSpan.toYear), locale))}
+            </button>
+          ) : null}
         </div>
       )}
       {orderStatus !== null ? <p className="year-order-status" role="status">{text.moved(orderStatus.which, orderStatus.year)}</p> : null}

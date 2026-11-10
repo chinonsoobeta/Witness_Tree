@@ -4153,6 +4153,9 @@ dd > a:only-child {
   .explore--expanded .explore-play-jump input {
     width: 100%;
   }
+  .explore--expanded .explore-play-restore {
+    grid-column: 1 / -1;
+  }
   .explore--expanded .province-bar--map {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -4242,8 +4245,8 @@ dd > a:only-child {
 .explore-toolbar .year-row {
   flex: 1 1 320px;
 }
-/* Play's own tools (E1): jump the last year and pick a pace. They sit with
-   Play, so they follow it into full screen. */
+/* Play's own tools (E1, E2): jump the last year, pick a pace, and take back
+   the reader's years. They sit with Play, so they follow it into full screen. */
 .explore-play-tools {
   display: flex;
   flex-wrap: wrap;
@@ -4270,6 +4273,10 @@ dd > a:only-child {
 }
 .explore-play-speed .explore-year-select {
   width: auto;
+}
+.explore-play-restore {
+  white-space: normal;
+  text-align: start;
 }
 
 /* Boundaries: a menu of overlays rather than four cards in a column. A native
