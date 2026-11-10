@@ -67,6 +67,8 @@ export const COPY = {
     copied: "Citation copied.",
     copyFailed: "The citation could not be copied. Select it above instead.",
     related: "Related places",
+    more: "Sources, limits and how to cite",
+    embed: "Embed this figure",
     region: "Economic region",
     federal: "Federal ridings",
     provincial: "Provincial ridings",
@@ -118,6 +120,9 @@ export const COPY = {
     copied: "Citation copiée.",
     copyFailed: "La citation n’a pas pu être copiée. Sélectionnez-la ci-dessus.",
     related: "Lieux liés",
+    // Draft French for the owner's review (2026-11-10).
+    more: "Sources, limites et citation",
+    embed: "Intégrer ce chiffre",
     region: "Région économique",
     federal: "Circonscriptions fédérales",
     provincial: "Circonscriptions provinciales",
@@ -240,68 +245,74 @@ export function RecordPlacePage({ locale, record }: Readonly<{ locale: Locale; r
           </div>
         </dl>
 
-        <div className="place-detail">
-          <aside className="place-provenance">
-            <section className="card place-provenance-card">
-              <h2 className="eyebrow">{text.provenance}</h2>
-              <ProvenanceBlock provenance={provenance} locale={locale} />
-              <h3 className="place-source-heading">{text.boundarySource}</h3>
-              <dl className="provenance">
-                <div className="provenance-row"><dt>{text.boundary}</dt><dd>{record.boundary.title[locale]}</dd></div>
-                <div className="provenance-row"><dt>{text.edition}</dt><dd>{record.boundary.edition}</dd></div>
-                <div className="provenance-row"><dt>{text.dataVersion}</dt><dd>{PLACE_DATA_VERSION}</dd></div>
-                <div className="provenance-row"><dt>{text.method}</dt><dd>{PLACE_METHOD_VERSION}</dd></div>
-                <div className="provenance-row">
-                  <dt>{text.recordFile}</dt>
-                  <dd><a href={`https://github.com/chinonsoobeta/Witness_Tree/blob/main/${record.record}`}>{record.record}</a></dd>
-                </div>
-              </dl>
-            </section>
+        <section className="place-observed place-related-section" aria-labelledby="place-related-heading">
+          <h2 className="eyebrow" id="place-related-heading">{text.related}</h2>
+          {record.kind === "community" ? (
+            <>
+              <h3>{text.region}</h3>
+              <ReferenceList items={record.region ? [record.region] : []} locale={locale} empty={text.noRiding} />
+              <h3>{text.federal}</h3>
+              <ReferenceList items={record.federal} locale={locale} empty={text.noRiding} note={text.placeShare} />
+              <h3>{text.provincial}</h3>
+              <ReferenceList items={record.provincial} locale={locale} empty={text.noRiding} note={text.placeShare} />
+            </>
+          ) : (
+            <>
+              <h3>{record.kind === "economic-region" ? text.communitiesInRegion : text.communitiesInRiding}</h3>
+              <ReferenceList items={record.communities} locale={locale} empty={text.noCommunity} note={record.kind === "economic-region" ? undefined : text.communityShare} />
+            </>
+          )}
+          <p className="place-related-links">
+            <a href={exploreHref}>{text.explore}</a>
+            {compareHref ? <a href={compareHref}>{text.compare}</a> : null}
+          </p>
+        </section>
 
-            <section className="card place-caution">
-              <h2 className="eyebrow">{text.limits}</h2>
-              <ul className="place-limitations">
-                {text.limitations.map((limitation) => <li key={limitation}>{limitation}</li>)}
-              </ul>
-              <a href={locale === "en" ? "/en/methods" : "/fr/methodes"}>{text.readMethod}</a>
-            </section>
+        {/* Sources, limits, citation and embed code, full width at the foot of
+            the page. Each is a closed <details>, so every limitation is one
+            click away; without script they open natively, and the print rules
+            open them all on paper. */}
+        <section className="place-more" aria-labelledby="place-more-heading">
+          <h2 className="eyebrow" id="place-more-heading">{text.more}</h2>
+          <details className="place-more-item">
+            <summary><h3>{text.provenance}</h3></summary>
+            <ProvenanceBlock provenance={provenance} locale={locale} />
+            <h4 className="place-source-heading">{text.boundarySource}</h4>
+            <dl className="provenance">
+              <div className="provenance-row"><dt>{text.boundary}</dt><dd>{record.boundary.title[locale]}</dd></div>
+              <div className="provenance-row"><dt>{text.edition}</dt><dd>{record.boundary.edition}</dd></div>
+              <div className="provenance-row"><dt>{text.dataVersion}</dt><dd>{PLACE_DATA_VERSION}</dd></div>
+              <div className="provenance-row"><dt>{text.method}</dt><dd>{PLACE_METHOD_VERSION}</dd></div>
+              <div className="provenance-row">
+                <dt>{text.recordFile}</dt>
+                <dd><a href={`https://github.com/chinonsoobeta/Witness_Tree/blob/main/${record.record}`}>{record.record}</a></dd>
+              </div>
+            </dl>
+          </details>
 
-            <section className="record-citation">
-              <h2 className="eyebrow">{text.citation}</h2>
-              <p id="place-citation">{citation}</p>
-              <p className="place-share">
-                <a href={receiptPath(locale, record)} download={`${PLACE_DATA_VERSION}-${record.geography}-${record.code}-${locale}.png`}>{text.download}</a>
-                {isRidingGeography(record.geography) ? <a href={ridingSheetPath(locale, record.geography, record.code)}>{text.sheet}</a> : null}
-                <CopyCitation targetId="place-citation" label={text.copy} copied={text.copied} failed={text.copyFailed} />
-              </p>
-            </section>
+          <details className="place-more-item place-more-item--caution">
+            <summary><h3>{text.limits}</h3></summary>
+            <ul className="place-limitations">
+              {text.limitations.map((limitation) => <li key={limitation}>{limitation}</li>)}
+            </ul>
+            <a href={locale === "en" ? "/en/methods" : "/fr/methodes"}>{text.readMethod}</a>
+          </details>
 
-            <EmbedSnippet locale={locale} place={{ geography: record.geography, code: record.code, name }} />
-          </aside>
-
-          <section className="place-observed" aria-labelledby="place-related-heading">
-            <h2 className="eyebrow" id="place-related-heading">{text.related}</h2>
-            {record.kind === "community" ? (
-              <>
-                <h3>{text.region}</h3>
-                <ReferenceList items={record.region ? [record.region] : []} locale={locale} empty={text.noRiding} />
-                <h3>{text.federal}</h3>
-                <ReferenceList items={record.federal} locale={locale} empty={text.noRiding} note={text.placeShare} />
-                <h3>{text.provincial}</h3>
-                <ReferenceList items={record.provincial} locale={locale} empty={text.noRiding} note={text.placeShare} />
-              </>
-            ) : (
-              <>
-                <h3>{record.kind === "economic-region" ? text.communitiesInRegion : text.communitiesInRiding}</h3>
-                <ReferenceList items={record.communities} locale={locale} empty={text.noCommunity} note={record.kind === "economic-region" ? undefined : text.communityShare} />
-              </>
-            )}
-            <p className="place-related-links">
-              <a href={exploreHref}>{text.explore}</a>
-              {compareHref ? <a href={compareHref}>{text.compare}</a> : null}
+          <details className="place-more-item place-more-cite">
+            <summary><h3>{text.citation}</h3></summary>
+            <p id="place-citation">{citation}</p>
+            <p className="place-share">
+              <a href={receiptPath(locale, record)} download={`${PLACE_DATA_VERSION}-${record.geography}-${record.code}-${locale}.png`}>{text.download}</a>
+              {isRidingGeography(record.geography) ? <a href={ridingSheetPath(locale, record.geography, record.code)}>{text.sheet}</a> : null}
+              <CopyCitation targetId="place-citation" label={text.copy} copied={text.copied} failed={text.copyFailed} />
             </p>
-          </section>
-        </div>
+          </details>
+
+          <details className="place-more-item">
+            <summary><h3 id="place-embed-heading">{text.embed}</h3></summary>
+            <EmbedSnippet locale={locale} place={{ geography: record.geography, code: record.code, name }} />
+          </details>
+        </section>
       </div>
     </main>
   );

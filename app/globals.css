@@ -6014,6 +6014,25 @@ dd > a:only-child {
 .place-embed-code { width: 100%; min-width: 0; resize: vertical; padding: 8px; border: 1px solid var(--muted); border-radius: 4px; background: var(--surface-2); color: var(--ink); font: 0.8rem/1.4 var(--mono); overflow-wrap: anywhere; }
 .place-embed-terms { color: var(--muted); font-size: 0.85rem; }
 .place-embed-links { display: flex; flex-wrap: wrap; gap: 8px 20px; }
+/* A real place's page: sources, limits, citation and embed code as closed
+   sections at the foot, full width. */
+.place-more { display: flex; flex-direction: column; gap: 10px; padding-top: 8px; border-top: 1px solid var(--rule); }
+.place-more > .eyebrow { margin: 0 0 4px; }
+.place-more-item { border: 1px solid var(--rule); border-radius: var(--radius); background: var(--surface); padding: 0 18px; }
+.place-more-item[open] { padding-bottom: 18px; display: flex; flex-direction: column; gap: 12px; }
+.place-more-item--caution { border-color: var(--clay); background: var(--tint-derived); }
+.place-more-item--caution > summary, .place-more-item--caution a { color: var(--clay-ink); }
+.place-more-cite p { margin: 0; overflow-wrap: anywhere; }
+.place-more-cite .place-share { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; }
+.place-more-item > summary { cursor: pointer; padding: 14px 0; list-style-position: inside; }
+.place-more-item > summary h3 { display: inline; margin: 0; font-size: 1rem; }
+.place-more-item > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.place-more-item > :not(summary), .place-more-item .provenance, .place-more-item .place-embed-code { max-width: 80ch; }
+@media print {
+  /* On paper every section prints open, so no limitation is left behind a click. */
+  .place-more-item::details-content { content-visibility: visible; display: contents; }
+  .place-more-item > summary { list-style: none; }
+}
 
 @media (max-width: 1000px) {
   .place-hero { grid-template-columns: minmax(0, 1fr); }

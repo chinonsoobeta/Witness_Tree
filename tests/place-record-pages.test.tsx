@@ -140,3 +140,20 @@ test("search links communities and ridings to their pages and every link resolve
   const province = suggestSearch("British Columbia", "en").suggestions.find((suggestion) => suggestion.kind === "province");
   if (province) assert.equal(province.href, null);
 });
+
+test("sources, limits, citation and embed code sit in closed sections at the foot, with nothing removed", () => {
+  const record = placePageRecord(PLACE_DATA_VERSION, "csd-2021", "5924034")!;
+  for (const locale of ["en", "fr"] as const) {
+    const html = renderToStaticMarkup(<RecordPlacePage locale={locale} record={record} />);
+    const foot = html.indexOf('class="place-more"');
+    assert.ok(foot > html.indexOf('id="place-related-heading"'), "the closed sections come after the related places");
+    const sections = html.slice(foot).match(/<details class="place-more-item[^"]*">/g) ?? [];
+    assert.equal(sections.length, 4);
+    assert.doesNotMatch(html.slice(foot), /<details[^>]* open/);
+    const tail = html.slice(foot);
+    // Every limitation, the provenance, the boundary source, the citation and the embed code are still in the page.
+    assert.equal((tail.match(/<li>/g) ?? []).length >= 5, true);
+    for (const pattern of [/2785c103-9c2d-429b-9f3d-89f5cd9ea94d/, /interval-union-and-sum-1984-2022-v1/, /id="place-citation"/, /id="place-embed-code"/, /opengraph-image/]) assert.match(tail, pattern);
+    assert.match(tail, locale === "en" ? /The accuracy of detected loss is Unknown/ : /L’exactitude de la perte détectée est inconnue/);
+  }
+});
