@@ -146,6 +146,8 @@ const text = {
     province: "Province",
     placeFiguresLoading: "Loading this place’s figures…",
     placeFiguresFailed: "This place’s figures didn’t load. Try again later.",
+    outsideRecord:
+      "No figures here. The record covers British Columbia, Alberta, Ontario and Québec only; this riding is drawn to show where it lies.",
     clearBoundary: "Clear boundary",
     placePage: "Open this place’s page",
     interval: "Interval",
@@ -251,6 +253,8 @@ const text = {
     province: "Province",
     placeFiguresLoading: "Chargement des chiffres de ce lieu…",
     placeFiguresFailed: "Les chiffres de ce lieu n’ont pas pu être chargés. Réessayez plus tard.",
+    outsideRecord:
+      "Aucun chiffre ici. Le registre ne couvre que la Colombie-Britannique, l’Alberta, l’Ontario et le Québec\u202F; cette circonscription est tracée pour montrer où elle se trouve.",
     clearBoundary: "Effacer la limite",
     placePage: "Ouvrir la page de ce lieu",
     interval: "Période",
@@ -740,6 +744,17 @@ const boundaryPruid = (boundary: BoundarySelection): string | null => {
   }
   const province = boundaryProvince(boundary) ?? boundary.jurisdiction;
   return PRUID_FOR_PROVINCE_CODE[province] ?? null;
+};
+
+/**
+ * A federal riding outside the four provinces the record covers (F6). The
+ * ridings are drawn across Canada, so the readout says why such a riding has
+ * no figures rather than showing them as Unknown.
+ */
+const outsideRecord = (boundary: BoundarySelection): boolean => {
+  if (boundary.overlay !== "federal-ridings") return false;
+  const pruid = boundaryPruid(boundary);
+  return pruid !== null && !(pruid in PROVINCE_CODE_FOR_PRUID);
 };
 
 /** The readout's heading: the kind of boundary, then where it lies. */
@@ -1862,7 +1877,7 @@ export function ExploreMapClient({
   const placeMeasurement = boundary && placeEntry && placeEntry !== "failed"
     ? censusSubdivisionMeasurement(placeEntry, boundary.boundaryId, { fromYear, toYear: year })
     : null;
-  const readout = boundary && (placeState === null || placeState === "ready")
+  const readout = boundary && !outsideRecord(boundary) && (placeState === null || placeState === "ready")
     ? boundaryReadout(
       boundary,
       placeMeasurement ? [...ridingMeasurements, placeMeasurement] : ridingMeasurements,
@@ -1883,7 +1898,7 @@ export function ExploreMapClient({
     : null;
   // A riding, region, city or town that is pinned, in a mode whose years change the map.
   const timelapseBoundary =
-    cause !== null && source === "pmtiles" && pinnedBoundary &&
+    cause !== null && source === "pmtiles" && pinnedBoundary && !outsideRecord(pinnedBoundary) &&
     (MEASURED_BOUNDARY_OVERLAYS as readonly string[]).includes(pinnedBoundary.overlay)
       ? pinnedBoundary
       : null;
@@ -2268,6 +2283,7 @@ export function ExploreMapClient({
               <aside className="explore-map-boundary-status" role="status">
                 <strong>{boundaryHeading(locale, boundary)}</strong>
                 <p>{boundary.name}</p>
+                {outsideRecord(boundary) ? <p>{text[locale].outsideRecord}</p> : null}
                 {placeState === "loading" ? <p>{text[locale].placeFiguresLoading}</p> : null}
                 {placeState === "failed" ? <p>{text[locale].placeFiguresFailed}</p> : null}
                 {readout?.kind === "boundary-only" ? <p>{readout.note}</p> : null}
