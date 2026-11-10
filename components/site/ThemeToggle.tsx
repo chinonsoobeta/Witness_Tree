@@ -23,7 +23,7 @@ const TEXT = {
  * Hand-written rather than useId(), because the id has to survive hydration and
  * useId() does not here: the value is derived from the component's position in
  * the tree, and the server and client trees around this island are not the same
- * shape. Fixed strings are safe because the header renders exactly one of these.
+ * shape. Fixed strings are safe because the footer renders exactly one of these.
  */
 const GROUP_NAME = "witness-tree-theme-choice";
 const LABEL_ID = "witness-tree-theme-label";
@@ -73,9 +73,10 @@ const mounted = () => true;
 const notMounted = () => false;
 
 /**
- * The colour-theme control. A client island for the same reason LocaleLink is one:
- * the header sits in the shell on every page, and marking the whole header client
- * would ship the navigation to the browser to operate one control.
+ * The colour-theme control, in the footer (SiteFooter). A client island for the
+ * same reason LocaleLink is one: the footer sits in the shell on every page, and
+ * marking the whole footer client would ship its links to the browser to operate
+ * one control.
  *
  * Three native radios rather than a switch, because the choice genuinely has three
  * values and a two-state switch cannot express "follow the system". Native inputs
@@ -84,8 +85,8 @@ const notMounted = () => false;
  *
  * Without JavaScript the control cannot change anything, and a radio that visibly
  * accepts a click while doing nothing is a worse failure than one that says it is
- * unavailable. Rendering nothing until mount would instead shift the whole
- * navigation row sideways on hydration, so the markup is present and inert.
+ * unavailable. Rendering nothing until mount would instead shift the footer on
+ * hydration, so the markup is present and inert.
  */
 export function ThemeToggle({ locale }: { locale: Locale }) {
   const text = TEXT[locale];
@@ -115,20 +116,22 @@ export function ThemeToggle({ locale }: { locale: Locale }) {
   return (
     <div className="theme-toggle" role="radiogroup" aria-labelledby={LABEL_ID}>
       <span className="theme-toggle-label" id={LABEL_ID}>{text.group}</span>
-      {THEME_CHOICES.map((value) => (
-        <label className="theme-option" key={value}>
-          <input
-            type="radio"
-            name={GROUP_NAME}
-            value={value}
-            aria-label={text[value]}
-            checked={choice === value}
-            disabled={!ready}
-            onChange={() => select(value)}
-          />
-          <span>{text[value]}</span>
-        </label>
-      ))}
+      <span className="theme-options">
+        {THEME_CHOICES.map((value) => (
+          <label className="theme-option" key={value}>
+            <input
+              type="radio"
+              name={GROUP_NAME}
+              value={value}
+              aria-label={text[value]}
+              checked={choice === value}
+              disabled={!ready}
+              onChange={() => select(value)}
+            />
+            <span>{text[value]}</span>
+          </label>
+        ))}
+      </span>
     </div>
   );
 }

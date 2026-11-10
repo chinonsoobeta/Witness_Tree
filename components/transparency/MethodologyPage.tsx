@@ -1,4 +1,5 @@
 import type { ConfidenceResult } from "@/lib/domain/confidence";
+import { ReadingAids } from "./ReadingAids";
 import type { Locale } from "@/lib/domain";
 import { provincialMatchingTextEn } from "@/lib/phase4/methods-matching-en";
 import { provincialMatchingTextFr } from "@/lib/phase4/methods-matching-fr";
@@ -44,6 +45,15 @@ const COPY = {
     limits: "What this record does not claim",
     limitsText:
       "We never label a detected loss as logging, deforestation, a rule violation or the fault of a named organisation. Where no official record exists, we say so instead of filling in a number.",
+    // Moved here from the home page on 2026-11-10 (A9), which now links to this section.
+    limitsList: [
+      "That a loss was caused by logging or deforestation.",
+      "Any legal or compliance finding.",
+      "How much sellable timber there is.",
+      "Who is responsible, based on who is nearby.",
+      "How a wildfire will spread.",
+      "A total of all the loss. Detected loss is a minimum.",
+    ],
   },
   fr: {
     title: "Méthodologie",
@@ -80,6 +90,14 @@ const COPY = {
     limits: "Ce que ce registre n’affirme pas",
     limitsText:
       "Nous ne qualifions jamais une perte détectée d’exploitation forestière, de déforestation, d’infraction ou de faute d’une organisation désignée. Lorsqu’aucun registre officiel n’existe, nous le disons au lieu d’inscrire un chiffre.",
+    limitsList: [
+      "Qu’une perte soit due à l’exploitation forestière ou à la déforestation.",
+      "Toute conclusion juridique ou de conformité.",
+      "La quantité de bois vendable.",
+      "Qui est responsable, selon qui se trouve à proximité.",
+      "Comment un incendie se propagera.",
+      "Un total de toutes les pertes. La perte détectée est un minimum.",
+    ],
   },
 } as const;
 
@@ -134,10 +152,11 @@ export function MethodologyPage({ locale }: Readonly<{ locale: Locale }>) {
       <header className="masthead">
         <h1>{copy.title}</h1>
         <p className="dek">{copy.statement}</p>
+        <ReadingAids locale={locale} current="methods" />
       </header>
       <div className="content-section prose-measure">
         {sections.map(([heading, text], index) => (
-          <section className="governance-section" key={heading} id={heading === copy.unmapped ? "coverage-gap" : heading === copy.provincialMatching ? "provincial-matching" : undefined}>
+          <section className="governance-section" key={heading} id={heading === copy.unmapped ? "coverage-gap" : heading === copy.provincialMatching ? "provincial-matching" : heading === copy.limits ? "limits" : undefined}>
             <p className="governance-index" aria-hidden="true">
               {String(index + 1).padStart(2, "0")}
             </p>
@@ -161,6 +180,11 @@ export function MethodologyPage({ locale }: Readonly<{ locale: Locale }>) {
               <p>
                 <a href={locale === "en" ? "/en/unknown" : "/fr/inconnu"}>{copy.atlasLink}</a>
               </p>
+            ) : null}
+            {heading === copy.limits ? (
+              <ul>
+                {copy.limitsList.map((item) => <li key={item}>{item}</li>)}
+              </ul>
             ) : null}
             {heading === copy.accuracy ? (
               <p>

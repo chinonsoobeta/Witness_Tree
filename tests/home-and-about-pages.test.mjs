@@ -39,54 +39,89 @@ test("landing pages use the released province span and retain the bounded scope"
 });
 
 /*
- * This replaces the staged-grammar test that pinned the landing-hero and
- * landing-record-band structure. The confidence-first canvas puts the coverage
- * statement and the evidence legend ahead of the first figure, and reports each
- * province through a ranked list rather than a grid of cards, so the old
- * structure is gone by design rather than by neglect. The contract it enforced
- * is kept here against the composition that replaced it, at the same strictness:
- * one call to action per band, the interior sections still numbered, and no
- * em dash.
+ * The home page was cut to about two desktop screens on 2026-11-10 (audit
+ * items A1 and A3 to A9). The evidence legend, the province cards, the
+ * recovery breakdown, the four data cards, the top-five rankings, the "Read
+ * the record" cards and the list of limits each have a home elsewhere, and
+ * the page links there. What this pins is the order the brief set (question
+ * and search, province bar, one figure with its minimum, the four provinces,
+ * three doors, one line of limits), that each removed section stays removed,
+ * and the contracts the old test held: one way out of the hero, a single
+ * limits block, no numbered markers and no em dash.
  */
-test("the landing composition puts coverage and the legend before any figure", async () => {
+test("the landing page is the question, one figure, four provinces, three doors and one line of limits", async () => {
   const [english, french] = await Promise.all([read("../app/en/page.tsx"), read("../app/fr/page.tsx")]);
-  for (const [page, route, methods] of [
-    [english, "/en/explore", "/en/methods#coverage-gap"],
-    [french, "/fr/explorer", "/fr/methodes#coverage-gap"],
+  for (const [page, locale, route, compare, harvest, methods, unknown] of [
+    [english, "en", "/en/explore", "/en/compare?rank=cities#rankings", "HARVEST_FIRE_ROUTES.en", "/en/methods#limits", "/en/unknown"],
+    [french, "fr", "/fr/explorer", "/fr/comparer?rank=cities#rankings", "HARVEST_FIRE_ROUTES.fr", "/fr/methodes#limits", "/fr/inconnu"],
   ]) {
     const hero = section(page, '<header className="masthead masthead--record">', "</header>");
     // The owner removed the hero eyebrow on 2026-09-27; the question is the title.
     assert.doesNotMatch(hero, /<p className="eyebrow">/);
     assert.match(hero, /<h1>/);
-    assert.match(hero, /<ProvinceBar/);
+    assert.ok(hero.indexOf("<HomeSearch") < hero.indexOf("<ProvinceBar"), "search, then the province bar");
     // The owner asked on 2026-10-03 for one way out of the hero: the map.
     assert.equal((hero.match(/<Link\b/g) ?? []).length, 1);
     assert.match(hero, new RegExp(`<Link href="${route}">`));
-    // Order is the claim. The headline carries its own minimum inside the
-    // panel, so there is no separate coverage banner; the legend still stands
-    // ahead of the section that reports a province's figures.
+
+    // The order the brief set. The headline carries its own minimum, so there
+    // is no separate coverage banner.
     assert.equal(page.indexOf("<CoverageStatement"), -1, "the headline panel says the minimum itself");
-    const headline = page.indexOf("<CumulativeHeadline");
-    const legend = page.indexOf("<EvidenceMarks");
-    const record = page.indexOf('<section className="content-section landing-coverage"');
-    assert.ok(headline > 0 && legend > headline && record > legend, "headline with its minimum, then legend, then figures");
-    const band = section(page, '<section className="content-section landing-coverage"', '<section className="content-section">');
-    assert.match(band, /<ProvinceRecordList/);
-    assert.match(band, new RegExp(`href="${methods}"`));
-    assert.match(band, new RegExp(`href="${route}"`));
-    assert.equal((page.match(/landing-coverage/g) ?? []).length, 1);
-    /*
-     * The interior sections are no longer numbered. A numbered marker claims
-     * the content is a sequence the reader should follow in order, and these
-     * four never were: 02 and 04 stated the same caveat several screens
-     * apart. They collapse into the evidence marks plus one limits block, so
-     * the contract enforced here is now that no such marker survives and that
-     * the limits block is single.
-     */
-    assert.doesNotMatch(page, /<span className="num">/);
+    const order = ["</header>", "<CumulativeHeadline", "<ProvinceRecordList", 'className="content-section home-doors"', "<RecoveryAnswer", 'className="content-section home-caveat"'].map((marker) => page.indexOf(marker));
+    order.forEach((at, index) => assert.ok(at > (order[index - 1] ?? 0), `${locale}: section ${index} is out of order`));
+
+    // The four provinces carry the span in their heading and one way to the
+    // map for the same years, and the gap notes are one link away.
+    const provinces = section(page, 'className="content-section home-provinces"', "</section>");
+    assert.match(provinces, /provinceSpanReach\("(?:en|fr)"\)/);
+    assert.ok(provinces.includes(`${route}?from=1984&year=2022`));
+    assert.ok(provinces.includes(`<Link href="${unknown}">`));
+
+    // Three doors: the map, Compare (on its rankings, a contract with the
+    // Compare page), and harvest and fire.
+    const doors = section(page, 'className="content-section home-doors"', "</nav>");
+    assert.equal((doors.match(/<article className="record-card"/g) ?? []).length, 3);
+    assert.ok(doors.includes(`<Link href="${route}">`));
+    assert.ok(doors.includes(`<Link href="${compare}">`));
+    assert.ok(doors.includes(`<Link href={${harvest}}>`));
+    // Explore still links to "/<locale>#ridings-most-lost"; that address lands on the Compare door.
+    assert.match(doors, /id="ridings-most-lost"/);
+
+    // Removed from home; each has a page of its own.
+    for (const gone of ["<EvidenceMarks", "<HarvestSources", "<CitiesMostLost", "<RidingsMostLost", "limits-list", "landing-coverage", "evidence-band"]) {
+      assert.ok(!page.includes(gone), `${locale}: ${gone} is back on the home page`);
+    }
+    assert.ok(page.includes(`href="${locale === "en" ? "/en/data" : "/fr/donnees"}"`), "one link to the Data page");
+
+    // One limits block, one line, linking to the list at the end of Methods.
     assert.equal((page.match(/aria-labelledby="(limits|limites)"/g) ?? []).length, 1);
+    const caveat = section(page, 'className="content-section home-caveat"', "</section>");
+    assert.ok(caveat.includes(`<Link href="${methods}">`));
+    assert.match(caveat, locale === "en" ? /detected loss is a minimum/ : /la perte détectée est un minimum/);
+    assert.doesNotMatch(page, /<span className="num">/);
     assert.doesNotMatch(page, /\u2014/);
   }
+});
+
+test("the limits the home page used to list are at the end of Methods, in both languages", async () => {
+  const methods = await read("../components/transparency/MethodologyPage.tsx");
+  for (const item of [
+    "That a loss was caused by logging or deforestation.",
+    "Any legal or compliance finding.",
+    "How much sellable timber there is.",
+    "Who is responsible, based on who is nearby.",
+    "How a wildfire will spread.",
+    "A total of all the loss. Detected loss is a minimum.",
+    "Qu’une perte soit due à l’exploitation forestière ou à la déforestation.",
+    "Toute conclusion juridique ou de conformité.",
+    "La quantité de bois vendable.",
+    "Qui est responsable, selon qui se trouve à proximité.",
+    "Comment un incendie se propagera.",
+    "Un total de toutes les pertes. La perte détectée est un minimum.",
+  ]) assert.ok(methods.includes(`"${item}"`), item);
+  assert.match(methods, /heading === copy\.limits \? "limits"/);
+  // Still the last section, so "Methods ends with this section" stays true.
+  assert.match(methods, /\[copy\.limits, copy\.limitsText\],\n {2}\];/);
 });
 
 test("public coverage copy derives from the bounded Explore period", async () => {
@@ -108,8 +143,9 @@ test("public coverage copy derives from the bounded Explore period", async () =>
   }
   assert.match(period, /EXPLORE_YEAR_MAX = 2022/);
   assert.match(period, /EXPLORE_COVERAGE_PERIOD/);
-  assert.match(english, /formatUnknownSharePercent\(row\.unknownSharePercent, "en"\)/);
-  assert.match(french, /formatUnknownSharePercent\(row\.unknownSharePercent, "fr"\)/);
+  // The unknown share is formatted where the provinces are now listed, for both locales.
+  const provinces = await read("../components/site/ProvinceRecordList.tsx");
+  assert.match(provinces, /formatUnknownSharePercent\(row\.unknownSharePercent, locale\)/);
 });
 
 test("language choices use native document navigation", async () => {
@@ -218,6 +254,8 @@ test("about routes are bilingual and carry the owner's own text", async () => {
   assert.doesNotMatch(footer, /\["About", "\/en\/about"\]|\["À propos", "\/fr\/a-propos"\]/);
   assert.doesNotMatch(header, /\["Account", "\/en\/account"\]|\["Wildfire", "\/en\/wildfire"\]/);
   assert.doesNotMatch(header, /\["Compte", "\/fr\/compte"\]|\["Incendies", "\/fr\/incendies"\]/);
-  assert.match(footer, /\["Account", "\/en\/account"\]/);
-  assert.match(footer, /\["Compte", "\/fr\/compte"\]/);
+  // Accounts are not active, so since 2026-11-10 (K1) no menu links to the
+  // Account page; it stays reachable by its address and in the sitemap.
+  assert.doesNotMatch(footer, /\/en\/account|\/fr\/compte/);
+  assert.doesNotMatch(header, /\/en\/account|\/fr\/compte/);
 });

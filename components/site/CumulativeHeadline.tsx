@@ -1,4 +1,4 @@
-import { formatHectares, formatPercent, formatYearRange, SUM_TERM, yearRange, type Locale } from "@/lib/domain";
+import { formatHectares, formatPercent, formatYearRange, yearRange, type Locale } from "@/lib/domain";
 import { EXPLORE_INTERVAL_FIRST_YEAR, EXPLORE_INTERVAL_LAST_YEAR } from "@/lib/explore/interval";
 import { fourProvinceSpanMeasurement } from "@/lib/explore/province-spans";
 
@@ -12,8 +12,7 @@ const COPY = {
     unionLabel: "Lost at least once",
     unionBasis: (share: string, known: string) =>
       `${share} of the ${known} of forest mapped in 1984. A place counts once, however many times it was cleared.`,
-    sumBasis: "A place cleared in two different years counts twice, so this is larger. It has no percentage, because it can count the same forest more than once.",
-    minimumLead: "Both are minimums.",
+    minimumLead: "This is a minimum.",
     minimumBody: (unknown: string) =>
       `The satellite source covers only Canada’s forest regions, so ${unknown} of these provinces have no data. Loss there counts as unknown, not zero.`,
   },
@@ -23,8 +22,7 @@ const COPY = {
     unionLabel: "Perdue au moins une fois",
     unionBasis: (share: string, known: string) =>
       `${share} des ${known} de forêt cartographiés en 1984. Un lieu ne compte qu’une fois, peu importe combien de fois sa forêt a été perdue.`,
-    sumBasis: "Un lieu qui a perdu sa forêt au cours de deux années différentes compte deux fois\u202F; ce chiffre est donc plus élevé. Il n’a pas de pourcentage, car il peut compter la même forêt plus d’une fois.",
-    minimumLead: "Ce sont deux minimums.",
+    minimumLead: "C’est un minimum.",
     minimumBody: (unknown: string) =>
       `La source satellitaire ne couvre que les régions forestières du Canada\u202F: ${unknown} de ces provinces n’ont donc pas de données. Les pertes à cet endroit comptent comme inconnues, pas comme nulles.`,
   },
@@ -34,10 +32,15 @@ const COPY = {
  * The record's largest figure, with everything that bounds it in the same block.
  *
  * The number and its limits are one visual unit because they are one claim.
- * The span, the denominator, the unmapped share and the reason the annual rows
- * do not add up to this are not footnotes to the figure: each of them changes
- * what the figure means, and a reader who takes the number without them has
- * taken a total from a product that does not publish one.
+ * The span, the denominator and the unmapped share are not footnotes to the
+ * figure: each of them changes what the figure means, and a reader who takes
+ * the number without them has taken a total from a product that does not
+ * publish one.
+ *
+ * Yearly losses added together are not shown here (audit 2026-11-10, A2). The
+ * harvest and fire page says yearly losses are never added up on this site,
+ * and printing that sum beside this figure contradicted it. Explore's figures
+ * panel still states the sum, where it is explained as a second measure.
  *
  * It renders nothing at all if the span cannot be measured for all four
  * provinces. A partial headline would be a fifth kind of number on a page whose
@@ -45,10 +48,10 @@ const COPY = {
  */
 export function CumulativeHeadline({ locale }: Readonly<{ locale: Locale }>) {
   const measurement = fourProvinceSpanMeasurement(WHOLE_RECORD);
-  const { unionLossHectares, knownForestedHectares, unionLossPercent, summedLossHectares, unknownHectares } = measurement ?? {};
+  const { unionLossHectares, knownForestedHectares, unionLossPercent, unknownHectares } = measurement ?? {};
   if (
     unionLossHectares == null || knownForestedHectares == null || unionLossPercent == null ||
-    summedLossHectares == null || unknownHectares == null
+    unknownHectares == null
   ) return null;
 
   const copy = COPY[locale];
@@ -61,23 +64,14 @@ export function CumulativeHeadline({ locale }: Readonly<{ locale: Locale }>) {
       <p className="eyebrow">{copy.eyebrow}</p>
       <h2 id="cumulative-headline-heading">{`${copy.heading}, ${span}`}</h2>
       {/*
-        Two measures of the same loss, set as equals. The union counts a place
-        once and carries a share; the yearly sum counts a place each time it
-        was lost and carries none. Neither corrects the other. The figures are
+        One measure: a place counts once and the figure carries a share. It is
         exact to the hectare, because rounding would put a number on the page
         that appears nowhere in the record.
       */}
-      <div className="cumulative-pair">
-        <div className="cumulative-measure">
-          <p className="cumulative-label">{copy.unionLabel}</p>
-          <p className="cumulative-figure">{formatHectares(unionLossHectares, locale)}</p>
-          <p className="cumulative-claim">{copy.unionBasis(formatPercent(unionLossPercent, locale), formatHectares(knownForestedHectares, locale))}</p>
-        </div>
-        <div className="cumulative-measure">
-          <p className="cumulative-label">{SUM_TERM[locale]}</p>
-          <p className="cumulative-figure">{formatHectares(summedLossHectares, locale)}</p>
-          <p className="cumulative-claim">{copy.sumBasis}</p>
-        </div>
+      <div className="cumulative-measure">
+        <p className="cumulative-label">{copy.unionLabel}</p>
+        <p className="cumulative-figure">{formatHectares(unionLossHectares, locale)}</p>
+        <p className="cumulative-claim">{copy.unionBasis(formatPercent(unionLossPercent, locale), formatHectares(knownForestedHectares, locale))}</p>
       </div>
       <p className="cumulative-minimum">
         <span className="mark-glyph mark-glyph--unknown" aria-hidden="true" />

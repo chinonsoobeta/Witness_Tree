@@ -95,12 +95,16 @@ test("every province's reason comes from unmapped-reasons.ts, the map style carr
     assert.equal(row.unmappedCharacter.fr, UNMAPPED_REASONS[row.id].fr, row.id);
   }
   // The map draws no figures table of its own; Explore's figures section is where its province rows are read.
-  for (const file of ["app/en/page.tsx", "app/fr/page.tsx", "components/explore/ExploreView.tsx"]) {
+  // Since 2026-11-10 (A4) the home page lists the provinces through ProvinceRecordList, which both locales render.
+  for (const file of ["components/site/ProvinceRecordList.tsx", "components/explore/ExploreView.tsx"]) {
     assert.match(read(file), /row\.unmappedCharacter\.(?:en|fr)|row\.unmappedCharacter\[locale\]/, file);
   }
+  for (const page of ["app/en/page.tsx", "app/fr/page.tsx"]) assert.match(read(page), /<ProvinceRecordList rows=\{SPAN_ROWS\}/, page);
   assert.match(read("components/explore/ExploreView.tsx"), /<p key=\{item\.id\}>[^\n]*item\.unmappedCharacter\[locale\]/, "the chart also needs a visible qualifier");
-  assert.match(read("app/en/page.tsx"), /href="\/en\/methods#coverage-gap"/);
-  assert.match(read("app/fr/page.tsx"), /href="\/fr\/methodes#coverage-gap"/);
+  const provinces = read("components/site/ProvinceRecordList.tsx");
+  assert.match(provinces, /methods: "\/en\/methods#coverage-gap"/);
+  assert.match(provinces, /methods: "\/fr\/methodes#coverage-gap"/);
+  assert.match(provinces, /<Link href=\{copy\.methods\}>\{row\.unmappedCharacter\[locale\]\}<\/Link>/);
 });
 
 
