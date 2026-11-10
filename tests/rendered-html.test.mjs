@@ -161,7 +161,7 @@ test("emits application security headers with the map delivery allowances", asyn
 });
 
 test("Explore sends its map legend and the tile connection in the first HTML", async () => {
-  for (const [pathname, heading] of [["/en/explore", "Detected forest loss, 2021–2022"], ["/fr/explorer", "Perte forestière détectée, 2021–2022"]]) {
+  for (const [pathname, heading] of [["/en/explore", "Detected forest loss, 1984–2022"], ["/fr/explorer", "Perte forestière détectée, 1984–2022"]]) {
     const html = await (await render(pathname)).text();
     const head = /<head>([\s\S]*?)<\/head>/.exec(html)?.[1] ?? "";
     // Opened while the page loads, so the first archive range does not wait for a handshake.
@@ -183,8 +183,12 @@ test("Explore sends its map legend and the tile connection in the first HTML", a
  */
 test("Explore serves its span-honest rankings link, Play name, map notice and phone readout", async () => {
   const cases = [
-    ["/en/explore", "Ridings with the largest share of forest lost over the whole record, 1984–2022, not the years you chose (2021–2022)", 'aria-label="Play year by year from 1984">Play<', "2021–2022 · 1,352,468.43 ha detected as lost, a minimum"],
-    ["/fr/explorer", "Circonscriptions ayant perdu la plus grande part de leur forêt sur l’ensemble du registre, 1984–2022, et non pendant les années choisies (2021–2022)", 'aria-label="Lecture année par année depuis 1984">Lecture<', "2021–2022 · "],
+    // With no years in the address Explore opens on the whole record, so the ranking's span is the span on display.
+    ["/en/explore", "Ridings with the largest share of forest lost, 1984–2022<", 'aria-label="Play year by year from 1984">Play<', "1984–2022 · "],
+    ["/fr/explorer", "Circonscriptions ayant perdu la plus grande part de leur forêt, 1984–2022<", 'aria-label="Lecture année par année depuis 1984">Lecture<', "1984–2022 · "],
+    // A last year alone is still the one-year interval ending there, as it always was.
+    ["/en/explore?year=2022", "Ridings with the largest share of forest lost over the whole record, 1984–2022, not the years you chose (2021–2022)", 'aria-label="Play year by year from 1984">Play<', "2021–2022 · 1,352,468.43 ha detected as lost, a minimum"],
+    ["/fr/explorer?year=2022", "Circonscriptions ayant perdu la plus grande part de leur forêt sur l’ensemble du registre, 1984–2022, et non pendant les années choisies (2021–2022)", 'aria-label="Lecture année par année depuis 1984">Lecture<', "2021–2022 · "],
     ["/en/explore?from=1990&year=2000", "not the years you chose (1990–2000)", 'aria-label="Play year by year from 1990">Play<', "1990–2000 · "],
     ["/en/explore?from=1984&year=2022", "Ridings with the largest share of forest lost, 1984–2022<", 'aria-label="Play year by year from 1984">Play<', "1984–2022 · "],
   ];
@@ -563,8 +567,8 @@ test("Explore and the chart builder name the values they ignore, in both languag
   const [en, fr, backwards, ok, chartEn, chartFr, chartOk] = await Promise.all(
     [englishExplore, frenchExplore, inverted, valid, englishChart, frenchChart, validChart].map((response) => response.text()),
   );
-  assert.match(en, /class="notice query-notice" role="note">The last year in this link, “abc”, is not a four-digit year\. The page shows the default years, 2021–2022, instead\./);
-  assert.match(fr, /La dernière année de ce lien, 1900, ne peut pas être utilisée\u202F: une dernière année doit se situer entre 1985 et 2022\. La page affiche donc les années par défaut, 2021–2022\./);
+  assert.match(en, /class="notice query-notice" role="note">The last year in this link, “abc”, is not a four-digit year\. The page shows the default years, 1984–2022, instead\./);
+  assert.match(fr, /La dernière année de ce lien, 1900, ne peut pas être utilisée\u202F: une dernière année doit se situer entre 1985 et 2022\. La page affiche donc les années par défaut, 1984–2022\./);
   assert.match(backwards, /The first year in this link, 2010, is not before its last year, 2002\./);
   assert.doesNotMatch(ok, /query-notice/);
   assert.match(chartEn, /The first year in this link, 2019, comes after its last year, 2010\. The chart shows the default years, 1985–2022, instead\./);
