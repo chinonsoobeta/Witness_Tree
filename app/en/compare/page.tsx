@@ -2,18 +2,17 @@ import { CoverageStatement } from "@/components/policy/CoverageStatement";
 import type { Metadata } from "next";
 import {
   ComparisonPrompt,
+  ComparisonRankings,
   FederalRidingPicker,
   nothingChosen,
-  RankedRidingsTable,
   selectComparedRidings,
   SideBySideComparison,
 } from "@/components/comparison";
 import {
   comparableRidings,
-  comparisonRankings,
   federalRidingComparison,
   parseRankingSort,
-  RANKING_PREVIEW_ROWS,
+  parseRankingTab,
 } from "@/lib/comparison";
 import { SiteShell } from "@/components/site";
 import { routeMetadata } from "@/lib/site-metadata";
@@ -25,7 +24,7 @@ export const metadata: Metadata = routeMetadata("en", { en: "/en/compare", fr: "
 export default async function ComparePage({
   searchParams,
 }: {
-  searchParams: Promise<{ view?: string; sort?: string; left?: string; right?: string; rankings?: string }>;
+  searchParams: Promise<{ view?: string; sort?: string; left?: string; right?: string; rankings?: string; rank?: string }>;
 }) {
   const parameters = await searchParams;
   const view = parameters.view === "table" ? "table" : "cards";
@@ -36,6 +35,7 @@ export default async function ComparePage({
   });
   const leftId = selected.left?.id;
   const rightId = selected.right?.id;
+  const rank = parseRankingTab(parameters.rank, [selected.left, selected.right]);
   return (
     <SiteShell locale="en">
       <main id="main" className="page-wrap">
@@ -53,6 +53,7 @@ export default async function ComparePage({
           sort={sort}
           allRankings={allRankings}
           notices={selected.notices}
+          rank={parameters.rank === rank ? rank : undefined}
         />
         {nothingChosen(selected) ? <ComparisonPrompt locale="en" /> : (
           <SideBySideComparison
@@ -65,21 +66,16 @@ export default async function ComparePage({
             allRankings={allRankings}
           />
         )}
-        {comparisonRankings([selected.left, selected.right]).map((ranking) => (
-          <RankedRidingsTable
-            key={ranking.scope.level === "federal" ? "federal" : ranking.scope.province}
-            rows={ranking.rows}
-            context={ranking.context}
-            scope={ranking.scope}
-            locale="en"
-            sort={sort}
-            leftId={leftId}
-            rightId={rightId}
-            view={view}
-            limit={allRankings ? undefined : RANKING_PREVIEW_ROWS}
-            allRankings={allRankings}
-          />
-        ))}
+        <ComparisonRankings
+          tab={rank}
+          places={[selected.left, selected.right]}
+          locale="en"
+          sort={sort}
+          leftId={leftId}
+          rightId={rightId}
+          view={view}
+          allRankings={allRankings}
+        />
       </main>
     </SiteShell>
   );

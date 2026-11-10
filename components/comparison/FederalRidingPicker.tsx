@@ -139,6 +139,7 @@ export function FederalRidingPicker({
   sort,
   allRankings = false,
   notices = [],
+  rank,
 }: {
   rows: readonly ComparisonPlace[];
   locale: Locale;
@@ -149,6 +150,8 @@ export function FederalRidingPicker({
   sort?: string;
   allRankings?: boolean;
   notices?: readonly SelectionNotice[];
+  /** The ranking tab the address named, kept when the reader picks a new pair. */
+  rank?: string;
 }) {
   const labels = locale === "en"
     ? {
@@ -175,6 +178,7 @@ export function FederalRidingPicker({
         {view && <input type="hidden" name="view" value={view} />}
         {sort && <input type="hidden" name="sort" value={sort} />}
         {allRankings && <input type="hidden" name="rankings" value="all" />}
+        {rank && <input type="hidden" name="rank" value={rank} />}
         <FederalRidingFields
           locale={locale}
           choices={ridingChoices(rows, locale)}

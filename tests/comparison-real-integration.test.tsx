@@ -5,6 +5,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import {
   comparableRidings,
   comparisonRankings,
+  parseRankingTab,
   federalRidingComparison,
   provincialRidingComparison,
   // @ts-expect-error -- Node's TypeScript runner requires explicit local extensions.
@@ -24,6 +25,9 @@ import { FederalDistrictFinder
 import { RankedRidingsTable
 // @ts-expect-error -- Node's TypeScript runner requires explicit local extensions.
 } from "../components/comparison/RankedRidingsTable.tsx";
+import { CitiesMostLost
+// @ts-expect-error -- Node's TypeScript runner requires explicit local extensions.
+} from "../components/site/RidingsMostLost.tsx";
 
 test("the comparison reads 1984–2022 from the riding interval release and accounts for Canada's 343 federal ridings", () => {
   assert.equal(federalRidingComparison.rows.length, 280);
@@ -178,33 +182,38 @@ test("the same riding on both sides is shown once, and a riding outside the four
   assert.match(loin, new RegExp(`Côté gauche\u202F: ${outside.name.fr} est une circonscription fédérale située hors des quatre provinces`));
 });
 
-test("a federal riding sits beside a provincial one, each labelled, each with its own ranking", async () => {
+test("a federal riding sits beside a provincial one, each labelled, each with its own ranking under its tab", async () => {
   const [english, french] = await render({ left: "federal-59001", right: "provincial-BC-258" });
+  const [englishProvincial, frenchProvincial] = await render({ left: "federal-59001", right: "provincial-BC-258", rank: "provincial" });
   for (const html of [english, french]) {
     assert.match(html, /option value="provincial-BC-258" selected=""/);
     assert.doesNotMatch(html, /role="status"/);
-    assert.match(html, /id="rankings-federal"/);
-    assert.match(html, /id="rankings-BC"/);
-    assert.doesNotMatch(html, /id="rankings-(AB|ON|QC)"/);
+    assert.match(html, /id="rankings-federal"/, "a pair with a federal riding opens on the federal tab");
+    assert.doesNotMatch(html, /id="rankings-(BC|AB|ON|QC)"/);
     const comparison = html.slice(html.indexOf('class="comparison-side-by-side"'), html.indexOf('class="comparison-table"'));
     assert.ok(comparison.indexOf("Abbotsford—South Langley") < comparison.indexOf("Abbotsford-Mission"));
+  }
+  for (const html of [englishProvincial, frenchProvincial]) {
+    assert.match(html, /id="rankings-BC"/, "the provincial tab shows the chosen provincial riding's province");
+    assert.doesNotMatch(html, /id="rankings-(federal|AB|ON|QC)"/);
   }
   assert.match(english, /Federal riding · British Columbia/);
   assert.match(english, /Provincial riding · British Columbia/);
   assert.match(french, /Circonscription fédérale · Colombie-Britannique/);
   assert.match(french, /Circonscription provinciale · Colombie-Britannique/);
   assert.match(english, /<h2 id="rankings-federal-heading">Federal ridings in the four provinces<\/h2>/);
-  assert.match(english, /<h2 id="rankings-BC-heading">Provincial ridings in British Columbia<\/h2>/);
+  assert.match(englishProvincial, /<h2 id="rankings-BC-heading">Provincial ridings in British Columbia<\/h2>/);
   assert.match(french, /<h2 id="rankings-federal-heading">Circonscriptions fédérales des quatre provinces<\/h2>/);
-  assert.match(french, /<h2 id="rankings-BC-heading">Circonscriptions provinciales de la Colombie-Britannique<\/h2>/);
-  assert.match(english, /53 of British Columbia’s 93 provincial ridings are ranked\./);
-  assert.match(french, /53 des 93 circonscriptions provinciales de la Colombie-Britannique sont classées\./);
+  assert.match(frenchProvincial, /<h2 id="rankings-BC-heading">Circonscriptions provinciales de la Colombie-Britannique<\/h2>/);
+  assert.match(englishProvincial, /53 of British Columbia’s 93 provincial ridings are ranked\./);
+  assert.match(frenchProvincial, /53 des 93 circonscriptions provinciales de la Colombie-Britannique sont classées\./);
   assert.match(english, /42 of 280 federal ridings are ranked\./);
 
   const [table] = await render({ left: "provincial-QC-137", right: "provincial-ON-89", view: "table" });
   assert.match(table, /Provincial riding · Québec/);
   assert.match(table, /Provincial riding · Ontario/);
-  assert.doesNotMatch(table, /id="rankings-federal"/, "only the chosen ridings' rankings are shown");
+  assert.doesNotMatch(table, /id="rankings-federal"/, "two provincial ridings open on the provincial tab, with only their provinces");
+  assert.doesNotMatch(table, /id="rankings-(BC|AB)"/);
   assert.ok(table.indexOf('id="rankings-ON"') < table.indexOf('id="rankings-QC"'), "provinces in their west-to-east order");
 });
 
@@ -245,7 +254,8 @@ test("provincial ridings rank only within their own province, with their own cou
 
 test("Compare shows the first 20 of each ranking until the reader asks for all of it", async () => {
   const [english, french] = await render({ left: "federal-59001", right: "provincial-BC-258" });
-  const federal = (html: string) => html.slice(html.indexOf('id="rankings-federal"'), html.indexOf('id="rankings-BC"'));
+  const [englishProvincial, frenchProvincial] = await render({ left: "federal-59001", right: "provincial-BC-258", rank: "provincial" });
+  const federal = (html: string) => html.slice(html.indexOf('id="rankings-federal"'));
   for (const html of [english, french]) {
     assert.equal((federal(html).match(/<th scope="row">/g) ?? []).length, 20);
     assert.doesNotMatch(federal(html), /comparison-unranked/);
@@ -255,13 +265,17 @@ test("Compare shows the first 20 of each ranking until the reader asks for all o
   assert.match(federal(english), />Show all 280 federal ridings<\/a>/);
   assert.match(federal(french), /Les 20 premières des 42 circonscriptions classées sont affichées\. Les 238 circonscriptions non classées figurent dans la liste complète\./);
   assert.match(federal(french), />Afficher les 280 circonscriptions fédérales<\/a>/);
-  assert.match(english, />Show all 93 provincial ridings in British Columbia<\/a>/);
-  assert.match(french, />Afficher les 93 circonscriptions provinciales de la Colombie-Britannique<\/a>/);
+  assert.match(englishProvincial, />Show all 93 provincial ridings in British Columbia<\/a>/);
+  assert.match(frenchProvincial, />Afficher les 93 circonscriptions provinciales de la Colombie-Britannique<\/a>/);
 
   const [all, tout] = await render({ left: "federal-59001", right: "provincial-BC-258", rankings: "all" });
+  const [allProvincial, toutProvincial] = await render({ left: "federal-59001", right: "provincial-BC-258", rankings: "all", rank: "provincial" });
+  for (const html of [allProvincial, toutProvincial]) {
+    assert.equal((html.slice(html.indexOf('id="rankings-BC"')).match(/<th scope="row">/g) ?? []).length, 93);
+    assert.doesNotMatch(html, /comparison-ranking-more/);
+  }
   for (const html of [all, tout]) {
     assert.equal((federal(html).match(/<th scope="row">/g) ?? []).length, 280);
-    assert.equal((html.slice(html.indexOf('id="rankings-BC"')).match(/<th scope="row">/g) ?? []).length, 93);
     assert.doesNotMatch(html, /comparison-ranking-more/);
     assert.match(html, /name="rankings" value="all"/);
     assert.match(html, /href="\?sort=share-asc&amp;left=federal-59001&amp;right=provincial-BC-258&amp;view=cards&amp;rankings=all#rankings-federal"/);
@@ -305,4 +319,66 @@ test("both comparison routes serve the two ridings a search link and the riding 
     const right = comparison.indexOf("Pontiac—Kitigan Zibi");
     assert.ok(left > 0 && right > left, "the left riding is shown before the right one");
   }
+});
+
+test("the rankings have three tabs, chosen by rank= and anchored at #rankings, in both languages", async () => {
+  const labels = {
+    en: ["Federal ridings", "Provincial ridings", "Cities"],
+    fr: ["Circonscriptions fédérales", "Circonscriptions provinciales", "Villes"],
+  } as const;
+  for (const rank of ["federal", "provincial", "cities"] as const) {
+    const [english, french] = await render({ rank });
+    for (const [locale, html] of [["en", english], ["fr", french]] as const) {
+      assert.equal((html.match(/<section class="comparison-rankings" id="rankings"/g) ?? []).length, 1, "one #rankings section");
+      const nav = html.slice(html.indexOf('class="segment comparison-rank-tabs"'), html.indexOf("</nav>", html.indexOf("comparison-rank-tabs")));
+      ["federal", "provincial", "cities"].forEach((tab, index) => {
+        const current = tab === rank ? ' aria-current="page"' : "";
+        assert.ok(nav.includes(`<a class="segment-option" href="?rank=${tab}#rankings"${current}>${labels[locale][index]}</a>`), `${locale} ${rank}: tab ${tab}`);
+      });
+      assert.equal((nav.match(/aria-current="page"/g) ?? []).length, 1);
+      assert.match(html, /name="rank" value="/, "the picker keeps the named tab");
+    }
+    if (rank === "federal") {
+      for (const html of [english, french]) {
+        assert.match(html, /id="rankings-federal"/);
+        assert.doesNotMatch(html, /id="rankings-(BC|AB|ON|QC)"|id="cities-most-lost"/);
+      }
+    } else if (rank === "provincial") {
+      for (const html of [english, french]) {
+        assert.doesNotMatch(html, /id="rankings-federal"|id="cities-most-lost"/);
+        const order = ["BC", "AB", "ON", "QC"].map((province) => html.indexOf(`id="rankings-${province}"`));
+        assert.ok(order.every((at, index) => at > 0 && (index === 0 || at > order[index - 1]!)), "with no riding chosen, all four provinces, west to east");
+      }
+    } else {
+      for (const html of [english, french]) {
+        assert.doesNotMatch(html, /id="rankings-(federal|BC|AB|ON|QC)"/);
+        assert.match(html, /id="cities-most-lost"/);
+      }
+      // The cities tab is the home page's ranking, with its rules for which cities qualify.
+      assert.ok(english.includes(renderToStaticMarkup(<CitiesMostLost locale="en" />)));
+      assert.ok(french.includes(renderToStaticMarkup(<CitiesMostLost locale="fr" />)));
+    }
+  }
+  // Tabs keep the chosen pair, view, sort and length; an unknown rank falls back as no rank does.
+  const [kept] = await render({ left: "federal-59001", right: "federal-59006", view: "table", sort: "share-asc", rankings: "all", rank: "cities" });
+  assert.ok(kept.includes('href="?left=federal-59001&amp;right=federal-59006&amp;view=table&amp;sort=share-asc&amp;rankings=all&amp;rank=provincial#rankings"'));
+  const [unknown] = await render({ rank: "towns" });
+  assert.match(unknown, /id="rankings-federal"/);
+  assert.doesNotMatch(unknown, /name="rank"/, "an unknown tab is not carried into the picker");
+  assert.match(unknown, /href="\?rank=federal#rankings" aria-current="page"/);
+});
+
+test("without a rank the chosen ridings pick the tab, and the sort and show-all links keep it once the page loads", async () => {
+  assert.equal(parseRankingTab(undefined, [null, null]), "federal");
+  assert.equal(parseRankingTab("cities", [null, null]), "cities");
+  assert.equal(parseRankingTab("nonsense", [null, null]), "federal");
+  const bc = provincialRidingComparison.rowsByProvince.BC[0]!;
+  const federal = federalRidingComparison.comparisonRows[0]!;
+  assert.equal(parseRankingTab(undefined, [bc, null]), "provincial");
+  assert.equal(parseRankingTab(undefined, [bc, federal]), "federal");
+  assert.equal(parseRankingTab("federal", [bc, null]), "federal");
+  const source = readFileSync(new URL("../components/comparison/KeepRankInLinks.tsx", import.meta.url), "utf8");
+  assert.match(source, /^"use client";/);
+  assert.match(source, /main a\[href\^="\?"\]/);
+  assert.match(source, /if \(query\.has\("rank"\)\) continue;/);
 });

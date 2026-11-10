@@ -127,3 +127,37 @@ export function comparisonRankings(places: readonly (ComparisonPlace | null)[]):
     })),
   ];
 }
+
+/** The three rankings Compare offers, chosen by the address's `rank`. */
+export const RANKING_TABS = ["federal", "provincial", "cities"] as const;
+export type RankingTab = (typeof RANKING_TABS)[number];
+
+/**
+ * The ranking the address asks for. Without a valid `rank`, the chosen ridings
+ * decide: provincial when every chosen riding is provincial, federal otherwise,
+ * and federal when none is chosen.
+ */
+export function parseRankingTab(value: string | undefined, places: readonly (ComparisonPlace | null)[]): RankingTab {
+  const named = RANKING_TABS.find((tab) => tab === value);
+  if (named) return named;
+  const chosen = places.filter((place): place is ComparisonPlace => place !== null);
+  return chosen.length > 0 && chosen.every((place) => provincialRidingProvince(place.id) !== null) ? "provincial" : "federal";
+}
+
+/**
+ * The riding rankings under a tab: the federal one; or, for provincial, the
+ * provinces of the chosen provincial ridings, and all four, west to east, when
+ * none is chosen.
+ */
+export function ridingRankingsForTab(tab: "federal" | "provincial", places: readonly (ComparisonPlace | null)[] = []): ReturnType<typeof comparisonRankings> {
+  if (tab === "federal") return comparisonRankings([]);
+  const chosen = new Set(places.flatMap((place) => {
+    const province = place ? provincialRidingProvince(place.id) : null;
+    return province ? [province] : [];
+  }));
+  return COVERED_PROVINCES.filter((province) => chosen.size === 0 || chosen.has(province)).map((province) => ({
+    scope: { level: "provincial" as const, province },
+    rows: provincialRidingComparison.rowsByProvince[province],
+    context: provincialRidingComparison.contexts[province],
+  }));
+}

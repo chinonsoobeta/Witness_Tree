@@ -3663,6 +3663,13 @@ dd > a:only-child {
   margin: 0 0 32px;
   color: var(--ink-2);
 }
+/* Two classes, to outrank the later `.segment { margin: 0 }` reset. */
+.comparison-rankings .comparison-rank-tabs {
+  margin-bottom: 28px;
+}
+.comparison-rankings .content-section {
+  padding-top: 0;
+}
 .comparison-selection-notice {
   margin-bottom: 20px;
 }
