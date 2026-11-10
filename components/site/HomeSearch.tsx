@@ -23,7 +23,7 @@ const COPY = {
     placeholder: "Prince George, British Columbia",
     submit: "Open the record",
     note: "Search provinces, ridings and communities. Figures cover 1984 to 2022.",
-    nearby: "What happened within 10 km of me?",
+    nearby: "What happened within 10 km of a place you choose?",
     empty: "Enter a place first: a province, riding or community.",
   },
   fr: {
@@ -32,7 +32,7 @@ const COPY = {
     placeholder: "Prince George, Colombie-Britannique",
     submit: "Ouvrir le registre",
     note: "Recherchez une province, une circonscription ou une collectivité. Les chiffres couvrent la période de 1984 à 2022.",
-    nearby: "Qu’est-il arrivé dans un rayon de 10\u00a0km autour de moi\u202F?",
+    nearby: "Qu’est-il arrivé dans un rayon de 10\u00a0km autour d’un lieu de votre choix\u202F?",
     empty: "Entrez d’abord un lieu\u202F: une province, une circonscription ou une collectivité.",
   },
 } as const;
@@ -51,7 +51,12 @@ export function HomeSearch({ locale }: { locale: Locale }) {
       note={
         <>
           <p className="home-search-note">{text.note}</p>
-          {/* Opens the Draw page on the circle with its place field focused. No address travels in this link. */}
+          {/*
+            Opens the Draw page on the circle with its place field focused. No address travels in this link.
+            It says "a place you choose", not "me": the site's permissions policy refuses geolocation
+            (next.config.ts), so the page cannot find the reader; the centre is a map click, the
+            coordinate fields or, where configured, a place search (L6, 2026-11-10).
+          */}
           <p className="home-search-nearby">
             <a href={`${drawPagePath(locale)}?shape=circle`}>{text.nearby}</a>
           </p>

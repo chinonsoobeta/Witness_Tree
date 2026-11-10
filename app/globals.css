@@ -3148,8 +3148,12 @@ h4 {
   border-radius: var(--radius-control);
   background: var(--surface);
 }
+/* Tall enough that the circle the map zooms to once a centre is set reads as
+   a shape on the land rather than a mark (L6, 2026-11-10): 320px was a strip
+   at the national view. 60% of the viewport, between 380px and 560px, keeps
+   the fields above and the hint below within one scroll on a phone. */
 .shape-draw-canvas {
-  height: 320px;
+  height: clamp(380px, 60vh, 560px);
   border-bottom: 1px solid var(--rule);
 }
 .shape-draw-hint,
