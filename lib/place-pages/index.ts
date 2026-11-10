@@ -3,6 +3,7 @@ import placeRegionRecord from "@/data/place-economic-regions.json";
 import regionRecord from "@/data/phase3-economic-region-interval-measurements.json";
 import ridingRecord from "@/data/phase3-riding-interval-measurements.json";
 import ledgerFacts from "@/data/phase1-ledger-facts-2026-09-26.json";
+import extentRecord from "@/data/place-extents.json";
 import { localized, type Locale, type LocalizedString } from "@/lib/domain/localized";
 import type { BoundaryOverlayId } from "@/lib/explore/boundaries";
 import { intervalWindowIndex } from "@/lib/explore/interval";
@@ -14,6 +15,7 @@ import { displayPlaceName, PLACE_NAME_INDEX, placeTypeLabel } from "@/lib/search
 import { ridingSearchRow } from "@/lib/search/site-search";
 import { wholeRecordFigures, type WholeRecordCells, type WholeRecordFigures } from "./figures";
 import type { YearlyCells } from "./yearly";
+import type { PlaceExtent } from "./map-view";
 import { PLACE_DATA_VERSION, PLACE_METHOD_VERSION, type PlaceGeography } from "./paths";
 
 /**
@@ -76,6 +78,10 @@ export type PlacePageRecord = Readonly<{
   communities: readonly PlaceReference[];
   /** The Explore overlay that draws this kind of area. */
   exploreOverlay: BoundaryOverlayId;
+  /** The area's `id` in that overlay's outline tiles. */
+  mapFeatureId: string;
+  /** The box holding the area's boundary, from data/place-extents.json. */
+  extent: PlaceExtent;
   /** For a federal riding: its Compare selection id. */
   compareId: string | null;
 }>;
@@ -221,12 +227,28 @@ for (const place of PLACE_NAME_INDEX.places) {
 const byName = (left: PlaceReference, right: PlaceReference) => left.name.en.localeCompare(right.name.en, "en-CA") || left.code.localeCompare(right.code);
 for (const list of [...communitiesByRiding.values(), ...communitiesByRegion.values()]) list.sort(byName);
 
+// Each page's bounding box, built by scripts/build-place-extents.mjs from the
+// boundary files the figures and the outline tiles come from.
+if (extentRecord.schema !== "witness-tree/place-extents/1" || extentRecord.crs !== "EPSG:4326" || JSON.stringify(extentRecord.order) !== JSON.stringify(["west", "south", "east", "north"])) {
+  throw new Error("The place extents have an invalid envelope.");
+}
+const EXTENTS = extentRecord.extents as unknown as Readonly<Record<string, PlaceExtent>>;
+function extentOf(key: string): PlaceExtent {
+  const box = EXTENTS[key];
+  if (!box || box.length !== 4 || !(box[0] <= box[2] && box[1] <= box[3])) throw new Error(`${key} has no extent.`);
+  return box;
+}
+
 function buildRecords(): ReadonlyMap<string, PlacePageRecord> {
   const records = new Map<string, PlacePageRecord>();
   const add = (record: PlacePageRecord) => {
     const key = `${record.geography}/${record.code}`;
     if (records.has(key)) throw new Error(`Two place pages share ${key}.`);
     records.set(key, record);
+  };
+  const finish = () => {
+    if (records.size !== Object.keys(EXTENTS).length) throw new Error(`${records.size} pages but ${Object.keys(EXTENTS).length} extents.`);
+    return records;
   };
 
   for (const place of PLACE_NAME_INDEX.places) {
@@ -250,6 +272,8 @@ function buildRecords(): ReadonlyMap<string, PlacePageRecord> {
       provincial: place.provincial.map(({ id, share }) => ridingReference(id, share)),
       communities: [],
       exploreOverlay: "census-subdivisions",
+      mapFeatureId: `CA-${place.id}`,
+      extent: extentOf(`csd-2021/${place.id}`),
       compareId: null,
     });
   }
@@ -279,6 +303,8 @@ function buildRecords(): ReadonlyMap<string, PlacePageRecord> {
       provincial: [],
       communities: communitiesByRiding.get(district.boundaryId) ?? [],
       exploreOverlay: federal ? "federal-ridings" : "provincial-ridings",
+      mapFeatureId: district.boundaryId,
+      extent: extentOf(`${geography}/${code}`),
       compareId: federal ? `federal-${code}` : null,
     });
   }
@@ -306,10 +332,12 @@ function buildRecords(): ReadonlyMap<string, PlacePageRecord> {
       provincial: [],
       communities: communitiesByRegion.get(code) ?? [],
       exploreOverlay: "economic-regions",
+      mapFeatureId: region.boundaryId,
+      extent: extentOf(`er-2021/${code}`),
       compareId: null,
     });
   }
-  return records;
+  return finish();
 }
 
 const RECORDS = buildRecords();

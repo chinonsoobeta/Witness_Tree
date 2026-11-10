@@ -6009,6 +6009,16 @@ dd > a:only-child {
 .place-related-share { color: var(--muted); font-size: 0.85rem; }
 .place-related-figure { color: var(--ink); font-size: 0.85rem; line-height: 1.4; }
 .place-related-links { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 8px 0 0; }
+/* The small map of a place: hidden until script starts it, and again if its tiles fail, so the link is all a no-script or failed page shows. */
+.place-map-section { display: flex; flex-direction: column; gap: 8px; }
+.place-map { margin: 0; display: flex; flex-direction: column; gap: 8px; max-width: 960px; }
+.place-map-frame { aspect-ratio: 16 / 9; width: 100%; max-height: 420px; border: 1px solid var(--rule-strong); background: #eeefe9; }
+.place-map[data-state="static"] .place-map-frame, .place-map[data-state="failed"] .place-map-frame { display: none; }
+.place-map-caption { display: flex; flex-direction: column; gap: 4px; font-size: 0.9rem; }
+.place-map-caption small { color: var(--muted); }
+.place-map-key { display: inline-flex; align-items: center; gap: 6px; }
+.place-map-swatch { display: inline-block; width: 14px; height: 14px; border: 1px solid var(--ink); }
+@media print { .place-map-frame { display: none; } }
 /* "Embed this figure" on a place page: the iframe code in a read-only box, and its terms. */
 .place-embed { display: flex; flex-direction: column; gap: 8px; }
 .place-embed .eyebrow, .place-embed p { margin: 0; }

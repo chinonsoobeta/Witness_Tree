@@ -16,13 +16,17 @@ import {
   type PlacePageRecord,
   type PlaceReference,
 } from "@/lib/place-pages";
-import { formatUnknownSharePercent } from "@/lib/explore/map-style";
+import { BOUNDARY_OVERLAYS } from "@/lib/explore/boundaries";
+import { EXPLORE_MAP_COLOURS, formatUnknownSharePercent } from "@/lib/explore/map-style";
+import { EXPLORE_PER_CELL_LAYER, EXPLORE_PER_CELL_SPAN_LAYER } from "@/lib/explore/per-cell";
 import { provinceSpanDisplayRows } from "@/lib/explore/province-spans";
 import { PLACE_METHOD_VERSION } from "@/lib/place-pages/paths";
 import { placeSummary } from "@/lib/place-pages/summary";
 import { placeLeadSentence } from "@/lib/place-pages/sentence";
 import { yearlyRows } from "@/lib/place-pages/yearly";
 import { PlaceYearlyChart } from "./PlaceYearlyChart";
+import { PlaceMap } from "./PlaceMap";
+import { mapHash, placeMapView } from "@/lib/place-pages/map-view";
 import { RECEIPT_SIZE, receiptAlt, receiptPath } from "@/lib/share/meta";
 import { localizedAlternates } from "@/lib/site-metadata";
 import { embedTitle, oembedDiscoveryPath } from "@/lib/embed/paths";
@@ -83,8 +87,13 @@ export const COPY = {
     noCommunity: "No published community lies in it.",
     placeShare: (share: string) => `${share} of this place`,
     communityShare: (share: string) => `${share} of the community lies here`,
-    explore: "See it on the Explore map",
     compare: "Compare it with another riding (2021–2022 figures)",
+    map: "On the map",
+    mapLabel: (name: string) => `Map of ${name}: its boundary, with the forest patches satellites detected as lost from 1984 to 2022.`,
+    mapOpen: "Open this place on the Explore map",
+    mapKey: "Forest detected as lost at least once, 1984–2022, from any cause",
+    mapZoomedOut: "This place is too large for its loss patches to show at this size. Open it on the Explore map and zoom in to see them.",
+    mapFailed: "The map could not load. The link opens this place on the Explore map.",
     provinceContext: (province: string, share: string, gap: string) => `For comparison, ${province}: ${share} of the forest mapped there in 1984 was lost at least once. ${gap} of the province has no satellite data and is left out of that share.`,
     referenceShare: (share: string) => `${share} of its forest mapped in 1984 lost at least once`,
     referenceAdmitted: (gap: string) => ` (${gap} with no satellite data left out)`,
@@ -142,8 +151,14 @@ export const COPY = {
     noCommunity: "Aucune collectivité publiée ne s’y trouve.",
     placeShare: (share: string) => `${share} de ce lieu`,
     communityShare: (share: string) => `${share} de la collectivité se trouve ici`,
-    explore: "Voir sur la carte Explorer",
     compare: "Comparer avec une autre circonscription (chiffres de 2021–2022)",
+    // Draft French for the owner's review (2026-11-10).
+    map: "Sur la carte",
+    mapLabel: (name: string) => `Carte de ${name}\u202F: sa limite, avec les parcelles de forêt que les satellites ont détectées comme perdues de 1984 à 2022.`,
+    mapOpen: "Ouvrir ce lieu sur la carte Explorer",
+    mapKey: "Forêt détectée comme perdue au moins une fois, 1984–2022, toutes causes confondues",
+    mapZoomedOut: "Ce lieu est trop grand pour que ses parcelles perdues s’affichent à cette taille. Ouvrez-le sur la carte Explorer et zoomez pour les voir.",
+    mapFailed: "La carte n’a pas pu se charger. Le lien ouvre ce lieu sur la carte Explorer.",
     // Draft French for the owner's review (2026-11-10).
     provinceContext: (province: string, share: string, gap: string) => `À titre de comparaison, ${province}\u202F: ${share} de la forêt cartographiée en 1984 y a été perdue au moins une fois. ${gap} de la province n’a pas de données satellitaires et est exclu de cette part.`,
     referenceShare: (share: string) => `${share} de sa forêt cartographiée en 1984 perdue au moins une fois`,
@@ -223,7 +238,8 @@ export function RecordPlacePage({ locale, record }: Readonly<{ locale: Locale; r
   const summary = placeSummary(record, locale);
   const { figures, name, province, coverage, unmapped, citation } = summary;
   const provenance = landCoverProvenance(locale);
-  const exploreHref = `${locale === "en" ? "/en/explore" : "/fr/explorer"}?overlays=${record.exploreOverlay}&from=1984&year=2022`;
+  const exploreHref = `${locale === "en" ? "/en/explore" : "/fr/explorer"}?overlays=${record.exploreOverlay}&from=1984&year=2022${mapHash(placeMapView(record.extent))}`;
+  const overlay = BOUNDARY_OVERLAYS[record.exploreOverlay];
   const provinceSentence = provinceContext(record, locale);
   const compareHref = record.compareId ? `${locale === "en" ? "/en/compare" : "/fr/comparer"}?left=${encodeURIComponent(record.compareId)}` : null;
 
@@ -290,6 +306,35 @@ export function RecordPlacePage({ locale, record }: Readonly<{ locale: Locale; r
           </div>
         </dl>
 
+        {overlay.url && overlay.sourceLayer ? (
+          <section className="place-map-section" aria-labelledby="place-map-heading">
+            <h2 className="eyebrow" id="place-map-heading">{text.map}</h2>
+            <PlaceMap
+              extent={record.extent}
+              boundary={{ url: overlay.url, sourceLayer: overlay.sourceLayer, featureId: record.mapFeatureId }}
+              patches={{
+                url: EXPLORE_PER_CELL_SPAN_LAYER.url,
+                sourceLayer: EXPLORE_PER_CELL_SPAN_LAYER.sourceLayer,
+                yearProperty: EXPLORE_PER_CELL_SPAN_LAYER.yearProperty,
+                minZoom: EXPLORE_PER_CELL_SPAN_LAYER.minZoom,
+                maxZoom: EXPLORE_PER_CELL_SPAN_LAYER.maxZoom,
+              }}
+              colours={{ ground: EXPLORE_MAP_COLOURS.ground, outline: EXPLORE_MAP_COLOURS.ink, neighbour: EXPLORE_MAP_COLOURS.observation, patch: EXPLORE_MAP_COLOURS.neither }}
+              exploreHref={exploreHref}
+              text={{
+                label: text.mapLabel(name),
+                open: text.mapOpen,
+                key: text.mapKey,
+                zoomedOut: text.mapZoomedOut,
+                failed: text.mapFailed,
+                attribution: [overlay.attribution?.[locale], EXPLORE_PER_CELL_LAYER.attribution[locale]].filter(Boolean).join(" "),
+              }}
+            />
+          </section>
+        ) : (
+          <p className="place-related-links"><a href={exploreHref}>{text.mapOpen}</a></p>
+        )}
+
         {record.yearly ? <PlaceYearlyChart rows={yearlyRows(record.yearly, record.unknownTolerancePercent)} locale={locale} wholeRecordHectares={figures.lost.kind === "figure" ? figures.lost.value : null} /> : null}
 
         <section className="place-observed place-related-section" aria-labelledby="place-related-heading">
@@ -309,10 +354,7 @@ export function RecordPlacePage({ locale, record }: Readonly<{ locale: Locale; r
               <ReferenceList items={record.communities} locale={locale} empty={text.noCommunity} note={record.kind === "economic-region" ? undefined : text.communityShare} />
             </>
           )}
-          <p className="place-related-links">
-            <a href={exploreHref}>{text.explore}</a>
-            {compareHref ? <a href={compareHref}>{text.compare}</a> : null}
-          </p>
+          {compareHref ? <p className="place-related-links"><a href={compareHref}>{text.compare}</a></p> : null}
         </section>
 
         {/* Sources, limits, citation and embed code, full width at the foot of
