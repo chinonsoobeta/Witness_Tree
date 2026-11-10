@@ -8,7 +8,7 @@ import { gzipSync } from "node:zlib";
 // shared total at 133,352 gzip bytes, so the limit is 136 KiB (see docs/PERFORMANCE.md).
 export const SHARED_LIMIT = 136 * 1024;
 // 400 KiB until 2026-11-10. Under the same sentence the limit is 416 KiB: the
-// site-wide fixes measured the map budget at 417,936 gzip bytes while the two
+// site-wide fixes measured the map budget at 417,972 gzip bytes while the two
 // totals together fell (docs/PERFORMANCE.md has the figures and the reason).
 export const EXPLORE_LIMIT = 416 * 1024;
 

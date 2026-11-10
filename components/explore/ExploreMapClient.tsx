@@ -911,6 +911,21 @@ function showTimelapseSpan(
  * so the map can be styled with them and can also swap them in place when
  * Show or Hide is pressed, without rebuilding the map or moving the camera.
  */
+/*
+ * One source for each archive. The federal-riding outlines read the land
+ * tone's source (D7) and the economic-region outlines read the region
+ * shading's; both are the same archives and both sources are always on the
+ * map. Two sources on one archive ask for the same byte ranges at the same
+ * moment, and Chromium then fails one of the two requests on some loads (about
+ * every second one for the ridings), which sent the whole map to its still
+ * fallback whenever those outlines were on.
+ */
+const SHARED_BOUNDARY_SOURCES: Partial<Record<BoundaryOverlayId, string>> = {
+  "federal-ridings": CANADA_LAND_SOURCE_ID,
+  "economic-regions": REGION_SOURCE_ID,
+};
+const boundarySourceId = (id: BoundaryOverlayId) => SHARED_BOUNDARY_SOURCES[id] ?? `boundary-${id}`;
+
 const boundaryStyle = (overlays: readonly BoundaryOverlayId[]) => {
   const sources: StyleSpecification["sources"] = {};
   const layers: StyleSpecification["layers"] = [];
@@ -923,7 +938,9 @@ const boundaryStyle = (overlays: readonly BoundaryOverlayId[]) => {
   });
   for (const id of availableOverlays) {
     const overlay = BOUNDARY_OVERLAYS[id];
-    const sourceId = `boundary-${id}`;
+    const sourceId = boundarySourceId(id);
+    // The style already carries the shared sources (buildStyle).
+    if (SHARED_BOUNDARY_SOURCES[id]) continue;
     sources[sourceId] = {
       type: "vector",
       url: `pmtiles://${overlay.url}`,
@@ -936,7 +953,7 @@ const boundaryStyle = (overlays: readonly BoundaryOverlayId[]) => {
     layers.push({
       id: `${sourceId}-fill`,
       type: "fill",
-      source: sourceId,
+      source: boundarySourceId(id),
       "source-layer": overlay.sourceLayer,
       paint: {
         "fill-color": EXPLORE_MAP_COLOURS.ink,
@@ -952,7 +969,7 @@ const boundaryStyle = (overlays: readonly BoundaryOverlayId[]) => {
     layers.push({
       id: `${sourceId}-casing`,
       type: "line",
-      source: sourceId,
+      source: boundarySourceId(id),
       "source-layer": overlay.sourceLayer,
       paint: {
         "line-color": BOUNDARY_CASING_COLOUR,
@@ -967,7 +984,7 @@ const boundaryStyle = (overlays: readonly BoundaryOverlayId[]) => {
     layers.push({
       id: `${sourceId}-line`,
       type: "line",
-      source: sourceId,
+      source: boundarySourceId(id),
       "source-layer": overlay.sourceLayer,
       paint: {
         "line-color": overlay.colour ?? EXPLORE_MAP_COLOURS.ink,
@@ -987,7 +1004,7 @@ const boundaryStyle = (overlays: readonly BoundaryOverlayId[]) => {
     layers.push({
       id: `${sourceId}-selected`,
       type: "line",
-      source: sourceId,
+      source: boundarySourceId(id),
       "source-layer": overlay.sourceLayer,
       filter: ["all", ["==", ["get", "id"], ""], ["==", ["get", "juris"], ""]],
       paint: {
@@ -1058,6 +1075,11 @@ const buildStyle = (
    * Arctic waters and Hudson Bay, which a land tone would show as land. Its
    * own source, so showing and hiding the riding outlines cannot remove it.
    */
+  // The region archive, for the region shading and for the economic-region
+  // outlines alike. Always in the style, so neither can open it a second time;
+  // with no layer drawn from it, only its header is read.
+  if (REGION_OVERLAY.url && REGION_OVERLAY.sourceLayer)
+    sources[REGION_SOURCE_ID] = { type: "vector", url: `pmtiles://${REGION_OVERLAY.url}`, bounds: [-141, 41, -52, 84] };
   const ridings = BOUNDARY_OVERLAYS["federal-ridings"];
   if (ridings.url && ridings.sourceLayer) {
     sources[CANADA_LAND_SOURCE_ID] = { type: "vector", url: `pmtiles://${ridings.url}`, bounds: [-141, 41, -52, 84] };
@@ -1086,12 +1108,10 @@ const buildStyle = (
     // Forest loss is shaded by region over the province fill, which still
     // answers wherever the region figures for the span are not yet in.
     if (province === "loss") {
-      sources[REGION_SOURCE_ID] = { type: "vector", url: `pmtiles://${REGION_OVERLAY.url}`, bounds: [-141, 41, -52, 84] };
       layers.push(...regionLayers(regions, breaks, years !== null));
     }
     layers.push(outline);
   } else if (recovery.length > 0) {
-    sources[REGION_SOURCE_ID] = { type: "vector", url: `pmtiles://${REGION_OVERLAY.url}`, bounds: [-141, 41, -52, 84] };
     layers.push(recoveryLayer(recovery), provinceOutlineLayer());
   } else layers.push(provinceOutlineLayer());
   if (years) {

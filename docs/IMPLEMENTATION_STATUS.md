@@ -634,13 +634,13 @@ because a CI step would change the checksum-bound workflow file.
 **The bundle gate changed, under the owner's 2026-10-28 sentence that the
 bundle limit can be raised as necessary; the owner can reverse either part.**
 Running CI's own checks on the combined branch showed the gate failing, not
-because the site grew (shared and Explore together measure 485,062 gzip bytes,
+because the site grew (shared and Explore together measure 485,098 gzip bytes,
 against 491,687 on `main`) but because of how chunks are counted. Two changes
 in `scripts/check-budgets.mjs`, with the figures in `docs/PERFORMANCE.md`:
 (1) the map library, which a place page's small map now fetches once it
 scrolls into view, counts against the Explore limit wherever it is fetched,
 where the old rule would have put it on every page's shared budget; (2) the
-Explore limit is 416 KiB where the plan says 400 (measured 417,936; shared
+Explore limit is 416 KiB where the plan says 400 (measured 417,972; shared
 measured 67,126 against the unchanged 136 KiB). A reader who scrolls to a
 place page's map does fetch the map library (about 296,000 gzip bytes) on top
 of that page's own JavaScript. Phase 3 (`budgets-pass-in-ci`) and Phase 8
@@ -651,6 +651,20 @@ found three smaller gate failures, now fixed with no change a reader sees: the
 outline key's sample lines have a title, and the map's land tone, dark ground
 and casing colour live in `lib/explore/map-ground.ts` and two palette tokens
 (`--map-ground-dark`, `--map-casing`), not in a component file or a rule.
+
+**One archive, one source.** The final browser run caught a defect the audit
+had missed. The new land tone (D7) reads the federal-riding archive, and the
+federal-riding outlines opened the same archive as a second source. Two
+sources ask for the same byte ranges at the same moment, and Chromium then
+fails one of the two requests on some loads: with the riding outlines on, the
+interactive map fell back to the still map on 11 of 20 headless loads. The
+economic-region outlines and the region shading had the same fault on `main`
+(3 of 16 loads). Each of those outlines now draws from the source already on
+the map, and the region source is always in the style, so its header is read
+on every load of the interactive map. Measured after the fix: 56 of 56 loads
+reached the interactive map, across every outline and four modes.
+`tests/explore-boundary-toggle.test.tsx` pins it. It was measured in headless
+Chromium against the local build, not on the deployed site.
 
 **Build.** The combined build on 2026-11-10 took 93 s and generated 24,523
 static pages (it was 13,761 items): `.next` is 3.3 GB in 99,292 files (it was

@@ -47,42 +47,69 @@ function fakeMap(initialLayers: string[] = ["ground", "province-fill", "per-cell
 
 test("showing an outline adds its source and layers on top, in drawing order", () => {
   const map = fakeMap();
-  sync(map, ["federal-ridings"]);
+  sync(map, ["provincial-ridings"]);
   assert.deepEqual(map.layers.map((layer) => layer.id), [
     "ground",
     "province-fill",
     "per-cell-fill",
-    "boundary-federal-ridings-fill",
-    "boundary-federal-ridings-casing",
-    "boundary-federal-ridings-line",
-    "boundary-federal-ridings-selected",
+    "boundary-provincial-ridings-fill",
+    "boundary-provincial-ridings-casing",
+    "boundary-provincial-ridings-line",
+    "boundary-provincial-ridings-selected",
   ]);
-  assert.deepEqual([...map.sources.keys()], ["boundary-federal-ridings"]);
+  assert.deepEqual([...map.sources.keys()], ["boundary-provincial-ridings"]);
 });
 
 test("showing a second outline keeps the first one's source, and draws every fill under every line", () => {
   const map = fakeMap();
-  sync(map, ["federal-ridings"]);
+  sync(map, ["provincial-ridings"]);
   map.calls.length = 0;
-  sync(map, ["federal-ridings", "watersheds"]);
-  assert.ok(!map.calls.includes("removeSource boundary-federal-ridings"));
-  assert.ok(!map.calls.includes("addSource boundary-federal-ridings"));
+  sync(map, ["provincial-ridings", "watersheds"]);
+  assert.ok(!map.calls.includes("removeSource boundary-provincial-ridings"));
+  assert.ok(!map.calls.includes("addSource boundary-provincial-ridings"));
   assert.ok(map.calls.includes("addSource boundary-watersheds"));
   const ids = map.layers.map((layer) => layer.id);
-  assert.ok(ids.indexOf("boundary-watersheds-fill") < ids.indexOf("boundary-federal-ridings-casing"));
-  assert.ok(ids.indexOf("boundary-federal-ridings-casing") < ids.indexOf("boundary-watersheds-line"));
+  assert.ok(ids.indexOf("boundary-watersheds-fill") < ids.indexOf("boundary-provincial-ridings-casing"));
+  assert.ok(ids.indexOf("boundary-provincial-ridings-casing") < ids.indexOf("boundary-watersheds-line"));
   assert.deepEqual(ids.slice(0, 3), ["ground", "province-fill", "per-cell-fill"]);
 });
 
 test("hiding an outline removes its layers and its source and touches nothing else", () => {
   const map = fakeMap();
-  sync(map, ["federal-ridings", "watersheds"]);
+  sync(map, ["provincial-ridings", "watersheds"]);
   sync(map, ["watersheds"]);
-  assert.ok(!map.layers.some((layer) => layer.id.startsWith("boundary-federal-ridings")));
+  assert.ok(!map.layers.some((layer) => layer.id.startsWith("boundary-provincial-ridings")));
   assert.deepEqual([...map.sources.keys()], ["boundary-watersheds"]);
   sync(map, []);
   assert.deepEqual(map.layers.map((layer) => layer.id), ["ground", "province-fill", "per-cell-fill"]);
   assert.equal(map.sources.size, 0);
+});
+
+test("the federal-riding and economic-region outlines read the sources already on the map and never open an archive a second time", () => {
+  // Two sources on one archive ask for the same byte ranges together, and
+  // Chromium then fails one of the requests on about every second load.
+  const map = fakeMap();
+  map.sources.set("canada-land", {});
+  sync(map, ["federal-ridings", "watersheds"]);
+  assert.deepEqual([...map.sources.keys()], ["canada-land", "boundary-watersheds"]);
+  const riding = map.layers.filter((layer) => layer.id.startsWith("boundary-federal-ridings"));
+  assert.equal(riding.length, 4);
+  for (const layer of riding) assert.equal(layer.source, "canada-land");
+  sync(map, []);
+  // Hiding the outlines leaves the land tone its source.
+  assert.deepEqual([...map.sources.keys()], ["canada-land"]);
+  assert.ok(!map.calls.includes("removeSource canada-land"));
+  const source = readFileSync(new URL("../components/explore/ExploreMapClient.tsx", import.meta.url), "utf8");
+  assert.equal(source.match(/pmtiles:\/\/\$\{ridings\.url\}/g)?.length, 1);
+  assert.equal(source.match(/pmtiles:\/\/\$\{REGION_OVERLAY\.url\}/g)?.length, 1);
+
+  const regions = fakeMap();
+  regions.sources.set("forest-regions", {});
+  sync(regions, ["economic-regions"]);
+  assert.deepEqual([...regions.sources.keys()], ["forest-regions"]);
+  for (const layer of regions.layers.filter((item) => item.id.startsWith("boundary-economic-regions"))) assert.equal(layer.source, "forest-regions");
+  sync(regions, []);
+  assert.deepEqual([...regions.sources.keys()], ["forest-regions"]);
 });
 
 test("each Show or Hide keeps its link and, on a plain click, toggles in place with replaceState", () => {
