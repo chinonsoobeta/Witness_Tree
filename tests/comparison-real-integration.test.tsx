@@ -25,16 +25,22 @@ import { RankedRidingsTable
 // @ts-expect-error -- Node's TypeScript runner requires explicit local extensions.
 } from "../components/comparison/RankedRidingsTable.tsx";
 
-test("the checked-in real comparison has 343 extent-corrected districts", () => {
-  assert.equal(federalRidingComparison.rows.length, 343);
-  assert.equal(federalRidingComparison.rows.filter((row) => row.sufficientCoverage).length, 57);
-  assert.equal(federalRidingComparison.rows.filter((row) => !row.sufficientCoverage).length, 286);
+test("the comparison reads 1984–2022 from the riding interval release and accounts for Canada's 343 federal ridings", () => {
+  assert.equal(federalRidingComparison.rows.length, 280);
+  assert.equal(federalRidingComparison.outside.length, 63);
+  assert.equal(federalRidingComparison.nationalTotal, 343);
+  assert.equal(federalRidingComparison.context.timeRange, "1984–2022");
+  assert.equal(provincialRidingComparison.contexts.BC.timeRange, "1984–2022", "both levels describe the same years");
+  assert.equal(federalRidingComparison.rows.filter((row) => row.sufficientCoverage).length, 42);
+  assert.equal(federalRidingComparison.rows.filter((row) => !row.sufficientCoverage).length, 238);
   assert.equal(federalRidingComparison.rows.filter((row) => row.measurementCoverage !== "complete" && (row.detectedChangeHectares !== null || row.detectedChangePercent !== null)).length, 0);
-  assert.equal(federalRidingComparison.rows.filter((row) => !row.sufficientCoverage && row.measurementCoverage === "complete" && row.forestedHectares > 0 && row.forestedHectares < 500).length, 12);
-  assert.deepEqual(new Set(federalRidingComparison.rows.map((row) => row.id)).size, 343);
+  assert.equal(federalRidingComparison.rows.filter((row) => !row.sufficientCoverage && row.measurementCoverage === "complete" && row.forestedHectares > 0 && row.forestedHectares < 500).length, 13);
+  assert.equal(new Set([...federalRidingComparison.rows, ...federalRidingComparison.outside].map((row) => row.id)).size, 343);
+  assert.ok(federalRidingComparison.outside.every((row) => !/^federal-(24|35|48|59)/.test(row.id)));
   const ranked = rankRidings(federalRidingComparison.rows).ranked;
-  assert.equal(ranked[0]?.name.en, "Charlottetown");
+  assert.equal(ranked[0]?.name.en, "Abbotsford—South Langley");
   assert.ok(ranked.every((row) => row.forestedHectares >= 500));
+  assert.ok(federalRidingComparison.rows.some((row) => row.admittedUnknownPercent !== undefined), "the owner's 1% rule admits some ridings, with their unmapped share");
   assert.doesNotMatch(federalRidingComparison.context.method.en, /British Columbia, Alberta, Ontario and Quebec/);
 });
 
@@ -46,31 +52,33 @@ test("the comparison lists only four-province districts under truthful coverage 
     <RankedRidingsTable rows={federalRidingComparison.comparisonRows} context={federalRidingComparison.context} locale="fr" />,
   );
   for (const html of [english, french]) assert.equal((html.match(/<th scope="row">/g) ?? []).length, 280);
-  assert.match(english, /36 of 280 federal ridings are ranked\./);
-  assert.match(english, /Of the rest, 165 were not mapped at all, 67 were only partly mapped, and 12 have less than 500 hectares of forest\./);
-  assert.match(french, /36 des 280 circonscriptions fédérales sont classées\./);
-  assert.match(french, /Parmi les autres, 165 n’ont pas du tout été cartographiées, 67 ne l’ont été qu’en partie, et 12 comptent moins de 500 hectares de forêt\./);
+  assert.match(english, /42 of 280 federal ridings are ranked\./);
+  assert.match(english, /Of the rest, 225 were only partly mapped and 13 have less than 500 hectares of forest\./);
+  assert.match(french, /42 des 280 circonscriptions fédérales sont classées\./);
+  assert.match(french, /Parmi les autres, 225 ne l’ont été qu’en partie et 13 comptent moins de 500 hectares de forêt\./);
   assert.doesNotMatch(`${english}${french}`, /Insufficient coverage, not ranked|Couverture insuffisante, non classée/);
 
-  const none = english.indexOf("No mapped coverage, not ranked");
+  // Over the whole record every federal riding in the four provinces had some forest mapped,
+  // so there is no not-mapped table, and no riding is written as unmapped.
+  assert.equal(english.indexOf("No mapped coverage, not ranked"), -1);
+  assert.doesNotMatch(english, /<span class="coverage-band">Not mapped<\/span>/);
   const partial = english.indexOf("Partial mapped coverage, not ranked");
   const belowFloor = english.indexOf("Complete mapped coverage below 500 forested hectares, not ranked");
   const cloverdale = english.indexOf("Cloverdale\u2014Langley City");
   assert.doesNotMatch(english, /Central Nova|Charlottetown|Malpeque|Cardigan|Kings\u2014Hants|Beauséjour|Prince Albert/);
-  assert.ok(none > 0 && partial > none && belowFloor > partial);
+  assert.ok(partial > 0 && belowFloor > partial);
   assert.ok(cloverdale > belowFloor, "a completely mapped small-forest district belongs only under the ranking-floor heading");
-  assert.equal((english.slice(none, partial).match(/<span class="coverage-band">Not mapped<\/span>/g) ?? []).length, 165);
-  assert.equal((english.slice(partial, belowFloor).match(/<span class="coverage-band">Partly mapped; an unknown area remains<\/span>/g) ?? []).length, 67);
-  assert.equal((english.slice(belowFloor).match(/<span class="coverage-band">Fully mapped<\/span>/g) ?? []).length, 12);
-  assert.match(french, /aria-label="Aucune couverture cartographiée, non classée \(165\)"/);
-  assert.match(french, /aria-label="Couverture cartographiée partielle, non classée \(67\)"/);
-  assert.match(french, /aria-label="Couverture cartographiée complète sous le seuil de 500 hectares forestiers, non classée \(12\)"/);
+  assert.equal((english.slice(partial, belowFloor).match(/<span class="coverage-band">Partly mapped; an unknown area remains<\/span>/g) ?? []).length, 225);
+  assert.equal((english.slice(belowFloor).match(/<span class="coverage-band">Fully mapped<\/span>/g) ?? []).length, 13);
+  assert.doesNotMatch(french, /aria-label="Aucune couverture cartographiée, non classée/);
+  assert.match(french, /aria-label="Couverture cartographiée partielle, non classée \(225\)"/);
+  assert.match(french, /aria-label="Couverture cartographiée complète sous le seuil de 500 hectares forestiers, non classée \(13\)"/);
 });
 
 test("the comparison scope and defaults are derived from the four-province data", () => {
   assert.equal(federalRidingComparison.comparisonRows.length, 280);
   assert.ok(federalRidingComparison.comparisonRows.every((row) => /^federal-(24|35|48|59)/.test(row.id)));
-  assert.equal(federalRidingComparison.comparisonRows.filter((row) => row.sufficientCoverage).length, 36);
+  assert.equal(federalRidingComparison.comparisonRows.filter((row) => row.sufficientCoverage).length, 42);
   const [left, right] = federalRidingComparison.defaultPair;
   assert.deepEqual([left.id, right.id], ["federal-59001", "federal-59011"]);
   assert.ok(left.sufficientCoverage && right.sufficientCoverage);
@@ -87,8 +95,8 @@ test("both comparison routes use real data and preserve exact selected ids", asy
   const parameters = Promise.resolve({ left: "federal-59001", right: "federal-59006", view: "table", sort: "share-asc" });
   const english = renderToStaticMarkup(await EnglishComparePage({ searchParams: parameters }));
   const french = renderToStaticMarkup(await FrenchComparePage({ searchParams: parameters }));
-  assert.match(english, /Figures for 2021–2022, for the mapped part of each riding/);
-  assert.match(french, /Chiffres pour 2021–2022, pour la partie cartographiée de chaque circonscription/);
+  assert.match(english, /Figures for 1984–2022, for the mapped part of each riding/);
+  assert.match(french, /Chiffres pour 1984–2022, pour la partie cartographiée de chaque circonscription/);
   for (const html of [english, french]) {
     assert.match(html, /option value="federal-59001" selected/);
     assert.match(html, /option value="federal-59006" selected/);
@@ -146,7 +154,7 @@ test("the same riding on both sides is shown once, and a riding outside the four
     assert.equal((comparison.match(/Abbotsford—(South Langley|Langley-Sud)/g) ?? []).length, 1);
     assert.match(html, /<select name="right"><option value="" selected="">/);
   }
-  const outside = federalRidingComparison.rows.find((row) => !/^federal-(24|35|48|59)/.test(row.id))!;
+  const outside = federalRidingComparison.outside[0]!;
   const [away, loin] = await render({ left: outside.id, right: "federal-59006" });
   assert.match(away, new RegExp(`Left side: ${outside.name.en} is a federal riding outside the four provinces the record covers, so it can’t be compared here\\.`));
   assert.match(loin, new RegExp(`Côté gauche\u202F: ${outside.name.fr} est une circonscription fédérale située hors des quatre provinces`));
@@ -173,7 +181,7 @@ test("a federal riding sits beside a provincial one, each labelled, each with it
   assert.match(french, /<h2 id="rankings-BC-heading">Circonscriptions provinciales de la Colombie-Britannique<\/h2>/);
   assert.match(english, /53 of British Columbia’s 93 provincial ridings are ranked\./);
   assert.match(french, /53 des 93 circonscriptions provinciales de la Colombie-Britannique sont classées\./);
-  assert.match(english, /36 of 280 federal ridings are ranked\./);
+  assert.match(english, /42 of 280 federal ridings are ranked\./);
 
   const [table] = await render({ left: "provincial-QC-137", right: "provincial-ON-89", view: "table" });
   assert.match(table, /Provincial riding · Québec/);
@@ -183,7 +191,7 @@ test("a federal riding sits beside a provincial one, each labelled, each with it
 });
 
 test("provincial ridings rank only within their own province, with their own counts", () => {
-  const expected = { BC: [93, 53], AB: [87, 7], ON: [124, 11], QC: [127, 26] } as const;
+  const expected = { BC: [93, 53], AB: [87, 8], ON: [124, 11], QC: [127, 26] } as const;
   for (const [province, [total, ranked]] of Object.entries(expected)) {
     const rows = provincialRidingComparison.rowsByProvince[province as keyof typeof expected];
     assert.equal(rows.length, total, province);
@@ -211,10 +219,10 @@ test("provincial ridings rank only within their own province, with their own cou
   assert.doesNotMatch(english, /Abbotsford—South Langley/, "no federal riding in a provincial ranking");
   assert.match(english, /unmapped; the share is of the mapped forest/);
   // Only the reasons that apply are named, in the right number.
-  assert.match(english, /53 of British Columbia’s 93 provincial ridings are ranked\. Of the rest, 7 were only partly mapped and 33 have less than 500 hectares of forest\./);
+  assert.match(english, /53 of British Columbia’s 93 provincial ridings are ranked\. Of the rest, 2 were not mapped at all, 7 were only partly mapped, and 31 have less than 500 hectares of forest\./);
   const alberta = { rows: provincialRidingComparison.rowsByProvince.AB, context: provincialRidingComparison.contexts.AB, scope: { level: "provincial" as const, province: "AB" as const } };
-  assert.match(renderToStaticMarkup(<RankedRidingsTable {...alberta} locale="en" />), /Of the rest, 79 were only partly mapped and 1 has less than 500 hectares of forest\./);
-  assert.match(renderToStaticMarkup(<RankedRidingsTable {...alberta} locale="fr" />), /7 des 87 circonscriptions provinciales de l’Alberta sont classées\. Parmi les autres, 79 ne l’ont été qu’en partie et 1 compte moins de 500 hectares de forêt\./);
+  assert.match(renderToStaticMarkup(<RankedRidingsTable {...alberta} locale="en" />), /8 of Alberta’s 87 provincial ridings are ranked\. Of the rest, 79 were only partly mapped\./);
+  assert.match(renderToStaticMarkup(<RankedRidingsTable {...alberta} locale="fr" />), /8 des 87 circonscriptions provinciales de l’Alberta sont classées\. Parmi les autres, 79 ne l’ont été qu’en partie\./);
 });
 
 test("Compare shows the first 20 of each ranking until the reader asks for all of it", async () => {
@@ -225,9 +233,9 @@ test("Compare shows the first 20 of each ranking until the reader asks for all o
     assert.doesNotMatch(federal(html), /comparison-unranked/);
     assert.match(federal(html), /href="\?sort=share-desc&amp;left=federal-59001&amp;right=provincial-BC-258&amp;view=cards&amp;rankings=all#rankings-federal"/);
   }
-  assert.match(federal(english), /Showing the first 20 of 36 ranked ridings\. The 244 not ranked are listed with the whole ranking\./);
+  assert.match(federal(english), /Showing the first 20 of 42 ranked ridings\. The 238 not ranked are listed with the whole ranking\./);
   assert.match(federal(english), />Show all 280 federal ridings<\/a>/);
-  assert.match(federal(french), /Les 20 premières des 36 circonscriptions classées sont affichées\. Les 244 circonscriptions non classées figurent dans la liste complète\./);
+  assert.match(federal(french), /Les 20 premières des 42 circonscriptions classées sont affichées\. Les 238 circonscriptions non classées figurent dans la liste complète\./);
   assert.match(federal(french), />Afficher les 280 circonscriptions fédérales<\/a>/);
   assert.match(english, />Show all 93 provincial ridings in British Columbia<\/a>/);
   assert.match(french, />Afficher les 93 circonscriptions provinciales de la Colombie-Britannique<\/a>/);

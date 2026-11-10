@@ -31,7 +31,7 @@ export default async function ComparePage({
   const allRankings = parameters.rankings === "all";
   const selected = selectComparedRidings(comparableRidings, parameters.left, parameters.right, {
     fallback: federalRidingComparison.defaultPair,
-    outside: federalRidingComparison.rows,
+    outside: federalRidingComparison.outside,
   });
   const leftId = selected.left?.id;
   const rightId = selected.right?.id;
@@ -40,7 +40,7 @@ export default async function ComparePage({
       <main id="main" className="page-wrap">
         <header className="masthead">
           <h1>{TITLE}</h1>
-          <p className="masthead-note">Figures for 2021–2022, for the mapped part of each riding. Choose any two ridings in the four provinces, federal or provincial.</p>
+          <p className="masthead-note">Figures for 1984–2022, for the mapped part of each riding. Choose any two ridings in the four provinces, federal or provincial.</p>
         </header>
         <CoverageStatement locale="en"><p>Before comparing two ridings, check how much of each was mapped: a smaller loss can just mean less was mapped. Ridings without full data are left out of the ranking rather than counted as zero, and every share is of mapped forest only.</p></CoverageStatement>
         <FederalRidingPicker

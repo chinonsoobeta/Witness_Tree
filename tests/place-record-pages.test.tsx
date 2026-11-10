@@ -111,6 +111,11 @@ test("Campbell River links to its region and ridings, and they link back", () =>
   const riding = placePageRecord(PLACE_DATA_VERSION, federal.geography, federal.code)!;
   assert.ok(riding.communities.some((community) => community.code === "5924034"));
   assert.equal(riding.compareId, `federal-${federal.code}`);
+  const provincial = placePageRecord(PLACE_DATA_VERSION, record.provincial[0]!.geography, record.provincial[0]!.code)!;
+  assert.equal(provincial.compareId, `provincial-BC-${provincial.code}`, "a provincial riding opens Compare too, now that Compare covers both levels");
+  const html = renderToStaticMarkup(<RecordPlacePage locale="en" record={provincial} />);
+  assert.ok(html.includes(`<a href="/en/compare?left=provincial-BC-${provincial.code}">Compare it with another riding</a>`));
+  assert.doesNotMatch(html, /2021–2022 figures/);
   const region = placePageRecord(PLACE_DATA_VERSION, "er-2021", record.region!.code)!;
   assert.ok(region.communities.some((community) => community.code === "5924034"));
 });

@@ -86,7 +86,7 @@ export const COPY = {
     noCommunity: "No published community lies in it.",
     placeShare: (share: string) => `${share} of this place`,
     communityShare: (share: string) => `${share} of the community lies here`,
-    compare: "Compare it with another riding (2021–2022 figures)",
+    compare: "Compare it with another riding",
     map: "On the map",
     mapLabel: (name: string) => `Map of ${name}: its boundary, with the forest patches satellites detected as lost from 1984 to 2022.`,
     mapOpen: "Open this place on the Explore map",
@@ -151,7 +151,7 @@ export const COPY = {
     noCommunity: "Aucune collectivité publiée ne s’y trouve.",
     placeShare: (share: string) => `${share} de ce lieu`,
     communityShare: (share: string) => `${share} de la collectivité se trouve ici`,
-    compare: "Comparer avec une autre circonscription (chiffres de 2021–2022)",
+    compare: "Comparer avec une autre circonscription",
     // Draft French for the owner's review (2026-11-10).
     map: "Sur la carte",
     mapLabel: (name: string) => `Carte de ${name}\u202F: sa limite, avec les parcelles de forêt que les satellites ont détectées comme perdues de 1984 à 2022.`,

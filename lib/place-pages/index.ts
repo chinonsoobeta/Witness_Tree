@@ -83,7 +83,7 @@ export type PlacePageRecord = Readonly<{
   mapFeatureId: string;
   /** The box holding the area's boundary, from data/place-extents.json. */
   extent: PlaceExtent;
-  /** For a federal riding: its Compare selection id. */
+  /** For a federal or provincial riding: its Compare selection id. */
   compareId: string | null;
 }>;
 
@@ -319,7 +319,7 @@ function buildRecords(): ReadonlyMap<string, PlacePageRecord> {
       exploreOverlay: federal ? "federal-ridings" : "provincial-ridings",
       mapFeatureId: district.boundaryId,
       extent: extentOf(`${geography}/${code}`),
-      compareId: federal ? `federal-${code}` : null,
+      compareId: federal ? `federal-${code}` : `provincial-${district.boundaryId}`,
     });
   }
 

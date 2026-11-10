@@ -39,7 +39,7 @@ export function selectComparedRidings(
     /** The measured pair the page opens with. */
     fallback?: readonly ComparisonPlace[];
     /** Ridings that exist but that this page does not compare, named rather than called unknown. */
-    outside?: readonly ComparisonPlace[];
+    outside?: readonly Readonly<{ id: string; name: ComparisonPlace["name"] }>[];
   }> = {},
 ): ComparedRidings {
   const notices: SelectionNotice[] = [];

@@ -31,7 +31,7 @@ export default async function ComparerPage({
   const allRankings = parameters.rankings === "all";
   const selected = selectComparedRidings(comparableRidings, parameters.left, parameters.right, {
     fallback: federalRidingComparison.defaultPair,
-    outside: federalRidingComparison.rows,
+    outside: federalRidingComparison.outside,
   });
   const leftId = selected.left?.id;
   const rightId = selected.right?.id;
@@ -40,7 +40,7 @@ export default async function ComparerPage({
       <main id="main" className="page-wrap">
         <header className="masthead">
           <h1>{TITRE}</h1>
-          <p className="masthead-note">Chiffres pour 2021–2022, pour la partie cartographiée de chaque circonscription. Choisissez deux circonscriptions des quatre provinces, fédérales ou provinciales.</p>
+          <p className="masthead-note">Chiffres pour 1984–2022, pour la partie cartographiée de chaque circonscription. Choisissez deux circonscriptions des quatre provinces, fédérales ou provinciales.</p>
         </header>
         <CoverageStatement locale="fr"><p>Avant de comparer deux circonscriptions, vérifiez quelle part de chacune a été cartographiée{" "}: une perte plus faible peut simplement signifier qu’une plus petite partie a été cartographiée. Les circonscriptions sans données complètes sont exclues du classement plutôt que comptées comme zéro, et chaque part porte seulement sur la forêt cartographiée.</p></CoverageStatement>
         <FederalRidingPicker
