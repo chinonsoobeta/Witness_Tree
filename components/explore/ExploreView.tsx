@@ -547,8 +547,8 @@ export function ExploreView({
   const maxShare = Math.max(...provinceRows.map((row) => row.unionLossPercent ?? 0), 0);
   const rankedProvinces = [...provinceRows].sort((a, b) => (b.unionLossPercent ?? -1) - (a.unionLossPercent ?? -1));
   /*
-   * The riding ranking the reading panel links to is the whole record's, on the
-   * home page. Its heading names that span, and says plainly when it is not the
+   * The riding ranking the reading panel links to is the whole record's, on
+   * Compare. Its heading names that span, and says plainly when it is not the
    * span on display, so the two figures are never read as the same years.
    */
   const rankedSpan = formatYearRange(EXPLORE_COVERAGE_SPAN, locale);
@@ -861,7 +861,7 @@ export function ExploreView({
                   </li>
                 ))}
               </ul>
-              <p className="explore-reading-ridings"><a href={locale === "en" ? "/en#ridings-most-lost" : "/fr#ridings-most-lost"}>{rankingHeading}</a></p>
+              <p className="explore-reading-ridings"><a href={locale === "en" ? "/en/compare?rank=federal#rankings" : "/fr/comparer?rank=federal#rankings"}>{rankingHeading}</a></p>
             </div>
           ) : null}
           <EvidenceKey locale={locale} classes={["satellite-observation", "unknown"]} />

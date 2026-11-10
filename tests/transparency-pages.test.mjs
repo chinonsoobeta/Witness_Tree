@@ -26,7 +26,9 @@ test("methodology states the required definitions, matching and neutral limits",
   assert.match(page, /EXPLORE_COVERAGE_PERIOD/);
   assert.match(exploreTypes, /EXPLORE_YEAR_MIN = 1985/);
   assert.match(exploreTypes, /EXPLORE_YEAR_MIN - 1/);
-  assert.match(page, /EXPLORE_DEFAULT_YEAR/);
+  // Methods names Explore's opening span from the constant the route itself uses.
+  assert.match(page, /EXPLORE_DEFAULT_INTERVAL\.fromYear\} to \$\{EXPLORE_DEFAULT_INTERVAL\.toYear\}/);
+  assert.doesNotMatch(page, /EXPLORE_DEFAULT_YEAR - 1/);
   assert.match(exploreTypes, /EXPLORE_DEFAULT_YEAR = EXPLORE_YEAR_MAX/);
   assert.match(exploreTypes, /EXPLORE_YEAR_MAX = 2022/);
   assert.match(page, /fire; recorded harvest; recorded insect or disease disturbance; other recorded intervention; then detected loss with no matching record/);

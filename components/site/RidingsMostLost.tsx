@@ -7,8 +7,7 @@ import { CITY_RANK_FLOOR_HECTARES, citiesByWholeRecordLoss, RIDING_RANK_UNKNOWN_
  * The ridings where the largest share of forest was detected as lost over the
  * whole record. The figures were already on the site, but only a reader who
  * searched for a riding by name ever saw them. Each entry opens that riding's
- * search result, which carries the same 1984 to 2022 figure; Compare is not
- * the target, because it reads 2021 to 2022.
+ * search result, which carries the same 1984 to 2022 figure.
  */
 
 const LIMIT = 5;

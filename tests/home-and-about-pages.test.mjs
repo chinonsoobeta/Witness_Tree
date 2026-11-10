@@ -84,7 +84,7 @@ test("the landing page is the question, one figure, four provinces, three doors 
     assert.ok(doors.includes(`<Link href="${route}">`));
     assert.ok(doors.includes(`<Link href="${compare}">`));
     assert.ok(doors.includes(`<Link href={${harvest}}>`));
-    // Explore still links to "/<locale>#ridings-most-lost"; that address lands on the Compare door.
+    // Older links to "/<locale>#ridings-most-lost" still land on the Compare door.
     assert.match(doors, /id="ridings-most-lost"/);
 
     // Removed from home; each has a page of its own.

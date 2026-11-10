@@ -5,7 +5,7 @@ import { provincialMatchingTextEn } from "@/lib/phase4/methods-matching-en";
 import { provincialMatchingTextFr } from "@/lib/phase4/methods-matching-fr";
 import {
   EXPLORE_COVERAGE_PERIOD,
-  EXPLORE_DEFAULT_YEAR,
+  EXPLORE_DEFAULT_INTERVAL,
   EXPLORE_YEAR_MIN,
 } from "@/lib/explore";
 
@@ -21,7 +21,7 @@ const COPY = {
       "Forest is land of at least 1 hectare and at least 20 metres wide, where tree crowns cover at least 10% of the ground, with trees that can grow to 5 metres.",
     denominator: "What percentages measure",
     denominatorText:
-      `Percentages are a share of the forest that existed at the start of the years you choose, not a share of all land. The record covers ${EXPLORE_COVERAGE_PERIOD.en}. On Explore you choose a first and a last year. The shortest span is one year, such as ${EXPLORE_YEAR_MIN - 1} to ${EXPLORE_YEAR_MIN}, and Explore opens on ${EXPLORE_DEFAULT_YEAR - 1} to ${EXPLORE_DEFAULT_YEAR}.`,
+      `Percentages are a share of the forest that existed at the start of the years you choose, not a share of all land. The record covers ${EXPLORE_COVERAGE_PERIOD.en}. On Explore you choose a first and a last year. The shortest span is one year, such as ${EXPLORE_YEAR_MIN - 1} to ${EXPLORE_YEAR_MIN}, and Explore opens on the whole record, ${EXPLORE_DEFAULT_INTERVAL.fromYear} to ${EXPLORE_DEFAULT_INTERVAL.toYear}.`,
     coverage: "Geographic coverage",
     coverageText:
       "The record covers British Columbia, Alberta, Ontario and Québec, using national data. Québec north of 52° has national data only, with no extra local records. Coverage is worked out from the area actually mapped, not just from province names.",
@@ -66,7 +66,7 @@ const COPY = {
       "La forêt est une terre d’au moins 1 hectare et d’au moins 20 mètres de largeur, où les cimes des arbres couvrent au moins 10\u00A0% du sol, avec des arbres pouvant atteindre 5 mètres.",
     denominator: "Ce que mesurent les pourcentages",
     denominatorText:
-      `Les pourcentages expriment une part de la forêt présente au début des années choisies, et non de l’ensemble du territoire. Le registre couvre la période de ${EXPLORE_COVERAGE_PERIOD.fr}. Sur la page Explorer, vous choisissez une première et une dernière année. La période la plus courte est d’un an, par exemple de ${EXPLORE_YEAR_MIN - 1} à ${EXPLORE_YEAR_MIN}, et la page s’ouvre sur la période de ${EXPLORE_DEFAULT_YEAR - 1} à ${EXPLORE_DEFAULT_YEAR}.`,
+      `Les pourcentages expriment une part de la forêt présente au début des années choisies, et non de l’ensemble du territoire. Le registre couvre la période de ${EXPLORE_COVERAGE_PERIOD.fr}. Sur la page Explorer, vous choisissez une première et une dernière année. La période la plus courte est d’un an, par exemple de ${EXPLORE_YEAR_MIN - 1} à ${EXPLORE_YEAR_MIN}, et la page s’ouvre sur l’ensemble du registre, de ${EXPLORE_DEFAULT_INTERVAL.fromYear} à ${EXPLORE_DEFAULT_INTERVAL.toYear}.`,
     coverage: "Couverture géographique",
     coverageText:
       "Le registre couvre la Colombie-Britannique, l’Alberta, l’Ontario et le Québec, à partir de données nationales. Au Québec, au nord du 52e parallèle, il n’y a que des données nationales, sans registres locaux supplémentaires. La couverture est établie à partir de la zone réellement cartographiée, et non du seul nom de la province.",

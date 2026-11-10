@@ -74,7 +74,7 @@ test("corrections provides interim actions without inventing an intake address",
 
 test("method copy uses the current interval control", async () => {
   const method = await read("../components/transparency/MethodologyPage.tsx");
-  assert.match(method, /EXPLORE_DEFAULT_YEAR/);
+  assert.match(method, /EXPLORE_DEFAULT_INTERVAL/);
   assert.match(method, /EXPLORE_YEAR_MIN/);
   assert.doesNotMatch(method, /default view (?:starts|begins) in 2000|vue par défaut commence en 2000/);
   // The control is a first and a last year, so the copy describes a span.
