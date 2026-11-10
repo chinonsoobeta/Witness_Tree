@@ -1,4 +1,3 @@
-import { rankRidings } from "./ranking";
 import type { ComparisonPlace, RankedRiding, RankingContext } from "./types";
 
 export const MINIMUM_RANKED_FOREST_HECTARES = 500;
@@ -31,8 +30,6 @@ export type RealFederalRidingComparison = Readonly<{
   outside: readonly Readonly<{ id: string; name: Readonly<{ en: string; fr: string }> }>[];
   /** Every federal riding in Canada, to reconcile with the covered count. */
   nationalTotal: number;
-  /** A measured pair shown before the reader makes a selection. */
-  defaultPair: readonly [RankedRiding, RankedRiding];
 }>;
 
 const isCoveredFederalId = (boundaryId: string) =>
@@ -118,12 +115,7 @@ export function adaptFederalRidingComparison(input: Readonly<{
       fr: `Les circonscriptions fédérales comptant au moins ${MINIMUM_RANKED_FOREST_HECTARES} hectares de forêt, entièrement cartographiées ou dont moins de 1\u00A0% n’est pas cartographié, sont classées selon la part de forêt perdue. Lorsqu’une petite partie n’est pas cartographiée, la part porte sur la forêt cartographiée.`,
     },
   };
-  const ranked = rankRidings(rows).ranked;
-  if (ranked.length < 2) {
-    throw new Error("Federal-riding comparison needs two ranked districts for its default pair.");
-  }
-  const defaultPair: readonly [RankedRiding, RankedRiding] = [ranked[0]!, ranked[1]!];
-  return { context, rows, places: rows, comparisonRows: rows, outside, nationalTotal: rows.length + outside.length, defaultPair };
+  return { context, rows, places: rows, comparisonRows: rows, outside, nationalTotal: rows.length + outside.length };
 }
 
 /*

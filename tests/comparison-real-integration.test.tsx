@@ -75,14 +75,14 @@ test("the comparison lists only four-province districts under truthful coverage 
   assert.match(french, /aria-label="Couverture cartographiée complète sous le seuil de 500 hectares forestiers, non classée \(13\)"/);
 });
 
-test("the comparison scope and defaults are derived from the four-province data", () => {
+test("the comparison scope is derived from the four-province data, with no default pair", () => {
   assert.equal(federalRidingComparison.comparisonRows.length, 280);
   assert.ok(federalRidingComparison.comparisonRows.every((row) => /^federal-(24|35|48|59)/.test(row.id)));
   assert.equal(federalRidingComparison.comparisonRows.filter((row) => row.sufficientCoverage).length, 42);
-  const [left, right] = federalRidingComparison.defaultPair;
-  assert.deepEqual([left.id, right.id], ["federal-59001", "federal-59011"]);
-  assert.ok(left.sufficientCoverage && right.sufficientCoverage);
-  assert.notEqual(left.id, right.id);
+  assert.equal("defaultPair" in federalRidingComparison, false, "the page no longer opens on a pre-filled pair");
+  const [first, second] = rankRidings(federalRidingComparison.comparisonRows).ranked;
+  assert.deepEqual([first.id, second.id], ["federal-59001", "federal-59011"], "the federal ranking still leads with the same two");
+  assert.ok(first.sufficientCoverage && second.sufficientCoverage);
 });
 
 test("the real federal district finder links source names into Compare", () => {
@@ -113,13 +113,31 @@ test("both comparison routes use real data and preserve exact selected ids", asy
   }
 });
 
-test("both comparison routes default to covered measured ridings", async () => {
+test("both comparison routes open with no pair chosen: the picker, a one-line prompt and the rankings", async () => {
   const english = renderToStaticMarkup(await EnglishComparePage({ searchParams: Promise.resolve({}) }));
   const french = renderToStaticMarkup(await FrenchComparePage({ searchParams: Promise.resolve({}) }));
   for (const html of [english, french]) {
-    assert.match(html, /option value="federal-59001" selected/);
-    assert.match(html, /option value="federal-59011" selected/);
+    assert.match(html, /<select name="left"><option value="" selected="">/);
+    assert.match(html, /<select name="right"><option value="" selected="">/);
+    assert.equal((html.match(/ selected=""/g) ?? []).length, 2, "only the two empty options are selected");
     assert.doesNotMatch(html, /option value="federal-(?!24|35|48|59)/);
+    assert.equal((html.match(/class="comparison-prompt"/g) ?? []).length, 1);
+    assert.doesNotMatch(html, /comparison-side-by-side|comparison-card--empty/, "no empty comparison under the prompt");
+    assert.ok(html.indexOf("comparison-prompt") < html.indexOf('class="comparison-table"'), "the prompt comes before the rankings");
+    assert.equal((html.match(/class="comparison-table"/g) ?? []).length, 1, "one ranking: the federal one");
+  }
+  assert.match(english, /Choose two ridings in the fields above to compare them, or start from the rankings below\./);
+  assert.match(french, /Choisissez deux circonscriptions dans les champs ci-dessus pour les comparer, ou partez des classements ci-dessous\./);
+  assert.match(english, /Abbotsford—South Langley/, "the federal ranking is shown");
+});
+
+test("a link naming one riding fills that side only and leaves the other to the reader", async () => {
+  const [english, french] = await render({ left: "federal-59006" });
+  for (const html of [english, french]) {
+    assert.match(html, /option value="federal-59006" selected/);
+    assert.match(html, /<select name="right"><option value="" selected="">/);
+    assert.match(html, /comparison-card--empty/);
+    assert.doesNotMatch(html, /class="comparison-prompt"/);
   }
 });
 
@@ -207,7 +225,7 @@ test("provincial ridings rank only within their own province, with their own cou
   assert.ok(provincialRidingComparison.rows.every((row: { measurementCoverage: string; detectedChangePercent: number | null }) =>
     row.measurementCoverage === "complete" || row.detectedChangePercent === null));
 
-  const [federal, bc] = comparisonRankings([federalRidingComparison.defaultPair[0], provincialRidingComparison.rowsByProvince.BC[0]]);
+  const [federal, bc] = comparisonRankings([rankRidings(federalRidingComparison.comparisonRows).ranked[0], provincialRidingComparison.rowsByProvince.BC[0]]);
   assert.deepEqual(federal.scope, { level: "federal", nationalTotal: 343 });
   assert.deepEqual(bc.scope, { level: "provincial", province: "BC" });
   assert.match(bc.context.method.en, /against the other provincial ridings of British Columbia only/);

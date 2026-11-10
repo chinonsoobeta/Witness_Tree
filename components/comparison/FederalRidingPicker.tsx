@@ -24,20 +24,16 @@ export type ComparedRidings = Readonly<{
  * page cannot compare, leaves its side empty with a notice saying so; the same
  * riding on both sides is shown once. Nothing is silently put in its place.
  *
- * A side the address leaves out altogether (the page's own first visit, or a
- * search link that names one riding) takes the next of the caller's measured
- * defaults, distinct from the other side.
+ * A side the address leaves out stays empty too: the page's first visit opens
+ * with no pair chosen, and a search link that names one riding fills one side.
  */
 export function selectComparedRidings(
   rows: readonly ComparisonPlace[],
   leftId?: string,
   rightId?: string,
   {
-    fallback = [],
     outside = [],
   }: Readonly<{
-    /** The measured pair the page opens with. */
-    fallback?: readonly ComparisonPlace[];
     /** Ridings that exist but that this page does not compare, named rather than called unknown. */
     outside?: readonly Readonly<{ id: string; name: ComparisonPlace["name"] }>[];
   }> = {},
@@ -51,16 +47,29 @@ export function selectComparedRidings(
     notices.push(away ? { side, kind: "outside", id, name: away.name } : { side, kind: "unknown", id: id.slice(0, 80) });
     return null;
   };
-  let left = resolve("left", leftId);
+  const left = resolve("left", leftId);
   let right = resolve("right", rightId);
   if (left && right && left.id === right.id) {
     notices.push({ side: "right", kind: "same", id: right.id, name: right.name });
     right = null;
   }
-  const preferred = [...fallback, ...rows];
-  if (leftId === undefined) left = preferred.find((row) => row.id !== right?.id) ?? null;
-  if (rightId === undefined) right = preferred.find((row) => row.id !== left?.id) ?? null;
   return { left, right, notices };
+}
+
+const PROMPT_COPY = {
+  en: "Choose two ridings in the fields above to compare them, or start from the rankings below.",
+  // Draft French for the owner's review (2026-11-10).
+  fr: "Choisissez deux circonscriptions dans les champs ci-dessus pour les comparer, ou partez des classements ci-dessous.",
+} as const;
+
+/** The one line the page shows in place of the comparison while no riding is chosen. */
+export function ComparisonPrompt({ locale }: Readonly<{ locale: Locale }>) {
+  return <p className="comparison-prompt">{PROMPT_COPY[locale]}</p>;
+}
+
+/** True when the address chose no riding and nothing needs a notice: the page shows the prompt. */
+export function nothingChosen(selected: ComparedRidings): boolean {
+  return selected.left === null && selected.right === null && selected.notices.length === 0;
 }
 
 /** Province names by federal district prefix, west to east, spelled as the rest of the site spells them. */

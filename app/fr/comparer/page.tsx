@@ -1,7 +1,9 @@
 import { CoverageStatement } from "@/components/policy/CoverageStatement";
 import type { Metadata } from "next";
 import {
+  ComparisonPrompt,
   FederalRidingPicker,
+  nothingChosen,
   RankedRidingsTable,
   selectComparedRidings,
   SideBySideComparison,
@@ -30,7 +32,6 @@ export default async function ComparerPage({
   const sort = parseRankingSort(parameters.sort);
   const allRankings = parameters.rankings === "all";
   const selected = selectComparedRidings(comparableRidings, parameters.left, parameters.right, {
-    fallback: federalRidingComparison.defaultPair,
     outside: federalRidingComparison.outside,
   });
   const leftId = selected.left?.id;
@@ -53,15 +54,17 @@ export default async function ComparerPage({
           allRankings={allRankings}
           notices={selected.notices}
         />
-        <SideBySideComparison
-          places={[selected.left, selected.right]}
-          locale="fr"
-          view={view}
-          leftId={leftId}
-          rightId={rightId}
-          sort={sort}
-          allRankings={allRankings}
-        />
+        {nothingChosen(selected) ? <ComparisonPrompt locale="fr" /> : (
+          <SideBySideComparison
+            places={[selected.left, selected.right]}
+            locale="fr"
+            view={view}
+            leftId={leftId}
+            rightId={rightId}
+            sort={sort}
+            allRankings={allRankings}
+          />
+        )}
         {comparisonRankings([selected.left, selected.right]).map((ranking) => (
           <RankedRidingsTable
             key={ranking.scope.level === "federal" ? "federal" : ranking.scope.province}

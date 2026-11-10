@@ -3659,6 +3659,10 @@ dd > a:only-child {
 .comparison-empty {
   color: var(--ink-2);
 }
+.comparison-prompt {
+  margin: 0 0 32px;
+  color: var(--ink-2);
+}
 .comparison-selection-notice {
   margin-bottom: 20px;
 }
