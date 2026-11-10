@@ -8,8 +8,7 @@ import { colon, formatHectares, formatPercent, type Locale } from "@/lib/domain"
 import {
   PLACE_DATA_VERSION,
   placePagePath,
-  isRidingGeography,
-  ridingSheetPath,
+  placeSheetPath,
   placeProvinceName,
   placeReferenceFigures,
   landCoverProvenance,
@@ -71,7 +70,7 @@ export const COPY = {
     readMethod: "Read the method",
     citation: "Cite this page",
     download: "Download this card (PNG, 1200 × 630)",
-    sheet: "Print a one-page sheet for this riding",
+    sheet: { riding: "Print a one-page sheet for this riding", community: "Print a one-page sheet for this place", region: "Print a one-page sheet for this region" },
     copy: "Copy the citation",
     copied: "Citation copied.",
     copyFailed: "The citation could not be copied. Select it above instead.",
@@ -134,7 +133,8 @@ export const COPY = {
     // Draft French for the owner's review (2026-10-29).
     download: "Télécharger cette carte (PNG, 1200 × 630)",
     // Draft French for the owner's review (2026-10-29).
-    sheet: "Imprimer une fiche d’une page pour cette circonscription",
+    // The community and region wording is draft French for the owner's review (2026-11-10).
+    sheet: { riding: "Imprimer une fiche d’une page pour cette circonscription", community: "Imprimer une fiche d’une page pour ce lieu", region: "Imprimer une fiche d’une page pour cette région" },
     copy: "Copier la citation",
     copied: "Citation copiée.",
     copyFailed: "La citation n’a pas pu être copiée. Sélectionnez-la ci-dessus.",
@@ -180,7 +180,13 @@ function shareAmount(share: number, locale: Locale) {
   return formatPercent(Math.max(1, Math.round(share * 100)), locale);
 }
 
-function codeLabel(record: PlacePageRecord, locale: Locale) {
+/** What the print sheet and its link call this kind of place. */
+export function sheetGroup(record: PlacePageRecord): "riding" | "community" | "region" {
+  if (record.kind === "community") return "community";
+  return record.kind === "economic-region" ? "region" : "riding";
+}
+
+export function codeLabel(record: PlacePageRecord, locale: Locale) {
   const labels = COPY[locale].code;
   if (record.geography === "csd-2021" || record.geography === "er-2021") return labels[record.geography];
   return record.kind === "federal-riding" ? labels.federal : labels.provincial;
@@ -392,7 +398,7 @@ export function RecordPlacePage({ locale, record }: Readonly<{ locale: Locale; r
             <p id="place-citation">{citation}</p>
             <p className="place-share">
               <a href={receiptPath(locale, record)} download={`${PLACE_DATA_VERSION}-${record.geography}-${record.code}-${locale}.png`}>{text.download}</a>
-              {isRidingGeography(record.geography) ? <a href={ridingSheetPath(locale, record.geography, record.code)}>{text.sheet}</a> : null}
+              <a href={placeSheetPath(locale, record.geography, record.code)}>{text.sheet[sheetGroup(record)]}</a>
               <CopyCitation targetId="place-citation" label={text.copy} copied={text.copied} failed={text.copyFailed} />
             </p>
           </details>

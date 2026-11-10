@@ -4,17 +4,18 @@ import { colon, EVIDENCE_DEFINITIONS, formatHectares, formatNumber, PRODUCT_NAME
 import { UNMAPPED_REASONS } from "@/lib/explore/unmapped-reasons";
 import { binLabel, cellsToHectares, HARVEST_FIRE_SERIES, harvestFireCharts, type HarvestFireChartModel, type HarvestFireSeries } from "@/lib/harvest-fire";
 import { SVG_SIZE } from "@/lib/harvest-fire/chart";
-import { landCoverProvenance, PLACE_DATA_VERSION, ridingSheetPath, type PlacePageRecord } from "@/lib/place-pages";
+import { landCoverProvenance, PLACE_DATA_VERSION, placeSheetPath, type PlacePageRecord } from "@/lib/place-pages";
 import { PLACE_METHOD_VERSION } from "@/lib/place-pages/paths";
 import { placeSummary } from "@/lib/place-pages/summary";
 import { CARD_TEXT } from "@/lib/share/card-parts";
 import { localizedAlternates, SITE_ORIGIN } from "@/lib/site-metadata";
 import { PrintButton } from "./PrintButton";
-import { COPY as PAGE_COPY } from "./RecordPlacePage";
+import { codeLabel, COPY as PAGE_COPY, sheetGroup } from "./RecordPlacePage";
 
 /**
- * A riding's one-page sheet, for a constituent or a reporter to print or save
- * as a PDF and hand on (feature plan item 2). It prints what the riding's page
+ * A place's one-page sheet, for a constituent or a reporter to print or save
+ * as a PDF and hand on (feature plan item 2). Ridings, communities and
+ * economic regions each have one. It prints what the place's page
  * and share card say, in their words (lib/place-pages/summary.ts, the card's
  * labels in lib/share/meta.ts and the page's own labels), with the province's
  * harvest and fire series beside it as an SVG drawn here on the server.
@@ -31,14 +32,18 @@ import { COPY as PAGE_COPY } from "./RecordPlacePage";
 
 const COPY = {
   en: {
-    back: "Back to the riding’s page",
+    back: { riding: "Back to the riding’s page", community: "Back to the place’s page", region: "Back to the region’s page" },
     print: "Print or save as PDF",
     hint: "To keep a file, choose “Save as PDF” as the printer. The sheet fits one Letter or A4 page.",
     figureTitle: "Detected loss as a share of mapped forest",
     shareOf: "of the forest mapped in 1984 was detected as lost at least once from 1984 to 2022.",
     shareUnknown: "Unknown",
     provinceTitle: (province: string) => `Harvest and fire in ${province}, 1985–2022`,
-    provinceNote: "This chart is for the whole province, not this riding. The riding figure above counts all detected loss, whatever its cause.",
+    provinceNote: {
+      riding: "This chart is for the whole province, not this riding. The riding figure above counts all detected loss, whatever its cause.",
+      community: "This chart is for the whole province, not this place. The place’s figure above counts all detected loss, whatever its cause.",
+      region: "This chart is for the whole province, not this region. The region’s figure above counts all detected loss, whatever its cause.",
+    },
     subtitle: "Hectares per five-year interval",
     harvest: "Harvest",
     fire: "Fire",
@@ -59,14 +64,19 @@ const COPY = {
   },
   // Draft French for the owner's review (2026-10-29).
   fr: {
-    back: "Retour à la page de la circonscription",
+    // The community and region wording is draft French for the owner's review (2026-11-10).
+    back: { riding: "Retour à la page de la circonscription", community: "Retour à la page du lieu", region: "Retour à la page de la région" },
     print: "Imprimer ou enregistrer en PDF",
     hint: "Pour garder un fichier, choisissez «\u00a0Enregistrer au format PDF\u00a0» comme imprimante. La fiche tient sur une page Lettre ou A4.",
     figureTitle: "Perte détectée en part de la forêt cartographiée",
     shareOf: "de la forêt cartographiée en 1984 a été détectée comme perdue au moins une fois de 1984 à 2022.",
     shareUnknown: "Inconnu",
     provinceTitle: (province: string) => `Récolte et feu, ${province}, 1985–2022`,
-    provinceNote: "Ce graphique porte sur toute la province, et non sur cette circonscription. Le chiffre de la circonscription, plus haut, compte toute perte détectée, quelle qu’en soit la cause.",
+    provinceNote: {
+      riding: "Ce graphique porte sur toute la province, et non sur cette circonscription. Le chiffre de la circonscription, plus haut, compte toute perte détectée, quelle qu’en soit la cause.",
+      community: "Ce graphique porte sur toute la province, et non sur ce lieu. Le chiffre du lieu, plus haut, compte toute perte détectée, quelle qu’en soit la cause.",
+      region: "Ce graphique porte sur toute la province, et non sur cette région. Le chiffre de la région, plus haut, compte toute perte détectée, quelle qu’en soit la cause.",
+    },
     subtitle: "Hectares par période de cinq ans",
     harvest: "Récolte",
     fire: "Feu",
@@ -114,13 +124,13 @@ export function RidingSheet({ locale, record }: Readonly<{ locale: Locale; recor
   const series = HARVEST_FIRE_SERIES;
   const chart = series ? provinceChart(series, record) : null;
   const short = chart?.bins.find((bin) => bin.short);
-  const codeLabel = page.code[record.kind === "federal-riding" ? "federal" : "provincial"];
+  const group = sheetGroup(record);
   const pageUrl = `${SITE_ORIGIN}${summary.path}`;
 
   return (
     <main id="main" className="riding-sheet">
       <div className="riding-sheet-toolbar">
-        <a href={summary.path}>{text.back}</a>
+        <a href={summary.path}>{text.back[group]}</a>
         <PrintButton label={text.print} />
         <p>{text.hint}</p>
       </div>
@@ -130,7 +140,7 @@ export function RidingSheet({ locale, record }: Readonly<{ locale: Locale; recor
           <p className="riding-sheet-brand">{PRODUCT_NAME[locale]} · {record.typeLabel[locale]} · {summary.province}</p>
           <h1>{summary.name}</h1>
           <dl className="riding-sheet-facts">
-            <Fact label={codeLabel} value={record.code} locale={locale} />
+            <Fact label={codeLabel(record, locale)} value={record.code} locale={locale} />
             <Fact label={card.years} value={card.span} locale={locale} />
             <Fact label={card.edition} value={record.boundary.edition} locale={locale} />
             <Fact label={card.dataVersion} value={PLACE_DATA_VERSION} locale={locale} />
@@ -163,7 +173,7 @@ export function RidingSheet({ locale, record }: Readonly<{ locale: Locale; recor
         {series && chart ? (
           <section className="riding-sheet-province" aria-labelledby="riding-sheet-province-title">
             <h2 id="riding-sheet-province-title">{text.provinceTitle(chart.province.name[locale])}</h2>
-            <p className="riding-sheet-note">{text.provinceNote} {series.measure[locale]}</p>
+            <p className="riding-sheet-note">{text.provinceNote[group]} {series.measure[locale]}</p>
             <p className="riding-sheet-note"><span>{text.subtitle}.</span>{" "}
               <span className="riding-sheet-key"><span className="hf-swatch hf-swatch--harvest" aria-hidden="true" />{text.harvestKey}</span>{" "}
               <span className="riding-sheet-key"><span className="hf-swatch hf-swatch--fire" aria-hidden="true" />{text.fireKey}</span>
@@ -215,15 +225,15 @@ export function RidingSheet({ locale, record }: Readonly<{ locale: Locale; recor
   );
 }
 
-/** A print copy of the riding's page: not indexed, so search sends readers to the page itself. */
+/** A print copy of the place's page: not indexed, so search sends readers to the page itself. */
 export function ridingSheetMetadata(locale: Locale, record: PlacePageRecord): Metadata {
   const title = `${record.name[locale]} (${record.typeLabel[locale]}) · ${COPY[locale].print}`;
   return {
     title,
     robots: { index: false, follow: true },
     alternates: localizedAlternates(locale, {
-      en: ridingSheetPath("en", record.geography, record.code),
-      fr: ridingSheetPath("fr", record.geography, record.code),
+      en: placeSheetPath("en", record.geography, record.code),
+      fr: placeSheetPath("fr", record.geography, record.code),
     }),
   };
 }
