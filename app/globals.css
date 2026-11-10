@@ -4319,6 +4319,14 @@ dd > a:only-child {
   margin: 0 0 12px;
 }
 
+/* Last-year figures under a longer span: a rule sets them apart from the
+   span headline above, so the two are not read as one measurement. */
+.explore-annual h3.explore-annual-last {
+  margin-block-start: 20px;
+  padding-block-start: 16px;
+  border-block-start: 1px solid var(--rule);
+}
+
 .explore-annual dl {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));

@@ -982,3 +982,28 @@ test("Explore shows its coverage caveat before the map and its evidence key besi
   assert.match(client, /<i className=\{`loss-swatch \$\{className\}`\} \/>/);
   for (const patch of ["patch-harvest", "patch-fire", "patch-none"]) assert.match(client, new RegExp(`symbol\\("${patch}"\\)`));
 });
+
+/*
+ * C3 of the 2026-11-10 review. Under a span longer than a year the per-cell
+ * figures are the last year alone, and the heading says so and sits apart
+ * from the span headline; under an annual span the heading is unchanged.
+ */
+test("the per-cell figures under a longer span are named as its last year alone", () => {
+  const heading = (markup: string) => markup.match(/<h3 id="explore-annual-heading"([^>]*)>([^<]*)<\/h3>/);
+  const cases = [
+    { locale: "en", text: "Per-cell detected loss in the last year alone, 2021–2022" },
+    { locale: "fr", text: "Perte détectée par cellule pendant la dernière année seulement, 2021–2022" },
+  ] as const;
+  for (const { locale, text } of cases) {
+    const span = heading(renderToStaticMarkup(<ExploreView events={exploreFixtures} locale={locale} year={2022} fromYear={1984} />));
+    assert.ok(span);
+    assert.equal(span[2], text);
+    assert.match(span[1], /class="explore-annual-last"/);
+    const annual = heading(renderToStaticMarkup(<ExploreView events={exploreFixtures} locale={locale} year={2022} fromYear={2021} />));
+    assert.ok(annual);
+    assert.equal(annual[2], `${locale === "en" ? "Per-cell detected loss" : "Perte détectée par cellule"}, 2021–2022`);
+    assert.doesNotMatch(annual[1], /explore-annual-last/);
+  }
+  const css = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
+  assert.match(css, /\.explore-annual h3\.explore-annual-last \{[^}]*border-block-start: 1px solid var\(--rule\);/);
+});

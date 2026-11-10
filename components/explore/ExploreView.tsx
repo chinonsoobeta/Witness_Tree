@@ -82,6 +82,8 @@ const copy = {
     production: `The province figures follow the years you choose, anywhere within ${provinceSpanReach("en")}. A place cleared more than once counts once. No loss patches are drawn for these years. Nothing here was checked on the ground, and parts of each province have no data, so every figure is a minimum.`,
     productionWithPerCell: `The province figures and the loss patches follow the years you choose, anywhere within ${provinceSpanReach("en")}. A place cleared more than once counts once. The per-cell figures below are for the last year of your span only. The patches are simplified for display, so don’t add them up. Nothing here was checked on the ground, and parts of each province have no data, so every figure is a minimum.`,
     annualHeading: "Per-cell detected loss",
+    // Under a span longer than a year: these figures are its last year only.
+    annualHeadingLastYear: "Per-cell detected loss in the last year alone",
     annualDetected: "Detected loss (ha)",
     annualHarvest: "Of that loss, logged (ha)",
     annualFire: "Of that loss, burned (ha)",
@@ -191,6 +193,7 @@ const copy = {
     production: `Les chiffres provinciaux suivent les années que vous choisissez, ${provinceSpanReach("fr", "between")}. Un lieu perdu plus d’une fois ne compte qu’une fois. Aucune parcelle de perte n’est dessinée pour ces années. Rien ici n’a été vérifié sur le terrain, et certaines parties de chaque province n’ont pas de données\u202F: chaque chiffre est donc un minimum.`,
     productionWithPerCell: `Les chiffres provinciaux et les parcelles de perte suivent les années que vous choisissez, ${provinceSpanReach("fr", "between")}. Un lieu perdu plus d’une fois ne compte qu’une fois. Les chiffres par cellule ci-dessous ne portent que sur la dernière année de votre période. Les parcelles sont simplifiées pour l’affichage\u202F: ne les additionnez pas. Rien ici n’a été vérifié sur le terrain, et certaines parties de chaque province n’ont pas de données\u202F: chaque chiffre est donc un minimum.`,
     annualHeading: "Perte détectée par cellule",
+    annualHeadingLastYear: "Perte détectée par cellule pendant la dernière année seulement",
     annualDetected: "Perte détectée (ha)",
     annualHarvest: "Dont récolte (ha)",
     annualFire: "Dont incendies (ha)",
@@ -686,7 +689,16 @@ export function ExploreView({
               <ConditionRecoveryHeadline four={recoveryFour} locale={locale} />
             </div>
           ) : null}
-          {mode === "condition-recovery" ? null : <h3 id="explore-annual-heading">{`${text.annualHeading}, ${annual ? formatYearRangeKey(annual.interval, locale) : formatYearRange(yearRange(activeYear - 1, activeYear), locale)}`}</h3>}
+          {/*
+            The per-cell figures are annual, and nothing in the data adds them
+            up over a span. Under a longer span they are set apart from the
+            span headline and named as its last year alone.
+          */}
+          {mode === "condition-recovery" ? null : (
+            <h3 id="explore-annual-heading" className={multiYear ? "explore-annual-last" : undefined}>
+              {`${multiYear ? text.annualHeadingLastYear : text.annualHeading}, ${annual ? formatYearRangeKey(annual.interval, locale) : formatYearRange(yearRange(activeYear - 1, activeYear), locale)}`}
+            </h3>
+          )}
           {annual ? (
             <>
               {/*
