@@ -1555,13 +1555,25 @@ export function ExploreMapClient({
           map.jumpTo({ center: [hashCamera.lng, hashCamera.lat], zoom: hashCamera.zoom });
           readerMovedRef.current = true;
         } else if (focusRef.current) map.fitBounds(MAP_VIEW_BOUNDS[focusRef.current], { padding: FRAME_PADDING, maxZoom: 6, duration: 0 });
-        // Once the map settles, its position goes into the address, with the
-        // browser's own replaceState so no navigation starts (D5).
+        /*
+         * Once the map settles, the address carries its position only while
+         * that position is the reader's own (D5): a gesture, the zoom buttons,
+         * the patch zoom, a key, or a hash the page opened with. A fit made by
+         * the page (a province, All, a refit for a new frame) takes any map
+         * hash out instead, so a copied link never pins a camera fitted to
+         * someone else's screen. The movestart handler above has already
+         * marked a gesture by then. The browser's own replaceState is used so
+         * no navigation starts.
+         */
         map.on("moveend", () => {
           if (!active || !map) return;
-          const centre = map.getCenter();
-          const { pathname, search } = window.location;
-          History.prototype.replaceState.call(window.history, window.history.state, "", `${pathname}${search}${formatMapHash({ zoom: map.getZoom(), lat: centre.lat, lng: centre.lng })}`);
+          const { pathname, search, hash } = window.location;
+          if (readerMovedRef.current) {
+            const centre = map.getCenter();
+            History.prototype.replaceState.call(window.history, window.history.state, "", `${pathname}${search}${formatMapHash({ zoom: map.getZoom(), lat: centre.lat, lng: centre.lng })}`);
+          } else if (hash.startsWith("#map=")) {
+            History.prototype.replaceState.call(window.history, window.history.state, "", `${pathname}${search}`);
+          }
         });
         map.once("load", () => {
           if (!active) return;
