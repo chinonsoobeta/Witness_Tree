@@ -485,11 +485,11 @@ test("renders localized search results and the Explore table without browser Jav
   ]);
 
   assert.match(englishSearch, /<main\b[^>]*id="main"/);
-  assert.match(englishSearch, /<h2>Places<\/h2>/);
+  assert.match(englishSearch, /<h2>Search places by name<\/h2>/);
   assert.match(englishSearch, /Search provinces, ridings and communities\. Figures cover 1984 to 2022\./);
   assert.match(englishSearch, /British Columbia/);
   assert.match(frenchSearch, /<main\b[^>]*id="main"/);
-  assert.match(frenchSearch, /<h2>Lieux<\/h2>/);
+  assert.match(frenchSearch, /<h2>Rechercher un lieu par son nom<\/h2>/);
   assert.match(frenchSearch, /Recherchez une province, une circonscription ou une collectivité\. Les chiffres couvrent la période de 1984 à 2022\./);
   assert.match(frenchSearch, /Colombie-Britannique/);
 
@@ -521,16 +521,22 @@ test("renders localized search results and the Explore table without browser Jav
 });
 
 test("Compare serves a federal riding beside a provincial one, and an unknown riding as an empty side with a notice", async () => {
-  const [mixed, unknown] = await Promise.all([
+  const [mixed, mixedProvincial, unknown] = await Promise.all([
     render("/en/compare?left=federal-59001&right=provincial-BC-258").then((response) => response.text()),
+    render("/en/compare?left=federal-59001&right=provincial-BC-258&rank=provincial").then((response) => response.text()),
     render("/fr/comparer?left=inexistante&right=provincial-QC-137").then((response) => response.text()),
   ]);
   assert.match(mixed, /<option value="federal-59001" selected="">/);
   assert.match(mixed, /<option value="provincial-BC-258" selected="">Abbotsford-Mission<\/option>/);
   assert.match(mixed, /Provincial riding · British Columbia/);
-  assert.match(mixed, /<h2 id="rankings-BC-heading">Provincial ridings in British Columbia<\/h2>/);
-  assert.match(mixed, /53 of British Columbia’s 93 provincial ridings are ranked\./);
+  // The rankings are tabs since 2026-11-10: a mixed pair opens the federal one, and the
+  // provincial one is a tab away at the same address with rank=provincial.
+  assert.match(mixed, /<section class="comparison-rankings" id="rankings"/);
   assert.match(mixed, />Show all 280 federal ridings<\/a>/);
+  assert.doesNotMatch(mixed, /id="rankings-BC-heading"/);
+  assert.match(mixed, /href="\?[^"]*rank=provincial[^"]*#rankings"/);
+  assert.match(mixedProvincial, /<h2 id="rankings-BC-heading">Provincial ridings in British Columbia<\/h2>/);
+  assert.match(mixedProvincial, /53 of British Columbia’s 93 provincial ridings are ranked\./);
   assert.match(unknown, /role="status"/);
   assert.match(unknown, /Côté gauche\u202F: aucune circonscription ne porte l’identifiant «\u00A0inexistante\u00A0»\./);
   assert.match(unknown, /<h2>Aucune circonscription choisie<\/h2>/);
