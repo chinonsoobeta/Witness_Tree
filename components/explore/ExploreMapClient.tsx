@@ -136,8 +136,13 @@ const text = {
     scaleBar: "Scale bar",
     mapPanel: "Map legend",
     boundariesShown: "Boundaries shown",
-    boundary: "Boundary",
-    jurisdiction: "Jurisdiction",
+    boundaryKind: {
+      "federal-ridings": "Federal riding",
+      "provincial-ridings": "Provincial riding",
+      "economic-regions": "Economic region",
+      "census-subdivisions": "City or town",
+      watersheds: "Watershed",
+    },
     province: "Province",
     placeFiguresLoading: "Loading this place’s figures…",
     placeFiguresFailed: "This place’s figures didn’t load. Try again later.",
@@ -236,8 +241,13 @@ const text = {
     scaleBar: "Barre d’échelle",
     mapPanel: "Légende de la carte",
     boundariesShown: "Limites affichées",
-    boundary: "Limite",
-    jurisdiction: "Autorité compétente",
+    boundaryKind: {
+      "federal-ridings": "Circonscription fédérale",
+      "provincial-ridings": "Circonscription provinciale",
+      "economic-regions": "Région économique",
+      "census-subdivisions": "Ville ou municipalité",
+      watersheds: "Bassin versant",
+    },
     province: "Province",
     placeFiguresLoading: "Chargement des chiffres de ce lieu…",
     placeFiguresFailed: "Les chiffres de ce lieu n’ont pas pu être chargés. Réessayez plus tard.",
@@ -695,6 +705,49 @@ const boundaryProvince = (boundary: BoundarySelection): string | null =>
     : boundary.overlay === "economic-regions"
       ? PROVINCE_CODE_FOR_PRUID[boundary.boundaryId.slice(12, 14)] ?? null
       : null;
+
+/*
+ * Every province and territory, by the Statistics Canada code a federal
+ * riding's id begins with (CA-35059 is in Ontario). The ridings cover all of
+ * Canada, so the readout can name where any of them lies (F3).
+ */
+const PROVINCE_NAME_FOR_PRUID: Readonly<Record<string, Readonly<Record<Locale, string>>>> = {
+  "10": { en: "Newfoundland and Labrador", fr: "Terre-Neuve-et-Labrador" },
+  "11": { en: "Prince Edward Island", fr: "Île-du-Prince-Édouard" },
+  "12": { en: "Nova Scotia", fr: "Nouvelle-Écosse" },
+  "13": { en: "New Brunswick", fr: "Nouveau-Brunswick" },
+  "24": { en: "Québec", fr: "Québec" },
+  "35": { en: "Ontario", fr: "Ontario" },
+  "46": { en: "Manitoba", fr: "Manitoba" },
+  "47": { en: "Saskatchewan", fr: "Saskatchewan" },
+  "48": { en: "Alberta", fr: "Alberta" },
+  "59": { en: "British Columbia", fr: "Colombie-Britannique" },
+  "60": { en: "Yukon", fr: "Yukon" },
+  "61": { en: "Northwest Territories", fr: "Territoires du Nord-Ouest" },
+  "62": { en: "Nunavut", fr: "Nunavut" },
+};
+const PRUID_FOR_PROVINCE_CODE: Readonly<Record<string, string>> = { BC: "59", AB: "48", ON: "35", QC: "24" };
+
+/**
+ * The Statistics Canada code of the province or territory a boundary lies in,
+ * or null for a watershed, which crosses provincial lines.
+ */
+const boundaryPruid = (boundary: BoundarySelection): string | null => {
+  if (boundary.overlay === "watersheds") return null;
+  if (boundary.overlay === "federal-ridings") {
+    const code = boundary.boundaryId.slice(3, 5);
+    return code in PROVINCE_NAME_FOR_PRUID ? code : null;
+  }
+  const province = boundaryProvince(boundary) ?? boundary.jurisdiction;
+  return PRUID_FOR_PROVINCE_CODE[province] ?? null;
+};
+
+/** The readout's heading: the kind of boundary, then where it lies. */
+const boundaryHeading = (locale: Locale, boundary: BoundarySelection): string => {
+  const pruid = boundaryPruid(boundary);
+  const kind = text[locale].boundaryKind[boundary.overlay];
+  return pruid ? `${kind} · ${PROVINCE_NAME_FOR_PRUID[pruid]![locale]}` : kind;
+};
 
 const boundaryJurisdiction = (locale: Locale, jurisdiction: string) =>
   ({
@@ -1805,7 +1858,6 @@ export function ExploreMapClient({
       { fromYear, toYear: year },
     )
     : null;
-  const province = boundary ? boundaryProvince(boundary) : null;
   // The pinned boundary's place page, where it has one: a riding or region the
   // record measures, or a city or town whose figures loaded.
   const placePageHref = pinnedBoundary && activeBoundaryKey === boundarySelectionKey(pinnedBoundary)
@@ -1836,6 +1888,7 @@ export function ExploreMapClient({
         },
         needsRegions: shading === "loss",
         boundarySet: BOUNDARY_OVERLAYS[timelapseBoundary.overlay].label[locale],
+        boundaryHeading: boundaryHeading(locale, timelapseBoundary),
         boundarySource: BOUNDARY_OVERLAYS[timelapseBoundary.overlay].attribution?.[locale] ?? "",
         dataVersion: `${EXPLORE_PER_CELL_SPAN_LAYER.productId} (${EXPLORE_PER_CELL_SPAN_LAYER.releaseId.slice(0, 12)})`,
         firstYear: EXPLORE_PER_CELL_SPAN_LAYER.firstYear - 1,
@@ -2201,12 +2254,8 @@ export function ExploreMapClient({
             ) : null}
             {state === "ready" && source === "pmtiles" && boundary ? (
               <aside className="explore-map-boundary-status" role="status">
-                <strong>{text[locale].boundary}</strong>
+                <strong>{boundaryHeading(locale, boundary)}</strong>
                 <p>{boundary.name}</p>
-                <p>
-                  {province ? text[locale].province : text[locale].jurisdiction}
-                  {colon(locale)} {boundaryJurisdiction(locale, province ?? boundary.jurisdiction)}
-                </p>
                 {placeState === "loading" ? <p>{text[locale].placeFiguresLoading}</p> : null}
                 {placeState === "failed" ? <p>{text[locale].placeFiguresFailed}</p> : null}
                 {readout?.kind === "boundary-only" ? <p>{readout.note}</p> : null}
