@@ -613,8 +613,8 @@ includes cells not treed in 1984, so it is larger than the place pages' "lost
 at least once" (18.4% over the four provinces, 38.6% in Alberta); and the
 cause-of-latest-loss split has no owner admission at any level.
 
-**Gate records touched.** No status and no count changed (Phase 4 4/4, Phase 7
-12/14, Phase 8 8/16, Phase 9 0/4). Digests were refreshed, each with a dated
+**Gate records touched.** No status and no count changed (Phase 3 4/5, Phase 4
+4/4, Phase 7 12/14, Phase 8 8/16, Phase 9 0/4). Digests were refreshed, each with a dated
 sentence in the criterion's reason: Phase 4 for
 `components/transparency/MethodologyPage.tsx` (a reading-aid row, the moved
 list of limits, and Explore's opening span; the matching text and figures are
@@ -622,14 +622,35 @@ unchanged); Phase 7 for `ExploreView.tsx`, `ExploreYearControl.tsx` and
 `tests/explore.test.tsx` under its three Explore criteria, where the
 time-control reason now records that the opening span is 1984 to 2022; Phase 8
 for `ExploreMapClient.tsx` and `tests/explore.test.tsx` under CDN and tile
-validation, and for `docs/OPERATIONS_HANDBOOK.md`; Phase 9 for the Phase 8
-record. The Phase 8 sentence says plainly that the map's style and layers
+validation, and for `docs/OPERATIONS_HANDBOOK.md`; Phase 3 and Phase 8 for
+the bundle gate (below); Phase 9 for the Phase 8 record. The Phase 8 sentence says plainly that the map's style and layers
 changed this time and that the federal-riding archive is read on every load.
 **The deployed map render observation is stale for the map client until the
 Site is redeployed and observed again.** The new launch script joined the
 exit-code taxonomy (twenty-seven runners), the handbook's count followed, and
 the new checker is registered as suite-covered in `data/ci-check-coverage.json`
 because a CI step would change the checksum-bound workflow file.
+
+**The bundle gate changed, under the owner's 2026-10-28 sentence that the
+bundle limit can be raised as necessary; the owner can reverse either part.**
+Running CI's own checks on the combined branch showed the gate failing, not
+because the site grew (shared and Explore together measure 485,062 gzip bytes,
+against 491,687 on `main`) but because of how chunks are counted. Two changes
+in `scripts/check-budgets.mjs`, with the figures in `docs/PERFORMANCE.md`:
+(1) the map library, which a place page's small map now fetches once it
+scrolls into view, counts against the Explore limit wherever it is fetched,
+where the old rule would have put it on every page's shared budget; (2) the
+Explore limit is 416 KiB where the plan says 400 (measured 417,936; shared
+measured 67,126 against the unchanged 136 KiB). A reader who scrolls to a
+place page's map does fetch the map library (about 296,000 gzip bytes) on top
+of that page's own JavaScript. Phase 3 (`budgets-pass-in-ci`) and Phase 8
+(`load-testing`, for `docs/PERFORMANCE.md`) carry the dated sentences. On the
+way, client code stopped importing through the `lib/explore` barrel, which had
+been shipping the riding measurements to the browser unused. The same run
+found three smaller gate failures, now fixed with no change a reader sees: the
+outline key's sample lines have a title, and the map's land tone, dark ground
+and casing colour live in `lib/explore/map-ground.ts` and two palette tokens
+(`--map-ground-dark`, `--map-casing`), not in a component file or a rule.
 
 **Build.** The combined build on 2026-11-10 took 93 s and generated 24,523
 static pages (it was 13,761 items): `.next` is 3.3 GB in 99,292 files (it was
