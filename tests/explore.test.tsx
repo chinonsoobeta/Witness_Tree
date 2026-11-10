@@ -251,10 +251,16 @@ test("Explore puts explanation and controls before the map, then the reading pan
       en.indexOf('id="explore-data-heading"'),
   );
   // Only the chosen view's status is stated, under the toolbar.
-  assert.match(en, /<p class="explore-mode-status">Map: 1985–2022/);
+  // C4: one plain reason the map's first change is a year after the record starts.
+  assert.match(en, /<p class="explore-mode-status">Pick any first and last year from 1984 to 2022\. The record starts in 1984, so the first loss it can show is the change from 1984 to 1985\.<\/p>/);
+  assert.match(
+    renderToStaticMarkup(<ExploreView events={exploreFixtures} locale="fr" />),
+    /<p class="explore-mode-status">Choisissez n’importe quelle première et dernière année de 1984 à 2022\. Le registre commence en 1984\u202F: la première perte qu’il peut montrer est donc le changement de 1984 à 1985\.<\/p>/u,
+  );
+  assert.doesNotMatch(en, /Map: 1985–2022\. Province figures/);
   assert.match(
     renderToStaticMarkup(<ExploreView events={exploreFixtures} locale="en" mode="recorded-harvest" />),
-    /<p class="explore-mode-status">[^<]*Province figures for harvest and fire, 1985–2022/,
+    /<p class="explore-mode-status">The map and the province figures show harvest and fire from 1985 to 2022\. The record starts in 1984, so its first change is from 1984 to 1985\./,
   );
   assert.match(
     renderToStaticMarkup(<ExploreView events={exploreFixtures} locale="en" mode="condition-recovery" />),

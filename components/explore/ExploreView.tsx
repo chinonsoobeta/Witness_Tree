@@ -151,12 +151,14 @@ const copy = {
       "condition-recovery": "Condition and recovery",
     },
     modeStatus: {
+      // The record starts in 1984, so its first change is from 1984 to 1985;
+      // saying so replaces two year ranges that read as a mismatch.
       "forest-change":
-        "Map: 1985–2022. Province figures for any years from 1984 to 2022.",
+        "Pick any first and last year from 1984 to 2022. The record starts in 1984, so the first loss it can show is the change from 1984 to 1985.",
       "recorded-harvest":
-        "Map: 1985–2022. Province figures for harvest and fire, 1985–2022.",
+        "The map and the province figures show harvest and fire from 1985 to 2022. The record starts in 1984, so its first change is from 1984 to 1985.",
       wildfire:
-        "Map: 1985–2022. Province figures for harvest and fire, 1985–2022.",
+        "The map and the province figures show harvest and fire from 1985 to 2022. The record starts in 1984, so its first change is from 1984 to 1985.",
       "condition-recovery":
         "Map and figures: tree cover lost from 1984 to 2022, and whether it came back for five years in a row. They cover the whole record, not the years you pick.",
     },
@@ -262,11 +264,11 @@ const copy = {
     },
     modeStatus: {
       "forest-change":
-        "Carte\u202F: 1985–2022. Chiffres provinciaux pour toutes les années de 1984 à 2022.",
+        "Choisissez n’importe quelle première et dernière année de 1984 à 2022. Le registre commence en 1984\u202F: la première perte qu’il peut montrer est donc le changement de 1984 à 1985.",
       "recorded-harvest":
-        "Carte\u202F: 1985–2022. Chiffres provinciaux pour la récolte et le feu, 1985–2022.",
+        "La carte et les chiffres provinciaux montrent la récolte et le feu de 1985 à 2022. Le registre commence en 1984\u202F: son premier changement est donc celui de 1984 à 1985.",
       wildfire:
-        "Carte\u202F: 1985–2022. Chiffres provinciaux pour la récolte et le feu, 1985–2022.",
+        "La carte et les chiffres provinciaux montrent la récolte et le feu de 1985 à 2022. Le registre commence en 1984\u202F: son premier changement est donc celui de 1984 à 1985.",
       "condition-recovery":
         "Carte et chiffres\u202F: couvert arboré perdu de 1984 à 2022, et s’il est revenu pendant cinq années consécutives. Ils couvrent tout le registre, et non les années choisies.",
     },
