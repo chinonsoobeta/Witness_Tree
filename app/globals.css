@@ -5180,250 +5180,57 @@ dd > a:only-child {
   }
 }
 
-/* Landing: loss and unmapped area use equal panels and a shared hectare scale. */
-.landing-coverage > .lead { max-width: var(--measure); }
-/* Four readings of one instrument, ranked.
-   The provinces were a two-column grid of cards, which is a layout for
-   browsing, and these are not things to browse. A list ranks; cards only sit
-   beside each other. Neither measure prints a sentence explaining its scale,
-   because each bar draws exactly what the figure beside it says. */
-.province-list-block {
-  margin-block: 28px;
-}
-.province-list-head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 16px 28px;
-}
-.province-list-headline {
-  margin: 0;
-  font-size: clamp(21px, 2.3vw, 27px);
-  font-weight: 700;
-  line-height: 1.2;
-  letter-spacing: -0.015em;
-  text-wrap: balance;
-}
-.measure-toggle {
-  display: flex;
-  flex-shrink: 0;
-  border: 1px solid var(--rule-strong);
-  border-radius: var(--radius-control);
-  overflow: hidden;
-}
-.measure-toggle-option {
-  min-height: 44px;
-  padding: 0 18px;
-  border: none;
-  background: var(--ground);
-  color: var(--ink-2);
-  font-family: var(--ui);
-  font-size: var(--text-small);
-  font-weight: 700;
-  cursor: pointer;
-  transition:
-    background-color var(--dur) var(--ease),
-    color var(--dur) var(--ease);
-}
-.measure-toggle-option + .measure-toggle-option {
-  border-left: 1px solid var(--rule-strong);
-}
-.measure-toggle-option[aria-pressed="true"] {
-  background: var(--ink);
-  color: var(--ground);
-}
-/* A key, not a disclaimer: it names the two parts of a bar the reader can
-   see, rather than asking the reader to discount what the bar draws. */
-.province-list-key {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 24px;
-  margin: 18px 0 0;
-  padding: 0;
-  list-style: none;
-  font-family: var(--ui);
-  font-size: var(--text-small);
-  color: var(--ink-2);
-}
-.province-list-key li {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-}
-.province-list-key-mapped,
-.province-list-key-gap {
-  display: block;
-  width: 26px;
-  height: 12px;
-}
-.province-list-key-mapped {
-  background: var(--accent);
-}
-.province-list-key-gap {
-  background: var(--ground);
-  border: 1px dashed var(--edge-unknown);
-}
-.province-list {
-  margin: 8px 0 0;
+/* The home page since 2026-11-10 (A1, A4): the four provinces one entry each,
+   three doors, and single lines for recovery, data and limits. */
+.home-provinces-list {
+  display: grid;
+  gap: 14px;
+  margin: 16px 0 0;
   padding: 0;
   list-style: none;
 }
-.province-list-row {
-  display: flex;
-  flex-direction: column;
-  gap: 13px;
-  padding: 22px 0 24px;
-  border-top: 1px solid var(--rule);
+.home-province {
+  padding-left: 14px;
+  border-left: 2px solid var(--rule-strong);
 }
-/* Place left, figure right, one baseline. Four rows then present four figures
-   down a single right edge, which is the comparison the ranking exists to
-   make; stacked, each figure sat at a different distance from the top of its
-   own row and the reader had to find it four times. */
-.province-list-head-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 4px 40px;
-}
-.province-list-identity {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 4px 12px;
-  min-width: 0;
-}
-.province-list-row:last-child {
-  border-bottom: 1px solid var(--rule);
-}
-.province-list-mark {
-  display: flex;
-  align-items: center;
-  gap: 9px;
+.home-province p {
   margin: 0;
-  font-family: var(--ui);
-  font-size: var(--text-compact);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--muted);
+  max-width: 52rem;
 }
-.province-list .province-list-place {
-  margin: 0;
-  font-size: clamp(20px, 2.2vw, 26px);
-  font-weight: 700;
-  line-height: 1.2;
-  letter-spacing: -0.015em;
-}
-/* Matched against `.page-wrap h3` rather than left as a bare class: the base
-   heading scale is a descendant selector, so a class alone loses to it. */
-.province-list .province-list-span {
-  font-weight: 400;
+.home-province-figure {
   font-variant-numeric: tabular-nums lining-nums;
+}
+.home-province-name {
+  margin-right: 4px;
+}
+.home-province-note {
   color: var(--ink-2);
+  font-size: var(--text-small);
+  line-height: 1.5;
 }
-.province-list-figure {
-  display: flex;
-  align-items: baseline;
-  gap: 7px;
-  margin: 0;
-  font-size: clamp(30px, 3.6vw, 42px);
-  font-weight: 700;
-  font-variant-numeric: tabular-nums lining-nums;
-  letter-spacing: -0.01em;
-  line-height: 1.05;
+.home-provinces-more {
+  margin-top: 16px;
 }
-/* "ha" set at 42px is a third as wide as the number it qualifies and reads as
-   part of it. At reading size on the same baseline it stays legible and stops
-   competing, which is the whole of what the unit has to do. */
-.province-list-unit {
-  font-size: 17px;
-  font-weight: 400;
-  letter-spacing: 0;
-  color: var(--muted);
+/* Shorter gaps than a long page's sections: these are four short blocks. */
+.page-wrap > .home-provinces,
+.page-wrap > .home-doors,
+.page-wrap > .home-more,
+.page-wrap > .home-caveat {
+  padding-block: 32px;
 }
-/* The track is the page's own ground inside a hairline, not a filled panel:
-   what the bar has not reached has to read as nothing measured rather than as
-   a second, paler quantity. The outline is what the empty end of a bar is made
-   of, and it is why a full bar and an empty one cannot be mistaken for each
-   other on either ground. */
-.province-list-track {
-  display: flex;
-  height: 12px;
-  background: var(--ground);
-  border: 1px solid var(--rule);
+.page-wrap > .home-more {
+  border-bottom: 0;
+  padding-bottom: 0;
 }
-/* The accent, which swaps from the deep moss to the light one under the dark
-   palette so the fill keeps its weight on a dark ground. It was
-   --edge-derived, a clay brown that belongs to the derived-estimate mark: a
-   satellite observation was being drawn in the colour of a different class of
-   evidence, which is the one thing a mark system cannot afford. */
-.province-list-fill {
-  display: block;
-  height: 100%;
-  background: var(--accent);
+.home-doors .record-grid {
+  margin-top: 0;
 }
-/* Unknown reads as a dashed edge, never as a hatch: the 45 degree hatch is
-   already spoken for by observation with no matching record. A province with
-   a gap too small to draw still keeps its 1px dashed edge, for the same
-   reason the share never prints as 0%. */
-.province-list-gap {
-  display: block;
-  height: 100%;
-  min-width: 1px;
-  background: var(--ground);
-  border-left: 1px dashed var(--edge-unknown);
-}
-/* The caveat and the value it rests on, on one line. The recorded value used
-   to sit in a bordered band across the full width of the row, which put a rule
-   between a sentence and the number that sentence is about. */
-.province-list-base {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 10px 40px;
-}
-.province-list-note {
-  flex: 1 1 380px;
-  margin: 0;
+.home-more > p,
+.home-caveat > p {
   max-width: var(--measure);
+}
+.home-caveat > p {
   color: var(--ink-2);
-  line-height: 1.55;
-}
-.province-list-note strong {
-  font-weight: 700;
-  font-variant-numeric: tabular-nums lining-nums;
-  color: var(--ink);
-}
-.province-list-foot {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 4px;
-  margin: 0;
-  font-family: var(--ui);
-  font-size: var(--text-compact);
-  color: var(--muted);
-  text-align: right;
-}
-.province-list-foot span {
-  font-variant-numeric: tabular-nums lining-nums;
-}
-@media (max-width: 700px) {
-  .province-list-head {
-    align-items: stretch;
-    flex-direction: column;
-  }
-  .measure-toggle-option {
-    flex: 1 1 0;
-  }
-  /* Once the base wraps there is no right-hand column to align to, and a
-     right-aligned block under a left-aligned paragraph reads as a mistake. */
-  .province-list-foot {
-    align-items: flex-start;
-    text-align: start;
-  }
 }
 
 /* The four marks and their definitions, said once. The mark is a shape, not
@@ -5468,12 +5275,6 @@ dd > a:only-child {
 .mark-glyph--unknown {
   border: 2px solid var(--edge-unknown);
   border-radius: 50%;
-}
-.evidence-band-lead {
-  margin: 0;
-  max-width: var(--measure);
-  color: var(--ink-2);
-  font-size: 19px;
 }
 @media (max-width: 900px) {
   .evidence-marks { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -5603,47 +5404,6 @@ dd > a:only-child {
 */
 @media (max-width: 420px) {
   .cumulative-figure { font-size: clamp(30px, 9.4vw, 40px); }
-}
-
-/* What the record does not claim, as a list of claims rather than one
-   sentence carrying five of them in a row. */
-.limits-block {
-  padding: 28px 32px;
-  background: var(--sand);
-}
-.limits-block > h2 {
-  margin: 0;
-}
-.limits-body > p {
-  max-width: var(--measure);
-  color: var(--ink-2);
-}
-.limits-body > p:last-child {
-  margin-bottom: 0;
-}
-.limits-list {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 11px 40px;
-  margin: 0 0 24px;
-  padding: 0;
-  list-style: none;
-}
-.limits-list li {
-  padding-left: 15px;
-  border-left: 1px solid var(--rule-strong);
-  line-height: 1.45;
-}
-@media (min-width: 900px) {
-  .limits-block {
-    display: grid;
-    grid-template-columns: 230px minmax(0, 1fr);
-    gap: 48px;
-    align-items: start;
-  }
-}
-@media (max-width: 620px) {
-  .limits-list { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* The search control the homepage grew when Search left the global nav. */
@@ -5984,31 +5744,13 @@ dd > a:only-child {
   .place-year-value { grid-column: 2; text-align: left; }
 }
 
-.recovery-answer-provinces {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
-  gap: 0.5rem 1.5rem;
-  padding: 0;
-  list-style: none;
-}
-.recovery-answer-provinces li {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  border-bottom: 1px solid var(--rule);
-  padding-bottom: 0.25rem;
-}
 .explore-reading .recovery-headline p {
   font-size: var(--text-small);
   font-weight: 400;
   line-height: 1.45;
 }
-.recovery-headline p + p,
-.recovery-answer > p {
+.recovery-headline p + p {
   margin-top: 0.5rem;
-}
-.recovery-answer .eyebrow {
-  margin-top: 1.25rem;
 }
 /* ==========================================================================
    Riding print sheet (components/places/RidingSheet.tsx).
