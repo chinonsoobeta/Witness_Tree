@@ -1,6 +1,6 @@
 "use client";
 
-import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState, type RefObject } from "react";
 import type {
   ExpressionSpecification,
   FilterSpecification,
@@ -149,6 +149,8 @@ const text = {
     patchHint: "Loss patches appear when you zoom in close.",
     enterFullscreen: "View map full screen",
     exitFullscreen: "Exit full screen",
+    showLegend: "Show the legend",
+    hideLegend: "Hide the legend",
     mapPanelHarvest: "Harvest recorded",
     mapPanelFire: "Fire recorded",
     mapPanelNeither: "Neither recorded; the record may not cover it",
@@ -244,6 +246,8 @@ const text = {
     patchHint: "Les parcelles de perte apparaissent en zoom rapproché.",
     enterFullscreen: "Afficher la carte en plein écran",
     exitFullscreen: "Quitter le plein écran",
+    showLegend: "Afficher la légende",
+    hideLegend: "Masquer la légende",
     mapPanelHarvest: "Récolte consignée",
     mapPanelFire: "Incendie consigné",
     mapPanelNeither: "Ni récolte ni incendie consignés\u202F; le registre ne couvre peut-être pas cette zone",
@@ -261,6 +265,7 @@ const PMTILES_LOAD_TIMEOUT_MS = 10_000;
 // by the server and client trees having different positions around this island.
 const STATUS_ID = "explore-map-status";
 const ATTRIBUTION_ID = "explore-map-attribution";
+const LAYER_PANEL_ID = "explore-map-legend-panel";
 
 // The default camera and pan limit share this one four-province envelope so
 // they cannot drift apart. It frames all four provinces but is not a button.
@@ -964,6 +969,12 @@ const causeLegend = (locale: Locale) => {
   ];
 };
 
+/**
+ * How the map is enlarged: the browser's full screen, or, where the browser
+ * has none or refuses it, the same controls laid over the page (G1, G3).
+ */
+export type ExploreMapExpanded = "fullscreen" | "page" | null;
+
 export function ExploreMapClient({
   locale,
   mode,
@@ -975,6 +986,8 @@ export function ExploreMapClient({
   recoveryRegions = [],
   classSpan,
   measuredBoundaryKeys,
+  stageRef,
+  onExpandedChange,
   onPlaybackChange,
 }: Readonly<{
   locale: Locale;
@@ -1008,6 +1021,14 @@ export function ExploreMapClient({
    * place page; the pinned readout links to it.
    */
   measuredBoundaryKeys?: ReadonlySet<string>;
+  /**
+   * What goes full screen: the Explore section, so the years, Play, the
+   * Boundaries menu, the province buttons and the legend come with the map.
+   * Left out, the map frame alone.
+   */
+  stageRef?: RefObject<HTMLElement | null>;
+  /** Told when the map is enlarged or put back, so the stage can lay itself out. */
+  onExpandedChange?: (expanded: ExploreMapExpanded) => void;
   /** Told whether the map can follow playback, so Play waits or pauses rather than stepping a map that isn't drawing. */
   onPlaybackChange?: (playback: ExploreMapPlayback) => void;
 }>) {
@@ -1047,7 +1068,32 @@ export function ExploreMapClient({
   });
   const [hoveredRegion, setHoveredRegion] = useState<string | null>(null);
   const [fullscreenAvailable, setFullscreenAvailable] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [expanded, setExpandedState] = useState<ExploreMapExpanded>(null);
+  // The stage is told in the same update, so its layout and this map's change
+  // together and the page behind is back in place before it is scrolled.
+  const expandedRef = useRef<ExploreMapExpanded>(null);
+  const onExpandedChangeRef = useRef(onExpandedChange);
+  useEffect(() => {
+    onExpandedChangeRef.current = onExpandedChange;
+  });
+  const setExpanded = (next: ExploreMapExpanded) => {
+    if (expandedRef.current === next) return;
+    expandedRef.current = next;
+    setExpandedState(next);
+    onExpandedChangeRef.current?.(next);
+  };
+  const isFullscreen = expanded !== null;
+  const [legendOpen, setLegendOpen] = useState(true);
+  const fullscreenButtonRef = useRef<HTMLButtonElement>(null);
+  // Set when the reader pans or zooms the map themselves, and cleared when a
+  // province button or the opening view frames it again: entering or leaving
+  // full screen refits the selection only while it is still unset (G2).
+  const readerMovedRef = useRef(false);
+  const pageScrollRef = useRef(0);
+  const expandInPage = () => {
+    pageScrollRef.current = window.scrollY;
+    setExpanded("page");
+  };
   // The province shading answers any span from 1984 to 2022 and the per-cell
   // detail every annual interval inside it, so the map is offered for the
   // whole series and each layer is shown wherever it has something to say.
@@ -1089,7 +1135,7 @@ export function ExploreMapClient({
     onPlaybackChange?.(playback);
   }, [playback, onPlaybackChange]);
   useEffect(() => {
-    const frame = mapFrameRef.current;
+    const frame = stageRef?.current ?? mapFrameRef.current;
     const available = Boolean(
       frame?.requestFullscreen && document.fullscreenEnabled && document.exitFullscreen,
     );
@@ -1097,7 +1143,9 @@ export function ExploreMapClient({
     if (!available) return;
 
     const syncFullscreenState = () => {
-      setIsFullscreen(document.fullscreenElement === frame);
+      const on = document.fullscreenElement === frame;
+      const current = expandedRef.current;
+      setExpanded(on ? "fullscreen" : current === "fullscreen" ? null : current);
       mapRef.current?.resize();
     };
     const syncAfterEscape = (event: KeyboardEvent) => {
@@ -1111,6 +1159,8 @@ export function ExploreMapClient({
       document.removeEventListener("keydown", syncAfterEscape);
       window.removeEventListener("resize", syncFullscreenState);
     };
+    // stageRef is a ref object, fixed for the life of the page.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Full screen leaves nothing to scroll, so the map takes the wheel and one finger again.
@@ -1257,6 +1307,8 @@ export function ExploreMapClient({
         });
         mapRef.current = map;
         if (!map) return;
+        // A new map opens on the four provinces, as the reader has not moved it yet.
+        readerMovedRef.current = false;
         // MapLibre 6 asks this resolver before it answers a tile, so the hatch is
         // in the first tiles drawn; the styleimagemissing event only fires after.
         map.setMissingStyleImageResolver((id) => {
@@ -1275,6 +1327,10 @@ export function ExploreMapClient({
           });
         };
         map.on("move", publishView);
+        // A drag, wheel or pinch carries the browser event; a fit or ease from code does not.
+        map.on("movestart", (event) => {
+          if ((event as { originalEvent?: unknown }).originalEvent) readerMovedRef.current = true;
+        });
         // A rotated phone or full screen changes the frame, and so the limit.
         map.on("resize", () => {
           if (!map) return;
@@ -1624,6 +1680,7 @@ export function ExploreMapClient({
   const zoomToPatches = () => {
     const map = mapRef.current;
     if (!map) return;
+    readerMovedRef.current = true;
     map.easeTo({
       center: patchZoomCentre(map.getCenter()),
       zoom: PATCH_TARGET_ZOOM,
@@ -1641,14 +1698,75 @@ export function ExploreMapClient({
   // Offered only while it would do something: patches exist for this
   // selection and the map is still zoomed out past the point they appear.
   const patchZoomOffered = perCellYears !== null && view !== null && view.zoom < PATCH_READABLE_ZOOM;
+  // Entering or leaving the enlarged map. The page behind an in-page map does
+  // not scroll; the selection is refitted to the new frame unless the reader
+  // moved the map; and leaving gives focus back to the button that entered.
+  const previousExpandedRef = useRef<ExploreMapExpanded>(null);
+  useEffect(() => {
+    const was = previousExpandedRef.current;
+    previousExpandedRef.current = expanded;
+    if (was === expanded) return;
+    if (expanded !== null && was === null) {
+      // A phone has no room for the legend beside the map, so it starts folded there.
+      setLegendOpen(!window.matchMedia("(max-width: 759px)").matches);
+    }
+    let restoreScroll: (() => void) | null = null;
+    if (expanded !== null) {
+      // Enlarged, the section leaves the page's flow and the page would jump
+      // to its top; the reader comes back to where they were, as read before
+      // the section moved. Behind the in-page map the page does not scroll.
+      const root = document.documentElement;
+      const before = root.style.overflow;
+      const scrolled = pageScrollRef.current;
+      if (expanded === "page") root.style.overflow = "hidden";
+      restoreScroll = () => {
+        root.style.overflow = before;
+        window.scrollTo(0, scrolled);
+      };
+    }
+    const frameRequest = window.requestAnimationFrame(() => {
+      mapRef.current?.resize();
+      if (!readerMovedRef.current) fitMapToView(focusRef.current);
+    });
+    if (expanded === null) fullscreenButtonRef.current?.focus({ preventScroll: true });
+    return () => {
+      window.cancelAnimationFrame(frameRequest);
+      restoreScroll?.();
+    };
+  }, [expanded]);
+
+  // Escape closes the in-page map, as it leaves the browser's full screen.
+  useEffect(() => {
+    if (expanded !== "page") return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setExpanded(null);
+    };
+    document.addEventListener("keydown", closeOnEscape);
+    return () => document.removeEventListener("keydown", closeOnEscape);
+  }, [expanded]);
+
   const toggleFullscreen = async () => {
-    const frame = mapFrameRef.current;
-    if (!frame || !fullscreenAvailable) return;
+    const frame = stageRef?.current ?? mapFrameRef.current;
+    if (!frame) return;
+    if (expanded === "page") {
+      setExpanded(null);
+      return;
+    }
+    // No full screen here (iPhone Safari, for one): enlarge within the page.
+    if (!fullscreenAvailable) {
+      expandInPage();
+      return;
+    }
     try {
       if (document.fullscreenElement === frame) await document.exitFullscreen();
-      else await frame.requestFullscreen();
+      else {
+        pageScrollRef.current = window.scrollY;
+        await frame.requestFullscreen();
+      }
     } catch (error: unknown) {
       console.error("Explore map full-screen error", error);
+      // The browser refused, for example in a frame that does not allow it.
+      if (document.fullscreenElement !== frame) expandInPage();
     }
   };
   /*
@@ -1673,7 +1791,9 @@ export function ExploreMapClient({
    */
   const layerPanel = state === "ready" || state === "loading" ? (
     <div
+      id={LAYER_PANEL_ID}
       className="explore-map-layer-panel"
+      hidden={isFullscreen && !legendOpen}
       tabIndex={0}
       role="region"
       aria-label={text[locale].mapPanel}
@@ -1769,7 +1889,7 @@ export function ExploreMapClient({
     <div className="explore-map-client">
       {/* React hoists this into the head of the server's HTML. */}
       <link rel="preconnect" href={TILE_ORIGIN} crossOrigin="anonymous" />
-      <div className="explore-map-stack">
+      <div className="explore-map-stack" data-legend={isFullscreen ? (legendOpen ? "open" : "closed") : undefined}>
       <ProvinceBar
         locale={locale}
         placement="map"
@@ -1777,9 +1897,20 @@ export function ExploreMapClient({
         onSelect={(mapView) => {
           setSelectedMapView(mapView);
           setHoveredRegion(null);
+          readerMovedRef.current = false;
           fitMapToView(mapView);
         }}
       />
+      {isFullscreen ? (
+        <div className="explore-map-expanded-bar">
+          {layerPanel ? (
+            <button type="button" aria-expanded={legendOpen} aria-controls={LAYER_PANEL_ID} onClick={() => setLegendOpen((open) => !open)}>
+              {legendOpen ? text[locale].hideLegend : text[locale].showLegend}
+            </button>
+          ) : null}
+          <button type="button" onClick={() => void toggleFullscreen()}>{text[locale].exitFullscreen}</button>
+        </div>
+      ) : null}
       <div
         ref={mapFrameRef}
         className="explore-map"
@@ -1937,8 +2068,9 @@ export function ExploreMapClient({
             </div>
           ) : null}
           <div className="explore-map-control-cluster">
-            {fullscreenAvailable ? (
+            {state === "ready" || state === "loading" ? (
               <button
+                ref={fullscreenButtonRef}
                 type="button"
                 className="explore-map-corner-button explore-map-fullscreen-button"
                 onClick={() => void toggleFullscreen()}
@@ -1966,7 +2098,10 @@ export function ExploreMapClient({
               <button
                 type="button"
                 className="explore-map-zoom-button"
-                onClick={() => mapRef.current?.zoomIn()}
+                onClick={() => {
+                  readerMovedRef.current = true;
+                  mapRef.current?.zoomIn();
+                }}
                 disabled={!view || view.atMaxZoom}
               >
                 <span aria-hidden="true">+</span>
@@ -1975,7 +2110,10 @@ export function ExploreMapClient({
               <button
                 type="button"
                 className="explore-map-zoom-button"
-                onClick={() => mapRef.current?.zoomOut()}
+                onClick={() => {
+                  readerMovedRef.current = true;
+                  mapRef.current?.zoomOut();
+                }}
                 disabled={!view || view.atMinZoom}
               >
                 {/* A mathematical minus sign remains legible at button size. */}

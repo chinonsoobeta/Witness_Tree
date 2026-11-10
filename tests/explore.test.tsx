@@ -517,7 +517,7 @@ test("the map keeps one four-province camera envelope and the forest map alive a
   assert.doesNotMatch(map, /mapView === "national"|^\s*national:/m);
 });
 
-test("the map exposes native full screen only when supported", async () => {
+test("the map uses native full screen where supported and enlarges in the page elsewhere", async () => {
   const map = await (await import("node:fs/promises")).readFile(
     new URL("../components/explore/ExploreMapClient.tsx", import.meta.url),
     "utf8",
@@ -529,8 +529,14 @@ test("the map exposes native full screen only when supported", async () => {
   assert.match(map, /requestAnimationFrame\(syncFullscreenState\)/);
   assert.match(map, /window\.addEventListener\("resize", syncFullscreenState\)/);
   assert.match(map, /await frame\.requestFullscreen\(\)/);
+  assert.match(map, /pageScrollRef\.current = window\.scrollY;\n\s*await frame\.requestFullscreen\(\);/);
   assert.match(map, /await document\.exitFullscreen\(\)/);
-  assert.match(map, /\{fullscreenAvailable \? \(/);
+  // G3: the button is offered wherever the map is; without native full
+  // screen, or when the browser refuses it, the map enlarges within the page.
+  assert.match(map, /\{state === "ready" \|\| state === "loading" \? \(\n\s*<button\n\s*ref=\{fullscreenButtonRef\}/);
+  assert.match(map, /if \(!fullscreenAvailable\) \{\n\s*expandInPage\(\);/);
+  assert.match(map, /if \(document\.fullscreenElement !== frame\) expandInPage\(\);/);
+  assert.match(map, /const expandInPage = \(\) => \{\n\s*pageScrollRef\.current = window\.scrollY;\n\s*setExpanded\("page"\);/);
   assert.match(map, /isFullscreen \? text\[locale\]\.exitFullscreen : text\[locale\]\.enterFullscreen/);
 });
 

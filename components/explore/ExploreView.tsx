@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { CoverageStatement } from "@/components/policy/CoverageStatement";
 import { EvidenceKey } from "@/components/policy/EvidenceKey";
 import { ConditionRecoveryFigures, ConditionRecoveryHeadline } from "./ConditionRecoveryFigures";
@@ -46,7 +46,7 @@ import {
 import { harvestFireHref, harvestFireSpanTotals } from "@/lib/harvest-fire";
 import type { ForestRegionFigure } from "@/lib/explore/forest-regions";
 import type { ProvincialCauseBreakdown } from "@/lib/phase4/provincial-cause";
-import { ExploreMapClient } from "./ExploreMapClient";
+import { ExploreMapClient, type ExploreMapExpanded } from "./ExploreMapClient";
 import { boundarySelectionKey } from "@/lib/explore/place-links";
 import { ExploreYearControl, usePlayRunActive, type ExploreMapPlayback } from "./ExploreYearControl";
 
@@ -450,6 +450,10 @@ export function ExploreView({
   const districtsCurrent = spanIsServed || liveIsCurrent;
   // Which ridings and regions have a place page does not depend on the span,
   // so the rows the server sent decide it even while another span loads.
+  // The map goes full screen with the controls that change it: this section,
+  // laid out as the map and its controls alone while it is enlarged.
+  const stageRef = useRef<HTMLElement>(null);
+  const [expanded, setExpanded] = useState<ExploreMapExpanded>(null);
   const measuredBoundaryKeys = useMemo(() => new Set(ridingMeasurements.map(boundarySelectionKey)), [ridingMeasurements]);
   const servedMeasurements = spanIsServed
     ? ridingMeasurements
@@ -531,7 +535,12 @@ export function ExploreView({
       : `${text.modes[mode]} · ${spanPeriod}`;
 
   return (
-    <section className="explore" aria-label={text.title}>
+    <section
+      ref={stageRef}
+      className={expanded ? "explore explore--expanded" : "explore"}
+      data-expanded={expanded ?? undefined}
+      aria-label={text.title}
+    >
       <CoverageStatement locale={locale}>
         <p className="explore-caveat">{locale === "en"
           ? "A blank area on the map doesn’t mean no forest was lost there. Check what years and areas each layer covers before comparing figures."
@@ -681,6 +690,8 @@ export function ExploreView({
           recoveryRegions={recovery ? recovery.rows.filter((row) => row.kind === "region") : []}
           classSpan={playRun ? EXPLORE_COVERAGE_SPAN : undefined}
           measuredBoundaryKeys={measuredBoundaryKeys}
+          stageRef={stageRef}
+          onExpandedChange={setExpanded}
           onPlaybackChange={setMapPlayback}
         />
         {activeYear > activeFrom + 1 && !recovery ? (
