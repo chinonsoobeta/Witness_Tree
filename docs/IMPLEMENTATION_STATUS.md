@@ -626,7 +626,8 @@ validation, and for `docs/OPERATIONS_HANDBOOK.md`; Phase 3 and Phase 8 for
 the bundle gate (below); Phase 9 for the Phase 8 record. The Phase 8 sentence says plainly that the map's style and layers
 changed this time and that the federal-riding archive is read on every load.
 **The deployed map render observation is stale for the map client until the
-Site is redeployed and observed again.** The new launch script joined the
+Site is redeployed and observed again.** (It was observed again after the
+release; see "After the release" below.) The new launch script joined the
 exit-code taxonomy (twenty-seven runners), the handbook's count followed, and
 the new checker is registered as suite-covered in `data/ci-check-coverage.json`
 because a CI step would change the checksum-bound workflow file.
@@ -686,6 +687,23 @@ for every community and region, in two languages. Whether the host builds and
 serves that many pages was to be confirmed on the preview deployment before
 merging; rendering the community and region sheets on demand is the fallback.
 
+**After the release.** The preview deployment built all 24,523 pages on Vercel
+in 4 min 9 s. Behind the owner's sign-in, every server-rendered route answered
+200 on it, and so did 56 sampled place pages and print sheets across all seven
+kinds of place in both languages. The owner then said to merge; pull request
+221 landed on `main` as `a1e525e8` and Vercel deployed it at 23:53 UTC on
+2026-11-10. Vercel now builds and runs the Site on Node 26.x (the `engines`
+line in `package.json` says `>=22.13.0`, and Vercel takes the newest), while CI
+tests on Node 22; nothing failed, and the line is unchanged. On the live Site,
+sixteen addresses answered 200, and the deployed-map harness, run from a
+checkout of `a1e525e8`, wrote `data/deployed-map-render-evidence-2026-11-10.json`
+with all five checks passing, so `check:deployed-map-render` is answered by the
+deployed Site again and not by awaiting deploy. Twelve further harness runs
+with outlines on (federal ridings in English and French, economic regions in
+Ontario) all reached the interactive map; those twelve wrote nothing. All of
+this is headless Chromium from one machine: no phone, no Safari, no screen
+reader.
+
 **Browser tests.** `tests/browser/accessibility.spec.ts` now ends running CSS
 transitions before the axe scan: with the theme switch in the footer, the
 320 ms colour change on its chosen option does not advance off screen, and the
@@ -706,7 +724,7 @@ Phase 0 is complete under its recorded scope: seven of its eight literal gates p
 | Phase 5 | **3/4 (75%) local; production blocked** | The safety and simulation controls pass. The dated 100-run receipt records zero real refresh successes; the observed runs of 2026-09-13 and 2026-09-14 record the first three, each archived and read back. The scheduled cadence still needs observation over a longer window that crosses a daylight saving transition. |
 | Phase 6 | **4/5 (80%)** | Managed Canadian database isolation is proven. Sender infrastructure and the independent timed kill-switch rehearsal remain absent. |
 | Phase 7 | **12/14, incomplete** | On 2026-10-03 the owner removed the Decisions and Engagement pages, so the engagement-register gate and the Mistik-outcome gate no longer pass; the Mistik outcome remains recorded in `data/phase0-owner-scope-decisions-2026-08-27.json`. They pass again only if the pages return or the owner removes the gates by a recorded scope decision. On 2026-09-26 the owner removed the reserve-and-treaty layer gate and the right-of-reply gate, which the Plan scopes to reserve and treaty pages, because Witness Tree will not publish that geography. No reserve or treaty geometry, name or reply route exists. The modes-and-overlays gate covers the released federal-riding, provincial-riding, economic-region and watershed reference boundaries. |
-| Phase 8 | **8/16 (50%)** | Raw-archive reproducibility, the operations handbook, bounded independently retrieved bulk downloads, and CDN/tile validation pass. Sites version 48 deployed main commit `d9432b8e36be3f48a922d194618ff9840a5640a9` (#204) through Sites-history reconciliation merge `11e88ca14123fcffaa90ced142167f1a2ad6b726`. `/en` and `/fr` returned 200; live checks confirmed 10 federal and 10 provincial riding rankings, city ranks 1–10 including “Campbell River, British Columbia,” and `consignée` followed by U+202F before the semicolon on `/fr/methodes`. The map gate passed and the Explore smoke check drew the map. Neither gated map file changed, so the existing observation remains `data/deployed-map-render-evidence-2026-09-27-v45.json`. Version 48 replaced version 47, deployed from main commit `2ecefdf812e5f49ae827275e95c07eb867ca6753` (#202) through reconciliation merge `ec4bc74abb1802649ec34dd560e15b6559d08c65`. Version 47 replaced version 46, deployed from main commit `8485d77679b216faf1ca2844b573d7800e744de4` (#200) through reconciliation merge `31f26986e9715f73198db7a90c1f6f629a24b4b7`. Version 46 replaced version 45, deployed from main commit `3e68029df6e8e045f477d8909606fde13c912138` (#199) through reconciliation merge `4b97fba6017770767f474420b6911ca179130f4b`. `npm run verify:deploy-source <commit>` proves a deploy carries the tree of a commit on `main`. Other operated release evidence remains incomplete. |
+| Phase 8 | **8/16 (50%)** | Raw-archive reproducibility, the operations handbook, bounded independently retrieved bulk downloads, and CDN/tile validation pass. On 2026-11-10 Vercel deployed main commit `a1e525e8866de74b12a60dd13ed67bc0d89fd3de` (#221), and the browser observation of the deployed Site at `data/deployed-map-render-evidence-2026-11-10.json` passed all five checks; it is the current observation, and the map gate is answered by the deployed Site again. Earlier, under ChatGPT Sites: Sites version 48 deployed main commit `d9432b8e36be3f48a922d194618ff9840a5640a9` (#204) through Sites-history reconciliation merge `11e88ca14123fcffaa90ced142167f1a2ad6b726`. `/en` and `/fr` returned 200; live checks confirmed 10 federal and 10 provincial riding rankings, city ranks 1–10 including “Campbell River, British Columbia,” and `consignée` followed by U+202F before the semicolon on `/fr/methodes`. The map gate passed and the Explore smoke check drew the map. Neither gated map file changed, so the existing observation remains `data/deployed-map-render-evidence-2026-09-27-v45.json`. Version 48 replaced version 47, deployed from main commit `2ecefdf812e5f49ae827275e95c07eb867ca6753` (#202) through reconciliation merge `ec4bc74abb1802649ec34dd560e15b6559d08c65`. Version 47 replaced version 46, deployed from main commit `8485d77679b216faf1ca2844b573d7800e744de4` (#200) through reconciliation merge `31f26986e9715f73198db7a90c1f6f629a24b4b7`. Version 46 replaced version 45, deployed from main commit `3e68029df6e8e045f477d8909606fde13c912138` (#199) through reconciliation merge `4b97fba6017770767f474420b6911ca179130f4b`. `npm run verify:deploy-source <commit>` proves a deploy carries the tree of a commit on `main`. Other operated release evidence remains incomplete. |
 | Phase 9 | **0/4 (0%)** | No operated beta, real correction metrics, source-agency confirmation, or quarterly published-figure reproduction. |
 
 The underlying machine-checked records are [Phase 4](../data/phase4-exit-status.json), [Phase 5](../data/phase5-live-wildfire-exit-status.json), [Phase 6](../data/phase6-account-alert-exit-status.json), [Phase 7](../data/phase7-indigenous-explore-comparison-exit-status.json), [Phase 8](../data/phase8-launch-readiness-exit-status.json), and [Phase 9](../data/phase9-public-beta-launch-exit-status.json).
