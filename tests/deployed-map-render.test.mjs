@@ -32,24 +32,21 @@ const withRecord = async (mutate) => {
   return validateDeployedMapRender({ record });
 };
 
-test("the Site observation waits for the next deploy after this map client change", async () => {
+test("the fresh Site observation settles the map render gate", async () => {
   /*
-   * The version 45 observation is stale for exactly one file: the 2026-10-03
-   * restructure shades the owner's forest regions, adds the All and
-   * single-province views, and draws condition and recovery by economic
-   * region, all in components/explore/ExploreMapClient.tsx. Merging is what
-   * deploys now (Vercel builds main), and the daily workflow measures the live
-   * Site, so the gate is answered as awaiting deploy until the next observation
-   * is committed. Any other source drifting out of the observation is still
-   * caught, and a failing check is still a failure (tested below).
+   * The 2026-11-10 observation was taken from a checkout of main commit
+   * a1e525e8 (#221) minutes after Vercel deployed it, and binds the map client
+   * and map style as that commit has them. It replaces the version 45
+   * observation of 2026-09-27, which had been stale for the map client since
+   * the 2026-10-03 restructure. The gate is satisfied by the deployed Site
+   * again; a failing check remains a failure (tested below).
    */
   const failures = validateDeployedMapRender();
-  assert.equal(failures.length, 1, failures.join(" "));
-  assert.ok(failures[0].startsWith("components/explore/ExploreMapClient.tsx changed since"), failures[0]);
+  assert.deepEqual(failures, []);
   const gate = resolveDeployedMapRender();
-  assert.equal(gate.satisfiedBy, "awaiting-deploy");
+  assert.equal(gate.satisfiedBy, "deployed-site");
   assert.deepEqual(gate.failures, []);
-  assert.ok(gate.notes.join(" ").includes(DEPLOYED_MAP_RENDER_WORKFLOW));
+  assert.deepEqual(gate.notes, []);
   const record = await loadRecord();
   assert.equal(record.schemaVersion, RENDER_EVIDENCE_SCHEMA);
   assert.ok(record.url.startsWith(DEPLOYED_ORIGIN));
@@ -368,17 +365,17 @@ test("a settled debt has to be deleted rather than left on the branch", async ()
 test("neither weaker tier exists on this branch, so nothing stands in for the Site", async () => {
   /*
    * The gate resolves a tier on presence, so a leftover file silently answers
-   * for a measurement nobody took. Awaiting deploy covers a map change on its
-   * own, so neither the preview record nor a break-glass is needed.
+   * for a measurement nobody took. The deployed-site observation settles the
+   * gate, so neither the preview record nor a break-glass is needed.
    */
   for (const relative of [BRANCH_EVIDENCE_PATH, BREAK_GLASS_PATH]) {
     assert.equal(
       existsSync(new URL(`../${relative}`, import.meta.url)),
       false,
-      `${relative} is committed, but a map change now waits for its deploy without one`,
+      `${relative} is committed, but the deployed-site observation makes it unnecessary`,
     );
   }
-  assert.equal(resolveDeployedMapRender().satisfiedBy, "awaiting-deploy");
+  assert.equal(resolveDeployedMapRender().satisfiedBy, "deployed-site");
 });
 
 test("the daily workflow drives the live Site with the same harness", async () => {
