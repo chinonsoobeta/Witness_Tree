@@ -45,11 +45,11 @@ test("landing pages use the released province span and retain the bounded scope"
  * the record" cards and the list of limits each have a home elsewhere, and
  * the page links there. What this pins is the order the brief set (question
  * and search, province bar, one figure with its minimum, the four provinces,
- * three doors, one line of limits), that each removed section stays removed,
+ * the doors, one line of limits), that each removed section stays removed,
  * and the contracts the old test held: one way out of the hero, a single
  * limits block, no numbered markers and no em dash.
  */
-test("the landing page is the question, one figure, four provinces, three doors and one line of limits", async () => {
+test("the landing page is the question, the map button, one figure, four provinces, two doors and one line of limits", async () => {
   const [english, french] = await Promise.all([read("../app/en/page.tsx"), read("../app/fr/page.tsx")]);
   for (const [page, locale, route, compare, harvest, methods, unknown] of [
     [english, "en", "/en/explore", "/en/compare?rank=cities#rankings", "HARVEST_FIRE_ROUTES.en", "/en/methods#limits", "/en/unknown"],
@@ -60,9 +60,14 @@ test("the landing page is the question, one figure, four provinces, three doors 
     assert.doesNotMatch(hero, /<p className="eyebrow">/);
     assert.match(hero, /<h1>/);
     assert.ok(hero.indexOf("<HomeSearch") < hero.indexOf("<ProvinceBar"), "search, then the province bar");
-    // The owner asked on 2026-10-03 for one way out of the hero: the map.
+    // The owner asked on 2026-10-03 for one way out of the hero: the map. On
+    // 2026-11-19 they asked for it to be an explicit call at the top, so it is
+    // the page's one filled button, above the search, and the search's own
+    // button is outlined.
     assert.equal((hero.match(/<Link\b/g) ?? []).length, 1);
-    assert.match(hero, new RegExp(`<Link href="${route}">`));
+    assert.ok(hero.includes(`<Link href="${route}" className="btn btn--primary">`));
+    assert.ok(hero.indexOf("<Link") < hero.indexOf("<HomeSearch"), "the map button, then the search");
+    assert.equal((page.match(/btn--primary/g) ?? []).length, 1, `${locale}: one filled button on the page`);
 
     // The order the brief set. The headline carries its own minimum, so there
     // is no separate coverage banner.
@@ -77,11 +82,12 @@ test("the landing page is the question, one figure, four provinces, three doors 
     assert.ok(provinces.includes(`${route}?from=1984&year=2022`));
     assert.ok(provinces.includes(`<Link href="${unknown}">`));
 
-    // Three doors: the map, Compare (on its rankings, a contract with the
-    // Compare page), and harvest and fire.
+    // Two doors: Compare (on its rankings, a contract with the Compare page),
+    // and harvest and fire. The map was a third until 2026-11-19; it is the
+    // button at the top now, and is not repeated here.
     const doors = section(page, 'className="content-section home-doors"', "</nav>");
-    assert.equal((doors.match(/<article className="record-card"/g) ?? []).length, 3);
-    assert.ok(doors.includes(`<Link href="${route}">`));
+    assert.equal((doors.match(/<article className="record-card"/g) ?? []).length, 2);
+    assert.ok(!doors.includes(`<Link href="${route}">`));
     assert.ok(doors.includes(`<Link href="${compare}">`));
     assert.ok(doors.includes(`<Link href={${harvest}}>`));
     // Older links to "/<locale>#ridings-most-lost" still land on the Compare door.
@@ -100,6 +106,8 @@ test("the landing page is the question, one figure, four provinces, three doors 
     assert.match(caveat, locale === "en" ? /detected loss is a minimum/ : /la perte détectée est un minimum/);
     assert.doesNotMatch(page, /<span className="num">/);
     assert.doesNotMatch(page, /\u2014/);
+    // No middle dot between pieces of text (owner rule, 2026-11-19).
+    assert.doesNotMatch(page, /\u00b7/);
   }
 });
 

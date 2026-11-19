@@ -63,7 +63,7 @@ export function ProvinceRecordList({ rows, locale, labelledBy }: Readonly<{
             <p className="home-province-figure">
               <strong className="home-province-name">{row.name[locale]}</strong>{" "}
               <span>{row.unionLossHectares === null ? copy.unknown : copy.lost(formatHectares(row.unionLossHectares, locale))}</span>
-              {row.unionLossPercent === null ? null : <>{" · "}<span>{copy.share(formatPercent(row.unionLossPercent, locale))}</span></>}
+              {row.unionLossPercent === null ? null : <>{", "}<span>{copy.share(formatPercent(row.unionLossPercent, locale))}</span></>}
             </p>
             <p className="home-province-note">
               {copy.gap(unknownShare, <Link href={copy.methods}>{row.unmappedCharacter[locale]}</Link>)}
