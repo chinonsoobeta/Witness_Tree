@@ -25,6 +25,8 @@ import { placeLeadSentence } from "@/lib/place-pages/sentence";
 import { yearlyRows } from "@/lib/place-pages/yearly";
 import { PlaceYearlyChart } from "./PlaceYearlyChart";
 import { PlaceMap } from "./PlaceMap";
+import { PlaceTerrain } from "./PlaceTerrain";
+import { TERRAIN_COPY, terrainPrototype } from "@/lib/place-pages/terrain-prototype";
 import { mapHash, placeMapView } from "@/lib/place-pages/map-view";
 import { RECEIPT_SIZE, receiptAlt, receiptPath } from "@/lib/share/meta";
 import { localizedAlternates } from "@/lib/site-metadata";
@@ -246,6 +248,7 @@ export function RecordPlacePage({ locale, record }: Readonly<{ locale: Locale; r
   const provenance = landCoverProvenance(locale);
   const exploreHref = `${locale === "en" ? "/en/explore" : "/fr/explorer"}?overlays=${record.exploreOverlay}&from=1984&year=2022${mapHash(placeMapView(record.extent))}`;
   const overlay = BOUNDARY_OVERLAYS[record.exploreOverlay];
+  const terrain = terrainPrototype(record.geography, record.code);
   const provinceSentence = provinceContext(record, locale);
   const compareHref = record.compareId ? `${locale === "en" ? "/en/compare" : "/fr/comparer"}?left=${encodeURIComponent(record.compareId)}` : null;
 
@@ -340,6 +343,30 @@ export function RecordPlacePage({ locale, record }: Readonly<{ locale: Locale; r
         ) : (
           <p className="place-related-links"><a href={exploreHref}>{text.mapOpen}</a></p>
         )}
+
+        {terrain && overlay.url && overlay.sourceLayer ? (
+          <section className="place-map-section" aria-labelledby="place-terrain-heading">
+            <h2 className="eyebrow" id="place-terrain-heading">{TERRAIN_COPY[locale].heading} <span className="place-terrain-badge">{TERRAIN_COPY[locale].prototype}</span></h2>
+            <PlaceTerrain
+              extent={record.extent}
+              terrain={terrain}
+              boundary={{ url: overlay.url, sourceLayer: overlay.sourceLayer, featureId: record.mapFeatureId }}
+              patches={{
+                url: EXPLORE_PER_CELL_SPAN_LAYER.url,
+                sourceLayer: EXPLORE_PER_CELL_SPAN_LAYER.sourceLayer,
+                yearProperty: EXPLORE_PER_CELL_SPAN_LAYER.yearProperty,
+                minZoom: EXPLORE_PER_CELL_SPAN_LAYER.minZoom,
+                maxZoom: EXPLORE_PER_CELL_SPAN_LAYER.maxZoom,
+              }}
+              colours={{ ground: EXPLORE_MAP_COLOURS.ground, outline: EXPLORE_MAP_COLOURS.ink, patch: EXPLORE_MAP_COLOURS.neither, shadow: EXPLORE_MAP_COLOURS.ink }}
+              text={{
+                ...TERRAIN_COPY[locale],
+                label: TERRAIN_COPY[locale].label(name),
+                attribution: [TERRAIN_COPY[locale].attribution, overlay.attribution?.[locale], EXPLORE_PER_CELL_LAYER.attribution[locale]].filter(Boolean).join(" "),
+              }}
+            />
+          </section>
+        ) : null}
 
         {record.yearly ? <PlaceYearlyChart rows={yearlyRows(record.yearly, record.unknownTolerancePercent)} locale={locale} wholeRecordHectares={figures.lost.kind === "figure" ? figures.lost.value : null} /> : null}
 

@@ -710,6 +710,17 @@ transitions before the axe scan: with the theme switch in the footer, the
 scan read a colour between two states. The settled colours pass. The riding
 sheet spec still covers ridings only, not the new community and region sheets.
 
+### Terrain view prototype (branch `prototype/terrain-view` only)
+
+A tilted, true-height view of one place (Squamish) with the detected-loss
+patches laid over a 30 m ground model. It is a prototype: off unless a build
+sets `NEXT_PUBLIC_TERRAIN_PROTOTYPE=1`, built from an elevation source the owner
+has not admitted (Natural Resources Canada's MRDEM-30, Open Government Licence
+– Canada, part produced from Copernicus WorldDEM-30), and the archive is not
+checked in. It is not released and makes no production claim. The verified
+licence facts, the build figures, what was checked and what a release would
+need are in [the prototype record](TERRAIN_PROTOTYPE.md).
+
 ## Other formal phase counts
 
 Version 2.1 does not assign Phase 3 a cumulative percentage. Its five literal published exit criteria are nonetheless gated and counted, at 4/5 with moderated bilingual usability testing owner-blocked; that count is not a maturity score and does not mean the phase is four fifths complete. Its historical checkpoint records four completed technical-foundation evidence groups and one execution-ready, empty external-checkpoint envelope; that shorthand is not a Phase 3 exit result or a production-readiness measure.
