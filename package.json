@@ -303,7 +303,7 @@
     "@vercel/analytics": "^2.0.1",
     "drizzle-orm": "0.45.2",
     "maplibre-gl": "^6.9.0",
-    "next": "16.4.3",
+    "next": "16.4.6",
     "pmtiles": "^4.5.0",
     "react": "19.2.9",
     "react-dom": "19.2.9"

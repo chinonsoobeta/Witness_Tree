@@ -89,10 +89,27 @@ development dependency here and nothing in the repository imports it. After
 the move both CI gates report nothing at their thresholds; the type check,
 lint, the unit suite, a production build and the rendered-page test pass.
 
-Not settled by this step: `next` 16.4.3 carries its own built-in copy of the
-React server packages (a 19.3.0 canary dated 2026-10-02), which `npm audit`
-does not read. No published advisory names `next` for GHSA-xqc2-xf4c-x3h3 as of
-2026-11-19. `npm audit` does report two moderate advisories against `next`
-16.2.0 through 16.4.4 (GHSA-mfr8-8qww-v76h and GHSA-vc7v-qv4w-wrv8), both about
-`use cache`, which this Site does not use; they are below the CI thresholds and
-`next` is unchanged here. Moving to 16.4.6 is the owner's decision.
+## 2026-11-19: Next.js 16.4.3 to 16.4.6
+
+On the owner's instruction, the same day, `next` moved from 16.4.3 to 16.4.6, a
+patch step. It clears the two moderate advisories `npm audit` reported against
+`next` 16.2.0 through 16.4.4 (GHSA-mfr8-8qww-v76h and GHSA-vc7v-qv4w-wrv8, both
+about `use cache`, which this Site does not use). 16.4.5 was Next's November
+security release; 16.4.6 backports bug fixes on top of it.
+`@next/eslint-plugin-next` stays at 16.2.6.
+
+The share-card record binds the renderer's Next.js version. All 36 sample
+cards render byte for byte the same under 16.4.6, so
+`node scripts/check-share-images.mjs --write` changed only the record's
+`nextVersion` line. After the move both audit gates report nothing at their
+thresholds, and the type check, lint, the unit suite, the accessibility check,
+a production build, the rendered-page test, the CI test suite and the browser
+tests pass locally.
+
+Not settled by either step: `next` carries its own built-in copy of the React
+server packages, which `npm audit` does not read. It is the same copy in
+16.4.3 and 16.4.6 (a 19.3.0 canary dated 2026-10-02), so this update does not
+change it. No published advisory names `next` for GHSA-xqc2-xf4c-x3h3 as of
+2026-11-19. The advisory describes the affected case as responses that carry
+several typed arrays and a value an attacker controls; this Site has no server
+actions. Whether the built-in copy is affected is not established here.
