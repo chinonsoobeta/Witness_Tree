@@ -76,3 +76,23 @@ on the integration branch of that day, a minor-version step within Next 16.
 After the move `npm audit --omit=dev --audit-level=high` reports zero
 advisories. `@next/eslint-plugin-next` stays at 16.2.6; it is lint tooling and
 carries no advisory.
+
+## 2026-11-19: React 19.2.8 to 19.2.9
+
+On 2026-11-19 the whole-tree audit (`npm audit --audit-level=critical`) began
+failing on GHSA-xqc2-xf4c-x3h3, published 2026-11-10: unauthenticated remote
+code execution in React Server Components, against `react-server-dom-webpack`
+19.2.0 through 19.2.8. The first patched 19.2 release is 19.2.9, and it
+requires `react` and `react-dom` at 19.2.9 or later, so the three pins moved
+together from 19.2.8 to 19.2.9, a patch step. `react-server-dom-webpack` is a
+development dependency here and nothing in the repository imports it. After
+the move both CI gates report nothing at their thresholds; the type check,
+lint, the unit suite, a production build and the rendered-page test pass.
+
+Not settled by this step: `next` 16.4.3 carries its own built-in copy of the
+React server packages (a 19.3.0 canary dated 2026-10-02), which `npm audit`
+does not read. No published advisory names `next` for GHSA-xqc2-xf4c-x3h3 as of
+2026-11-19. `npm audit` does report two moderate advisories against `next`
+16.2.0 through 16.4.4 (GHSA-mfr8-8qww-v76h and GHSA-vc7v-qv4w-wrv8), both about
+`use cache`, which this Site does not use; they are below the CI thresholds and
+`next` is unchanged here. Moving to 16.4.6 is the owner's decision.

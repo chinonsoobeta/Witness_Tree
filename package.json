@@ -305,8 +305,8 @@
     "maplibre-gl": "^6.9.0",
     "next": "16.4.3",
     "pmtiles": "^4.5.0",
-    "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react": "19.2.9",
+    "react-dom": "19.2.9"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.13.0",
@@ -325,7 +325,7 @@
     "eslint-plugin-react": "7.37.5",
     "eslint-plugin-react-hooks": "7.1.1",
     "globals": "16.4.0",
-    "react-server-dom-webpack": "19.2.8",
+    "react-server-dom-webpack": "19.2.9",
     "tailwindcss": "4.2.1",
     "tsx": "4.22.1",
     "typescript": "5.9.3",
