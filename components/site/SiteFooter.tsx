@@ -34,7 +34,7 @@ export function SiteFooter({ locale }: { locale: Locale }) {
           It is outside the nav, because it is a setting, not a link.
         */}
         <div className="footer-meta">
-          <p className="footer-coverage">{EXPLORE_COVERAGE_PERIOD.compact} · BC · AB · ON · QC</p>
+          <p className="footer-coverage">{EXPLORE_COVERAGE_PERIOD.compact}{locale === "en" ? ":" : "\u00a0:"} BC, AB, ON, QC</p>
           <ThemeToggle locale={locale} />
         </div>
         <nav className="footer-nav" aria-label={locale === "en" ? "More pages" : "Autres pages"}>

@@ -5714,7 +5714,11 @@ dd > a:only-child {
   line-height: 1.5;
 }
 .home-provinces-more {
-  margin-top: 16px;
+  display: grid;
+  gap: 8px;
+  margin: 16px 0 12px;
+  padding: 0;
+  list-style: none;
 }
 /* Shorter gaps than a long page's sections: these are four short blocks. */
 .page-wrap > .home-provinces,
@@ -5728,7 +5732,11 @@ dd > a:only-child {
   padding-bottom: 0;
 }
 .home-doors .record-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   margin-top: 0;
+}
+@media (max-width: 760px) {
+  .home-doors .record-grid { grid-template-columns: 1fr; }
 }
 .home-more > p,
 .home-caveat > p {
@@ -6104,6 +6112,10 @@ dd > a:only-child {
 .search-chosen-foot a { font-weight: 700; }
 .search-chosen-foot .evidence-key { margin-inline-start: auto; }
 
+/* The one filled button on the home page: the way to the map. */
+.home-map-call {
+  margin: 24px 0 0;
+}
 .home-search {
   margin-block: 24px;
   max-width: 42rem;
@@ -6120,6 +6132,7 @@ dd > a:only-child {
 }
 .search-page-field { margin-bottom: 32px; }
 @media (max-width: 560px) {
+  .home-map-call .btn { width: 100%; }
   .search-suggest-row { grid-template-columns: minmax(0, 1fr); }
   .search-chosen-ridings { grid-template-columns: minmax(0, 1fr); }
 }

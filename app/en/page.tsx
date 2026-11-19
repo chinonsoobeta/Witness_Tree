@@ -24,14 +24,16 @@ const SPAN_ROWS = provinceSpanDisplayRows({ fromYear: 1984, toYear: 2022 });
  * the record cannot see", recovery in Explore, the harvest pages and downloads
  * on Data, the town and riding rankings on Compare, and the limits at the end
  * of Methods. What stays is the question, one figure with its minimum, the
- * four provinces in a line each, and three ways in.
+ * four provinces in a line each, and two more ways in. The map is the button at
+ * the top, so it is not repeated as a third card (2026-11-19).
  */
 export default function EnglishHome() {
   return <SiteShell locale="en"><main id="main" className="page-wrap">
     <header className="masthead masthead--record">
       <h1>What happened to the forest here?</h1>
       <p className="dek">{PRODUCT_NAME.en} shows forest loss in British Columbia, Alberta, Ontario, and Québec from 1984 to 2022 from satellite imagery and public records.</p>
-      <p className="masthead-note"><Link href="/en/explore">Explore the map</Link></p>
+      {/* The map is the first thing to do here, so it is the one filled button (2026-11-19). */}
+      <p className="home-map-call"><Link href="/en/explore" className="btn btn--primary">Explore the map</Link></p>
       <HomeSearch locale="en" />
       <ProvinceBar locale="en" />
     </header>
@@ -46,18 +48,16 @@ export default function EnglishHome() {
     <section className="content-section home-provinces" aria-labelledby="current-record">
       <h2 id="current-record">By province, {provinceSpanReach("en")}</h2>
       <ProvinceRecordList rows={SPAN_ROWS} locale="en" labelledBy="current-record" />
-      <p className="home-provinces-more">
-        <Link href="/en/explore?from=1984&year=2022">See the four provinces on the map, {provinceSpanReach("en")}</Link>
-        {" · "}
-        <Link href="/en/unknown">What the record cannot see</Link>
-      </p>
+      <ul className="home-provinces-more">
+        <li><Link href="/en/explore?from=1984&year=2022">See the four provinces on the map, {provinceSpanReach("en")}</Link></li>
+        <li><Link href="/en/unknown">What the record cannot see</Link></li>
+      </ul>
       <p><small>The record covers these four provinces only.</small></p>
     </section>
 
     <nav className="content-section home-doors" aria-labelledby="home-doors">
       <h2 id="home-doors" className="sr-only">Where to go next</h2>
       <div className="record-grid">
-        <article className="record-card"><h3>The map</h3><p>Forest loss across the four provinces, year by year.</p><Link href="/en/explore">Explore the map</Link></article>
         {/* The id keeps Explore's old link to the home rankings landing on their way in. */}
         <article className="record-card" id="ridings-most-lost"><h3>Ridings and towns</h3><p>Compare two places, or see which lost the most forest.</p><Link href="/en/compare?rank=cities#rankings">Compare ridings and towns</Link></article>
         <article className="record-card"><h3>Logged or burned</h3><p>What was harvested and what burned, by province and year.</p><Link href={HARVEST_FIRE_ROUTES.en}>See harvest and fire</Link></article>

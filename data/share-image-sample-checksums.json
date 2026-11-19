@@ -292,7 +292,7 @@
       "sha256": "47069ab13b5c2137b4c1082d42e838d4146125bc503426243dba6a6407d515b8"
     }
   ],
-  "nextVersion": "16.4.3",
+  "nextVersion": "16.4.6",
   "fonts": {
     "node_modules/@bcgov/bc-sans/fonts/BCSans-Regular.woff": "fe8f6adad04aa444c4446255eec2ad20ea17f3b06dd56bd10367827187d477d3",
     "node_modules/@bcgov/bc-sans/fonts/BCSans-Bold.woff": "c895f7047b012ed12a2b224600d95de226f294da332c411334c48cce3e53f802"

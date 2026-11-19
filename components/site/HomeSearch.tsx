@@ -47,6 +47,7 @@ export function HomeSearch({ locale }: { locale: Locale }) {
       label={text.label}
       placeholder={text.placeholder}
       submitLabel={text.submit}
+      submitStyle="outline"
       emptyHint={text.empty}
       note={
         <>
