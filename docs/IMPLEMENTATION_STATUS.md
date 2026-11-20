@@ -721,6 +721,27 @@ checked in. It is not released and makes no production claim. The verified
 licence facts, the build figures, what was checked and what a release would
 need are in [the prototype record](TERRAIN_PROTOTYPE.md).
 
+### Home page map button, 2026-11-19
+
+The owner asked for an explicit call to the map at the top of the home page.
+"Explore the map" was a 13 px text link under the introduction; it is now the
+page's one filled button, above the search, in both languages, and full width
+on a phone. The search's own button is outlined so the two do not compete
+(`SearchSuggest` takes a `submitStyle`; the Search page keeps the filled one).
+The "The map" card under the provinces repeated the button and is gone, leaving
+two cards: ridings and towns, and harvest and fire.
+
+The home page and the footer no longer put a middle dot between pieces of text
+(the owner's rule): the province lines use a comma, the two links under the
+provinces sit on a line each, and the footer reads "1984–2022: BC, AB, ON, QC".
+Other pages still use the dot, in page titles and in Explore, Compare and
+Search; those are not changed here.
+
+`tests/home-and-about-pages.test.mjs` pins the button, its place above the
+search, one filled button on the page, two cards and no middle dot. Checked on
+a local development server in Chromium, in English and French, light and dark,
+at desktop and 375 px. Not checked on a real phone or with a screen reader.
+
 ## Other formal phase counts
 
 Version 2.1 does not assign Phase 3 a cumulative percentage. Its five literal published exit criteria are nonetheless gated and counted, at 4/5 with moderated bilingual usability testing owner-blocked; that count is not a maturity score and does not mean the phase is four fifths complete. Its historical checkpoint records four completed technical-foundation evidence groups and one execution-ready, empty external-checkpoint envelope; that shorthand is not a Phase 3 exit result or a production-readiness measure.

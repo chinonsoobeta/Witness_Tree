@@ -67,6 +67,8 @@ export type SearchSuggestProps = Readonly<{
   labelHidden?: boolean;
   placeholder?: string;
   submitLabel: string;
+  /** "outline" where another control on the page is the main action. */
+  submitStyle?: "primary" | "outline";
   defaultValue?: string;
   note?: ReactNode;
   /**
@@ -87,6 +89,7 @@ export function SearchSuggest({
   labelHidden = false,
   placeholder,
   submitLabel,
+  submitStyle = "primary",
   defaultValue = "",
   note,
   emptyHint,
@@ -273,7 +276,7 @@ export function SearchSuggest({
             {/* Always in the tree and empty until needed, so the live region exists before its words arrive. */}
             {emptyHint !== undefined ? <p id={hintId} className="search-suggest-hint" aria-live="polite">{hinted ? emptyHint : ""}</p> : null}
           </div>
-          <button className="btn btn--primary" type="submit">{submitLabel}</button>
+          <button className={`btn btn--${submitStyle}`} type="submit">{submitLabel}</button>
         </div>
         <p className="sr-only" aria-live="polite">{ready && open ? text.count(suggestions.length) : ""}</p>
         {note}
