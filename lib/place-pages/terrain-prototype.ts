@@ -65,7 +65,7 @@ export type TerrainPrototype = Readonly<{
     view: Readonly<{ center: readonly [number, number]; zoom: number; bearing: number; pitch: number }>;
     /** The air photo over the whole close-up area. */
     photo: string;
-    /** The air photo's finest level, which is stored only inside a smaller box. */
+    /** The air photo's finest level, which is stored only over the settled valley; bounds is the box around it. */
     photoCore: Readonly<{ url: string; bounds: readonly [west: number, south: number, east: number, north: number]; zoom: number }>;
     height: string;
     /** The folder holding the ground-level photos and their index, ending with a slash. */
@@ -98,7 +98,7 @@ const PROTOTYPES: Readonly<Record<string, TerrainPrototype>> = {
       // From above downtown, looking south-east to the Stawamus Chief.
       view: { center: [-123.1485, 49.6915], zoom: 15.4, bearing: 140, pitch: 68 },
       photo: "/prototype/terrain/squamish-photo-2024.pmtiles",
-      photoCore: { url: "/prototype/terrain/squamish-photo-2024-core.pmtiles", bounds: [-123.178711, 49.681847, -123.134766, 49.724479], zoom: 21 },
+      photoCore: { url: "/prototype/terrain/squamish-photo-2024-core.pmtiles", bounds: [-123.178711, 49.667628, -123.09082, 49.79545], zoom: 21 },
       height: "/prototype/terrain/squamish-height.pmtiles",
       groundPhotos: "/prototype/terrain/ground/",
     },
@@ -209,7 +209,7 @@ export const TERRAIN_COPY: Readonly<Record<Locale, {
     label: (name) => `A tilted map of ${name} showing the shape of the land, with forest loss drawn on it`,
     key: "Forest detected as lost at least once, 1984–2022, from any cause",
     says: "The land is shown at true height with no exaggeration. Where a patch is drawn the forest was lost at least once, and some of it has grown back since. The patches come from 30 m satellite cells, so they stay blocky however far in you go.",
-    closeUpSays: "Inside the dashed line, everywhere the District of Squamish’s 2024 air photo reaches (about 290 square kilometres), the view is much finer: a 1 m laser survey of the ground and of the treetops and roofs above it, with the air photo laid over it at about 10 cm, and at about 5 cm, the photo’s own detail, over downtown. You can pick out single trees, road markings and garden beds there. The survey’s flight year is not established and it is older than the photo, so a tree in the photo may stand where the surface is bare, and the reverse. Outside the line, and where no survey flight passed, the ground is a 30 m model, and outside the line there is no photo.",
+    closeUpSays: "Inside the dashed line, everywhere the District of Squamish’s 2024 air photo reaches (about 290 square kilometres), the view is much finer: a 1 m laser survey of the ground and of the treetops and roofs above it, with the air photo laid over it at about 10 cm, and at about 5 cm, the photo’s own detail, over the settled valley from Brackendale to the foot of the Stawamus Chief. You can pick out single trees, road markings and garden beds there. The survey’s flight year is not established and it is older than the photo, so a tree in the photo may stand where the surface is bare, and the reverse. Outside the line, and where no survey flight passed, the ground is a 30 m model, and outside the line there is no photo.",
     turnLeft: "Turn left",
     turnRight: "Turn right",
     flat: "Look straight down",
@@ -269,7 +269,7 @@ export const TERRAIN_COPY: Readonly<Record<Locale, {
     label: (name) => `Une carte inclinée de ${name} montrant le relief, avec les pertes de forêt dessinées dessus`,
     key: "Forêt détectée comme perdue au moins une fois, 1984–2022, toutes causes confondues",
     says: "Le terrain est montré à sa hauteur réelle, sans exagération. Là où une parcelle est dessinée, la forêt a été perdue au moins une fois, et une partie a repoussé depuis. Les parcelles viennent de cellules satellitaires de 30 m : elles restent en blocs, aussi près que l’on s’approche.",
-    closeUpSays: "À l’intérieur de la ligne en pointillé, partout où s’étend la photo aérienne de 2024 du District de Squamish (environ 290 kilomètres carrés), la vue est beaucoup plus fine : un levé laser à 1 m du sol, et de la cime des arbres et des toits au-dessus, recouvert de la photo aérienne à environ 10 cm, et à environ 5 cm, le détail propre à la photo, au-dessus du centre-ville. On y distingue les arbres un à un, le marquage des routes et les plates-bandes. L’année de vol du levé n’est pas établie et il est plus ancien que la photo : un arbre de la photo peut se trouver là où la surface est nue, et l’inverse. Hors de la ligne, et là où aucun vol n’est passé, le sol est un modèle à 30 m, et hors de la ligne il n’y a pas de photo.",
+    closeUpSays: "À l’intérieur de la ligne en pointillé, partout où s’étend la photo aérienne de 2024 du District de Squamish (environ 290 kilomètres carrés), la vue est beaucoup plus fine : un levé laser à 1 m du sol, et de la cime des arbres et des toits au-dessus, recouvert de la photo aérienne à environ 10 cm, et à environ 5 cm, le détail propre à la photo, au-dessus de la vallée habitée, de Brackendale au pied du Stawamus Chief. On y distingue les arbres un à un, le marquage des routes et les plates-bandes. L’année de vol du levé n’est pas établie et il est plus ancien que la photo : un arbre de la photo peut se trouver là où la surface est nue, et l’inverse. Hors de la ligne, et là où aucun vol n’est passé, le sol est un modèle à 30 m, et hors de la ligne il n’y a pas de photo.",
     turnLeft: "Tourner à gauche",
     turnRight: "Tourner à droite",
     flat: "Regarder à la verticale",

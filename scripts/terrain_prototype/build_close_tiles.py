@@ -22,12 +22,13 @@ surface, ground
 photo, photo-core
     The District of Squamish's 2024 orthophoto (published at 7.5 cm and 15 cm),
     read from the District's public image service and stored as 256-pixel WebP
-    tiles. The photo set holds zooms 12 to 20 over the whole close-up area;
+    tiles. The photo set holds zooms 10 to 20 over the whole close-up area;
     zoom 20 is about 10 cm on the ground. The photo-core set holds zoom 21,
-    the service's own pixel, about 5 cm, over a core of six zoom-14 tiles
-    (downtown). The core is a set of its own because a map draws nothing where
-    a set has no tile, rather than a coarser one. Where the photo has no
-    picture there is no tile, or a transparent one.
+    the service's own pixel, about 5 cm, over the settled valley: 33 zoom-14
+    tiles from Brackendale to the Stawamus Chief. It is a set of its own
+    because a map draws nothing where a set has no tile, rather than a coarser
+    one. Where the photo has no picture there is no tile, or a transparent
+    one.
 
 height
     The surface model minus the terrain model, in classes: how tall whatever
@@ -41,8 +42,8 @@ Steps, each of which can be run alone with --step:
     height       cut the height tiles from the lidar windows
 
 The photo is fetched as blocks of 4,096 pixels: one for each zoom-15 tile
-(zooms 12 to 19 are cut from these), then one for each zoom-16 tile outside
-the core and each zoom-17 tile inside it (zooms 20 and 21). Each zoom-15 tile
+(zooms 10 to 19 are cut from these), then one for each zoom-16 tile outside
+the settled valley and each zoom-17 tile inside it (zooms 20 and 21). Each zoom-15 tile
 is first asked for as a 256-pixel picture whose transparency says where the
 photo has none; a block the photo does not reach is not asked for.
 
@@ -53,7 +54,7 @@ Memory: lidar windows are read in blocks with a 128 MB cache in each worker.
 A photo worker holds one 4,096-pixel block and its smaller copies, about
 150 MB, or about 400 MB for a block the photo only partly covers. The main
 process keeps one 256-pixel copy of every zoom-15 block, as bytes, for the
-three coarsest zooms: about 17 MB for each zoom-12 tile the area touches.
+zooms below the blocks: about 17 MB for each zoom-12 tile the area touches.
 
 Run with a Python that has GDAL and NumPy:
     python -I build_close_tiles.py --out ~/Witness_Tree-terrain-prototype/squamish-close \
@@ -115,17 +116,27 @@ QUANTUM_M = 0.0625
 PHOTO_BLOCK_Z = 15
 PHOTO_BLOCK = 4096
 PHOTO_ZOOMS = (12, 13, 14, 15, 16, 17, 18, 19)
+# Two zooms below those, made from the zoom-12 pictures: a 256-pixel tile is
+# asked for one zoom past the map's own, and the whole-place view opens near
+# zoom 9, so without them the far view would show no photo.
+PHOTO_FAR_ZOOMS = (10, 11)
 PHOTO_TILE = 256
 PHOTO_QUALITY = 70
 PHOTO_PAUSE_S = 1.0
 # Two finer levels. The service's own pixel is a zoom-21 pixel (0.075 units of
 # EPSG:3857, about 5 cm on the ground here), everywhere the photo reaches. Zoom
-# 20 covers the whole close-up area; zoom 21 covers a core of it, as zoom-14
-# tiles: downtown, the estuary's edge and the Stawamus Chief. A finer block is again 4,096 pixels, so its
-# 256-pixel tiles sit four zooms past the block's own.
+# 20 covers the whole close-up area; zoom 21 covers the settled valley, as
+# zoom-14 tiles, a row to its first and last column: Brackendale, Garibaldi
+# Highlands and Estates, the business park, downtown, Valleycliffe and the
+# foot of the Stawamus Chief. The first builds kept it over six tiles of
+# downtown. A finer block is again 4,096 pixels, so its 256-pixel tiles sit
+# four zooms past the block's own.
 PHOTO_FINE_Z = 20
 PHOTO_FINEST_Z = 21
-PHOTO_FINEST_CORE = (2586, 2587, 5576, 5578)
+PHOTO_FINEST_ROWS = {
+    5571: (2586, 2588), 5572: (2586, 2588), 5573: (2586, 2589), 5574: (2586, 2589), 5575: (2586, 2589),
+    5576: (2586, 2589), 5577: (2586, 2589), 5578: (2586, 2589), 5579: (2586, 2588),
+}
 
 HEIGHT_ZOOMS = (12, 13, 14, 15, 16, 17)
 HEIGHT_TILE = 256
@@ -441,13 +452,13 @@ def step_elevation(out: str, far: str, workers: int) -> None:
 
 
 def fine_blocks() -> list[tuple[int, int, int]]:
-    """The finer blocks, as (zoom, x, y): zoom-17 blocks over the finest core,
-    whose zoom-20 tiles are made by halving them, and zoom-16 blocks over the
-    rest of the close-up area. The finest core comes first."""
-    fx0, fx1, fy0, fy1 = PHOTO_FINEST_CORE
+    """The finer blocks, as (zoom, x, y): zoom-17 blocks over the settled
+    valley, whose zoom-20 tiles are made by halving them, and zoom-16 blocks
+    over the rest of the close-up area. The zoom-17 blocks come first."""
     found = []
     for x, y in area_tiles(CORE_Z):
-        z = PHOTO_FINEST_Z - 4 if fx0 <= x <= fx1 and fy0 <= y <= fy1 else PHOTO_FINE_Z - 4
+        first, last = PHOTO_FINEST_ROWS.get(y, (1, 0))
+        z = PHOTO_FINEST_Z - 4 if first <= x <= last else PHOTO_FINE_Z - 4
         f = 1 << (z - CORE_Z)
         found += [(z, x * f + i, y * f + j) for i in range(f) for j in range(f)]
     return sorted(found, reverse=True)
@@ -507,7 +518,7 @@ def step_fetch_photo(out: str) -> None:
     """For each zoom-15 tile, a 256-pixel PNG whose transparency says where the
     photo has no picture and, where it has one, a block of 4,096 pixels. Then
     the finer blocks, also 4,096 pixels each: zoom 16 over the close-up area and
-    zoom 17 over its core. A file already on disk is not asked for again."""
+    zoom 17 over the settled valley. A file already on disk is not asked for again."""
     started, clock = datetime.now(timezone.utc), time.time()
     blocks = os.path.join(out, "photo-blocks")
     os.makedirs(blocks, exist_ok=True)
@@ -547,7 +558,7 @@ def step_fetch_photo(out: str) -> None:
         },
         "request": {
             "blockZoom": PHOTO_BLOCK_Z, "blockPixels": PHOTO_BLOCK, "format": "jpg", "compressionQuality": 95, "interpolation": "bilinear", "fetchedThisRun": fetched,
-            "finerBlocks": {"blockZooms": [PHOTO_FINE_Z - 4, PHOTO_FINEST_Z - 4], "finestCoreTileRange": list(PHOTO_FINEST_CORE), "skipped": "blocks the photo does not reach"},
+            "finerBlocks": {"blockZooms": [PHOTO_FINE_Z - 4, PHOTO_FINEST_Z - 4], "finestRows": {str(y): list(xs) for y, xs in PHOTO_FINEST_ROWS.items()}, "skipped": "blocks the photo does not reach"},
         },
         "blocks": [{"path": name, "byteLength": os.path.getsize(os.path.join(blocks, name)), "sha256": sha256_file(os.path.join(blocks, name))} for name in files],
     }, started, clock)
@@ -625,9 +636,9 @@ def step_photo(out: str, workers: int) -> None:
         raise SystemExit(f"{len(missing)} photo blocks are not downloaded yet; run --step fetch-photo first.")
     mbtiles = os.path.join(out, "photo.mbtiles")
     db = new_mbtiles(mbtiles)
-    per_zoom: dict[str, dict] = {str(z): {"tiles": 0, "bytes": 0} for z in (*PHOTO_ZOOMS, PHOTO_FINE_Z, PHOTO_FINEST_Z)}
-    # The finest zoom covers only a core, so it goes in a set of its own: a map
-    # cannot fall back to a coarser tile where a set has none.
+    per_zoom: dict[str, dict] = {str(z): {"tiles": 0, "bytes": 0} for z in (*PHOTO_FAR_ZOOMS, *PHOTO_ZOOMS, PHOTO_FINE_Z, PHOTO_FINEST_Z)}
+    # The finest zoom covers only the settled valley, so it goes in a set of its
+    # own: a map cannot fall back to a coarser tile where a set has none.
     core_mbtiles = os.path.join(out, "photo-core.mbtiles")
     core_db = new_mbtiles(core_mbtiles)
     with Pool(workers, initializer=worker_setup) as pool:
@@ -659,11 +670,12 @@ def step_photo(out: str, workers: int) -> None:
             small[key][1][row:row + PHOTO_TILE, col:col + PHOTO_TILE] = np.clip(np.rint(weight * 255), 0, 255)
             covered.append(share)
             db.commit()
-    for (cx, cy), (kept, kept_weight) in sorted(small.items()):
-        pixels, weight = kept.astype(np.float32), kept_weight.astype(np.float32) / 255
-        for z in range(PHOTO_BLOCK_Z - 1, coarsest - 1, -1):
+
+    def cut_down(pixels: np.ndarray, weight: np.ndarray, top_z: int, last_z: int, cx: int, cy: int) -> tuple[np.ndarray, np.ndarray]:
+        """Halve the zoom top_z picture of tile (cx, cy) of zoom last_z, down to last_z, storing each zoom's tiles."""
+        for z in range(top_z - 1, last_z - 1, -1):
             pixels, weight = halve(pixels, weight)
-            f = 1 << (z - coarsest)
+            f = 1 << (z - last_z)
             for tx in range(f):
                 for ty in range(f):
                     rows, cols = slice(ty * PHOTO_TILE, (ty + 1) * PHOTO_TILE), slice(tx * PHOTO_TILE, (tx + 1) * PHOTO_TILE)
@@ -672,15 +684,32 @@ def step_photo(out: str, workers: int) -> None:
                         put(db, z, cx * f + tx, cy * f + ty, data)
                         per_zoom[str(z)]["tiles"] += 1
                         per_zoom[str(z)]["bytes"] += len(data)
+        return (pixels, weight)
+
+    # The coarsest zoom's pictures, laid out inside the far tile each falls in, for the far zooms.
+    far = PHOTO_FAR_ZOOMS[0]
+    wide = (1 << (coarsest - far)) * PHOTO_TILE
+    tops: dict[tuple[int, int], tuple[np.ndarray, np.ndarray]] = {}
+    for (cx, cy), (kept, kept_weight) in sorted(small.items()):
+        pixels, weight = cut_down(kept.astype(np.float32), kept_weight.astype(np.float32) / 255, PHOTO_BLOCK_Z, coarsest, cx, cy)
+        key = (cx * PHOTO_TILE // wide, cy * PHOTO_TILE // wide)
+        if key not in tops:
+            tops[key] = (np.zeros((wide, wide, 3), np.float32), np.zeros((wide, wide), np.float32))
+        row, col = cy * PHOTO_TILE % wide, cx * PHOTO_TILE % wide
+        tops[key][0][row:row + PHOTO_TILE, col:col + PHOTO_TILE] = pixels
+        tops[key][1][row:row + PHOTO_TILE, col:col + PHOTO_TILE] = weight
+    for (cx, cy), (pixels, weight) in sorted(tops.items()):
+        cut_down(pixels, weight, coarsest, far, cx, cy)
     db.commit()
     bounds = area_bounds_lonlat()
     finish(db, {
         "name": "terrain-prototype-squamish-photo-2024", "format": "webp", "type": "baselayer",
-        "bounds": ",".join(f"{v:.6f}" for v in bounds), "minzoom": str(PHOTO_ZOOMS[0]), "maxzoom": str(PHOTO_FINE_Z),
+        "bounds": ",".join(f"{v:.6f}" for v in bounds), "minzoom": str(PHOTO_FAR_ZOOMS[0]), "maxzoom": str(PHOTO_FINE_Z),
         "center": centre_text(CORE_Z),
         "attribution": "Air photo: District of Squamish, Aerial Photo 2024",
     })
-    core = box_bounds_lonlat(PHOTO_FINEST_CORE)
+    firsts, lasts = zip(*PHOTO_FINEST_ROWS.values())
+    core = box_bounds_lonlat((min(firsts), max(lasts), min(PHOTO_FINEST_ROWS), max(PHOTO_FINEST_ROWS)))
     finish(core_db, {
         "name": "terrain-prototype-squamish-photo-2024-core", "format": "webp", "type": "baselayer",
         "bounds": ",".join(f"{v:.6f}" for v in core), "minzoom": str(PHOTO_FINEST_Z), "maxzoom": str(PHOTO_FINEST_Z),
@@ -692,12 +721,15 @@ def step_photo(out: str, workers: int) -> None:
         return round(2 * ORIGIN / (1 << z) / PHOTO_TILE * math.cos(math.radians((bounds[1] + bounds[3]) / 2)), 3)
 
     write_record(out, "photo", {
-        "tiles": {"size": PHOTO_TILE, "format": "webp", "quality": PHOTO_QUALITY, "zooms": [*PHOTO_ZOOMS, PHOTO_FINE_Z, PHOTO_FINEST_Z], "perZoom": per_zoom},
+        "tiles": {"size": PHOTO_TILE, "format": "webp", "quality": PHOTO_QUALITY, "zooms": [*PHOTO_FAR_ZOOMS, *PHOTO_ZOOMS, PHOTO_FINE_Z, PHOTO_FINEST_Z], "perZoom": per_zoom},
         "blocks": len(jobs),
         "finerBlocks": len(fine_jobs),
         "shareOfBlocksWithPicture": round(float(np.mean(covered)), 4),
         "groundMetresPerPixel": {str(PHOTO_ZOOMS[-1]): ground(PHOTO_ZOOMS[-1]), str(PHOTO_FINE_Z): ground(PHOTO_FINE_Z), str(PHOTO_FINEST_Z): ground(PHOTO_FINEST_Z)},
-        "finestCore": {"tileZoom": CORE_Z, "tileRange": list(PHOTO_FINEST_CORE), "boundsLonLat": [round(v, 6) for v in core]},
+        "finestArea": {
+            "tileZoom": CORE_Z, "tiles": sum(last - first + 1 for first, last in PHOTO_FINEST_ROWS.values()),
+            "rows": {str(y): list(xs) for y, xs in PHOTO_FINEST_ROWS.items()}, "boundsLonLat": [round(v, 6) for v in core],
+        },
         "mbtiles": {"path": os.path.basename(mbtiles), "byteLength": os.path.getsize(mbtiles), "sha256": sha256_file(mbtiles)},
         "coreMbtiles": {"path": os.path.basename(core_mbtiles), "byteLength": os.path.getsize(core_mbtiles), "sha256": sha256_file(core_mbtiles)},
     }, started, clock)

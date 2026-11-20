@@ -25,8 +25,10 @@ ground.
   laser survey where a survey flight passed, either the top of whatever stands
   there (treetops and roofs) or the bare ground beneath, with the air photo
   laid over it at about 10 cm for each pixel, and at about 5 cm, the photo's
-  own grid, over a core of about 15 square kilometres downtown. A reader can pick out single trees, road
-  markings, garden beds and the lines of a parking space.
+  own grid, over the settled valley from Brackendale to the foot of the
+  Stawamus Chief, about 82 square kilometres. A reader can pick out single
+  trees, road markings, garden beds and the lines of a parking space. From far
+  off, in the whole-place view, the photo shows too.
 - **Photos from the ground.** Dots on the map mark photographs that volunteers
   took at ground level and gave to two open archives. Choosing a dot opens the
   photo under the map. Nine of them are all-round photos a reader can look
@@ -54,7 +56,7 @@ the way.
 | | Whole place | Close-up area | Photos from the ground | Google Street View in a frame |
 | --- | --- | --- | --- | --- |
 | Shape of the land | 30 m | 1 m survey, stored at about 0.77 m | not a shape: a photograph | not a shape: a photograph |
-| Picture | none | air photo, about 10 cm for each pixel, about 5 cm over a core of about 15 square kilometres downtown | the photographer's own picture: 11,904 pixels around for an all-round photo, up to 2,048 across for a road photo | Google's own panoramas, at Google's own sharpness |
+| Picture | none | air photo, about 10 cm for each pixel, about 5 cm over the settled valley, about 82 square kilometres | the photographer's own picture: 11,904 pixels around for an all-round photo, up to 2,048 across for a road photo | Google's own panoramas, at Google's own sharpness |
 | Seen from | above | above | a person's or a car's height | a car's height |
 | Where | the whole place | everywhere the air photo reaches: about 290 square kilometres of picture inside about 360 | 101 photos so far: 9 at one spot under the trees, 92 along roads | wherever Google has driven; nothing away from roads |
 | Whose | the Site's copy of public data | the Site's copy of public data | the Site's copy, share-alike | Google's, shown by Google's page, not the Site's data |
@@ -64,8 +66,11 @@ District describes the photo as a 7.5 cm and 15 cm composite and serves all of
 it on one grid of 0.075 units, about 5 cm on the ground at this latitude. The
 first build stored it at about 19 cm over a box of about 50 square kilometres.
 This build stores it at about 10 cm everywhere the photo has a picture, and at
-about 5 cm, the service's own grid, over a core of about 15 square kilometres
-downtown. A measured comparison
+about 5 cm, the service's own grid, over the settled valley: 33 map tiles,
+about 82 square kilometres, taking in Brackendale, Garibaldi Highlands,
+Garibaldi Estates, downtown, Valleycliffe and the foot of the Stawamus Chief.
+An earlier build kept that level over about 15 square kilometres downtown
+only. A measured comparison
 at six spots in the first box (downtown, the Stawamus Chief, the estuary, and
 its north, west and south) found that each finer level adds picture the coarser
 one lacks, and a second measure at seven spots from Furry Creek to Paradise
@@ -358,8 +363,9 @@ be run alone with `--step`:
   the area at a time, copies the far tiles, and cuts zooms 12 to 16 for the
   close-up area (height rounded to a sixteenth of a metre), filling survey gaps
   from the 30 m window;
-- `photo` cuts the blocks into 256-pixel WebP tiles: zooms 12 to 20 in one
-  set, and zoom 21 in a set of its own, because a map draws nothing where a set
+- `photo` cuts the blocks into 256-pixel WebP tiles: zooms 10 to 20 in one
+  set (10 and 11 are there so the whole-place view shows the photo), and zoom
+  21 in a set of its own, because a map draws nothing where a set
   has no tile and cannot fall back to a coarser one. It refuses to run while a
   block the masks call for is missing;
 - `height` subtracts ground from surface and cuts classed, paletted PNG tiles
@@ -439,12 +445,12 @@ Close-up area (the wider build of 2026-11-20):
 | Surface heights | −2.19 m to 1,709.71 m |
 | Ground heights | −30.4 m to 1,709.38 m |
 | Finest pixels with no survey | surface 233,795,898 and ground 233,922,049, of 608,174,080 (38%) |
-| Photo download | 500 masks and 2,095 blocks in 4 hours 27 minutes, about 6 to 10 seconds a block; five answers dropped and asked for again. With the 686 blocks of the first builds, 2,781 blocks are on disk: 525 at zoom 15, 1,872 at zoom 16 and 384 at zoom 17. 55 zoom-15 tiles have no picture and were not asked for. |
-| Photo step | 963 s with six worker processes. The largest process held 0.96 GB; swap did not grow. |
-| Photo tiles | 733,601: zooms 12 to 19, 159,774; zoom 20, 475,523; zoom 21 (core only), 98,304 |
+| Photo download | 500 masks and 2,095 blocks in 4 hours 27 minutes, about 6 to 10 seconds a block; five answers dropped and asked for again. Then, for the finest level over the settled valley, 1,728 more zoom-17 blocks in 2 hours 29 minutes, one request at a time, about 5 seconds a block; one answer dropped and asked for again. With the 686 blocks of the first builds, 4,509 blocks are on disk: 525 at zoom 15, 1,872 at zoom 16 and 2,112 at zoom 17. 55 zoom-15 tiles have no picture and were not asked for. |
+| Photo step | 1,547 s with six worker processes. The largest process held 0.91 GB; swap did not grow. |
+| Photo tiles | 1,175,510: zooms 10 and 11, 9; zooms 12 to 19, 159,774; zoom 20, 475,523; zoom 21 (settled valley only), 540,204 |
 | Picture | 288.4 of the 361.9 square kilometres, measured from the masks. 525 of 580 zoom-15 tiles hold some picture; 356 are wholly pictured. |
 | Ground size of one photo pixel | 0.193 m at zoom 19, 0.096 m at zoom 20, 0.048 m at zoom 21 |
-| Core at zoom 21 | Zoom 14 tiles x 2586 to 2587, y 5576 to 5578: longitude −123.178711 to −123.134766, latitude 49.681847 to 49.724479, about 15 square kilometres |
+| Finest level, zoom 21 | 33 zoom-14 tiles in nine rows, y 5571 to 5579, each from x 2586 to 2588 or 2589, inside longitude −123.178711 to −123.09082 and latitude 49.667628 to 49.79545: about 82 square kilometres. An earlier build kept six tiles, about 15 square kilometres. |
 | Height step | 186 s |
 | Height tiles | 7,910 (zoom 12: 15, zoom 13: 42, zoom 14: 112, zoom 15: 407, zoom 16: 1,515, zoom 17: 5,819) |
 | First box, for comparison | 20 zoom-14 tiles, 50 square kilometres, 206,500 photo tiles, 2.1 GB of archives |
@@ -456,13 +462,17 @@ Archives in `public/prototype/terrain/`:
 | `squamish-dtm.pmtiles` | 34,512,766 |
 | `squamish-surface.pmtiles` | 634,469,074 |
 | `squamish-ground.pmtiles` | 434,748,301 |
-| `squamish-photo-2024.pmtiles` | 8,849,322,665 |
-| `squamish-photo-2024-core.pmtiles` | 539,529,169 |
+| `squamish-photo-2024.pmtiles` | 8,798,209,060 |
+| `squamish-photo-2024-core.pmtiles` | 3,974,500,752 |
 | `squamish-height.pmtiles` | 51,662,249 |
-| Total | 10,544,244,224 |
+| Total | 13,928,102,202 |
+
+The elevation and height archives were not rebuilt for the settled-valley
+round: their build records name the script as it stood one commit earlier,
+whose elevation and height steps are the same.
 
 The downloaded photo blocks, kept beside the build output and not served, are
-about 25 GB.
+about 32 GB.
 
 Ground-level photos in `public/prototype/terrain/ground/`:
 
@@ -481,12 +491,14 @@ survey, rounded: under 2 m 19%, 2 to 10 m 20%, 10 to 20 m 26%, 20 to 30 m 22%,
 ## What was checked
 
 On a production build with the flag on, served locally, in Chromium, on
-2026-11-19 and 2026-11-20 (the wider area and the Street View frame on
-2026-11-20):
+2026-11-19 and 2026-11-20 (the wider area, the Street View frame and the
+finest level over the settled valley on 2026-11-20):
 
 - the flagged production build completes, and the view reaches its ready state
   in English and in French;
-- all six archives are served with range requests (the largest is 8.85 GB);
+- all six archives are served with range requests (the largest is 8.80 GB);
+- in the whole-place view, before any zoom, the photo is drawn along the
+  valley (it was not, before zooms 10 and 11 were added);
 - the dashed line follows the stepped edge of the wider area, and from far off
   the photo fills the valley from Howe Sound to north of Brackendale;
 - in Brackendale, about 8 km north of downtown and outside the first box,
@@ -498,7 +510,13 @@ On a production build with the flag on, served locally, in Chromium, on
   Height above ground, Forest loss and Ground-level photos each switch their
   layer, and the height key appears with the height colouring and reads the
   same classes the tiles were built with;
-- looking straight down inside the core, at the closest zoom, the zoom-21 tiles
+- in Garibaldi Estates, about 5 km north of downtown and outside the earlier
+  core, looking straight down at the closest zoom, the zoom-21 tiles are
+  requested and drawn (29 requests of that archive, none failing): a boat on
+  its trailer, a camper, a swimming pool and single cars in a driveway can be
+  told apart. Google's frame, asked for there, showed Dales Place, the same
+  cul-de-sac;
+- looking straight down downtown, at the closest zoom, the zoom-21 tiles
   are requested and drawn: the lines of parking spaces, a utility pole and its
   wires, and single clumps of grass can be told apart. The camera stops at zoom
   20, where those tiles are drawn one pixel for one pixel; closer would only
@@ -546,6 +564,12 @@ On a production build with the flag on, served locally, in Chromium, on
   persistent identifiers, contrast, bilingual, loss vocabulary, CI coverage,
   source review, accessibility), 63 place-page and gate unit tests, and the
   whole unit suite (2,235 tests: 2,231 pass, 4 are skipped as before) pass.
+  One of those tests,
+  `tests/volume-source-redistribution.test.mjs`, reads every file under
+  `public/` whole and cannot open one larger than 2 GiB, so on a machine that
+  holds the two photo archives it fails with "file too large" until they are
+  moved aside. It passes with them moved aside, and in a checkout without the
+  archives. The checker was left as it is.
 
 Not checked: a real phone or touch device (dragging a photo with a finger),
 Safari or Firefox, a slow connection, a screen reader, keyboard-only use of the
@@ -599,10 +623,13 @@ Brackendale and from far off).
   mountainsides or the sea. There the ground is the 30 m model with the air
   photo laid over it, so the treetop surface and the height colouring stop at
   a visible edge and the photo looks smeared on steep ground.
-- **The finest photo level covers the downtown core only,** about 15 square
-  kilometres. Outside it the photo is stored at about 10 cm, coarser than the
-  5 cm grid it is served on, although the photo is as sharp there. The two
-  photo archives are 9.4 GB together.
+- **The finest photo level covers the settled valley only,** about 82 square
+  kilometres from Brackendale to the Stawamus Chief. Outside it (Paradise
+  Valley, the Cheakamus, Britannia Beach, Furry Creek and the mountainsides)
+  the photo is stored at about 10 cm, coarser than the 5 cm grid it is served
+  on, although the photo is as sharp there. Storing the finest level over the
+  whole photo would take roughly 7,000 more requests of the District's server
+  and tens of gigabytes. The two photo archives are 12.8 GB together.
 - **Loss patches are still 30 m cells.** They stay blocky however far in the
   reader goes, and at this detail a patch can sit on a roof or a road. A patch
   marks forest detected as lost at least once from 1984 to 2022, and some of it
@@ -645,7 +672,7 @@ Brackendale and from far off).
    Mapillary is the largest open archive and needs a free account, which is the
    owner's to create. Its photos are CC BY-SA 4.0, like the two used here.
 5. **An established survey year,** or wording a reviewer accepts without one.
-6. **Hosting for large archives.** One place is about 10.5 GB of archives
+6. **Hosting for large archives.** One place is about 13.9 GB of archives
    and 0.5 GB of ground-level photos. Air photos this fine exist only where a
    municipality publishes them, so most places could have the 1 m shape and
    height but no picture. A province is a different size of job and needs its

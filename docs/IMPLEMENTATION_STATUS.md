@@ -730,8 +730,8 @@ On 2026-11-19 the owner then asked for detail as high as Google Street View,
 at no cost. Three things were added on 2026-11-20:
 
 - the air photo at all the detail it has: about 10 cm over the close-up area
-  and about 5 cm, the grid the District serves it on, over a core of about
-  15 square kilometres downtown;
+  and about 5 cm, the grid the District serves it on, at first over a core
+  of about 15 square kilometres downtown;
 - photographs taken on the ground by volunteers, from two open archives under
   CC BY-SA 4.0: 9 all-round photos from Panoramax at one spot under the trees,
   and 92 single road photos from KartaView (361 more are listed; the archive's
@@ -750,7 +750,7 @@ box and nothing showed Street View's own detail. Two more things were done on
   145 map tiles, about 360 square kilometres, with a picture over about 290 of
   them, from Britannia Beach to Paradise Valley. The 1 m survey, the height
   colouring and the 10 cm photo now cover all of it; 38% of it has no survey
-  and keeps the 30 m ground under the photo. The archives are about 10.5 GB.
+  and keeps the 30 m ground under the photo.
 - **Google's own Street View can be shown inside the view,** in a frame under
   the map, at the panorama nearest the middle of the map. It loads only when
   the reader presses a button. Where Google has driven, this is Street View
@@ -760,12 +760,20 @@ box and nothing showed Street View's own detail. Two more things were done on
   the released content security policy is unchanged. The frame's address is
   one Google serves without a key but does not document for other sites.
 
+A third round on 2026-11-20 took the photo's finest level, about 5 cm, from
+the downtown core to the whole settled valley (33 map tiles, about 82 square
+kilometres, from Brackendale to the foot of the Stawamus Chief), and added two
+far zoom levels so the whole-place view shows the photo. The six archives are
+now about 13.9 GB. The Site's own picture still stops at the photo's grid,
+seen from above; Street View's detail is still reached only through Google's
+frame.
+
 Open before any release: the owner's approval of five sources, the share-alike
 condition of the photo archives, a decision on showing homes, vehicles and
 people at this detail, a decision on Google (allowing its frame in the released
 content security policy; the key-less address or the free, keyed Maps Embed
 API; privacy wording), the survey's flight year (not established), hosting for
-about 11 GB for one place, a reviewed French text, and an accessibility pass.
+about 14 GB for one place, a reviewed French text, and an accessibility pass.
 Mapillary, the largest open archive of street-level photos, needs an account
 that is the owner's to create. The other places on the Site have no close-up:
 air photos this fine exist only where a municipality publishes them. The

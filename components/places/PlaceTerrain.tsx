@@ -22,8 +22,8 @@ import { GroundPhoto, type GroundPhotoEntry, type GroundPhotoText } from "./Grou
  * is not loaded until it is chosen.
  *
  * The air photo is two sources for the same reason a missing tile draws nothing:
- * its finest level covers only a core, so it sits in an archive of its own, with
- * bounds, above the level that covers the whole close-up area.
+ * its finest level covers only the settled valley, so it sits in an archive of
+ * its own, with bounds, above the level that covers the whole close-up area.
  *
  * Ground-level photos are dots on the map. Choosing one opens the photograph
  * itself under the map (GroundPhoto). The list comes from an index beside the
