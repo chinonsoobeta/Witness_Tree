@@ -714,12 +714,26 @@ sheet spec still covers ridings only, not the new community and region sheets.
 
 A tilted, true-height view of one place (Squamish) with the detected-loss
 patches laid over a 30 m ground model. It is a prototype: off unless a build
-sets `NEXT_PUBLIC_TERRAIN_PROTOTYPE=1`, built from an elevation source the owner
-has not admitted (Natural Resources Canada's MRDEM-30, Open Government Licence
-– Canada, part produced from Copernicus WorldDEM-30), and the archive is not
-checked in. It is not released and makes no production claim. The verified
-licence facts, the build figures, what was checked and what a release would
-need are in [the prototype record](TERRAIN_PROTOTYPE.md).
+sets `NEXT_PUBLIC_TERRAIN_PROTOTYPE=1`, built from sources the owner has not
+admitted, and its archives are not checked in. It is not released and makes no
+production claim.
+
+On 2026-11-19 the owner asked for the finest detail free data allows. A
+close-up area of about 50 square kilometres over the middle of Squamish now has
+a 1 m laser survey of the ground and of the treetops and roofs (Natural
+Resources Canada's HRDEM Mosaic, Open Government Licence – Canada), the
+District of Squamish's 2024 air photo at about 19 cm (Open Government Licence –
+Squamish), and a colouring of height above ground. It is a view from above:
+no free source has ground-level photographs of forest land. The far ground is
+still MRDEM-30 (Open Government Licence – Canada, part produced from Copernicus
+WorldDEM-30).
+
+Open before any release: the owner's approval of three sources, a decision on
+showing homes and vehicles at this detail, the survey's flight year (not
+established), hosting for about 650 MB for one box of one place, a reviewed
+French text, and an accessibility pass. The verified licence facts, the build
+figures, what was checked and the limits are in
+[the prototype record](TERRAIN_PROTOTYPE.md).
 
 ### Home page map button, 2026-11-19
 

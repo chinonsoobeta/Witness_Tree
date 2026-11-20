@@ -6257,6 +6257,11 @@ dd > a:only-child {
 .place-terrain-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .place-terrain-controls .btn { min-height: 44px; padding: 0 16px; }
 .place-terrain-toggle { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-size: 0.95rem; }
+.place-terrain-group { display: flex; flex-wrap: wrap; align-items: center; gap: 0 16px; margin: 0; padding: 0 12px; border: 1px solid var(--rule-strong); min-width: 0; }
+.place-terrain-group legend { padding: 0 4px; font-size: 0.8rem; color: var(--muted); }
+.place-terrain-dash { display: inline-block; width: 18px; height: 0; border-top: 2px dashed var(--ink); vertical-align: middle; }
+.place-terrain-heights { display: flex; flex-direction: column; gap: 4px; }
+.place-terrain-height-classes { display: flex; flex-wrap: wrap; gap: 4px 16px; }
 .place-terrain-hint { color: var(--muted); }
 .place-terrain-badge { margin-left: 8px; padding: 2px 8px; border: 1px solid var(--rule-strong); font-size: 0.75rem; letter-spacing: 0.04em; }
 @media print { .place-terrain-frame, .place-terrain-controls { display: none; } }

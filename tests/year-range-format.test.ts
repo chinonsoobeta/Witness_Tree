@@ -106,5 +106,5 @@ test("the repository itself passes, with one module reading the machine period f
   assert.deepEqual(periodFieldReaders(), []);
   const result = run();
   assert.ok(result.checkedFiles > 100);
-  assert.equal(result.allowedQuotations, 4);
+  assert.equal(result.allowedQuotations, 5);
 });

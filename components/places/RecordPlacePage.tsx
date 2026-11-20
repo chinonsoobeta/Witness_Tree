@@ -26,7 +26,7 @@ import { yearlyRows } from "@/lib/place-pages/yearly";
 import { PlaceYearlyChart } from "./PlaceYearlyChart";
 import { PlaceMap } from "./PlaceMap";
 import { PlaceTerrain } from "./PlaceTerrain";
-import { TERRAIN_COPY, terrainPrototype } from "@/lib/place-pages/terrain-prototype";
+import { TERRAIN_COLOURS, TERRAIN_COPY, terrainPrototype, terrainText } from "@/lib/place-pages/terrain-prototype";
 import { mapHash, placeMapView } from "@/lib/place-pages/map-view";
 import { RECEIPT_SIZE, receiptAlt, receiptPath } from "@/lib/share/meta";
 import { localizedAlternates } from "@/lib/site-metadata";
@@ -358,10 +358,10 @@ export function RecordPlacePage({ locale, record }: Readonly<{ locale: Locale; r
                 minZoom: EXPLORE_PER_CELL_SPAN_LAYER.minZoom,
                 maxZoom: EXPLORE_PER_CELL_SPAN_LAYER.maxZoom,
               }}
-              colours={{ ground: EXPLORE_MAP_COLOURS.ground, outline: EXPLORE_MAP_COLOURS.ink, patch: EXPLORE_MAP_COLOURS.neither, shadow: EXPLORE_MAP_COLOURS.ink }}
+              colours={{ ground: EXPLORE_MAP_COLOURS.ground, outline: EXPLORE_MAP_COLOURS.ink, patch: EXPLORE_MAP_COLOURS.neither, shadow: EXPLORE_MAP_COLOURS.ink, ...TERRAIN_COLOURS }}
+              heights={terrainText(locale, name).heights}
               text={{
-                ...TERRAIN_COPY[locale],
-                label: TERRAIN_COPY[locale].label(name),
+                ...terrainText(locale, name).text,
                 attribution: [TERRAIN_COPY[locale].attribution, overlay.attribution?.[locale], EXPLORE_PER_CELL_LAYER.attribution[locale]].filter(Boolean).join(" "),
               }}
             />
