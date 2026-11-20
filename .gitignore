@@ -37,6 +37,9 @@ yarn-error.log*
 
 /dist/
 /.wrangler/
+
+# terrain prototype: the elevation archive is built locally, never checked in
+/public/prototype/
 *.tsbuildinfo
 /outputs/
 /work/

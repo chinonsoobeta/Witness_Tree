@@ -6250,6 +6250,35 @@ dd > a:only-child {
 .place-map-key { display: inline-flex; align-items: center; gap: 6px; }
 .place-map-swatch { display: inline-block; width: 14px; height: 14px; border: 1px solid var(--ink); }
 @media print { .place-map-frame { display: none; } }
+/* PROTOTYPE: the tilted terrain view on a place page (components/places/PlaceTerrain.tsx). */
+.place-terrain { margin: 0; display: flex; flex-direction: column; gap: 8px; max-width: 960px; }
+.place-terrain-frame { aspect-ratio: 4 / 3; width: 100%; max-height: 640px; border: 1px solid var(--rule-strong); background: var(--map-ground); }
+.place-terrain[data-state="static"] .place-terrain-frame, .place-terrain[data-state="failed"] .place-terrain-frame { display: none; }
+.place-terrain-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.place-terrain-controls .btn { min-height: 44px; padding: 0 16px; }
+.place-terrain-toggle { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-size: 0.95rem; }
+.place-terrain-group { display: flex; flex-wrap: wrap; align-items: center; gap: 0 16px; margin: 0; padding: 0 12px; border: 1px solid var(--rule-strong); min-width: 0; }
+.place-terrain-group legend { padding: 0 4px; font-size: 0.8rem; color: var(--muted); }
+.place-terrain-dash { display: inline-block; width: 18px; height: 0; border-top: 2px dashed var(--ink); vertical-align: middle; }
+.place-terrain-heights { display: flex; flex-direction: column; gap: 4px; }
+.place-terrain-height-classes { display: flex; flex-wrap: wrap; gap: 4px 16px; }
+.place-terrain-street { display: flex; flex-direction: column; gap: 8px; }
+.place-terrain-street-frame { display: block; width: 100%; aspect-ratio: 16 / 10; max-height: 600px; border: 1px solid var(--rule-strong); background: var(--map-ground); }
+.place-terrain-leave { display: flex; flex-direction: column; gap: 4px; margin: 0; font-size: var(--text-small); color: var(--muted); }
+.place-terrain-leave a { align-self: flex-start; min-height: 44px; display: inline-flex; align-items: center; font-size: 1rem; }
+.place-terrain-dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--surface); outline: 1px solid var(--rule-strong); vertical-align: middle; }
+.place-ground { display: flex; flex-direction: column; gap: 8px; padding: 12px; border: 1px solid var(--rule-strong); background: var(--surface); }
+.place-ground-view { position: relative; width: 100%; aspect-ratio: 16 / 9; max-height: 620px; background: var(--ink); }
+.place-ground-view canvas, .place-ground-view img { display: block; width: 100%; height: 100%; }
+.place-ground-view img { object-fit: contain; }
+/* A sideways drag turns the photo; an up-and-down drag still scrolls the page on a touch screen. */
+.place-ground-view canvas { cursor: grab; touch-action: pan-y; }
+.place-ground-view canvas:active { cursor: grabbing; }
+.place-ground-status { position: absolute; left: 8px; bottom: 8px; padding: 4px 8px; background: var(--surface); color: var(--ink); font-size: var(--text-small); }
+.place-ground-credit { display: flex; flex-direction: column; gap: 4px; margin: 0; font-size: var(--text-small); color: var(--muted); }
+.place-terrain-hint { color: var(--muted); }
+.place-terrain-badge { margin-left: 8px; padding: 2px 8px; border: 1px solid var(--rule-strong); font-size: 0.75rem; letter-spacing: 0.04em; }
+@media print { .place-terrain-frame, .place-terrain-controls, .place-terrain-street-frame { display: none; } }
 /* "Embed this figure" on a place page: the iframe code in a read-only box, and its terms. */
 .place-embed { display: flex; flex-direction: column; gap: 8px; }
 .place-embed .eyebrow, .place-embed p { margin: 0; }

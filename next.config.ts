@@ -1,5 +1,15 @@
 import type { NextConfig } from "next";
 
+/*
+ * PROTOTYPE. The terrain view (docs/TERRAIN_PROTOTYPE.md) can show Google's own
+ * Street View page in a frame when the reader asks for it. Only a build that
+ * sets NEXT_PUBLIC_TERRAIN_PROTOTYPE=1 allows that frame, and no released build
+ * sets it: without the flag the policy has no frame-src, so default-src 'self'
+ * governs frames exactly as before. Allowing it in a release is the owner's
+ * decision.
+ */
+const PROTOTYPE_FRAME_SRC = process.env.NEXT_PUBLIC_TERRAIN_PROTOTYPE === "1" ? ["frame-src https://www.google.com"] : [];
+
 function contentSecurityPolicy(frameAncestors: string, scriptSrc: string) {
   return [
     "default-src 'self'",
@@ -7,6 +17,8 @@ function contentSecurityPolicy(frameAncestors: string, scriptSrc: string) {
     "connect-src 'self' https://d3g1406o0uekin.cloudfront.net",
     "font-src 'self'",
     "form-action 'self'",
+    // Not on a policy that refuses scripts (a place's embedded figure): it shows no frame.
+    ...(scriptSrc === "'none'" ? [] : PROTOTYPE_FRAME_SRC),
     `frame-ancestors ${frameAncestors}`,
     "img-src 'self' data: blob:",
     "object-src 'none'",

@@ -58,6 +58,11 @@ const HYPHEN_ALLOWED = [
     fragment: "Couverture terrestre annuelle à haute résolution des forêts du Canada (1984-2022)",
     reason: "French OGL attribution quoting the NRCan product title as the licensor publishes it.",
   },
+  {
+    fragment: "Copernicus WorldDEM-30 © DLR e.V. 2010-2014",
+    reason:
+      "Terrain prototype only. The Copernicus WorldDEM-30 licence, article 6(b), gives the notice to show word for word; its two year ranges are part of it.",
+  },
 ];
 
 /*

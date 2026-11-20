@@ -710,6 +710,76 @@ transitions before the axe scan: with the theme switch in the footer, the
 scan read a colour between two states. The settled colours pass. The riding
 sheet spec still covers ridings only, not the new community and region sheets.
 
+### Terrain view prototype (branch `prototype/terrain-view` only)
+
+A tilted, true-height view of one place (Squamish) with the detected-loss
+patches laid over a 30 m ground model. It is a prototype: off unless a build
+sets `NEXT_PUBLIC_TERRAIN_PROTOTYPE=1`, built from sources the owner has not
+admitted, and its archives are not checked in. It is not released and makes no
+production claim.
+
+On 2026-11-19 the owner asked for the finest detail free data allows. A
+close-up area of about 50 square kilometres over the middle of Squamish now has
+a 1 m laser survey of the ground and of the treetops and roofs (Natural
+Resources Canada's HRDEM Mosaic, Open Government Licence – Canada), the
+District of Squamish's 2024 air photo (Open Government Licence – Squamish), and
+a colouring of height above ground. The far ground is still MRDEM-30 (Open
+Government Licence – Canada, part produced from Copernicus WorldDEM-30).
+
+On 2026-11-19 the owner then asked for detail as high as Google Street View,
+at no cost. Three things were added on 2026-11-20:
+
+- the air photo at all the detail it has: about 10 cm over the close-up area
+  and about 5 cm, the grid the District serves it on, at first over a core
+  of about 15 square kilometres downtown;
+- photographs taken on the ground by volunteers, from two open archives under
+  CC BY-SA 4.0: 9 all-round photos from Panoramax at one spot under the trees,
+  and 92 single road photos from KartaView (361 more are listed; the archive's
+  photo store stopped answering partway through the download and had not
+  answered again by the end of 2026-11-20). They are shown as dots on the map
+  and open under it, the all-round ones in a viewer written for this, with no
+  new dependency;
+- a link that opens Google's own Street View at the middle of the map. It
+  leaves the Site.
+
+A check then found that this did not meet the request: the close-up was one
+box and nothing showed Street View's own detail. Two more things were done on
+2026-11-20:
+
+- **The close-up was widened to everywhere the District's photo reaches:**
+  145 map tiles, about 360 square kilometres, with a picture over about 290 of
+  them, from Britannia Beach to Paradise Valley. The 1 m survey, the height
+  colouring and the 10 cm photo now cover all of it; 38% of it has no survey
+  and keeps the 30 m ground under the photo.
+- **Google's own Street View can be shown inside the view,** in a frame under
+  the map, at the panorama nearest the middle of the map. It loads only when
+  the reader presses a button. Where Google has driven, this is Street View
+  itself, so the request is met there in that way only: by Google's page, not
+  by the Site's data. `next.config.ts` allows the frame
+  (`frame-src https://www.google.com`) only when the prototype flag is set, so
+  the released content security policy is unchanged. The frame's address is
+  one Google serves without a key but does not document for other sites.
+
+A third round on 2026-11-20 took the photo's finest level, about 5 cm, from
+the downtown core to the whole settled valley (33 map tiles, about 82 square
+kilometres, from Brackendale to the foot of the Stawamus Chief), and added two
+far zoom levels so the whole-place view shows the photo. The six archives are
+now about 13.9 GB. The Site's own picture still stops at the photo's grid,
+seen from above; Street View's detail is still reached only through Google's
+frame.
+
+Open before any release: the owner's approval of five sources, the share-alike
+condition of the photo archives, a decision on showing homes, vehicles and
+people at this detail, a decision on Google (allowing its frame in the released
+content security policy; the key-less address or the free, keyed Maps Embed
+API; privacy wording), the survey's flight year (not established), hosting for
+about 14 GB for one place, a reviewed French text, and an accessibility pass.
+Mapillary, the largest open archive of street-level photos, needs an account
+that is the owner's to create. The other places on the Site have no close-up:
+air photos this fine exist only where a municipality publishes them. The
+verified licence facts, the build figures, what was checked and the limits are
+in [the prototype record](TERRAIN_PROTOTYPE.md).
+
 ### Home page map button, 2026-11-19
 
 The owner asked for an explicit call to the map at the top of the home page.
