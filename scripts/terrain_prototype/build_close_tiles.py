@@ -4,8 +4,9 @@ for the middle of one place.
 PROTOTYPE. Not a release, not an admitted source, not production eligible.
 
 build_terrain_tiles.py makes the far view from the 30 m national model. This
-script adds a close-up area inside it (central Squamish, about 6 km by 8 km)
-from three finer sources, and writes four tile sets:
+script adds a close-up area inside it (every part of Squamish the District's
+air photo reaches, about 290 square kilometres) from three finer sources, and
+writes five tile sets:
 
 surface, ground
     Elevation. Zooms 8 to 11 are copied from the 30 m build, so the far land is
@@ -23,10 +24,10 @@ photo, photo-core
     read from the District's public image service and stored as 256-pixel WebP
     tiles. The photo set holds zooms 12 to 20 over the whole close-up area;
     zoom 20 is about 10 cm on the ground. The photo-core set holds zoom 21,
-    the service's own pixel, about 5 cm, over a core of six zoom-14 tiles. The
-    core is a set of its own because a map draws nothing where a set has no
-    tile, rather than a coarser one. Where the photo has no picture the tile
-    is transparent.
+    the service's own pixel, about 5 cm, over a core of six zoom-14 tiles
+    (downtown). The core is a set of its own because a map draws nothing where
+    a set has no tile, rather than a coarser one. Where the photo has no
+    picture there is no tile, or a transparent one.
 
 height
     The surface model minus the terrain model, in classes: how tall whatever
@@ -41,12 +42,18 @@ Steps, each of which can be run alone with --step:
 
 The photo is fetched as blocks of 4,096 pixels: one for each zoom-15 tile
 (zooms 12 to 19 are cut from these), then one for each zoom-16 tile outside
-the core and each zoom-17 tile inside it (zooms 20 and 21). A block the photo
-does not reach is not asked for.
+the core and each zoom-17 tile inside it (zooms 20 and 21). Each zoom-15 tile
+is first asked for as a 256-pixel picture whose transparency says where the
+photo has none; a block the photo does not reach is not asked for.
+
+The lidar mosaic is saved one row of the area at a time, four rows at once,
+each within a 256 MB limit, and a row that fails is asked for again.
 
 Memory: lidar windows are read in blocks with a 128 MB cache in each worker.
 A photo worker holds one 4,096-pixel block and its smaller copies, about
-150 MB, or about 400 MB for a block the photo only partly covers.
+150 MB, or about 400 MB for a block the photo only partly covers. The main
+process keeps one 256-pixel copy of every zoom-15 block, as bytes, for the
+three coarsest zooms: about 17 MB for each zoom-12 tile the area touches.
 
 Run with a Python that has GDAL and NumPy:
     python -I build_close_tiles.py --out ~/Witness_Tree-terrain-prototype/squamish-close \
@@ -65,6 +72,7 @@ import sys
 import time
 import urllib.parse
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from multiprocessing import Pool
 
@@ -81,10 +89,22 @@ HRDEM_URLS = {"surface": f"{HRDEM}/2_4-mosaic-1m-dsm.tif", "ground": f"{HRDEM}/2
 PHOTO_SERVICE = "https://portal.squamish.ca/server/rest/services/Orthophoto_2024/ImageServer"
 AGENT = "terrain-prototype-build/1.0"
 
-# The close-up area, as zoom-14 tiles (first x, last x, first y, last y):
-# downtown Squamish, the estuary, the Squamish River mouth and the Stawamus Chief.
+# The close-up area: every zoom-14 tile the District's air photo reaches, 145 of
+# them, about 290 square kilometres. One row for each tile y, with the first and
+# last tile x. Found on 2026-11-20 by asking the photo service for a 64-pixel
+# picture of each of the 280 zoom-14 tiles in its extent and keeping the tiles
+# with any picture.
 CORE_Z = 14
-CORE = (2585, 2588, 5575, 5579)
+AREA_ROWS = {
+    5563: (2585, 2587), 5564: (2585, 2587), 5565: (2585, 2587), 5566: (2585, 2588), 5567: (2585, 2589),
+    5568: (2585, 2589), 5569: (2585, 2590), 5570: (2585, 2590), 5571: (2585, 2591), 5572: (2585, 2591),
+    5573: (2585, 2592), 5574: (2585, 2593), 5575: (2584, 2594), 5576: (2584, 2594), 5577: (2584, 2594),
+    5578: (2581, 2594), 5579: (2581, 2590), 5580: (2581, 2588), 5581: (2581, 2587), 5582: (2581, 2587),
+}
+# The first close-up box (first x, last x, first y, last y): downtown Squamish,
+# the estuary, the Squamish River mouth and the Stawamus Chief. The tile sets
+# are centred on it.
+CENTRE_BOX = (2585, 2588, 5575, 5579)
 
 ELEVATION_ZOOMS = (12, 13, 14, 15, 16)
 ELEVATION_TILE = 512
@@ -99,9 +119,9 @@ PHOTO_TILE = 256
 PHOTO_QUALITY = 70
 PHOTO_PAUSE_S = 1.0
 # Two finer levels. The service's own pixel is a zoom-21 pixel (0.075 units of
-# EPSG:3857, about 5 cm on the ground here). Zoom 20 covers the whole close-up
-# area; zoom 21 covers a core of it, as zoom-14 tiles: downtown, the estuary's
-# edge and the Stawamus Chief. A finer block is again 4,096 pixels, so its
+# EPSG:3857, about 5 cm on the ground here), everywhere the photo reaches. Zoom
+# 20 covers the whole close-up area; zoom 21 covers a core of it, as zoom-14
+# tiles: downtown, the estuary's edge and the Stawamus Chief. A finer block is again 4,096 pixels, so its
 # 256-pixel tiles sit four zooms past the block's own.
 PHOTO_FINE_Z = 20
 PHOTO_FINEST_Z = 21
@@ -129,28 +149,37 @@ def lonlat(mx: float, my: float) -> tuple[float, float]:
     return (mx / ORIGIN * 180.0, math.degrees(2 * math.atan(math.exp(my / ORIGIN * math.pi)) - math.pi / 2))
 
 
-def tile_range(z: int) -> tuple[int, int, int, int]:
-    """The tiles at zoom z that touch the close-up area."""
-    x0, x1, y0, y1 = CORE
-    if z >= CORE_Z:
-        f = 1 << (z - CORE_Z)
-        return (x0 * f, (x1 + 1) * f - 1, y0 * f, (y1 + 1) * f - 1)
-    f = 1 << (CORE_Z - z)
-    return (x0 // f, x1 // f, y0 // f, y1 // f)
+def area_tiles(z: int) -> list[tuple[int, int]]:
+    """The tiles at zoom z that touch the close-up area, as (x, y), in order."""
+    found = set()
+    for y, (x0, x1) in AREA_ROWS.items():
+        for x in range(x0, x1 + 1):
+            if z >= CORE_Z:
+                f = 1 << (z - CORE_Z)
+                found.update((x * f + i, y * f + j) for i in range(f) for j in range(f))
+            else:
+                f = 1 << (CORE_Z - z)
+                found.add((x // f, y // f))
+    return sorted(found)
 
 
-def core_bounds_3857() -> tuple[float, float, float, float]:
-    x0, x1, y0, y1 = CORE
+def box_bounds_lonlat(box: tuple[int, int, int, int]) -> tuple[float, float, float, float]:
+    """A box of zoom-14 tiles (first x, last x, first y, last y) as west, south, east, north."""
+    x0, x1, y0, y1 = box
     west, _, _, north = tile_bounds_3857(CORE_Z, x0, y0)
     _, south, east, _ = tile_bounds_3857(CORE_Z, x1, y1)
-    return (west, south, east, north)
+    return (*lonlat(west, south), *lonlat(east, north))
 
 
-def core_bounds_lonlat() -> tuple[float, float, float, float]:
-    west, south, east, north = core_bounds_3857()
-    w, s = lonlat(west, south)
-    e, n = lonlat(east, north)
-    return (w, s, e, n)
+def area_bounds_lonlat() -> tuple[float, float, float, float]:
+    """The box round the whole close-up area. The area does not fill it."""
+    firsts, lasts = zip(*AREA_ROWS.values())
+    return box_bounds_lonlat((min(firsts), max(lasts), min(AREA_ROWS), max(AREA_ROWS)))
+
+
+def centre_text(zoom: int) -> str:
+    west, south, east, north = box_bounds_lonlat(CENTRE_BOX)
+    return f"{(west + east) / 2:.6f},{(south + north) / 2:.6f},{zoom}"
 
 
 def sha256_file(path: str) -> str:
@@ -225,7 +254,8 @@ def write_record(out: str, step: str, record: dict, started: datetime, clock: fl
         "claims": {"released": False, "admittedSource": False, "expertReviewed": False, "productionEligible": False},
         "step": step,
         "closeUpArea": {
-            "tileZoom": CORE_Z, "tileRange": list(CORE), "boundsLonLat": [round(v, 6) for v in core_bounds_lonlat()],
+            "tileZoom": CORE_Z, "tiles": len(area_tiles(CORE_Z)), "rows": {str(y): list(xs) for y, xs in AREA_ROWS.items()},
+            "boundsLonLat": [round(v, 6) for v in area_bounds_lonlat()],
         },
         **record,
         "script": {"path": "scripts/terrain_prototype/build_close_tiles.py", "sha256": script_sha},
@@ -245,22 +275,48 @@ def worker_setup() -> None:
 # --- elevation -----------------------------------------------------------------
 
 
-def fetch_window(url: str, path: str) -> None:
-    """Save the lidar mosaic over the close-up area on its own 1 m grid
-    (EPSG:3979), cell for cell."""
+def fetch_row(job: tuple[str, str, int]) -> str:
+    """Save the lidar mosaic over one row of the close-up area on its own 1 m
+    grid (EPSG:3979), cell for cell. A read from the mosaic that fails or comes
+    back damaged is asked for again."""
+    url, folder, y = job
+    path = os.path.join(folder, f"{y}.tif")
     if os.path.exists(path):
-        return
-    west, south, east, north = core_bounds_lonlat()
+        return path
+    x0, x1 = AREA_ROWS[y]
+    west, south, east, north = box_bounds_lonlat((x0, x1, y, y))
     margin = 0.004
     partial = path + ".partial.tif"
-    gdal.Warp(
-        partial, f"/vsicurl/{url}", format="GTiff", dstSRS="EPSG:3979",
-        outputBounds=(west - margin, south - margin, east + margin, north + margin), outputBoundsSRS="EPSG:4326",
-        xRes=1, yRes=1, targetAlignedPixels=True, resampleAlg="near", srcNodata=NODATA, dstNodata=NODATA,
-        creationOptions=["COMPRESS=DEFLATE", "PREDICTOR=3", "TILED=YES", "BIGTIFF=IF_SAFER"], warpMemoryLimit=256, multithread=True,
-    )
+    for attempt in range(5):
+        try:
+            gdal.Warp(
+                partial, f"/vsicurl/{url}", format="GTiff", dstSRS="EPSG:3979",
+                outputBounds=(west - margin, south - margin, east + margin, north + margin), outputBoundsSRS="EPSG:4326",
+                xRes=1, yRes=1, targetAlignedPixels=True, resampleAlg="near", srcNodata=NODATA, dstNodata=NODATA,
+                creationOptions=["COMPRESS=DEFLATE", "PREDICTOR=3", "TILED=YES", "BIGTIFF=IF_SAFER"], warpMemoryLimit=256,
+            )
+            break
+        except RuntimeError as error:
+            print("retry row", y, str(error)[:160], flush=True)
+            gdal.VSICurlClearCache()
+            time.sleep(15 * (attempt + 1))
+    else:
+        raise SystemExit(f"Could not read row {y} of {url}")
     os.replace(partial, path)
+    return path
 
+
+def fetch_window(url: str, kind: str, out: str) -> tuple[str, list[str]]:
+    """The lidar mosaic over the close-up area: one file for each row of the
+    area, and a list of them (a VRT) that the tiles are cut from. Rows are read
+    four at a time."""
+    folder = os.path.join(out, f"hrdem-1m-{kind}-rows")
+    os.makedirs(folder, exist_ok=True)
+    with ThreadPoolExecutor(4) as pool:
+        rows = list(pool.map(fetch_row, [(url, folder, y) for y in sorted(AREA_ROWS)]))
+    window = os.path.join(out, f"hrdem-1m-{kind}-area.vrt")
+    gdal.BuildVRT(window, rows, srcNodata=NODATA, VRTNodata=NODATA)
+    return (window, rows)
 
 def warp_tile(source: str, z: int, x: int, y: int, size: int, how: str) -> np.ndarray:
     warped = gdal.Warp(
@@ -319,8 +375,7 @@ def step_elevation(out: str, far: str, workers: int) -> None:
     sets = {}
     for kind, url in HRDEM_URLS.items():
         remote = head(url)
-        window = os.path.join(out, f"hrdem-1m-{kind}-window.tif")
-        fetch_window(url, window)
+        window, rows = fetch_window(url, kind, out)
         mbtiles = os.path.join(out, f"{kind}.mbtiles")
         db = new_mbtiles(mbtiles)
         # The far land, exactly as the 30 m build wrote it.
@@ -332,8 +387,7 @@ def step_elevation(out: str, far: str, workers: int) -> None:
 
         jobs = []
         for z in ELEVATION_ZOOMS:
-            x0, x1, y0, y1 = tile_range(z)
-            jobs += [(window, far_window, z, x, y) for x in range(x0, x1 + 1) for y in range(y0, y1 + 1)]
+            jobs += [(window, far_window, z, x, y) for x, y in area_tiles(z)]
         per_zoom: dict[str, dict] = {str(z): {"tiles": 0, "bytes": 0} for z in ELEVATION_ZOOMS}
         finest = {"pixels": 0, "gapPixels": 0, "lowest": math.inf, "highest": -math.inf}
         with Pool(workers, initializer=worker_setup) as pool:
@@ -348,18 +402,17 @@ def step_elevation(out: str, far: str, workers: int) -> None:
                     finest["highest"] = max(finest["highest"], stats.get("highest", -math.inf))
         db.commit()
         far_bounds = far_record["block"]["archiveBoundsLonLat"]
-        centre = core_bounds_lonlat()
         finish(db, {
             "name": f"terrain-prototype-squamish-{kind}", "format": "png", "type": "baselayer",
             "bounds": ",".join(f"{v:.6f}" for v in far_bounds),
             "minzoom": str(far_record["block"]["zooms"][0]), "maxzoom": str(ELEVATION_ZOOMS[-1]),
-            "center": f"{(centre[0] + centre[2]) / 2:.6f},{(centre[1] + centre[3]) / 2:.6f},{CORE_Z}",
+            "center": centre_text(CORE_Z),
             "attribution": "Elevation: Natural Resources Canada, HRDEM Mosaic and MRDEM-30 (CanElevation Series)",
         })
         finest["lowest"], finest["highest"] = round(finest["lowest"], 2), round(finest["highest"], 2)
         sets[kind] = {
             "remote": remote,
-            "window": {"path": os.path.basename(window), "byteLength": os.path.getsize(window), "sha256": sha256_file(window)},
+            "rows": [{"path": os.path.relpath(row, out), "byteLength": os.path.getsize(row), "sha256": sha256_file(row)} for row in rows],
             "farTilesCopied": far_tiles,
             "perZoom": per_zoom,
             "finestZoom": finest,
@@ -387,22 +440,16 @@ def step_elevation(out: str, far: str, workers: int) -> None:
 # --- photo ----------------------------------------------------------------------
 
 
-def block_range() -> tuple[int, int, int, int]:
-    return tile_range(PHOTO_BLOCK_Z)
-
-
 def fine_blocks() -> list[tuple[int, int, int]]:
     """The finer blocks, as (zoom, x, y): zoom-17 blocks over the finest core,
     whose zoom-20 tiles are made by halving them, and zoom-16 blocks over the
     rest of the close-up area. The finest core comes first."""
-    x0, x1, y0, y1 = CORE
     fx0, fx1, fy0, fy1 = PHOTO_FINEST_CORE
     found = []
-    for x in range(x0, x1 + 1):
-        for y in range(y0, y1 + 1):
-            z = PHOTO_FINEST_Z - 4 if fx0 <= x <= fx1 and fy0 <= y <= fy1 else PHOTO_FINE_Z - 4
-            f = 1 << (z - CORE_Z)
-            found += [(z, x * f + i, y * f + j) for i in range(f) for j in range(f)]
+    for x, y in area_tiles(CORE_Z):
+        z = PHOTO_FINEST_Z - 4 if fx0 <= x <= fx1 and fy0 <= y <= fy1 else PHOTO_FINE_Z - 4
+        f = 1 << (z - CORE_Z)
+        found += [(z, x * f + i, y * f + j) for i in range(f) for j in range(f)]
     return sorted(found, reverse=True)
 
 
@@ -437,63 +484,55 @@ def download(url: str, path: str) -> None:
     os.replace(path + ".partial", path)
 
 
+def fetch_block(bounds: tuple[float, float, float, float], size: int, fmt: str, path: str, label: str) -> None:
+    """Ask for one picture, three times at most, check its size, then pause."""
+    for attempt in range(3):
+        try:
+            download(export_url(bounds, size, fmt), path)
+            break
+        except Exception as error:  # a slow or dropped answer: wait and ask again
+            print("retry", label, str(error)[:120], flush=True)
+            time.sleep(10 * (attempt + 1))
+    else:
+        raise SystemExit(f"Could not fetch block {label}")
+    image = gdal.Open(path)
+    if image.RasterXSize != size or image.RasterYSize != size:
+        os.remove(path)
+        raise SystemExit(f"Block {label} came back {image.RasterXSize}x{image.RasterYSize}")
+    image = None
+    time.sleep(PHOTO_PAUSE_S)
+
+
 def step_fetch_photo(out: str) -> None:
-    """One block of 4,096 pixels for each zoom-15 tile, and a 256-pixel PNG of
-    the same block whose transparency says where the photo has no picture. Then
+    """For each zoom-15 tile, a 256-pixel PNG whose transparency says where the
+    photo has no picture and, where it has one, a block of 4,096 pixels. Then
     the finer blocks, also 4,096 pixels each: zoom 16 over the close-up area and
-    zoom 17 over its core. A block already on disk is not asked for again."""
+    zoom 17 over its core. A file already on disk is not asked for again."""
     started, clock = datetime.now(timezone.utc), time.time()
     blocks = os.path.join(out, "photo-blocks")
     os.makedirs(blocks, exist_ok=True)
     request = urllib.request.Request(f"{PHOTO_SERVICE}?f=json", headers={"User-Agent": AGENT})
     with urllib.request.urlopen(request, timeout=60) as response:
         service = json.load(response)
-    x0, x1, y0, y1 = block_range()
     fetched = 0
-    for x in range(x0, x1 + 1):
-        for y in range(y0, y1 + 1):
-            bounds = tile_bounds_3857(PHOTO_BLOCK_Z, x, y)
-            for suffix, size, fmt in (("jpg", PHOTO_BLOCK, "jpg"), ("mask.png", 256, "png32")):
-                path = os.path.join(blocks, f"{PHOTO_BLOCK_Z}-{x}-{y}.{suffix}")
-                if os.path.exists(path):
-                    continue
-                for attempt in range(3):
-                    try:
-                        download(export_url(bounds, size, fmt), path)
-                        break
-                    except Exception as error:  # a slow or dropped answer: wait and ask again
-                        print("retry", x, y, suffix, str(error)[:120], flush=True)
-                        time.sleep(10 * (attempt + 1))
-                else:
-                    raise SystemExit(f"Could not fetch block {x},{y}")
-                image = gdal.Open(path)
-                if image.RasterXSize != size or image.RasterYSize != size:
-                    os.remove(path)
-                    raise SystemExit(f"Block {x},{y} came back {image.RasterXSize}x{image.RasterYSize}")
-                image = None
-                fetched += 1
-                time.sleep(PHOTO_PAUSE_S)
-            print("block", x, y, "done", round(time.time() - clock), "s", flush=True)
+    for x, y in area_tiles(PHOTO_BLOCK_Z):
+        bounds = tile_bounds_3857(PHOTO_BLOCK_Z, x, y)
+        mask = os.path.join(blocks, f"{PHOTO_BLOCK_Z}-{x}-{y}.mask.png")
+        if not os.path.exists(mask):
+            fetch_block(bounds, 256, "png32", mask, f"{x},{y} mask")
+            fetched += 1
+        path = os.path.join(blocks, f"{PHOTO_BLOCK_Z}-{x}-{y}.jpg")
+        if os.path.exists(path) or not fine_mask(blocks, PHOTO_BLOCK_Z, x, y).any():
+            continue
+        fetch_block(bounds, PHOTO_BLOCK, "jpg", path, f"{x},{y}")
+        fetched += 1
+        print("block", x, y, "done", round(time.time() - clock), "s", flush=True)
     for z, x, y in fine_blocks():
         path = os.path.join(blocks, f"{z}-{x}-{y}.jpg")
         if os.path.exists(path) or not fine_mask(blocks, z, x, y).any():
             continue
-        for attempt in range(3):
-            try:
-                download(export_url(tile_bounds_3857(z, x, y), PHOTO_BLOCK, "jpg"), path)
-                break
-            except Exception as error:
-                print("retry", z, x, y, str(error)[:120], flush=True)
-                time.sleep(10 * (attempt + 1))
-        else:
-            raise SystemExit(f"Could not fetch block {z},{x},{y}")
-        image = gdal.Open(path)
-        if image.RasterXSize != PHOTO_BLOCK or image.RasterYSize != PHOTO_BLOCK:
-            os.remove(path)
-            raise SystemExit(f"Block {z},{x},{y} came back {image.RasterXSize}x{image.RasterYSize}")
-        image = None
+        fetch_block(tile_bounds_3857(z, x, y), PHOTO_BLOCK, "jpg", path, f"{z},{x},{y}")
         fetched += 1
-        time.sleep(PHOTO_PAUSE_S)
         print("fine block", z, x, y, "done", round(time.time() - clock), "s", flush=True)
     files = sorted(name for name in os.listdir(blocks) if not name.endswith(".partial"))
     write_record(out, "fetch-photo", {
@@ -579,8 +618,11 @@ def fine_block(job: tuple[str, int, int, int]) -> list[tuple[int, int, int, byte
 def step_photo(out: str, workers: int) -> None:
     started, clock = datetime.now(timezone.utc), time.time()
     blocks = os.path.join(out, "photo-blocks")
-    x0, x1, y0, y1 = block_range()
-    jobs = [(blocks, x, y) for x in range(x0, x1 + 1) for y in range(y0, y1 + 1)]
+    jobs = [(blocks, x, y) for x, y in area_tiles(PHOTO_BLOCK_Z) if fine_mask(blocks, PHOTO_BLOCK_Z, x, y).any()]
+    fine_jobs = [(blocks, z, x, y) for z, x, y in fine_blocks() if fine_mask(blocks, z, x, y).any()]
+    missing = [job[1:] for job in (*((b, PHOTO_BLOCK_Z, x, y) for b, x, y in jobs), *fine_jobs) if not os.path.exists(os.path.join(blocks, f"{job[1]}-{job[2]}-{job[3]}.jpg"))]
+    if missing:
+        raise SystemExit(f"{len(missing)} photo blocks are not downloaded yet; run --step fetch-photo first.")
     mbtiles = os.path.join(out, "photo.mbtiles")
     db = new_mbtiles(mbtiles)
     per_zoom: dict[str, dict] = {str(z): {"tiles": 0, "bytes": 0} for z in (*PHOTO_ZOOMS, PHOTO_FINE_Z, PHOTO_FINEST_Z)}
@@ -588,10 +630,6 @@ def step_photo(out: str, workers: int) -> None:
     # cannot fall back to a coarser tile where a set has none.
     core_mbtiles = os.path.join(out, "photo-core.mbtiles")
     core_db = new_mbtiles(core_mbtiles)
-    fine_jobs = [(blocks, z, x, y) for z, x, y in fine_blocks() if fine_mask(blocks, z, x, y).any()]
-    missing = [job[1:] for job in fine_jobs if not os.path.exists(os.path.join(blocks, f"{job[1]}-{job[2]}-{job[3]}.jpg"))]
-    if missing:
-        raise SystemExit(f"{len(missing)} finer photo blocks are not downloaded yet; run --step fetch-photo first.")
     with Pool(workers, initializer=worker_setup) as pool:
         for tiles in pool.imap_unordered(fine_block, fine_jobs):
             for z, tx, ty, data in tiles:
@@ -600,46 +638,49 @@ def step_photo(out: str, workers: int) -> None:
                 per_zoom[str(z)]["bytes"] += len(data)
             db.commit()
             core_db.commit()
-    # The blocks at 256 pixels each, laid out over the coarsest zoom's tiles, for the zooms below the blocks.
-    cx0, cx1, cy0, cy1 = tile_range(PHOTO_ZOOMS[0])
-    span = 1 << (PHOTO_BLOCK_Z - PHOTO_ZOOMS[0])
-    mosaic = np.zeros(((cy1 - cy0 + 1) * span * PHOTO_TILE, (cx1 - cx0 + 1) * span * PHOTO_TILE, 3), np.float32)
-    mosaic_weight = np.zeros(mosaic.shape[:2], np.float32)
+    # Each block at 256 pixels, kept as bytes and laid out inside the coarsest
+    # zoom's tile it falls in, for the zooms below the blocks.
+    coarsest = PHOTO_ZOOMS[0]
+    span = 1 << (PHOTO_BLOCK_Z - coarsest)
+    side = span * PHOTO_TILE
+    small: dict[tuple[int, int], tuple[np.ndarray, np.ndarray]] = {}
     covered = []
     with Pool(workers, initializer=worker_setup) as pool:
-        for x, y, tiles, small, weight, share in pool.imap_unordered(photo_block, jobs):
+        for x, y, tiles, pixels, weight, share in pool.imap_unordered(photo_block, jobs):
             for z, tx, ty, data in tiles:
                 put(db, z, tx, ty, data)
                 per_zoom[str(z)]["tiles"] += 1
                 per_zoom[str(z)]["bytes"] += len(data)
-            row, col = (y - cy0 * span) * PHOTO_TILE, (x - cx0 * span) * PHOTO_TILE
-            mosaic[row:row + PHOTO_TILE, col:col + PHOTO_TILE] = small
-            mosaic_weight[row:row + PHOTO_TILE, col:col + PHOTO_TILE] = weight
+            key = (x // span, y // span)
+            if key not in small:
+                small[key] = (np.zeros((side, side, 3), np.uint8), np.zeros((side, side), np.uint8))
+            row, col = (y % span) * PHOTO_TILE, (x % span) * PHOTO_TILE
+            small[key][0][row:row + PHOTO_TILE, col:col + PHOTO_TILE] = np.clip(np.rint(pixels), 0, 255)
+            small[key][1][row:row + PHOTO_TILE, col:col + PHOTO_TILE] = np.clip(np.rint(weight * 255), 0, 255)
             covered.append(share)
             db.commit()
-    for z in range(PHOTO_BLOCK_Z - 1, PHOTO_ZOOMS[0] - 1, -1):
-        mosaic, mosaic_weight = halve(mosaic, mosaic_weight)
-        f = 1 << (z - PHOTO_ZOOMS[0])
-        for tx in range((cx1 - cx0 + 1) * f):
-            for ty in range((cy1 - cy0 + 1) * f):
-                rows, cols = slice(ty * PHOTO_TILE, (ty + 1) * PHOTO_TILE), slice(tx * PHOTO_TILE, (tx + 1) * PHOTO_TILE)
-                data = photo_tile(mosaic[rows, cols], mosaic_weight[rows, cols])
-                if data is not None:
-                    put(db, z, cx0 * f + tx, cy0 * f + ty, data)
-                    per_zoom[str(z)]["tiles"] += 1
-                    per_zoom[str(z)]["bytes"] += len(data)
+    for (cx, cy), (kept, kept_weight) in sorted(small.items()):
+        pixels, weight = kept.astype(np.float32), kept_weight.astype(np.float32) / 255
+        for z in range(PHOTO_BLOCK_Z - 1, coarsest - 1, -1):
+            pixels, weight = halve(pixels, weight)
+            f = 1 << (z - coarsest)
+            for tx in range(f):
+                for ty in range(f):
+                    rows, cols = slice(ty * PHOTO_TILE, (ty + 1) * PHOTO_TILE), slice(tx * PHOTO_TILE, (tx + 1) * PHOTO_TILE)
+                    data = photo_tile(pixels[rows, cols], weight[rows, cols])
+                    if data is not None:
+                        put(db, z, cx * f + tx, cy * f + ty, data)
+                        per_zoom[str(z)]["tiles"] += 1
+                        per_zoom[str(z)]["bytes"] += len(data)
     db.commit()
-    bounds = core_bounds_lonlat()
+    bounds = area_bounds_lonlat()
     finish(db, {
         "name": "terrain-prototype-squamish-photo-2024", "format": "webp", "type": "baselayer",
         "bounds": ",".join(f"{v:.6f}" for v in bounds), "minzoom": str(PHOTO_ZOOMS[0]), "maxzoom": str(PHOTO_FINE_Z),
-        "center": f"{(bounds[0] + bounds[2]) / 2:.6f},{(bounds[1] + bounds[3]) / 2:.6f},{CORE_Z}",
+        "center": centre_text(CORE_Z),
         "attribution": "Air photo: District of Squamish, Aerial Photo 2024",
     })
-    fx0, fx1, fy0, fy1 = PHOTO_FINEST_CORE
-    west, _, _, north = tile_bounds_3857(CORE_Z, fx0, fy0)
-    _, south, east, _ = tile_bounds_3857(CORE_Z, fx1, fy1)
-    core = (*lonlat(west, south), *lonlat(east, north))
+    core = box_bounds_lonlat(PHOTO_FINEST_CORE)
     finish(core_db, {
         "name": "terrain-prototype-squamish-photo-2024-core", "format": "webp", "type": "baselayer",
         "bounds": ",".join(f"{v:.6f}" for v in core), "minzoom": str(PHOTO_FINEST_Z), "maxzoom": str(PHOTO_FINEST_Z),
@@ -654,7 +695,7 @@ def step_photo(out: str, workers: int) -> None:
         "tiles": {"size": PHOTO_TILE, "format": "webp", "quality": PHOTO_QUALITY, "zooms": [*PHOTO_ZOOMS, PHOTO_FINE_Z, PHOTO_FINEST_Z], "perZoom": per_zoom},
         "blocks": len(jobs),
         "finerBlocks": len(fine_jobs),
-        "shareOfAreaWithPicture": round(float(np.mean(covered)), 4),
+        "shareOfBlocksWithPicture": round(float(np.mean(covered)), 4),
         "groundMetresPerPixel": {str(PHOTO_ZOOMS[-1]): ground(PHOTO_ZOOMS[-1]), str(PHOTO_FINE_Z): ground(PHOTO_FINE_Z), str(PHOTO_FINEST_Z): ground(PHOTO_FINEST_Z)},
         "finestCore": {"tileZoom": CORE_Z, "tileRange": list(PHOTO_FINEST_CORE), "boundsLonLat": [round(v, 6) for v in core]},
         "mbtiles": {"path": os.path.basename(mbtiles), "byteLength": os.path.getsize(mbtiles), "sha256": sha256_file(mbtiles)},
@@ -689,11 +730,10 @@ def height_tile(job: tuple[str, str, int, int, int]) -> tuple[int, int, int, byt
 
 def step_height(out: str, workers: int) -> None:
     started, clock = datetime.now(timezone.utc), time.time()
-    windows = {kind: os.path.join(out, f"hrdem-1m-{kind}-window.tif") for kind in HRDEM_URLS}
+    windows = {kind: os.path.join(out, f"hrdem-1m-{kind}-area.vrt") for kind in HRDEM_URLS}
     jobs = []
     for z in HEIGHT_ZOOMS:
-        x0, x1, y0, y1 = tile_range(z)
-        jobs += [(windows["surface"], windows["ground"], z, x, y) for x in range(x0, x1 + 1) for y in range(y0, y1 + 1)]
+        jobs += [(windows["surface"], windows["ground"], z, x, y) for x, y in area_tiles(z)]
     mbtiles = os.path.join(out, "height.mbtiles")
     db = new_mbtiles(mbtiles)
     per_zoom: dict[str, dict] = {str(z): {"tiles": 0, "bytes": 0} for z in HEIGHT_ZOOMS}
@@ -708,11 +748,11 @@ def step_height(out: str, workers: int) -> None:
             per_zoom[str(z)]["tiles"] += 1
             per_zoom[str(z)]["bytes"] += len(data)
     db.commit()
-    bounds = core_bounds_lonlat()
+    bounds = area_bounds_lonlat()
     finish(db, {
         "name": "terrain-prototype-squamish-height", "format": "png", "type": "overlay",
         "bounds": ",".join(f"{v:.6f}" for v in bounds), "minzoom": str(HEIGHT_ZOOMS[0]), "maxzoom": str(HEIGHT_ZOOMS[-1]),
-        "center": f"{(bounds[0] + bounds[2]) / 2:.6f},{(bounds[1] + bounds[3]) / 2:.6f},{CORE_Z}",
+        "center": centre_text(CORE_Z),
         "attribution": "Height above ground: Natural Resources Canada, HRDEM Mosaic (CanElevation Series)",
     })
     lowers = [int(lower) for lower, _ in HEIGHT_CLASSES]

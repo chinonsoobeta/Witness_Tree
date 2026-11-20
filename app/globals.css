@@ -6262,6 +6262,8 @@ dd > a:only-child {
 .place-terrain-dash { display: inline-block; width: 18px; height: 0; border-top: 2px dashed var(--ink); vertical-align: middle; }
 .place-terrain-heights { display: flex; flex-direction: column; gap: 4px; }
 .place-terrain-height-classes { display: flex; flex-wrap: wrap; gap: 4px 16px; }
+.place-terrain-street { display: flex; flex-direction: column; gap: 8px; }
+.place-terrain-street-frame { display: block; width: 100%; aspect-ratio: 16 / 10; max-height: 600px; border: 1px solid var(--rule-strong); background: var(--map-ground); }
 .place-terrain-leave { display: flex; flex-direction: column; gap: 4px; margin: 0; font-size: var(--text-small); color: var(--muted); }
 .place-terrain-leave a { align-self: flex-start; min-height: 44px; display: inline-flex; align-items: center; font-size: 1rem; }
 .place-terrain-dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--surface); outline: 1px solid var(--rule-strong); vertical-align: middle; }
@@ -6276,7 +6278,7 @@ dd > a:only-child {
 .place-ground-credit { display: flex; flex-direction: column; gap: 4px; margin: 0; font-size: var(--text-small); color: var(--muted); }
 .place-terrain-hint { color: var(--muted); }
 .place-terrain-badge { margin-left: 8px; padding: 2px 8px; border: 1px solid var(--rule-strong); font-size: 0.75rem; letter-spacing: 0.04em; }
-@media print { .place-terrain-frame, .place-terrain-controls { display: none; } }
+@media print { .place-terrain-frame, .place-terrain-controls, .place-terrain-street-frame { display: none; } }
 /* "Embed this figure" on a place page: the iframe code in a read-only box, and its terms. */
 .place-embed { display: flex; flex-direction: column; gap: 8px; }
 .place-embed .eyebrow, .place-embed p { margin: 0; }

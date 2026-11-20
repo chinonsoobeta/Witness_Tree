@@ -16,22 +16,27 @@ ground.
 
 - **The whole place.** A 30 m model of bare ground. It answers "what does this
   land look like, and where on it was forest lost?".
-- **The close-up area.** A box about 6.3 km by 7.9 km over the middle of
-  Squamish (downtown, the estuary, the mouth of the Squamish River and the
-  Stawamus Chief), marked with a dashed line. Inside it the land is a 1 m laser
-  survey, either the top of whatever stands there (treetops and roofs) or the
-  bare ground beneath, with the District of Squamish's 2024 air photo laid over
-  it at about 10 cm for each pixel, and at about 5 cm in a core of about
-  15 square kilometres. The photo is published as a 7.5 cm photo, so the core
-  holds all the detail it has. A reader can pick out single trees, road markings, garden
-  beds and the lines of a parking space.
+- **The close-up area.** Everywhere the District of Squamish's 2024 air photo
+  reaches: 145 zoom-14 map tiles, about 360 square kilometres, from Britannia
+  Beach in the south to Paradise Valley in the north, marked with a stepped
+  dashed line. The photo has a picture over about 290 square kilometres of
+  them. The first builds covered a box of about 50 square kilometres over
+  downtown. Inside the line the land is a 1 m
+  laser survey where a survey flight passed, either the top of whatever stands
+  there (treetops and roofs) or the bare ground beneath, with the air photo
+  laid over it at about 10 cm for each pixel, and at about 5 cm, the photo's
+  own grid, over a core of about 15 square kilometres downtown. A reader can pick out single trees, road
+  markings, garden beds and the lines of a parking space.
 - **Photos from the ground.** Dots on the map mark photographs that volunteers
   took at ground level and gave to two open archives. Choosing a dot opens the
   photo under the map. Nine of them are all-round photos a reader can look
   around in; the rest are single frames from drives along roads.
-- **A way out to Google Street View.** A link under the map opens Google's own
-  street-level photos at the middle of the map, facing the way the map faces.
-  It leaves the Site. Nothing of Google's is shown, copied or kept here.
+- **Google Street View, inside the view.** A button under the map loads
+  Google's own Street View in a frame, at the panorama nearest the middle of
+  the map and facing the way the map faces. Nothing is asked of Google until
+  the reader presses it. A link beside it opens the same spot on Google's own
+  site. Google's photos are shown by Google's page; nothing of Google's is
+  copied or kept here.
 
 A reader can go to the close-up, return to the whole place, zoom, turn, tilt or
 look straight down, choose between treetops and bare ground, and switch four
@@ -42,27 +47,35 @@ and a colouring of height above ground in five classes.
 
 The owner asked for detail as high as Google Street View. Street View is
 photographs taken from the ground, a few metres apart, along almost every road.
-Three free things get part of the way, and none gets all of it.
+The view now reaches that detail in one way only: by showing Google's own
+Street View in a frame, where Google has it. The Site's own data gets part of
+the way.
 
-| | Whole place | Close-up area | Photos from the ground |
-| --- | --- | --- | --- |
-| Shape of the land | 30 m | 1 m survey, stored at about 0.77 m | not a shape: a photograph |
-| Picture | none | air photo, about 10 cm for each pixel, about 5 cm in the core | the photographer's own picture: 11,904 pixels around for an all-round photo, up to 2,048 across for a road photo |
-| Seen from | above | above | a person's or a car's height |
-| Where | the whole place | one box of about 50 square kilometres | 101 photos so far: 9 at one spot under the trees, 92 along roads |
+| | Whole place | Close-up area | Photos from the ground | Google Street View in a frame |
+| --- | --- | --- | --- | --- |
+| Shape of the land | 30 m | 1 m survey, stored at about 0.77 m | not a shape: a photograph | not a shape: a photograph |
+| Picture | none | air photo, about 10 cm for each pixel, about 5 cm over a core of about 15 square kilometres downtown | the photographer's own picture: 11,904 pixels around for an all-round photo, up to 2,048 across for a road photo | Google's own panoramas, at Google's own sharpness |
+| Seen from | above | above | a person's or a car's height | a car's height |
+| Where | the whole place | everywhere the air photo reaches: about 290 square kilometres of picture inside about 360 | 101 photos so far: 9 at one spot under the trees, 92 along roads | wherever Google has driven; nothing away from roads |
+| Whose | the Site's copy of public data | the Site's copy of public data | the Site's copy, share-alike | Google's, shown by Google's page, not the Site's data |
 
-**1. The air photo at all the detail it has.** The District publishes the photo
-at 7.5 cm for each pixel. The first build stored it at about 19 cm. This build
-stores it at about 10 cm over the whole close-up area and at about 5 cm over
-the core. That is the grid the District's own service keeps the photo on, so
-nothing the photo holds is lost there. A measured comparison at six spots
-(downtown, the Stawamus Chief, the estuary, and the north, west and south of
-the box) found that each finer level adds picture the coarser one lacks. There is no finer free picture from
-above: this is the limit of the source, not of the build.
+**1. The air photo at all the detail it has, everywhere it reaches.** The
+District describes the photo as a 7.5 cm and 15 cm composite and serves all of
+it on one grid of 0.075 units, about 5 cm on the ground at this latitude. The
+first build stored it at about 19 cm over a box of about 50 square kilometres.
+This build stores it at about 10 cm everywhere the photo has a picture, and at
+about 5 cm, the service's own grid, over a core of about 15 square kilometres
+downtown. A measured comparison
+at six spots in the first box (downtown, the Stawamus Chief, the estuary, and
+its north, west and south) found that each finer level adds picture the coarser
+one lacks, and a second measure at seven spots from Furry Creek to Paradise
+Valley found the photo as sharp at its finest grid outside downtown as inside
+it. There is no finer free picture from above: this is the limit of the
+source, not of the build.
 
 **2. Real photographs from the ground, where volunteers took them.** Two open
 archives hold street-level photos anyone may reuse with credit. Inside the
-close-up area they hold:
+first box (about 50 square kilometres over downtown) they hold:
 
 - **Panoramax:** 9 all-round photos, 11,904 by 5,952 pixels each, taken on
   2026-06-25 by one contributor within about 25 m of each other, under the
@@ -80,19 +93,23 @@ single frames, kept here at up to 2,048 pixels across, and are less sharp. They 
 every road in Squamish; the volunteers covered some roads once, between 2016
 and 2022, and one spot off the road. Nothing between the dots is filled in.
 
-**3. Google's own Street View, by a link.** Google documents a web address that
-opens Street View at a place and a compass direction, with no account and no
-key. The view builds that address from the middle of the map and the way it
-faces. This is the only free way to reach Google's photos: they are Google's,
-and their terms do not allow copying them into another site. An embedded frame
-would need the owner to accept Google's terms and to loosen the Site's content
-security policy, so the prototype links out instead. See "What a release would
-need".
+**3. Google's own Street View, in a frame and by a link.** Google's photos are
+Google's: their terms do not allow copying them into another site, so the only
+free way to show them is to let Google's own page show them. The view does
+that two ways. A button loads Google's Street View page in a frame under the
+map, at the panorama nearest the middle of the map; this is Street View
+itself, so along a road Google has driven the reader sees exactly what Street
+View shows. A link opens the same spot on Google's site. The frame is allowed
+only in a build with the prototype flag, loads nothing until the reader asks,
+and uses an address Google serves but does not document for other sites. See
+"Google Street View: a frame and a link, not a source" and "What a release
+would need".
 
 What the prototype still cannot do: show a forest from inside it, away from
-that one spot; show any place as it looks today; or match Street View's reach
-along roads. The air photo was taken from above, so on a steep face (a cliff,
-the side of a tree) it is stretched.
+that one spot and away from roads Google drove; or show, in its own data, what
+Street View shows. The Site's own picture of the land stops at the air photo,
+taken from above, so on a steep face (a cliff, the side of a tree) it is
+stretched.
 
 ## The sources, and what was verified
 
@@ -147,10 +164,15 @@ projects) match the mosaic cell for cell on only 2% to 4% of cells, so none of
 them can be named as its origin. The survey is older than the 2024 photo by an
 unknown number of years.
 
-**Coverage.** Lidar covers part of the land only. Inside the close-up area 18%
-of the finest pixels have no survey: the sea, and land no flight covered. Those
-are filled from the 30 m ground model, in both the surface and the ground
-archive.
+**Coverage.** Lidar covers part of the land only. Inside the close-up area 38%
+of the finest pixels have no survey: the sea, and land no flight covered,
+mostly the mountainsides at the edges. (In the first box it was 18%.) Those are
+filled from the 30 m ground model, in both the surface and the ground archive.
+
+**Reading the mosaic.** The two files are 150 GB and 160 GB and are read in
+place. A read of the whole area in one request failed on a damaged answer, so
+the script reads one row of the area at a time, four rows at once, and asks
+again for a row that fails. Eight rows were asked for twice in this build.
 
 ### Close-up picture: District of Squamish, Aerial Photo 2024
 
@@ -161,14 +183,24 @@ archive.
 | Licence on the record | "This data set is published under the terms of the Open Government Licence - Squamish." |
 | Licence text | Open Government Licence – Squamish, version 2.0, read at https://squamish.ca/government-and-administration/maps-and-data/open-data/. It grants a "worldwide, royalty-free, perpetual, non-exclusive licence to use the Information, including for commercial purposes", asks for the statement "Contains information licensed under the Open Government Licence - Squamish.", gives no warranty, forbids implying endorsement, and does not cover personal information or third-party rights. |
 | Access | The District's public image service, no account: `https://portal.squamish.ca/server/rest/services/Orthophoto_2024/ImageServer` |
-| Grid | 7.5 cm pixels in EPSG:3857 |
+| Grid | One grid of 0.075 units in EPSG:3857 for the whole photo. The service's catalogue lists three pieces, all with that finest pixel. It does not say where the photo was flown at 7.5 cm and where at 15 cm. |
 
-The service was read politely: 686 requests of 4,096 by 4,096 pixels (80 for
-the first build, 606 for the finer levels), one at a time, a second apart, each
-kept on disk so no block is asked for twice. The service's own record gives the
-pixel size as 0.075 in EPSG:3857 units; at Squamish's latitude that is about
-5 cm on the ground, which is why zoom 21 (about 4.8 cm) is the level that holds
-everything.
+The service was read politely: one request at a time, a second apart, each
+answer kept on disk so nothing is asked for twice. The first builds made 686
+requests of 4,096 by 4,096 pixels over the first box. The wider build added
+280 small requests to find where the photo has a picture, a 256-pixel mask for
+each of the 580 zoom-15 tiles of the area (500 of them new), and 2,095 more
+blocks of 4,096 pixels, asked for only where the mask shows a picture. The
+service's own record gives the pixel size as 0.075 in EPSG:3857 units; at
+Squamish's latitude that is about 5 cm on the ground, which is why zoom 21
+(about 4.8 cm) is the level that holds everything.
+
+**Where the photo has a picture.** A coarse request for the whole extent shows
+only part of the photo, because the service hides its pieces when asked for
+large pixels. The reach was found by asking for each zoom-14 tile of the
+service's extent on its own: 145 of 280 hold some picture. The close-up area
+is those tiles, and the picture covers about 290 square kilometres of their
+360 (288.4 of 361.9, measured from the masks).
 
 **The photo shows people's property.** At this detail houses, yards and
 vehicles are visible, as they are on the District's own public map. The licence
@@ -182,7 +214,7 @@ Site is the owner's decision, not a technical one.
 | Archive | Panoramax, an open archive of street-level photos run by a community with French public bodies. Read through its shared search, `https://api.panoramax.xyz/api/search`, no account. |
 | Licence | Each record carries its own licence. Only records marked `CC-BY-SA-4.0` were taken. |
 | What it asks | Credit to the photographer, a link to the licence, a note of changes, and the same licence on anything made from the photo. |
-| Found in the close-up area | 11 records. 9 are all-round photos by the contributor "49PL", taken on 2026-06-25, 11,904 by 5,952 pixels, 35 to 50 MB each. The files of the other 2 answered "not found" and are left out. |
+| Found in the first box | 11 records. 9 are all-round photos by the contributor "49PL", taken on 2026-06-25, 11,904 by 5,952 pixels, 35 to 50 MB each. The files of the other 2 answered "not found" and are left out. |
 | Kept | The original file of each photo, unchanged, with a SHA-256, beside the build output. The Site's copies are the same picture made smaller (4,096 and 8,192 pixels around) and the original itself. |
 
 The archive blurs faces and number plates before it publishes a photo. Two
@@ -195,7 +227,7 @@ people are in view in these photos, with their faces blurred.
 | Archive | KartaView, street-level photos given by volunteers, run by Grab. Read through `https://api.kartaview.org/2.0/photo/`, no account. |
 | Licence | Terms of use, section 4, read at https://kartaview.org/terms on 2026-11-19: the street images are licensed under "Creative Commons Attribution-ShareAlike 4.0 International". |
 | Credit the terms ask for | "© Grab and KartaView Contributors". A record carries no photographer's name. |
-| Found in the close-up area | 76,941 photos across the 32 drives that pass through it; 9,234 of them inside the box; 8,261 of those usable; 453 kept after thinning; 92 fetched so far. |
+| Found in the first box | 76,941 photos across the 32 drives that pass through it; 9,234 of them inside the box; 8,261 of those usable; 453 kept after thinning; 92 fetched so far. |
 | Which were kept | Only photos the archive marks as blurred, active, public and flat. Then, newest first, a photo was kept only if no kept photo stood within 40 m of it, so each stretch of road is shown once. |
 | Kept | The archive's own blurred file for each, unchanged, with a SHA-256, beside the build output. The Site's copy is the same picture at up to 2,048 pixels across. |
 
@@ -212,28 +244,69 @@ shows the photos resized and otherwise unchanged, with credit and the licence
 beside each one. Whether showing them obliges anything else the Site publishes
 is a licence question for the owner and has not been answered.
 
-### Google Street View: a link, not a source
+### Google Street View: a frame and a link, not a source
 
-Google documents the address `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=<latitude>,<longitude>&heading=<degrees>`
+Nothing of Google's is copied, stored or changed. Google's page shows Google's
+photos, in two ways.
+
+**The link.** Google documents the address `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=<latitude>,<longitude>&heading=<degrees>`
 (Maps URLs). It needs no account or key and costs nothing. Followed in a
 browser on 2026-11-19, it opened Google's Street View at the spot asked for.
-The view writes this address into an ordinary link. No Google picture, script
-or frame is loaded by the Site, and the content security policy is unchanged.
-Where Google has no photo near the spot, Google shows its map instead.
+The view writes this address into an ordinary link. Where Google has no photo
+near the spot, Google shows its map instead.
+
+**The frame.** The address `https://www.google.com/maps/embed?origin=mfe&pb=!6m7!1m6!2m2!1d<latitude>!2d<longitude>!3f<heading>!4f0!5f1`
+shows Street View at the panorama nearest a position, with no account and no
+key. Loaded in a frame on 2026-11-20, with the map centred on Brackendale, it
+showed Google's Street View on Government Road there, facing the way the map
+faced, with Google's own controls and credit. It is the address
+that Google's older documented form
+(`https://maps.google.com/maps?layer=c&cbll=<latitude>,<longitude>&output=svembed`)
+now redirects to.
+
+What is known and not known about the frame:
+
+- **It is not Google's documented way to put Street View on another site.**
+  That is the Maps Embed API, which is free and needs a key from a Google
+  account, with Google's terms accepted by the account's owner. The key-less
+  address works today and Google may change or close it without notice. The
+  prototype uses it because creating an account or a key is the owner's to do.
+- **Google's terms apply to whoever looks.** The frame is Google's page. The
+  reader's browser asks Google for it, so Google learns the reader's address
+  and the spot asked for. The view sends no referrer with it.
+- **Nothing loads until the reader presses the button.** Before that the page
+  holds no frame, and no request goes to Google. "Close Street View" removes
+  the frame.
+- **The content security policy allows it only with the prototype flag.**
+  `next.config.ts` adds `frame-src https://www.google.com` when
+  `NEXT_PUBLIC_TERRAIN_PROTOTYPE=1`, and never on a place's embedded figure.
+  No released build sets the flag, so the released policy has no `frame-src`
+  and is the same as before (`tests/rendered-html.test.mjs` pins it).
+- **The frame is held in a sandbox** that lets Google's page run its scripts
+  and open Google Maps in a new tab. It cannot send the reader's Site page
+  somewhere else, and, being another site's page, it cannot read it.
+- **It follows the map only when asked.** The frame shows the spot the map was
+  centred on when the button was last pressed. "Move Street View to the middle
+  of the map" asks again.
+- **Where Google has no panorama near the spot,** the frame stays empty or
+  shows Google's own message. Away from roads that is most of the land.
 
 ### Checked and not used
 
 - **Mapillary.** The largest open archive of street-level photos. Reading it
   needs an account and an access token, which is the owner's to create. Likely
-  the best next step: see "What a release would need".
-- **Wikimedia Commons.** 123 photos carry a position inside the close-up area,
-  but they are of mixed subjects (people at a table, vehicles, climbers), not a
+  the best next step for photos the Site may keep: see "What a release would
+  need".
+- **Wikimedia Commons.** 123 photos carry a position inside the first box, but
+  they are of mixed subjects (people at a table, vehicles, climbers), not a
   record of the land, and each has its own licence and author. Not taken.
-- **Google's photos themselves.** Not free to copy or store. Reached by the
-  link above only.
-- **An embedded Street View frame.** Possible only with Google's terms accepted
-  and the Site's content security policy loosened to allow Google's frame.
-  Both are the owner's decisions.
+- **Google's photos themselves.** Not free to copy or store. Shown by Google's
+  own page only, as above.
+- **More Panoramax photos in the wider area.** Searched on 2026-11-20 over the
+  whole wider area: the same 11 records as in the first box, and no others.
+- **More KartaView photos in the wider area.** Not searched. The archive's
+  photo store has not answered this machine since 2026-11-20, so a wider
+  search would list photos that cannot be fetched.
 
 ### What the caption carries
 
@@ -276,16 +349,19 @@ a quarter metre) for zooms 8 to 11.
 **2. The close-up area** (`build_close_tiles.py`). Four steps, each of which can
 be run alone with `--step`:
 
-- `fetch-photo` downloads the air photo in blocks of 4,096 pixels, and a mask
-  of where each has a picture: one block for each zoom-15 tile, then finer
-  blocks, zoom 16 over the close-up area and zoom 17 over its core, skipping
-  any the photo does not reach;
-- `elevation` reads a 1 m window of the surface model and of the ground model,
-  copies the far tiles, and cuts zooms 12 to 16 for the close-up area (height
-  rounded to a sixteenth of a metre), filling survey gaps from the 30 m window;
+- `fetch-photo` downloads the air photo in blocks of 4,096 pixels. For each
+  zoom-15 tile of the area it first asks for a 256-pixel mask of where the
+  photo has a picture, and asks for the block only if the mask shows one. Then
+  the finer blocks, zoom 16 over the area and zoom 17 where the finest level is
+  kept, skipping any the photo does not reach;
+- `elevation` reads the surface model and the ground model at 1 m, one row of
+  the area at a time, copies the far tiles, and cuts zooms 12 to 16 for the
+  close-up area (height rounded to a sixteenth of a metre), filling survey gaps
+  from the 30 m window;
 - `photo` cuts the blocks into 256-pixel WebP tiles: zooms 12 to 20 in one
-  set, and zoom 21 over the core in a set of its own, because a map draws
-  nothing where a set has no tile and cannot fall back to a coarser one;
+  set, and zoom 21 in a set of its own, because a map draws nothing where a set
+  has no tile and cannot fall back to a coarser one. It refuses to run while a
+  block the masks call for is missing;
 - `height` subtracts ground from surface and cuts classed, paletted PNG tiles
   for zooms 12 to 17.
 
@@ -321,7 +397,7 @@ pmtiles convert ~/Witness_Tree-terrain-prototype/squamish-close/height.mbtiles p
 ```
 
 **3. The ground-level photos** (`fetch_ground_photos.py`). Searches the two
-archives inside the close-up area, keeps each original with its SHA-256,
+archives inside the first box (the script keeps its own bounds), keeps each original with its SHA-256,
 writes the Site's smaller copies and an `index.json` listing each photo's
 position, date, credit, licence and files into
 `public/prototype/terrain/ground/` (ignored by git), and records every count.
@@ -351,39 +427,42 @@ Far ground:
 | Heights in the core | −21.28 m to 2,853.22 m, no empty cells |
 | Where the core's heights come from | about 54% adjusted Copernicus radar, 42% lidar (HRDEM), 3% a blend of the two |
 
-Close-up area:
+Close-up area (the wider build of 2026-11-20):
 
 | | |
 | --- | --- |
-| Area | Zoom 14 tiles x 2585 to 2588, y 5575 to 5579: longitude −123.200684 to −123.112793, latitude 49.667628 to 49.738682 |
+| Area | 145 zoom-14 tiles in 20 rows, y 5563 to 5582, each row from its first to its last tile with a picture. Longitude −123.288574 to −122.980957, latitude 49.624946 to 49.908787. 361.9 square kilometres. |
 | Remote surface file | `2_4-mosaic-1m-dsm.tif`, 159,701,620,349 bytes, ETag `ac37832e3b7f5637ce813fe702c27a77-595` |
 | Remote ground file | `2_4-mosaic-1m-dtm.tif`, 152,736,011,515 bytes, ETag `3d6982efcf1c8c28b111e8128e67796d-569` |
-| Windows kept on disk | surface 193.6 MB, ground 174.6 MB |
-| Elevation step | 90.1 s |
-| Elevation tiles added, each archive | 433 (zoom 12: 4, zoom 13: 9, zoom 14: 20, zoom 15: 80, zoom 16: 320) on top of the 116 far tiles |
-| Surface heights | −2.15 m to 1,355.39 m |
-| Ground heights | −30.4 m to 1,352.85 m |
-| Finest pixels with no survey | surface 15,055,053 and ground 15,065,640, of 83,886,080 (18%) |
-| Photo download | 80 blocks in 16 minutes for the first build; 606 finer blocks (384 at zoom 17, 222 at zoom 16) at about 5 to 10 seconds each for this one. 4.1 GB on disk. |
-| Photo step | 259.9 s with six worker processes; swap stayed at zero |
-| Photo tiles | 206,500: zooms 12 to 19, 27,070; zoom 20, 81,126; zoom 21 (core only), 98,304. 99% of the area has a picture. |
-| Ground size of one photo pixel | 0.193 m at zoom 19, 0.097 m at zoom 20, 0.048 m at zoom 21 |
+| Elevation step | 2,670 s, most of it reading the mosaic. Peak memory 2.54 GB. Eight rows asked for twice. |
+| Elevation tiles added, each archive | 3,109 (zoom 12: 15, zoom 13: 49, zoom 14: 145, zoom 15: 580, zoom 16: 2,320) on top of the 116 far tiles |
+| Surface heights | −2.19 m to 1,709.71 m |
+| Ground heights | −30.4 m to 1,709.38 m |
+| Finest pixels with no survey | surface 233,795,898 and ground 233,922,049, of 608,174,080 (38%) |
+| Photo download | 500 masks and 2,095 blocks in 4 hours 27 minutes, about 6 to 10 seconds a block; five answers dropped and asked for again. With the 686 blocks of the first builds, 2,781 blocks are on disk: 525 at zoom 15, 1,872 at zoom 16 and 384 at zoom 17. 55 zoom-15 tiles have no picture and were not asked for. |
+| Photo step | 963 s with six worker processes. The largest process held 0.96 GB; swap did not grow. |
+| Photo tiles | 733,601: zooms 12 to 19, 159,774; zoom 20, 475,523; zoom 21 (core only), 98,304 |
+| Picture | 288.4 of the 361.9 square kilometres, measured from the masks. 525 of 580 zoom-15 tiles hold some picture; 356 are wholly pictured. |
+| Ground size of one photo pixel | 0.193 m at zoom 19, 0.096 m at zoom 20, 0.048 m at zoom 21 |
 | Core at zoom 21 | Zoom 14 tiles x 2586 to 2587, y 5576 to 5578: longitude −123.178711 to −123.134766, latitude 49.681847 to 49.724479, about 15 square kilometres |
-| Height step | 15.7 s |
-| All steps in one run, photo blocks already on disk | 148 s with six worker processes. The largest single process held 1.1 GB; swap stayed at zero. |
-| Height tiles | 1,454 (zoom 17: 1,063) |
+| Height step | 186 s |
+| Height tiles | 7,910 (zoom 12: 15, zoom 13: 42, zoom 14: 112, zoom 15: 407, zoom 16: 1,515, zoom 17: 5,819) |
+| First box, for comparison | 20 zoom-14 tiles, 50 square kilometres, 206,500 photo tiles, 2.1 GB of archives |
 
 Archives in `public/prototype/terrain/`:
 
 | Archive | Bytes |
 | --- | --- |
 | `squamish-dtm.pmtiles` | 34,512,766 |
-| `squamish-surface.pmtiles` | 121,534,248 |
-| `squamish-ground.pmtiles` | 86,800,135 |
-| `squamish-photo-2024.pmtiles` | 1,341,898,966 |
+| `squamish-surface.pmtiles` | 634,469,074 |
+| `squamish-ground.pmtiles` | 434,748,301 |
+| `squamish-photo-2024.pmtiles` | 8,849,322,665 |
 | `squamish-photo-2024-core.pmtiles` | 539,529,169 |
-| `squamish-height.pmtiles` | 7,707,533 |
-| Total | 2,131,982,817 |
+| `squamish-height.pmtiles` | 51,662,249 |
+| Total | 10,544,244,224 |
+
+The downloaded photo blocks, kept beside the build output and not served, are
+about 25 GB.
 
 Ground-level photos in `public/prototype/terrain/ground/`:
 
@@ -396,17 +475,23 @@ Ground-level photos in `public/prototype/terrain/ground/`:
 | Panoramax files not fetched | 2, "not found" |
 
 Height above ground at the finest zoom, as a share of the pixels that have a
-survey, rounded: under 2 m 36%, 2 to 10 m 17%, 10 to 20 m 17%, 20 to 30 m 19%,
-30 to 40 m 8%, 40 m or more 2%.
+survey, rounded: under 2 m 19%, 2 to 10 m 20%, 10 to 20 m 26%, 20 to 30 m 22%,
+30 to 40 m 10%, 40 m or more 2%.
 
 ## What was checked
 
 On a production build with the flag on, served locally, in Chromium, on
-2026-11-19 and 2026-11-20:
+2026-11-19 and 2026-11-20 (the wider area and the Street View frame on
+2026-11-20):
 
 - the flagged production build completes, and the view reaches its ready state
   in English and in French;
-- all six archives are served with range requests (the largest is 1.34 GB);
+- all six archives are served with range requests (the largest is 8.85 GB);
+- the dashed line follows the stepped edge of the wider area, and from far off
+  the photo fills the valley from Howe Sound to north of Brackendale;
+- in Brackendale, about 8 km north of downtown and outside the first box,
+  looking straight down at the closest zoom, the zoom-20 tiles are drawn: a
+  house, a parked car and a garden shed can be told apart;
 - Go to the close-up, Whole place, Zoom in, Zoom out, Turn left, Turn right,
   Look straight down and Tilt the view each do what they say;
 - Treetops and roofs and Bare ground swap the shape of the land; Air photo,
@@ -431,14 +516,26 @@ On a production build with the flag on, served locally, in Chromium, on
 - the Street View link follows the map: after "Go to the close-up" it reads
   `viewpoint=49.691500%2C-123.148500&heading=140`. Followed by hand on
   2026-11-19, an address of this form opened Google's Street View at the spot;
+- before "Show Google Street View here" is pressed the page holds no frame and
+  asks nothing of Google. Pressed with the map over Brackendale, the frame
+  showed Google's Street View on Government Road, facing the way the map
+  faced. The frame stayed there while the map moved to the close-up; "Move
+  Street View to the middle of the map" then took it to Totem Drive, below the
+  Stawamus Chief. "Close Street View" removed the frame;
+- the frame carries a title, a sandbox and no referrer, in both languages;
+- a flagged build's pages answer with `frame-src https://www.google.com` in
+  their content security policy, and a place's embedded figure does not;
 - zoomed in outside the close-up area the land keeps its true height (the
   30 m model is used where the finer archive has no tile) and its shading, and
   the view stays in its ready state;
 - at 375 px wide the frame fits, nothing scrolls sideways, every control and
-  the Street View link is 44 px tall, and an all-round photo loads only its
-  4,096-pixel copy;
-- no request on the page fails, and the console shows no
-  content-security-policy, tile or WebGL errors. MapLibre logs one advisory,
+  the Street View link is 44 px tall, an all-round photo loads only its
+  4,096-pixel copy, and the Street View frame is 343 px wide with both its
+  buttons 44 px tall;
+- no request to the Site fails, and the console shows no
+  content-security-policy, tile or WebGL errors. With the Street View frame
+  open, two "not found" answers are logged from inside Google's own page; none
+  is the Site's. MapLibre logs one advisory,
   that the surface and its shading share a source; that is deliberate, for the
   reason given at the top of `PlaceTerrain.tsx`;
 - no middle dot separates pieces of text anywhere in the view;
@@ -447,19 +544,29 @@ On a production build with the flag on, served locally, in Chromium, on
 - `npm run lint`, `npm run typecheck`, the twelve static gates the change can
   touch (claims, style tokens, hex literals, year-range format, brand token,
   persistent identifiers, contrast, bilingual, loss vocabulary, CI coverage,
-  source review, accessibility) and 63 place-page and gate unit tests pass.
+  source review, accessibility), 63 place-page and gate unit tests, and the
+  whole unit suite (2,235 tests: 2,231 pass, 4 are skipped as before) pass.
 
 Not checked: a real phone or touch device (dragging a photo with a finger),
 Safari or Firefox, a slow connection, a screen reader, keyboard-only use of the
-map itself, a device whose graphics memory cannot hold an 11,904-pixel
-picture, and print.
+map itself or of Google's frame, a device whose graphics memory cannot hold an
+11,904-pixel picture, print, the Street View frame from any network but this
+one, and every part of the wider area (the photo was looked at downtown, in
+Brackendale and from far off).
 
 ## Limits a reader would need to know
 
-- **It does not reach Street View.** From above, the picture stops at the air
-  photo's own 7.5 cm. From the ground, there are photos at 101 spots, against
-  Google's coverage of nearly every road. See "How close this gets to street
-  level".
+- **The Site's own data does not reach Street View.** From above, the picture
+  stops at the air photo's own grid, about 5 cm. From the ground, the Site
+  holds photos at 101 spots, against Google's coverage of nearly every road.
+  Street View detail is reached only by showing Google's own page in a frame.
+  See "How close this gets to street level".
+- **The Street View frame is Google's page, not the Site's.** It loads only
+  when the reader asks, and then Google receives the request under Google's
+  terms. Its address is one Google serves but does not document for other
+  sites, and it may stop working. The Site does not check what it shows. Away
+  from roads Google has nothing, and the frame stays empty. The frame does not
+  follow the map by itself.
 - **Ground-level photos are sparse, old and uneven.** One spot under the trees
   from 2026; road photos from 2016 and 2017 in this build. A road photo may
   show a place that has since changed. 361 more road photos are listed and not
@@ -469,13 +576,16 @@ picture, and print.
   view in the all-round photos.
 - **An all-round photo is large.** The original is 35 to 50 MB and is loaded
   whole on a wide screen, after a 3 MB copy.
-- **The Street View link is only a link.** What it opens is Google's, on
+- **The Street View link leaves the Site.** What it opens is Google's, on
   Google's terms, and is not checked by this Site. Away from roads Google may
   have nothing near and show its map instead.
-- **The close-up covers one box.** About 50 square kilometres of one place, and
-  the finest photo level a core of about 15. Everything else is still the 30 m
-  ground with no picture. The District's photo reaches well beyond the box
-  (its service spans about 20 km by 30 km), so the box could be widened.
+- **The close-up covers one place.** It is everywhere the District of
+  Squamish's photo reaches, about 360 square kilometres, and nowhere
+  else: outside the dashed line the land is the 30 m ground with no picture.
+  Air photos this fine exist only where a municipality publishes them. The
+  other places on the Site, in all four provinces, have no close-up.
+- **The photo does not fill the dashed line.** The line follows whole map
+  tiles. The photo has a picture over about 290 square kilometres of them; the rest, at the ragged edge, is drawn without a picture.
 - **The survey and the photo are different years.** The photo is 2024. The
   survey's year is not established and it is older. A tree in the photo may
   stand where the surface is bare, and the reverse.
@@ -485,11 +595,14 @@ picture, and print.
   truest shape.
 - **Height above ground is trees and buildings alike.** The colouring does not
   tell a tree from a roof, and it is not a forest map.
-- **18% of the box has no survey.** There the ground is the 30 m model, so the
-  treetop surface and the height colouring stop at a visible edge.
-- **The finest photo level covers the core only.** Outside it the photo is
-  stored at about 10 cm, a little coarser than the 7.5 cm it is published at.
-  The two photo archives are 1.9 GB together.
+- **38% of the close-up area has no survey.** No flight covered the higher
+  mountainsides or the sea. There the ground is the 30 m model with the air
+  photo laid over it, so the treetop surface and the height colouring stop at
+  a visible edge and the photo looks smeared on steep ground.
+- **The finest photo level covers the downtown core only,** about 15 square
+  kilometres. Outside it the photo is stored at about 10 cm, coarser than the
+  5 cm grid it is served on, although the photo is as sharp there. The two
+  photo archives are 9.4 GB together.
 - **Loss patches are still 30 m cells.** They stay blocky however far in the
   reader goes, and at this detail a patch can sit on a roof or a road. A patch
   marks forest detected as lost at least once from 1984 to 2022, and some of it
@@ -519,18 +632,24 @@ picture, and print.
 2. **A decision on showing homes, vehicles and people** at this detail, from
    above and from the ground.
 3. **A decision on Google.** The link out needs none of Google's terms accepted
-   by the Site, but it sends a reader to Google. An embedded Street View frame
-   would put it on the page, and needs Google's terms accepted and the content
-   security policy loosened.
+   by the Site, but it sends a reader to Google. The frame puts Google's page
+   on the Site's page. Releasing the frame needs three things that are the
+   owner's: a decision to allow `https://www.google.com` in the released
+   content security policy (today only a flagged build allows it); a choice
+   between the key-less address used here, which Google does not document for
+   other sites, and the Maps Embed API, which is free, needs a key from the
+   owner's Google account and Google's terms accepted; and wording in the
+   Site's privacy notice, because a reader who presses the button is seen by
+   Google. Without those, a release keeps the link and drops the frame.
 4. **A Mapillary access token, if more ground-level photos are wanted.**
    Mapillary is the largest open archive and needs a free account, which is the
    owner's to create. Its photos are CC BY-SA 4.0, like the two used here.
 5. **An established survey year,** or wording a reviewer accepts without one.
-6. **Hosting for large archives.** One box of one place is about 2.1 GB of
-   archives and 0.5 GB of ground-level photos. Air photos this fine exist only
-   where a municipality publishes them, so most places could have the 1 m shape
-   and height but no picture. A province is a different size of job and needs
-   its own measured run, bounded in memory like every other data job.
+6. **Hosting for large archives.** One place is about 10.5 GB of archives
+   and 0.5 GB of ground-level photos. Air photos this fine exist only where a
+   municipality publishes them, so most places could have the 1 m shape and
+   height but no picture. A province is a different size of job and needs its
+   own measured run, bounded in memory like every other data job.
 7. **A reviewed French text and an accessibility pass** (keyboard, screen
    reader, touch), which local tests do not close.
 8. **A decision on where it belongs**: every place page, Explore, or neither.

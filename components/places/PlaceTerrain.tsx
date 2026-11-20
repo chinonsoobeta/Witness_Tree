@@ -3,7 +3,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import type { ExpressionSpecification, Map as MapLibreMap } from "maplibre-gl";
 import type { PlaceExtent } from "@/lib/place-pages/map-view";
-import { streetViewLink, type TerrainPrototype } from "@/lib/place-pages/terrain-prototype";
+import { streetViewFrame, streetViewLink, type TerrainPrototype } from "@/lib/place-pages/terrain-prototype";
 import { GroundPhoto, type GroundPhotoEntry, type GroundPhotoText } from "./GroundPhoto";
 
 /**
@@ -28,6 +28,11 @@ import { GroundPhoto, type GroundPhotoEntry, type GroundPhotoText } from "./Grou
  * Ground-level photos are dots on the map. Choosing one opens the photograph
  * itself under the map (GroundPhoto). The list comes from an index beside the
  * photos; with no index there are no dots and no button.
+ *
+ * Google's Street View is offered two ways, both at the middle of the map: a
+ * link that leaves the Site, and a frame that shows Google's own page here. The
+ * frame is loaded only when the reader asks, and it does not follow the map by
+ * itself: each move of it is the reader's own request.
  */
 
 const MAPLIBRE_WORKER_URL = "/maplibre/6.9.0/maplibre-gl-worker.mjs";
@@ -52,7 +57,8 @@ export type PlaceTerrainProps = Readonly<{
     label: string; key: string; says: string; closeUpSays: string; turnLeft: string; turnRight: string; flat: string; tilted: string;
     reset: string; closeUp: string; zoomIn: string; zoomOut: string; surfaceGroup: string; surface: string; ground: string;
     layersGroup: string; showPhoto: string; showHeight: string; showLoss: string; showGround: string; groundOpen: string; groundKey: string;
-    streetView: string; streetViewNote: string;
+    streetView: string; streetViewNote: string; streetViewShow: string; streetViewMove: string; streetViewClose: string;
+    streetViewFrame: string; streetViewFrameNote: string;
     groundSays: string; heightKey: string; heightNote: string; closeUpArea: string; hint: string; failed: string; attribution: string;
   }> & GroundPhotoText;
   /** The height classes, lowest first, each with the colour its tiles were built with and its wording. */
@@ -74,6 +80,8 @@ export function PlaceTerrain({ extent, terrain, boundary, patches, colours, text
   const [open, setOpen] = useState<number | null>(null);
   /** The middle of the map and the way it faces, for the link to Google's street-level photos. */
   const [spot, setSpot] = useState<Readonly<{ longitude: number; latitude: number; bearing: number }> | null>(null);
+  /** Where the Street View frame was last asked to look. Nothing is loaded from Google until this is set. */
+  const [street, setStreet] = useState<Readonly<{ longitude: number; latitude: number; bearing: number }> | null>(null);
 
   useEffect(() => {
     const frame = frameRef.current;
@@ -101,7 +109,6 @@ export function PlaceTerrain({ extent, terrain, boundary, patches, colours, text
         maplibre.addProtocol("pmtiles", protocol.tile);
         const archive = (path: string) => `pmtiles://${new URL(path, window.location.origin).href}`;
         const outline: ExpressionSpecification = ["==", ["get", "id"], boundary.featureId];
-        const [west, south, east, north] = terrain.closeUp.bounds;
         const shade = (id: string, source: Shape | "far", visible: boolean) => ({
           id,
           type: "hillshade" as const,
@@ -146,7 +153,7 @@ export function PlaceTerrain({ extent, terrain, boundary, patches, colours, text
               patches: { type: "vector", url: `pmtiles://${patches.url}` },
               closeup: {
                 type: "geojson",
-                data: { type: "Feature", properties: {}, geometry: { type: "LineString", coordinates: [[west, south], [east, south], [east, north], [west, north], [west, south]] } },
+                data: { type: "Feature", properties: {}, geometry: { type: "LineString", coordinates: terrain.closeUp.outline.map(([longitude, latitude]) => [longitude, latitude]) } },
               },
             },
             terrain: { source: "surface", exaggeration: 1 },
@@ -343,10 +350,26 @@ export function PlaceTerrain({ extent, terrain, boundary, patches, colours, text
             </fieldset>
           </div>
           {spot ? (
-            <p className="place-terrain-leave">
-              <a href={streetViewLink(spot.longitude, spot.latitude, spot.bearing)} rel="noreferrer">{text.streetView}</a>
-              <span>{text.streetViewNote}</span>
-            </p>
+            <div className="place-terrain-street">
+              <div className="place-terrain-controls">
+                <button type="button" className="btn btn--outline" onClick={() => setStreet(spot)}>{street ? text.streetViewMove : text.streetViewShow}</button>
+                {street ? <button type="button" className="btn btn--outline" onClick={() => setStreet(null)}>{text.streetViewClose}</button> : null}
+              </div>
+              {street ? (
+                <iframe
+                  className="place-terrain-street-frame"
+                  title={text.streetViewFrame}
+                  src={streetViewFrame(street.longitude, street.latitude, street.bearing)}
+                  referrerPolicy="no-referrer"
+                  sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
+                />
+              ) : null}
+              <p className="place-terrain-leave"><span>{text.streetViewFrameNote}</span></p>
+              <p className="place-terrain-leave">
+                <a href={streetViewLink(spot.longitude, spot.latitude, spot.bearing)} rel="noreferrer">{text.streetView}</a>
+                <span>{text.streetViewNote}</span>
+              </p>
+            </div>
           ) : null}
           {open !== null && photos[open] ? (
             <GroundPhoto

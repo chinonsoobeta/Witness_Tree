@@ -727,30 +727,50 @@ a colouring of height above ground. The far ground is still MRDEM-30 (Open
 Government Licence – Canada, part produced from Copernicus WorldDEM-30).
 
 On 2026-11-19 the owner then asked for detail as high as Google Street View,
-at no cost. Three things were added on 2026-11-20, and together they still do
-not reach it:
+at no cost. Three things were added on 2026-11-20:
 
 - the air photo at all the detail it has: about 10 cm over the close-up area
-  and about 5 cm over a core of about 15 square kilometres (it is published at
-  7.5 cm, so there is no finer free picture from above);
+  and about 5 cm, the grid the District serves it on, over a core of about
+  15 square kilometres downtown;
 - photographs taken on the ground by volunteers, from two open archives under
   CC BY-SA 4.0: 9 all-round photos from Panoramax at one spot under the trees,
   and 92 single road photos from KartaView (361 more are listed; the archive's
-  photo store stopped answering partway through the download). They are shown
-  as dots on the map and open under it, the all-round ones in a viewer written
-  for this, with no new dependency;
+  photo store stopped answering partway through the download and had not
+  answered again by the end of 2026-11-20). They are shown as dots on the map
+  and open under it, the all-round ones in a viewer written for this, with no
+  new dependency;
 - a link that opens Google's own Street View at the middle of the map. It
-  leaves the Site. Nothing of Google's is loaded, copied or kept, and the
-  content security policy is unchanged.
+  leaves the Site.
+
+A check then found that this did not meet the request: the close-up was one
+box and nothing showed Street View's own detail. Two more things were done on
+2026-11-20:
+
+- **The close-up was widened to everywhere the District's photo reaches:**
+  145 map tiles, about 360 square kilometres, with a picture over about 290 of
+  them, from Britannia Beach to Paradise Valley. The 1 m survey, the height
+  colouring and the 10 cm photo now cover all of it; 38% of it has no survey
+  and keeps the 30 m ground under the photo. The archives are about 10.5 GB.
+- **Google's own Street View can be shown inside the view,** in a frame under
+  the map, at the panorama nearest the middle of the map. It loads only when
+  the reader presses a button. Where Google has driven, this is Street View
+  itself, so the request is met there in that way only: by Google's page, not
+  by the Site's data. `next.config.ts` allows the frame
+  (`frame-src https://www.google.com`) only when the prototype flag is set, so
+  the released content security policy is unchanged. The frame's address is
+  one Google serves without a key but does not document for other sites.
 
 Open before any release: the owner's approval of five sources, the share-alike
 condition of the photo archives, a decision on showing homes, vehicles and
-people at this detail, a decision on linking to or embedding Google, the
-survey's flight year (not established), hosting for about 2.6 GB for one box of
-one place, a reviewed French text, and an accessibility pass. Mapillary, the
-largest open archive of street-level photos, needs an account that is the
-owner's to create. The verified licence facts, the build figures, what was
-checked and the limits are in [the prototype record](TERRAIN_PROTOTYPE.md).
+people at this detail, a decision on Google (allowing its frame in the released
+content security policy; the key-less address or the free, keyed Maps Embed
+API; privacy wording), the survey's flight year (not established), hosting for
+about 11 GB for one place, a reviewed French text, and an accessibility pass.
+Mapillary, the largest open archive of street-level photos, needs an account
+that is the owner's to create. The other places on the Site have no close-up:
+air photos this fine exist only where a municipality publishes them. The
+verified licence facts, the build figures, what was checked and the limits are
+in [the prototype record](TERRAIN_PROTOTYPE.md).
 
 ### Home page map button, 2026-11-19
 
