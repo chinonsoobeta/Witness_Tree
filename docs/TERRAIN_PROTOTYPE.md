@@ -91,6 +91,13 @@ first box (about 50 square kilometres over downtown) they hold:
   453 are in this build, all from 2016 and 2017. The script picks up the other
   361 when it is run again.
 
+The search has not been widened with the close-up. Panoramax was asked again
+on 2026-11-20 over the whole close-up area, in sixteen boxes: it holds the
+same photos there and no others, so widening would add nothing from it.
+KartaView was not asked over the wider area: that is about 3,700 requests for
+lists, and its photo store was still not answering, so nothing found could
+have been fetched.
+
 These are the same kind of thing as Street View, and the nine all-round photos
 are close to it in sharpness: 11,904 pixels around, against 16,384 for the one
 Google panorama checked in Squamish, dated April 2023. The road photos are
