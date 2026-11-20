@@ -722,18 +722,35 @@ On 2026-11-19 the owner asked for the finest detail free data allows. A
 close-up area of about 50 square kilometres over the middle of Squamish now has
 a 1 m laser survey of the ground and of the treetops and roofs (Natural
 Resources Canada's HRDEM Mosaic, Open Government Licence – Canada), the
-District of Squamish's 2024 air photo at about 19 cm (Open Government Licence –
-Squamish), and a colouring of height above ground. It is a view from above:
-no free source has ground-level photographs of forest land. The far ground is
-still MRDEM-30 (Open Government Licence – Canada, part produced from Copernicus
-WorldDEM-30).
+District of Squamish's 2024 air photo (Open Government Licence – Squamish), and
+a colouring of height above ground. The far ground is still MRDEM-30 (Open
+Government Licence – Canada, part produced from Copernicus WorldDEM-30).
 
-Open before any release: the owner's approval of three sources, a decision on
-showing homes and vehicles at this detail, the survey's flight year (not
-established), hosting for about 650 MB for one box of one place, a reviewed
-French text, and an accessibility pass. The verified licence facts, the build
-figures, what was checked and the limits are in
-[the prototype record](TERRAIN_PROTOTYPE.md).
+On 2026-11-19 the owner then asked for detail as high as Google Street View,
+at no cost. Three things were added on 2026-11-20, and together they still do
+not reach it:
+
+- the air photo at all the detail it has: about 10 cm over the close-up area
+  and about 5 cm over a core of about 15 square kilometres (it is published at
+  7.5 cm, so there is no finer free picture from above);
+- photographs taken on the ground by volunteers, from two open archives under
+  CC BY-SA 4.0: 9 all-round photos from Panoramax at one spot under the trees,
+  and 92 single road photos from KartaView (361 more are listed; the archive's
+  photo store stopped answering partway through the download). They are shown
+  as dots on the map and open under it, the all-round ones in a viewer written
+  for this, with no new dependency;
+- a link that opens Google's own Street View at the middle of the map. It
+  leaves the Site. Nothing of Google's is loaded, copied or kept, and the
+  content security policy is unchanged.
+
+Open before any release: the owner's approval of five sources, the share-alike
+condition of the photo archives, a decision on showing homes, vehicles and
+people at this detail, a decision on linking to or embedding Google, the
+survey's flight year (not established), hosting for about 2.6 GB for one box of
+one place, a reviewed French text, and an accessibility pass. Mapillary, the
+largest open archive of street-level photos, needs an account that is the
+owner's to create. The verified licence facts, the build figures, what was
+checked and the limits are in [the prototype record](TERRAIN_PROTOTYPE.md).
 
 ### Home page map button, 2026-11-19
 

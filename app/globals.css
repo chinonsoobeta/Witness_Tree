@@ -6262,6 +6262,18 @@ dd > a:only-child {
 .place-terrain-dash { display: inline-block; width: 18px; height: 0; border-top: 2px dashed var(--ink); vertical-align: middle; }
 .place-terrain-heights { display: flex; flex-direction: column; gap: 4px; }
 .place-terrain-height-classes { display: flex; flex-wrap: wrap; gap: 4px 16px; }
+.place-terrain-leave { display: flex; flex-direction: column; gap: 4px; margin: 0; font-size: var(--text-small); color: var(--muted); }
+.place-terrain-leave a { align-self: flex-start; min-height: 44px; display: inline-flex; align-items: center; font-size: 1rem; }
+.place-terrain-dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--surface); outline: 1px solid var(--rule-strong); vertical-align: middle; }
+.place-ground { display: flex; flex-direction: column; gap: 8px; padding: 12px; border: 1px solid var(--rule-strong); background: var(--surface); }
+.place-ground-view { position: relative; width: 100%; aspect-ratio: 16 / 9; max-height: 620px; background: var(--ink); }
+.place-ground-view canvas, .place-ground-view img { display: block; width: 100%; height: 100%; }
+.place-ground-view img { object-fit: contain; }
+/* A sideways drag turns the photo; an up-and-down drag still scrolls the page on a touch screen. */
+.place-ground-view canvas { cursor: grab; touch-action: pan-y; }
+.place-ground-view canvas:active { cursor: grabbing; }
+.place-ground-status { position: absolute; left: 8px; bottom: 8px; padding: 4px 8px; background: var(--surface); color: var(--ink); font-size: var(--text-small); }
+.place-ground-credit { display: flex; flex-direction: column; gap: 4px; margin: 0; font-size: var(--text-small); color: var(--muted); }
 .place-terrain-hint { color: var(--muted); }
 .place-terrain-badge { margin-left: 8px; padding: 2px 8px; border: 1px solid var(--rule-strong); font-size: 0.75rem; letter-spacing: 0.04em; }
 @media print { .place-terrain-frame, .place-terrain-controls { display: none; } }

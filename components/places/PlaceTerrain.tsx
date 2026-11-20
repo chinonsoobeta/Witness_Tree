@@ -3,7 +3,8 @@
 import { useEffect, useId, useRef, useState } from "react";
 import type { ExpressionSpecification, Map as MapLibreMap } from "maplibre-gl";
 import type { PlaceExtent } from "@/lib/place-pages/map-view";
-import type { TerrainPrototype } from "@/lib/place-pages/terrain-prototype";
+import { streetViewLink, type TerrainPrototype } from "@/lib/place-pages/terrain-prototype";
+import { GroundPhoto, type GroundPhotoEntry, type GroundPhotoText } from "./GroundPhoto";
 
 /**
  * PROTOTYPE. A tilted view of one place: the loss patches Explore draws, draped
@@ -19,6 +20,14 @@ import type { TerrainPrototype } from "@/lib/place-pages/terrain-prototype";
  * identical range requests, and Chromium drops one of them on some loads (the
  * fault fixed in Explore's outlines on 2026-11-10). The other elevation source
  * is not loaded until it is chosen.
+ *
+ * The air photo is two sources for the same reason a missing tile draws nothing:
+ * its finest level covers only a core, so it sits in an archive of its own, with
+ * bounds, above the level that covers the whole close-up area.
+ *
+ * Ground-level photos are dots on the map. Choosing one opens the photograph
+ * itself under the map (GroundPhoto). The list comes from an index beside the
+ * photos; with no index there are no dots and no button.
  */
 
 const MAPLIBRE_WORKER_URL = "/maplibre/6.9.0/maplibre-gl-worker.mjs";
@@ -27,6 +36,8 @@ const TILT = 62;
 const TURN_STEP = 30;
 /** The first zoom the finer elevation tiles exist at. */
 const CLOSE_SHADE_FROM = 12;
+/** How close the map goes when a ground-level photo is opened from the button. */
+const GROUND_PHOTO_ZOOM = 18;
 
 type State = "static" | "waiting" | "loading" | "ready" | "failed";
 type Shape = "surface" | "ground";
@@ -36,13 +47,14 @@ export type PlaceTerrainProps = Readonly<{
   terrain: TerrainPrototype;
   boundary: Readonly<{ url: string; sourceLayer: string; featureId: string }>;
   patches: Readonly<{ url: string; sourceLayer: string; yearProperty: string; minZoom: number; maxZoom: number }>;
-  colours: Readonly<{ ground: string; outline: string; patch: string; shadow: string; highlight: string; sky: string; horizon: string }>;
+  colours: Readonly<{ ground: string; outline: string; patch: string; shadow: string; highlight: string; sky: string; horizon: string; groundPhoto: string; groundPhotoEdge: string }>;
   text: Readonly<{
     label: string; key: string; says: string; closeUpSays: string; turnLeft: string; turnRight: string; flat: string; tilted: string;
     reset: string; closeUp: string; zoomIn: string; zoomOut: string; surfaceGroup: string; surface: string; ground: string;
-    layersGroup: string; showPhoto: string; showHeight: string; showLoss: string; heightKey: string;
-    heightNote: string; closeUpArea: string; hint: string; failed: string; attribution: string;
-  }>;
+    layersGroup: string; showPhoto: string; showHeight: string; showLoss: string; showGround: string; groundOpen: string; groundKey: string;
+    streetView: string; streetViewNote: string;
+    groundSays: string; heightKey: string; heightNote: string; closeUpArea: string; hint: string; failed: string; attribution: string;
+  }> & GroundPhotoText;
   /** The height classes, lowest first, each with the colour its tiles were built with and its wording. */
   heights: readonly Readonly<{ colour: string; label: string }>[];
 }>;
@@ -57,6 +69,11 @@ export function PlaceTerrain({ extent, terrain, boundary, patches, colours, text
   const [showPhoto, setShowPhoto] = useState(true);
   const [showHeight, setShowHeight] = useState(false);
   const [showLoss, setShowLoss] = useState(true);
+  const [showGround, setShowGround] = useState(true);
+  const [photos, setPhotos] = useState<readonly GroundPhotoEntry[]>([]);
+  const [open, setOpen] = useState<number | null>(null);
+  /** The middle of the map and the way it faces, for the link to Google's street-level photos. */
+  const [spot, setSpot] = useState<Readonly<{ longitude: number; latitude: number; bearing: number }> | null>(null);
 
   useEffect(() => {
     const frame = frameRef.current;
@@ -68,8 +85,17 @@ export function PlaceTerrain({ extent, terrain, boundary, patches, colours, text
     const start = async () => {
       setState("loading");
       try {
-        const [maplibre, pmtiles] = await Promise.all([import("maplibre-gl"), import("pmtiles")]);
+        const [maplibre, pmtiles, ground] = await Promise.all([
+          import("maplibre-gl"),
+          import("pmtiles"),
+          // No index means no ground-level photos were built: the view goes on without them.
+          fetch(`${terrain.closeUp.groundPhotos}index.json`)
+            .then((response) => (response.ok ? (response.json() as Promise<{ photos: GroundPhotoEntry[] }>) : null))
+            .then((index) => index?.photos ?? [])
+            .catch(() => [] as GroundPhotoEntry[]),
+        ]);
         if (!active) return;
+        setPhotos(ground);
         const protocol = new pmtiles.Protocol();
         maplibre.setWorkerUrl(MAPLIBRE_WORKER_URL);
         maplibre.addProtocol("pmtiles", protocol.tile);
@@ -107,6 +133,14 @@ export function PlaceTerrain({ extent, terrain, boundary, patches, colours, text
               surface: { type: "raster-dem", url: archive(terrain.surface), encoding: "terrarium", tileSize: terrain.tileSize },
               ground: { type: "raster-dem", url: archive(terrain.ground), encoding: "terrarium", tileSize: terrain.tileSize },
               photo: { type: "raster", url: archive(terrain.closeUp.photo), tileSize: 256 },
+              "photo-core": { type: "raster", url: archive(terrain.closeUp.photoCore.url), tileSize: 256 },
+              "ground-photos": {
+                type: "geojson",
+                data: {
+                  type: "FeatureCollection",
+                  features: ground.map((photo, index) => ({ type: "Feature", properties: { index }, geometry: { type: "Point", coordinates: [photo.lon, photo.lat] } })),
+                },
+              },
               height: { type: "raster", url: archive(terrain.closeUp.height), tileSize: 256 },
               boundary: { type: "vector", url: `pmtiles://${boundary.url}` },
               patches: { type: "vector", url: `pmtiles://${patches.url}` },
@@ -131,6 +165,8 @@ export function PlaceTerrain({ extent, terrain, boundary, patches, colours, text
               shade("shade-surface", "surface", true),
               shade("shade-ground", "ground", false),
               { id: "photo", type: "raster", source: "photo", paint: { "raster-fade-duration": 0 } },
+              // 256-pixel tiles are asked for one zoom ahead, so the finest level starts a zoom early.
+              { id: "photo-core", type: "raster", source: "photo-core", minzoom: terrain.closeUp.photoCore.zoom - 1, paint: { "raster-fade-duration": 0 } },
               // Classed tiles: nearest keeps a class's own colour at its edge.
               { id: "height", type: "raster", source: "height", layout: { visibility: "none" }, paint: { "raster-opacity": 0.85, "raster-resampling": "nearest", "raster-fade-duration": 0 } },
               // Above the shading, so a patch keeps the colour its key shows.
@@ -152,6 +188,24 @@ export function PlaceTerrain({ extent, terrain, boundary, patches, colours, text
                 filter: outline,
                 paint: { "line-color": colours.outline, "line-width": 2.5 },
               },
+              {
+                id: "ground-photos",
+                type: "circle",
+                source: "ground-photos",
+                paint: {
+                  "circle-radius": ["interpolate", ["linear"], ["zoom"], 10, 3, 16, 6],
+                  "circle-color": colours.groundPhoto,
+                  "circle-stroke-color": colours.groundPhotoEdge,
+                  "circle-stroke-width": 1.5,
+                },
+              },
+              {
+                id: "ground-photo-open",
+                type: "circle",
+                source: "ground-photos",
+                filter: ["==", ["get", "index"], -1],
+                paint: { "circle-radius": 11, "circle-color": colours.groundPhotoEdge, "circle-stroke-color": colours.groundPhoto, "circle-stroke-width": 4 },
+              },
             ],
           },
         });
@@ -163,9 +217,23 @@ export function PlaceTerrain({ extent, terrain, boundary, patches, colours, text
         };
         const timeout = setTimeout(fail, LOAD_TIMEOUT_MS);
         map.on("error", fail);
+        map.on("click", "ground-photos", (event) => {
+          const index = event.features?.[0]?.properties?.index;
+          if (typeof index !== "number") return;
+          setOpen(index);
+          map.setFilter("ground-photo-open", ["==", ["get", "index"], index]);
+        });
+        map.on("mouseenter", "ground-photos", () => { map.getCanvas().style.cursor = "pointer"; });
+        map.on("mouseleave", "ground-photos", () => { map.getCanvas().style.cursor = ""; });
+        const mark = () => {
+          const centre = map.getCenter();
+          if (active) setSpot({ longitude: centre.lng, latitude: centre.lat, bearing: map.getBearing() });
+        };
+        map.on("moveend", mark);
         map.once("idle", () => {
           clearTimeout(timeout);
           if (!active || failed) return;
+          mark();
           setState("ready");
         });
         cleanup = () => {
@@ -218,6 +286,18 @@ export function PlaceTerrain({ extent, terrain, boundary, patches, colours, text
     show(`shade-${next}`, true);
   };
 
+  const openPhoto = (index: number | null, move: boolean) => {
+    setOpen(index);
+    const map = mapRef.current;
+    if (!map) return;
+    map.setFilter("ground-photo-open", ["==", ["get", "index"], index ?? -1]);
+    const photo = index === null ? null : photos[index];
+    if (photo && move) map.easeTo({ center: [photo.lon, photo.lat], zoom: Math.max(map.getZoom(), GROUND_PHOTO_ZOOM), duration: 800 });
+  };
+  const step = (by: number) => {
+    if (open !== null && photos.length) openPhoto((open + by + photos.length) % photos.length, true);
+  };
+
   const ready = state === "ready";
   return (
     <figure className="place-terrain" data-state={state}>
@@ -232,6 +312,7 @@ export function PlaceTerrain({ extent, terrain, boundary, patches, colours, text
             <button type="button" className="btn btn--outline" onClick={() => turn(-TURN_STEP)}>{text.turnLeft}</button>
             <button type="button" className="btn btn--outline" onClick={() => turn(TURN_STEP)}>{text.turnRight}</button>
             <button type="button" className="btn btn--outline" onClick={tilt}>{tilted ? text.flat : text.tilted}</button>
+            {photos.length ? <button type="button" className="btn btn--outline" onClick={() => openPhoto(open ?? 0, true)}>{text.groundOpen}</button> : null}
           </div>
           <div className="place-terrain-controls">
             <fieldset className="place-terrain-group">
@@ -254,13 +335,37 @@ export function PlaceTerrain({ extent, terrain, boundary, patches, colours, text
               <label className="place-terrain-toggle">
                 <input type="checkbox" aria-label={text.showLoss} checked={showLoss} onChange={(event) => { setShowLoss(event.target.checked); show("patches", event.target.checked); }} /> {text.showLoss}
               </label>
+              {photos.length ? (
+                <label className="place-terrain-toggle">
+                  <input type="checkbox" aria-label={text.showGround} checked={showGround} onChange={(event) => { setShowGround(event.target.checked); show("ground-photos", event.target.checked); show("ground-photo-open", event.target.checked); }} /> {text.showGround}
+                </label>
+              ) : null}
             </fieldset>
           </div>
+          {spot ? (
+            <p className="place-terrain-leave">
+              <a href={streetViewLink(spot.longitude, spot.latitude, spot.bearing)} rel="noreferrer">{text.streetView}</a>
+              <span>{text.streetViewNote}</span>
+            </p>
+          ) : null}
+          {open !== null && photos[open] ? (
+            <GroundPhoto
+              key={photos[open].id}
+              photo={photos[open]}
+              base={terrain.closeUp.groundPhotos}
+              position={{ index: open, count: photos.length }}
+              text={text}
+              onPrevious={() => step(-1)}
+              onNext={() => step(1)}
+              onClose={() => openPhoto(null, false)}
+            />
+          ) : null}
         </>
       ) : null}
       <figcaption className="place-map-caption">
         {ready ? <span className="place-map-key"><span className="place-map-swatch" aria-hidden="true" style={{ background: colours.patch }} /> {text.key}</span> : null}
         {ready ? <span className="place-map-key"><span className="place-terrain-dash" aria-hidden="true" /> {text.closeUpArea}</span> : null}
+        {ready && photos.length ? <span className="place-map-key"><span className="place-terrain-dot" aria-hidden="true" style={{ background: colours.groundPhoto }} /> {text.groundKey}</span> : null}
         {ready && showHeight ? (
           <span className="place-terrain-heights">
             <span>{text.heightKey}</span>
@@ -277,6 +382,7 @@ export function PlaceTerrain({ extent, terrain, boundary, patches, colours, text
         {state === "failed" ? <span role="status">{text.failed}</span> : null}
         <span>{text.says}</span>
         <span>{text.closeUpSays}</span>
+        {ready && photos.length ? <span>{text.groundSays}</span> : null}
         {ready ? <span className="place-terrain-hint">{text.hint}</span> : null}
         <small>{text.attribution}</small>
       </figcaption>
